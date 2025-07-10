@@ -1,0 +1,62 @@
+{
+  "name": "newsmarkaba",
+  "version": "1.0.0",
+  "description": "A modern, bilingual (Arabic/English) news website built with Next.js, Node.js, and PostgreSQL",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "start:client": "cd client && npm run start",
+    "start:server": "cd server && npm run start",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "clean": "npm run clean:client && npm run clean:server",
+    "clean:client": "cd client && rm -rf .next node_modules",
+    "clean:server": "cd server && rm -rf dist node_modules",
+    "lint": "npm run lint:client && npm run lint:server",
+    "lint:client": "cd client && npm run lint",
+    "lint:server": "cd server && npm run lint",
+    "test": "npm run test:client && npm run test:server",
+    "test:client": "cd client && npm run test",
+    "test:server": "cd server && npm run test",
+    "db:setup": "psql -d newsmarkaba -f sql/create_tables.sql",
+    "db:reset": "dropdb newsmarkaba && createdb newsmarkaba && npm run db:setup"
+  },
+  "keywords": [
+    "news",
+    "website",
+    "nextjs",
+    "nodejs",
+    "postgresql",
+    "arabic",
+    "english",
+    "bilingual",
+    "pwa",
+    "responsive"
+  ],
+  "author": "NewsMarkaba Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/newsmarkaba.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/newsmarkaba/issues"
+  },
+  "homepage": "https://newsmarkaba.com",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ]
+}

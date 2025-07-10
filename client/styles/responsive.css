@@ -1,0 +1,304 @@
+/* Enhanced Responsive Design for NewsMarkaba */
+/* Desktop-first approach - preserve original design, enhance mobile */
+
+/* Default Desktop Styles (preserved from original design) */
+.responsive-padding {
+  @apply p-6 lg:p-8;
+}
+
+.responsive-flex {
+  @apply flex items-center;
+}
+
+.responsive-text {
+  @apply text-base md:text-lg;
+}
+
+.responsive-width {
+  @apply w-auto;
+}
+
+.section-title {
+  @apply text-3xl lg:text-4xl;
+}
+
+.featured-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6;
+}
+
+.info-boxes {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-8;
+}
+
+.info-box {
+  @apply p-6;
+}
+
+.info-box-title {
+  @apply text-xl;
+}
+
+.news-card {
+  @apply w-full;
+}
+
+.news-card-image {
+  @apply h-48 lg:h-56;
+}
+
+.news-card-content {
+  @apply p-4;
+}
+
+.news-card-title {
+  @apply text-lg font-semibold;
+}
+
+.news-card-excerpt {
+  @apply text-base;
+}
+
+.header-logo {
+  @apply w-16 h-16;
+}
+
+.header-title {
+  @apply text-2xl;
+}
+
+.header-tagline {
+  @apply text-base;
+}
+
+.nav-links {
+  @apply flex space-x-6;
+}
+
+.nav-link {
+  @apply px-4 py-2;
+}
+
+.touch-target {
+  @apply min-h-10 min-w-10;
+}
+
+/* Mobile Adjustments Only (640px and below) */
+@media (max-width: 640px) {
+  .responsive-padding {
+    @apply p-3;
+  }
+  
+  .header-logo {
+    @apply w-12 h-12;
+  }
+  
+  .header-title {
+    @apply text-lg;
+  }
+  
+  .header-tagline {
+    @apply text-xs;
+  }
+  
+  .nav-links {
+    @apply flex-col space-y-2 space-x-0;
+  }
+  
+  .nav-link {
+    @apply w-full text-center py-3 px-4;
+  }
+  
+  .breaking-news-mobile {
+    @apply text-xs py-1;
+  }
+  
+  .featured-grid {
+    @apply grid-cols-1 gap-4;
+  }
+  
+  .news-card-image {
+    @apply h-40;
+  }
+  
+  .news-card-content {
+    @apply p-3;
+  }
+  
+  .news-card-title {
+    @apply text-base;
+  }
+  
+  .news-card-excerpt {
+    @apply text-sm;
+  }
+  
+  .section-title {
+    @apply text-2xl;
+  }
+  
+  .info-boxes {
+    @apply grid-cols-1 gap-4;
+  }
+  
+  .info-box {
+    @apply p-4;
+  }
+  
+  .info-box-title {
+    @apply text-lg;
+  }
+  
+  .search-mobile {
+    @apply w-full px-3 py-2 text-sm;
+  }
+  
+  .footer-grid {
+    @apply grid-cols-1 gap-6;
+  }
+  
+  .footer-section {
+    @apply text-center;
+  }
+  
+  .footer-title {
+    @apply text-lg;
+  }
+  
+  .footer-link {
+    @apply block py-1;
+  }
+  
+  .footer-bottom {
+    @apply flex-col space-y-2;
+  }
+  
+size plz   .footer-bottom-links {
+     @apply flex-col space-y-1;
+   }
+ }
+
+/* Default Footer Styles for Desktop */
+.footer-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8;
+}
+
+.footer-section {
+  @apply text-left;
+}
+
+.footer-title {
+  @apply text-xl font-bold mb-4;
+}
+
+.footer-link {
+  @apply inline-block hover:text-blue-600 transition-colors;
+}
+
+.footer-bottom {
+  @apply flex justify-between items-center;
+}
+
+.footer-bottom-links {
+  @apply flex space-x-6;
+}
+
+.scroll-to-top {
+  @apply fixed bottom-6 right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 z-50;
+}
+
+/* Small Mobile Devices (up to 375px) */
+@media (max-width: 375px) {
+  .responsive-padding {
+    @apply p-2;
+  }
+  
+  .header-logo {
+    @apply w-10 h-10;
+  }
+  
+  .header-title {
+    @apply text-base;
+  }
+  
+  .news-card-image {
+    @apply h-32;
+  }
+  
+  .section-title {
+    @apply text-xl;
+  }
+  
+  .nav-link {
+    @apply text-sm py-2;
+  }
+  
+  .info-box {
+    @apply p-3;
+  }
+}
+
+/* Horizontal Scroll Improvements */
+.horizontal-scroll {
+  @apply overflow-x-auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontal-scroll-content {
+  @apply flex space-x-4 rtl:space-x-reverse px-4;
+  width: max-content;
+}
+
+.horizontal-scroll-item {
+  @apply flex-shrink-0 w-80 lg:w-96;
+}
+
+@media (max-width: 640px) {
+  .horizontal-scroll-item {
+    @apply w-72;
+  }
+}
+
+/* Touch-friendly improvements for mobile */
+@media (max-width: 640px) {
+  .touch-target {
+    @apply min-h-12 min-w-12;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    @apply hidden;
+  }
+  
+  .news-card {
+    @apply shadow-none border border-gray-300;
+  }
+  
+  .header-nav,
+  .footer,
+  .breaking-news {
+    @apply hidden;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

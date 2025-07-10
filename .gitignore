@@ -1,0 +1,3962 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Bower dependency directory (https://bower.io/)
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+out/
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Uploads
+uploads/
+static/uploads/
+public/uploads/
+
+# Build directories
+build/
+dist/
+
+# Temporary files
+tmp/
+temp/
+
+# Cache directories
+.cache/
+.tmp/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# Typescript
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Editor backup files
+*~
+*.tmp
+*.bak
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Custom project files
+custom_news_site_readme*.md
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.csr
+
+# Docker
+Dockerfile.prod
+docker-compose.prod.yml
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Linting
+.eslintcache
+.stylelintcache
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Local configuration files
+config/local.json
+config/development.json
+config/production.json
+
+# Runtime files
+*.pid
+*.seed
+*.pid.lock
+
+# Optional cache directories
+.cache/
+.parcel-cache/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Serverless
+.serverless/
+
+# AWS
+.aws/
+
+# Google Cloud
+.gcloud/
+
+# Azure
+.azure/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Ansible
+*.retry
+
+# Vagrant
+.vagrant/
+
+# Chef
+.chef/
+
+# Puppet
+.puppet/
+
+# SaltStack
+.salt/
+
+# Monitoring
+.monitoring/
+
+# Security
+.security/
+
+# Performance
+.performance/
+
+# Analytics
+.analytics/
+
+# A/B Testing
+.abtesting/
+
+# Feature Flags
+.featureflags/
+
+# Experiments
+.experiments/
+
+# Metrics
+.metrics/
+
+# Telemetry
+.telemetry/
+
+# Profiling
+.profiling/
+
+# Debugging
+.debugging/
+
+# Testing
+.testing/
+
+# Staging
+.staging/
+
+# Production
+.production/
+
+# Development
+.development/
+
+# Local
+.local/
+
+# Global
+.global/
+
+# Public
+.public/
+
+# Private
+.private/
+
+# Internal
+.internal/
+
+# External
+.external/
+
+# Third-party
+.thirdparty/
+
+# Vendor
+.vendor/
+
+# Library
+.library/
+
+# Framework
+.framework/
+
+# Platform
+.platform/
+
+# Service
+.service/
+
+# API
+.api/
+
+# Database
+.database/
+
+# Storage
+.storage/
+
+# Network
+.network/
+
+# Security
+.security/
+
+# Authentication
+.authentication/
+
+# Authorization
+.authorization/
+
+# Session
+.session/
+
+# Cookie
+.cookie/
+
+# Token
+.token/
+
+# Key
+.key/
+
+# Certificate
+.certificate/
+
+# License
+.license/
+
+# Documentation
+.documentation/
+
+# Help
+.help/
+
+# Support
+.support/
+
+# FAQ
+.faq/
+
+# Tutorial
+.tutorial/
+
+# Guide
+.guide/
+
+# Manual
+.manual/
+
+# Reference
+.reference/
+
+# Specification
+.specification/
+
+# Standard
+.standard/
+
+# Protocol
+.protocol/
+
+# Format
+.format/
+
+# Schema
+.schema/
+
+# Model
+.model/
+
+# Template
+.template/
+
+# Pattern
+.pattern/
+
+# Example
+.example/
+
+# Sample
+.sample/
+
+# Demo
+.demo/
+
+# Prototype
+.prototype/
+
+# Mock
+.mock/
+
+# Stub
+.stub/
+
+# Fake
+.fake/
+
+# Test
+.test/
+
+# Benchmark
+.benchmark/
+
+# Performance
+.performance/
+
+# Load
+.load/
+
+# Stress
+.stress/
+
+# Volume
+.volume/
+
+# Capacity
+.capacity/
+
+# Scalability
+.scalability/
+
+# Reliability
+.reliability/
+
+# Availability
+.availability/
+
+# Durability
+.durability/
+
+# Consistency
+.consistency/
+
+# Integrity
+.integrity/
+
+# Quality
+.quality/
+
+# Assurance
+.assurance/
+
+# Control
+.control/
+
+# Management
+.management/
+
+# Administration
+.administration/
+
+# Configuration
+.configuration/
+
+# Settings
+.settings/
+
+# Preferences
+.preferences/
+
+# Options
+.options/
+
+# Parameters
+.parameters/
+
+# Arguments
+.arguments/
+
+# Variables
+.variables/
+
+# Constants
+.constants/
+
+# Definitions
+.definitions/
+
+# Declarations
+.declarations/
+
+# Implementations
+.implementations/
+
+# Interfaces
+.interfaces/
+
+# Abstractions
+.abstractions/
+
+# Contracts
+.contracts/
+
+# Agreements
+.agreements/
+
+# Policies
+.policies/
+
+# Rules
+.rules/
+
+# Regulations
+.regulations/
+
+# Compliance
+.compliance/
+
+# Governance
+.governance/
+
+# Risk
+.risk/
+
+# Audit
+.audit/
+
+# Review
+.review/
+
+# Approval
+.approval/
+
+# Validation
+.validation/
+
+# Verification
+.verification/
+
+# Certification
+.certification/
+
+# Accreditation
+.accreditation/
+
+# Registration
+.registration/
+
+# Enrollment
+.enrollment/
+
+# Subscription
+.subscription/
+
+# Membership
+.membership/
+
+# Partnership
+.partnership/
+
+# Collaboration
+.collaboration/
+
+# Integration
+.integration/
+
+# Synchronization
+.synchronization/
+
+# Coordination
+.coordination/
+
+# Communication
+.communication/
+
+# Notification
+.notification/
+
+# Alert
+.alert/
+
+# Warning
+.warning/
+
+# Error
+.error/
+
+# Exception
+.exception/
+
+# Failure
+.failure/
+
+# Success
+.success/
+
+# Completion
+.completion/
+
+# Progress
+.progress/
+
+# Status
+.status/
+
+# State
+.state/
+
+# Condition
+.condition/
+
+# Situation
+.situation/
+
+# Context
+.context/
+
+# Environment
+.environment/
+
+# Workspace
+.workspace/
+
+# Project
+.project/
+
+# Application
+.application/
+
+# System
+.system/
+
+# Software
+.software/
+
+# Hardware
+.hardware/
+
+# Firmware
+.firmware/
+
+# Middleware
+.middleware/
+
+# Infrastructure
+.infrastructure/
+
+# Architecture
+.architecture/
+
+# Design
+.design/
+
+# Development
+.development/
+
+# Implementation
+.implementation/
+
+# Deployment
+.deployment/
+
+# Operation
+.operation/
+
+# Maintenance
+.maintenance/
+
+# Support
+.support/
+
+# Monitoring
+.monitoring/
+
+# Logging
+.logging/
+
+# Debugging
+.debugging/
+
+# Profiling
+.profiling/
+
+# Optimization
+.optimization/
+
+# Enhancement
+.enhancement/
+
+# Improvement
+.improvement/
+
+# Upgrade
+.upgrade/
+
+# Migration
+.migration/
+
+# Transformation
+.transformation/
+
+# Conversion
+.conversion/
+
+# Translation
+.translation/
+
+# Localization
+.localization/
+
+# Internationalization
+.internationalization/
+
+# Globalization
+.globalization/
+
+# Regionalization
+.regionalization/
+
+# Customization
+.customization/
+
+# Personalization
+.personalization/
+
+# Individualization
+.individualization/
+
+# Specialization
+.specialization/
+
+# Generalization
+.generalization/
+
+# Abstraction
+.abstraction/
+
+# Encapsulation
+.encapsulation/
+
+# Inheritance
+.inheritance/
+
+# Polymorphism
+.polymorphism/
+
+# Composition
+.composition/
+
+# Aggregation
+.aggregation/
+
+# Association
+.association/
+
+# Dependency
+.dependency/
+
+# Relationship
+.relationship/
+
+# Connection
+.connection/
+
+# Link
+.link/
+
+# Reference
+.reference/
+
+# Pointer
+.pointer/
+
+# Address
+.address/
+
+# Location
+.location/
+
+# Position
+.position/
+
+# Coordinate
+.coordinate/
+
+# Dimension
+.dimension/
+
+# Size
+.size/
+
+# Scale
+.scale/
+
+# Proportion
+.proportion/
+
+# Ratio
+.ratio/
+
+# Percentage
+.percentage/
+
+# Fraction
+.fraction/
+
+# Decimal
+.decimal/
+
+# Number
+.number/
+
+# Integer
+.integer/
+
+# Float
+.float/
+
+# Double
+.double/
+
+# String
+.string/
+
+# Character
+.character/
+
+# Boolean
+.boolean/
+
+# Array
+.array/
+
+# List
+.list/
+
+# Set
+.set/
+
+# Map
+.map/
+
+# Dictionary
+.dictionary/
+
+# Hash
+.hash/
+
+# Table
+.table/
+
+# Database
+.database/
+
+# Collection
+.collection/
+
+# Document
+.document/
+
+# Record
+.record/
+
+# Field
+.field/
+
+# Column
+.column/
+
+# Row
+.row/
+
+# Cell
+.cell/
+
+# Value
+.value/
+
+# Data
+.data/
+
+# Information
+.information/
+
+# Knowledge
+.knowledge/
+
+# Wisdom
+.wisdom/
+
+# Intelligence
+.intelligence/
+
+# Learning
+.learning/
+
+# Training
+.training/
+
+# Education
+.education/
+
+# Teaching
+.teaching/
+
+# Instruction
+.instruction/
+
+# Guidance
+.guidance/
+
+# Direction
+.direction/
+
+# Navigation
+.navigation/
+
+# Routing
+.routing/
+
+# Pathfinding
+.pathfinding/
+
+# Search
+.search/
+
+# Discovery
+.discovery/
+
+# Exploration
+.exploration/
+
+# Investigation
+.investigation/
+
+# Research
+.research/
+
+# Analysis
+.analysis/
+
+# Evaluation
+.evaluation/
+
+# Assessment
+.assessment/
+
+# Measurement
+.measurement/
+
+# Calculation
+.calculation/
+
+# Computation
+.computation/
+
+# Processing
+.processing/
+
+# Execution
+.execution/
+
+# Runtime
+.runtime/
+
+# Compile
+.compile/
+
+# Build
+.build/
+
+# Package
+.package/
+
+# Bundle
+.bundle/
+
+# Archive
+.archive/
+
+# Backup
+.backup/
+
+# Restore
+.restore/
+
+# Recovery
+.recovery/
+
+# Repair
+.repair/
+
+# Fix
+.fix/
+
+# Patch
+.patch/
+
+# Update
+.update/
+
+# Upgrade
+.upgrade/
+
+# Downgrade
+.downgrade/
+
+# Rollback
+.rollback/
+
+# Revert
+.revert/
+
+# Undo
+.undo/
+
+# Redo
+.redo/
+
+# Repeat
+.repeat/
+
+# Retry
+.retry/
+
+# Resume
+.resume/
+
+# Pause
+.pause/
+
+# Stop
+.stop/
+
+# Start
+.start/
+
+# Restart
+.restart/
+
+# Reset
+.reset/
+
+# Initialize
+.initialize/
+
+# Setup
+.setup/
+
+# Configure
+.configure/
+
+# Install
+.install/
+
+# Uninstall
+.uninstall/
+
+# Remove
+.remove/
+
+# Delete
+.delete/
+
+# Destroy
+.destroy/
+
+# Create
+.create/
+
+# Generate
+.generate/
+
+# Produce
+.produce/
+
+# Make
+.make/
+
+# Build
+.build/
+
+# Construct
+.construct/
+
+# Assemble
+.assemble/
+
+# Compile
+.compile/
+
+# Link
+.link/
+
+# Load
+.load/
+
+# Save
+.save/
+
+# Store
+.store/
+
+# Persist
+.persist/
+
+# Cache
+.cache/
+
+# Buffer
+.buffer/
+
+# Queue
+.queue/
+
+# Stack
+.stack/
+
+# Heap
+.heap/
+
+# Memory
+.memory/
+
+# Storage
+.storage/
+
+# Disk
+.disk/
+
+# File
+.file/
+
+# Directory
+.directory/
+
+# Folder
+.folder/
+
+# Path
+.path/
+
+# URL
+.url/
+
+# URI
+.uri/
+
+# Link
+.link/
+
+# Reference
+.reference/
+
+# Pointer
+.pointer/
+
+# Handle
+.handle/
+
+# Identifier
+.identifier/
+
+# ID
+.id/
+
+# Key
+.key/
+
+# Index
+.index/
+
+# Tag
+.tag/
+
+# Label
+.label/
+
+# Name
+.name/
+
+# Title
+.title/
+
+# Caption
+.caption/
+
+# Description
+.description/
+
+# Summary
+.summary/
+
+# Abstract
+.abstract/
+
+# Overview
+.overview/
+
+# Introduction
+.introduction/
+
+# Conclusion
+.conclusion/
+
+# Result
+.result/
+
+# Output
+.output/
+
+# Input
+.input/
+
+# Parameter
+.parameter/
+
+# Argument
+.argument/
+
+# Option
+.option/
+
+# Setting
+.setting/
+
+# Configuration
+.configuration/
+
+# Preference
+.preference/
+
+# Choice
+.choice/
+
+# Selection
+.selection/
+
+# Decision
+.decision/
+
+# Determination
+.determination/
+
+# Resolution
+.resolution/
+
+# Solution
+.solution/
+
+# Answer
+.answer/
+
+# Response
+.response/
+
+# Reply
+.reply/
+
+# Feedback
+.feedback/
+
+# Comment
+.comment/
+
+# Note
+.note/
+
+# Remark
+.remark/
+
+# Observation
+.observation/
+
+# Finding
+.finding/
+
+# Discovery
+.discovery/
+
+# Insight
+.insight/
+
+# Understanding
+.understanding/
+
+# Comprehension
+.comprehension/
+
+# Knowledge
+.knowledge/
+
+# Awareness
+.awareness/
+
+# Consciousness
+.consciousness/
+
+# Perception
+.perception/
+
+# Recognition
+.recognition/
+
+# Identification
+.identification/
+
+# Classification
+.classification/
+
+# Categorization
+.categorization/
+
+# Organization
+.organization/
+
+# Structure
+.structure/
+
+# Arrangement
+.arrangement/
+
+# Layout
+.layout/
+
+# Format
+.format/
+
+# Style
+.style/
+
+# Theme
+.theme/
+
+# Appearance
+.appearance/
+
+# Look
+.look/
+
+# Feel
+.feel/
+
+# Experience
+.experience/
+
+# Interaction
+.interaction/
+
+# Interface
+.interface/
+
+# User
+.user/
+
+# Client
+.client/
+
+# Customer
+.customer/
+
+# Consumer
+.consumer/
+
+# Visitor
+.visitor/
+
+# Guest
+.guest/
+
+# Member
+.member/
+
+# Participant
+.participant/
+
+# Player
+.player/
+
+# Actor
+.actor/
+
+# Agent
+.agent/
+
+# Entity
+.entity/
+
+# Object
+.object/
+
+# Instance
+.instance/
+
+# Element
+.element/
+
+# Component
+.component/
+
+# Module
+.module/
+
+# Package
+.package/
+
+# Library
+.library/
+
+# Framework
+.framework/
+
+# Platform
+.platform/
+
+# System
+.system/
+
+# Application
+.application/
+
+# Program
+.program/
+
+# Software
+.software/
+
+# Tool
+.tool/
+
+# Utility
+.utility/
+
+# Helper
+.helper/
+
+# Assistant
+.assistant/
+
+# Support
+.support/
+
+# Service
+.service/
+
+# Resource
+.resource/
+
+# Asset
+.asset/
+
+# Property
+.property/
+
+# Attribute
+.attribute/
+
+# Feature
+.feature/
+
+# Function
+.function/
+
+# Method
+.method/
+
+# Procedure
+.procedure/
+
+# Process
+.process/
+
+# Operation
+.operation/
+
+# Action
+.action/
+
+# Activity
+.activity/
+
+# Task
+.task/
+
+# Job
+.job/
+
+# Work
+.work/
+
+# Labor
+.labor/
+
+# Effort
+.effort/
+
+# Attempt
+.attempt/
+
+# Try
+.try/
+
+# Test
+.test/
+
+# Trial
+.trial/
+
+# Experiment
+.experiment/
+
+# Study
+.study/
+
+# Research
+.research/
+
+# Investigation
+.investigation/
+
+# Inquiry
+.inquiry/
+
+# Question
+.question/
+
+# Query
+.query/
+
+# Request
+.request/
+
+# Demand
+.demand/
+
+# Requirement
+.requirement/
+
+# Need
+.need/
+
+# Want
+.want/
+
+# Desire
+.desire/
+
+# Wish
+.wish/
+
+# Hope
+.hope/
+
+# Expectation
+.expectation/
+
+# Anticipation
+.anticipation/
+
+# Prediction
+.prediction/
+
+# Forecast
+.forecast/
+
+# Projection
+.projection/
+
+# Estimation
+.estimation/
+
+# Approximation
+.approximation/
+
+# Calculation
+.calculation/
+
+# Computation
+.computation/
+
+# Algorithm
+.algorithm/
+
+# Logic
+.logic/
+
+# Reasoning
+.reasoning/
+
+# Thinking
+.thinking/
+
+# Thought
+.thought/
+
+# Idea
+.idea/
+
+# Concept
+.concept/
+
+# Notion
+.notion/
+
+# Theory
+.theory/
+
+# Hypothesis
+.hypothesis/
+
+# Assumption
+.assumption/
+
+# Belief
+.belief/
+
+# Opinion
+.opinion/
+
+# View
+.view/
+
+# Perspective
+.perspective/
+
+# Viewpoint
+.viewpoint/
+
+# Standpoint
+.standpoint/
+
+# Position
+.position/
+
+# Stance
+.stance/
+
+# Attitude
+.attitude/
+
+# Approach
+.approach/
+
+# Method
+.method/
+
+# Technique
+.technique/
+
+# Strategy
+.strategy/
+
+# Plan
+.plan/
+
+# Scheme
+.scheme/
+
+# Design
+.design/
+
+# Blueprint
+.blueprint/
+
+# Specification
+.specification/
+
+# Requirement
+.requirement/
+
+# Criteria
+.criteria/
+
+# Standard
+.standard/
+
+# Guideline
+.guideline/
+
+# Rule
+.rule/
+
+# Regulation
+.regulation/
+
+# Policy
+.policy/
+
+# Procedure
+.procedure/
+
+# Protocol
+.protocol/
+
+# Convention
+.convention/
+
+# Practice
+.practice/
+
+# Custom
+.custom/
+
+# Tradition
+.tradition/
+
+# Habit
+.habit/
+
+# Routine
+.routine/
+
+# Pattern
+.pattern/
+
+# Trend
+.trend/
+
+# Fashion
+.fashion/
+
+# Style
+.style/
+
+# Mode
+.mode/
+
+# Manner
+.manner/
+
+# Way
+.way/
+
+# Path
+.path/
+
+# Route
+.route/
+
+# Direction
+.direction/
+
+# Course
+.course/
+
+# Track
+.track/
+
+# Trail
+.trail/
+
+# Journey
+.journey/
+
+# Trip
+.trip/
+
+# Travel
+.travel/
+
+# Movement
+.movement/
+
+# Motion
+.motion/
+
+# Action
+.action/
+
+# Activity
+.activity/
+
+# Behavior
+.behavior/
+
+# Conduct
+.conduct/
+
+# Performance
+.performance/
+
+# Execution
+.execution/
+
+# Implementation
+.implementation/
+
+# Realization
+.realization/
+
+# Achievement
+.achievement/
+
+# Accomplishment
+.accomplishment/
+
+# Success
+.success/
+
+# Victory
+.victory/
+
+# Win
+.win/
+
+# Triumph
+.triumph/
+
+# Conquest
+.conquest/
+
+# Defeat
+.defeat/
+
+# Loss
+.loss/
+
+# Failure
+.failure/
+
+# Mistake
+.mistake/
+
+# Error
+.error/
+
+# Fault
+.fault/
+
+# Defect
+.defect/
+
+# Bug
+.bug/
+
+# Issue
+.issue/
+
+# Problem
+.problem/
+
+# Challenge
+.challenge/
+
+# Difficulty
+.difficulty/
+
+# Obstacle
+.obstacle/
+
+# Barrier
+.barrier/
+
+# Hurdle
+.hurdle/
+
+# Impediment
+.impediment/
+
+# Hindrance
+.hindrance/
+
+# Obstruction
+.obstruction/
+
+# Blockage
+.blockage/
+
+# Bottleneck
+.bottleneck/
+
+# Constraint
+.constraint/
+
+# Limitation
+.limitation/
+
+# Restriction
+.restriction/
+
+# Boundary
+.boundary/
+
+# Border
+.border/
+
+# Edge
+.edge/
+
+# Margin
+.margin/
+
+# Limit
+.limit/
+
+# Threshold
+.threshold/
+
+# Ceiling
+.ceiling/
+
+# Floor
+.floor/
+
+# Minimum
+.minimum/
+
+# Maximum
+.maximum/
+
+# Range
+.range/
+
+# Scope
+.scope/
+
+# Extent
+.extent/
+
+# Degree
+.degree/
+
+# Level
+.level/
+
+# Grade
+.grade/
+
+# Rank
+.rank/
+
+# Order
+.order/
+
+# Sequence
+.sequence/
+
+# Series
+.series/
+
+# Chain
+.chain/
+
+# Link
+.link/
+
+# Connection
+.connection/
+
+# Relationship
+.relationship/
+
+# Association
+.association/
+
+# Correlation
+.correlation/
+
+# Correspondence
+.correspondence/
+
+# Match
+.match/
+
+# Fit
+.fit/
+
+# Alignment
+.alignment/
+
+# Agreement
+.agreement/
+
+# Harmony
+.harmony/
+
+# Balance
+.balance/
+
+# Equilibrium
+.equilibrium/
+
+# Stability
+.stability/
+
+# Consistency
+.consistency/
+
+# Uniformity
+.uniformity/
+
+# Regularity
+.regularity/
+
+# Predictability
+.predictability/
+
+# Reliability
+.reliability/
+
+# Dependability
+.dependability/
+
+# Trustworthiness
+.trustworthiness/
+
+# Credibility
+.credibility/
+
+# Authenticity
+.authenticity/
+
+# Validity
+.validity/
+
+# Accuracy
+.accuracy/
+
+# Precision
+.precision/
+
+# Correctness
+.correctness/
+
+# Exactness
+.exactness/
+
+# Perfection
+.perfection/
+
+# Excellence
+.excellence/
+
+# Quality
+.quality/
+
+# Standard
+.standard/
+
+# Benchmark
+.benchmark/
+
+# Baseline
+.baseline/
+
+# Reference
+.reference/
+
+# Comparison
+.comparison/
+
+# Contrast
+.contrast/
+
+# Difference
+.difference/
+
+# Distinction
+.distinction/
+
+# Variation
+.variation/
+
+# Diversity
+.diversity/
+
+# Variety
+.variety/
+
+# Multiplicity
+.multiplicity/
+
+# Plurality
+.plurality/
+
+# Multitude
+.multitude/
+
+# Abundance
+.abundance/
+
+# Plenty
+.plenty/
+
+# Wealth
+.wealth/
+
+# Richness
+.richness/
+
+# Prosperity
+.prosperity/
+
+# Success
+.success/
+
+# Achievement
+.achievement/
+
+# Accomplishment
+.accomplishment/
+
+# Attainment
+.attainment/
+
+# Realization
+.realization/
+
+# Fulfillment
+.fulfillment/
+
+# Satisfaction
+.satisfaction/
+
+# Contentment
+.contentment/
+
+# Happiness
+.happiness/
+
+# Joy
+.joy/
+
+# Pleasure
+.pleasure/
+
+# Delight
+.delight/
+
+# Enjoyment
+.enjoyment/
+
+# Fun
+.fun/
+
+# Entertainment
+.entertainment/
+
+# Amusement
+.amusement/
+
+# Recreation
+.recreation/
+
+# Leisure
+.leisure/
+
+# Relaxation
+.relaxation/
+
+# Rest
+.rest/
+
+# Break
+.break/
+
+# Pause
+.pause/
+
+# Interval
+.interval/
+
+# Gap
+.gap/
+
+# Space
+.space/
+
+# Room
+.room/
+
+# Area
+.area/
+
+# Zone
+.zone/
+
+# Region
+.region/
+
+# Territory
+.territory/
+
+# Domain
+.domain/
+
+# Realm
+.realm/
+
+# Sphere
+.sphere/
+
+# Field
+.field/
+
+# Sector
+.sector/
+
+# Industry
+.industry/
+
+# Business
+.business/
+
+# Commerce
+.commerce/
+
+# Trade
+.trade/
+
+# Market
+.market/
+
+# Economy
+.economy/
+
+# Finance
+.finance/
+
+# Money
+.money/
+
+# Currency
+.currency/
+
+# Cash
+.cash/
+
+# Capital
+.capital/
+
+# Investment
+.investment/
+
+# Asset
+.asset/
+
+# Resource
+.resource/
+
+# Material
+.material/
+
+# Substance
+.substance/
+
+# Matter
+.matter/
+
+# Element
+.element/
+
+# Component
+.component/
+
+# Part
+.part/
+
+# Piece
+.piece/
+
+# Fragment
+.fragment/
+
+# Portion
+.portion/
+
+# Section
+.section/
+
+# Segment
+.segment/
+
+# Division
+.division/
+
+# Category
+.category/
+
+# Class
+.class/
+
+# Type
+.type/
+
+# Kind
+.kind/
+
+# Sort
+.sort/
+
+# Variety
+.variety/
+
+# Species
+.species/
+
+# Genus
+.genus/
+
+# Family
+.family/
+
+# Group
+.group/
+
+# Set
+.set/
+
+# Collection
+.collection/
+
+# Assembly
+.assembly/
+
+# Gathering
+.gathering/
+
+# Meeting
+.meeting/
+
+# Conference
+.conference/
+
+# Convention
+.convention/
+
+# Summit
+.summit/
+
+# Forum
+.forum/
+
+# Discussion
+.discussion/
+
+# Debate
+.debate/
+
+# Argument
+.argument/
+
+# Dispute
+.dispute/
+
+# Conflict
+.conflict/
+
+# Disagreement
+.disagreement/
+
+# Opposition
+.opposition/
+
+# Resistance
+.resistance/
+
+# Objection
+.objection/
+
+# Protest
+.protest/
+
+# Complaint
+.complaint/
+
+# Criticism
+.criticism/
+
+# Feedback
+.feedback/
+
+# Review
+.review/
+
+# Evaluation
+.evaluation/
+
+# Assessment
+.assessment/
+
+# Judgment
+.judgment/
+
+# Opinion
+.opinion/
+
+# View
+.view/
+
+# Perspective
+.perspective/
+
+# Outlook
+.outlook/
+
+# Vision
+.vision/
+
+# Sight
+.sight/
+
+# Observation
+.observation/
+
+# Perception
+.perception/
+
+# Awareness
+.awareness/
+
+# Consciousness
+.consciousness/
+
+# Understanding
+.understanding/
+
+# Comprehension
+.comprehension/
+
+# Knowledge
+.knowledge/
+
+# Information
+.information/
+
+# Data
+.data/
+
+# Facts
+.facts/
+
+# Details
+.details/
+
+# Specifics
+.specifics/
+
+# Particulars
+.particulars/
+
+# Features
+.features/
+
+# Characteristics
+.characteristics/
+
+# Attributes
+.attributes/
+
+# Properties
+.properties/
+
+# Qualities
+.qualities/
+
+# Traits
+.traits/
+
+# Aspects
+.aspects/
+
+# Elements
+.elements/
+
+# Factors
+.factors/
+
+# Variables
+.variables/
+
+# Parameters
+.parameters/
+
+# Conditions
+.conditions/
+
+# Circumstances
+.circumstances/
+
+# Situations
+.situations/
+
+# Contexts
+.contexts/
+
+# Environments
+.environments/
+
+# Settings
+.settings/
+
+# Backgrounds
+.backgrounds/
+
+# Histories
+.histories/
+
+# Records
+.records/
+
+# Archives
+.archives/
+
+# Documents
+.documents/
+
+# Files
+.files/
+
+# Papers
+.papers/
+
+# Reports
+.reports/
+
+# Studies
+.studies/
+
+# Research
+.research/
+
+# Investigations
+.investigations/
+
+# Inquiries
+.inquiries/
+
+# Surveys
+.surveys/
+
+# Polls
+.polls/
+
+# Questionnaires
+.questionnaires/
+
+# Forms
+.forms/
+
+# Applications
+.applications/
+
+# Requests
+.requests/
+
+# Proposals
+.proposals/
+
+# Suggestions
+.suggestions/
+
+# Recommendations
+.recommendations/
+
+# Advice
+.advice/
+
+# Guidance
+.guidance/
+
+# Instructions
+.instructions/
+
+# Directions
+.directions/
+
+# Guidelines
+.guidelines/
+
+# Rules
+.rules/
+
+# Regulations
+.regulations/
+
+# Policies
+.policies/
+
+# Procedures
+.procedures/
+
+# Protocols
+.protocols/
+
+# Standards
+.standards/
+
+# Specifications
+.specifications/
+
+# Requirements
+.requirements/
+
+# Criteria
+.criteria/
+
+# Benchmarks
+.benchmarks/
+
+# Metrics
+.metrics/
+
+# Measures
+.measures/
+
+# Indicators
+.indicators/
+
+# Signals
+.signals/
+
+# Signs
+.signs/
+
+# Symbols
+.symbols/
+
+# Icons
+.icons/
+
+# Images
+.images/
+
+# Pictures
+.pictures/
+
+# Photos
+.photos/
+
+# Graphics
+.graphics/
+
+# Illustrations
+.illustrations/
+
+# Diagrams
+.diagrams/
+
+# Charts
+.charts/
+
+# Graphs
+.graphs/
+
+# Tables
+.tables/
+
+# Lists
+.lists/
+
+# Catalogs
+.catalogs/
+
+# Directories
+.directories/
+
+# Indexes
+.indexes/
+
+# References
+.references/
+
+# Citations
+.citations/
+
+# Sources
+.sources/
+
+# Origins
+.origins/
+
+# Roots
+.roots/
+
+# Foundations
+.foundations/
+
+# Bases
+.bases/
+
+# Grounds
+.grounds/
+
+# Reasons
+.reasons/
+
+# Causes
+.causes/
+
+# Motives
+.motives/
+
+# Purposes
+.purposes/
+
+# Goals
+.goals/
+
+# Objectives
+.objectives/
+
+# Targets
+.targets/
+
+# Aims
+.aims/
+
+# Intentions
+.intentions/
+
+# Plans
+.plans/
+
+# Strategies
+.strategies/
+
+# Tactics
+.tactics/
+
+# Approaches
+.approaches/
+
+# Methods
+.methods/
+
+# Techniques
+.techniques/
+
+# Procedures
+.procedures/
+
+# Processes
+.processes/
+
+# Operations
+.operations/
+
+# Functions
+.functions/
+
+# Activities
+.activities/
+
+# Tasks
+.tasks/
+
+# Jobs
+.jobs/
+
+# Duties
+.duties/
+
+# Responsibilities
+.responsibilities/
+
+# Obligations
+.obligations/
+
+# Commitments
+.commitments/
+
+# Promises
+.promises/
+
+# Agreements
+.agreements/
+
+# Contracts
+.contracts/
+
+# Deals
+.deals/
+
+# Arrangements
+.arrangements/
+
+# Settlements
+.settlements/
+
+# Resolutions
+.resolutions/
+
+# Solutions
+.solutions/
+
+# Answers
+.answers/
+
+# Responses
+.responses/
+
+# Replies
+.replies/
+
+# Reactions
+.reactions/
+
+# Feedback
+.feedback/
+
+# Comments
+.comments/
+
+# Remarks
+.remarks/
+
+# Observations
+.observations/
+
+# Notes
+.notes/
+
+# Messages
+.messages/
+
+# Communications
+.communications/
+
+# Notifications
+.notifications/
+
+# Alerts
+.alerts/
+
+# Warnings
+.warnings/
+
+# Reminders
+.reminders/
+
+# Announcements
+.announcements/
+
+# Declarations
+.declarations/
+
+# Statements
+.statements/
+
+# Proclamations
+.proclamations/
+
+# Pronouncements
+.pronouncements/
+
+# Disclosures
+.disclosures/
+
+# Revelations
+.revelations/
+
+# Discoveries
+.discoveries/
+
+# Findings
+.findings/
+
+# Results
+.results/
+
+# Outcomes
+.outcomes/
+
+# Consequences
+.consequences/
+
+# Effects
+.effects/
+
+# Impacts
+.impacts/
+
+# Influences
+.influences/
+
+# Changes
+.changes/
+
+# Modifications
+.modifications/
+
+# Alterations
+.alterations/
+
+# Adjustments
+.adjustments/
+
+# Adaptations
+.adaptations/
+
+# Improvements
+.improvements/
+
+# Enhancements
+.enhancements/
+
+# Upgrades
+.upgrades/
+
+# Updates
+.updates/
+
+# Revisions
+.revisions/
+
+# Corrections
+.corrections/
+
+# Fixes
+.fixes/
+
+# Repairs
+.repairs/
+
+# Maintenance
+.maintenance/
+
+# Support
+.support/
+
+# Assistance
+.assistance/
+
+# Help
+.help/
+
+# Aid
+.aid/
+
+# Service
+.service/
+
+# Care
+.care/
+
+# Attention
+.attention/
+
+# Focus
+.focus/
+
+# Concentration
+.concentration/
+
+# Effort
+.effort/
+
+# Energy
+.energy/
+
+# Power
+.power/
+
+# Strength
+.strength/
+
+# Force
+.force/
+
+# Pressure
+.pressure/
+
+# Stress
+.stress/
+
+# Tension
+.tension/
+
+# Strain
+.strain/
+
+# Load
+.load/
+
+# Weight
+.weight/
+
+# Mass
+.mass/
+
+# Volume
+.volume/
+
+# Capacity
+.capacity/
+
+# Size
+.size/
+
+# Dimension
+.dimension/
+
+# Scale
+.scale/
+
+# Magnitude
+.magnitude/
+
+# Extent
+.extent/
+
+# Scope
+.scope/
+
+# Range
+.range/
+
+# Span
+.span/
+
+# Reach
+.reach/
+
+# Coverage
+.coverage/
+
+# Area
+.area/
+
+# Territory
+.territory/
+
+# Region
+.region/
+
+# Zone
+.zone/
+
+# District
+.district/
+
+# Sector
+.sector/
+
+# Division
+.division/
+
+# Department
+.department/
+
+# Unit
+.unit/
+
+# Section
+.section/
+
+# Branch
+.branch/
+
+# Office
+.office/
+
+# Bureau
+.bureau/
+
+# Agency
+.agency/
+
+# Organization
+.organization/
+
+# Institution
+.institution/
+
+# Company
+.company/
+
+# Corporation
+.corporation/
+
+# Business
+.business/
+
+# Enterprise
+.enterprise/
+
+# Firm
+.firm/
+
+# Establishment
+.establishment/
+
+# Facility
+.facility/
+
+# Center
+.center/
+
+# Hub
+.hub/
+
+# Base
+.base/
+
+# Station
+.station/
+
+# Site
+.site/
+
+# Location
+.location/
+
+# Place
+.place/
+
+# Position
+.position/
+
+# Spot
+.spot/
+
+# Point
+.point/
+
+# Coordinate
+.coordinate/
+
+# Address
+.address/
+
+# Destination
+.destination/
+
+# Target
+.target/
+
+# Goal
+.goal/
+
+# Objective
+.objective/
+
+# Purpose
+.purpose/
+
+# Aim
+.aim/
+
+# Intention
+.intention/
+
+# Plan
+.plan/
+
+# Strategy
+.strategy/
+
+# Approach
+.approach/
+
+# Method
+.method/
+
+# Technique
+.technique/
+
+# Procedure
+.procedure/
+
+# Process
+.process/
+
+# System
+.system/
+
+# Mechanism
+.mechanism/
+
+# Structure
+.structure/
+
+# Framework
+.framework/
+
+# Architecture
+.architecture/
+
+# Design
+.design/
+
+# Layout
+.layout/
+
+# Format
+.format/
+
+# Style
+.style/
+
+# Pattern
+.pattern/
+
+# Template
+.template/
+
+# Model
+.model/
+
+# Example
+.example/
+
+# Sample
+.sample/
+
+# Instance
+.instance/
+
+# Case
+.case/
+
+# Scenario
+.scenario/
+
+# Situation
+.situation/
+
+# Condition
+.condition/
+
+# State
+.state/
+
+# Status
+.status/
+
+# Phase
+.phase/
+
+# Stage
+.stage/
+
+# Step
+.step/
+
+# Level
+.level/
+
+# Tier
+.tier/
+
+# Layer
+.layer/
+
+# Stratum
+.stratum/
+
+# Grade
+.grade/
+
+# Rank
+.rank/
+
+# Class
+.class/
+
+# Category
+.category/
+
+# Type
+.type/
+
+# Kind
+.kind/
+
+# Sort
+.sort/
+
+# Variety
+.variety/
+
+# Version
+.version/
+
+# Edition
+.edition/
+
+# Release
+.release/
+
+# Build
+.build/
+
+# Revision
+.revision/
+
+# Update
+.update/
+
+# Upgrade
+.upgrade/
+
+# Patch
+.patch/
+
+# Fix
+.fix/
+
+# Hotfix
+.hotfix/
+
+# Bugfix
+.bugfix/
+
+# Feature
+.feature/
+
+# Enhancement
+.enhancement/
+
+# Improvement
+.improvement/
+
+# Optimization
+.optimization/
+
+# Performance
+.performance/
+
+# Speed
+.speed/
+
+# Efficiency
+.efficiency/
+
+# Productivity
+.productivity/
+
+# Quality
+.quality/
+
+# Reliability
+.reliability/
+
+# Stability
+.stability/
+
+# Security
+.security/
+
+# Safety
+.safety/
+
+# Protection
+.protection/
+
+# Defense
+.defense/
+
+# Guard
+.guard/
+
+# Shield
+.shield/
+
+# Barrier
+.barrier/
+
+# Wall
+.wall/
+
+# Fence
+.fence/
+
+# Border
+.border/
+
+# Boundary
+.boundary/
+
+# Limit
+.limit/
+
+# Constraint
+.constraint/
+
+# Restriction
+.restriction/
+
+# Control
+.control/
+
+# Management
+.management/
+
+# Administration
+.administration/
+
+# Governance
+.governance/
+
+# Leadership
+.leadership/
+
+# Direction
+.direction/
+
+# Guidance
+.guidance/
+
+# Supervision
+.supervision/
+
+# Oversight
+.oversight/
+
+# Monitoring
+.monitoring/
+
+# Tracking
+.tracking/
+
+# Observation
+.observation/
+
+# Surveillance
+.surveillance/
+
+# Inspection
+.inspection/
+
+# Examination
+.examination/
+
+# Review
+.review/
+
+# Audit
+.audit/
+
+# Assessment
+.assessment/
+
+# Evaluation
+.evaluation/
+
+# Analysis
+.analysis/
+
+# Study
+.study/
+
+# Research
+.research/
+
+# Investigation
+.investigation/
+
+# Inquiry
+.inquiry/
+
+# Survey
+.survey/
+
+# Poll
+.poll/
+
+# Questionnaire
+.questionnaire/
+
+# Interview
+.interview/
+
+# Discussion
+.discussion/
+
+# Conversation
+.conversation/
+
+# Dialogue
+.dialogue/
+
+# Communication
+.communication/
+
+# Exchange
+.exchange/
+
+# Interaction
+.interaction/
+
+# Engagement
+.engagement/
+
+# Participation
+.participation/
+
+# Involvement
+.involvement/
+
+# Contribution
+.contribution/
+
+# Input
+.input/
+
+# Output
+.output/
+
+# Result
+.result/
+
+# Outcome
+.outcome/
+
+# Product
+.product/
+
+# Service
+.service/
+
+# Solution
+.solution/
+
+# Answer
+.answer/
+
+# Response
+.response/
+
+# Reply
+.reply/
+
+# Feedback
+.feedback/
+
+# Comment
+.comment/
+
+# Remark
+.remark/
+
+# Note
+.note/
+
+# Message
+.message/
+
+# Notification
+.notification/
+
+# Alert
+.alert/
+
+# Warning
+.warning/
+
+# Reminder
+.reminder/
+
+# Announcement
+.announcement/
+
+# Declaration
+.declaration/
+
+# Statement
+.statement/
+
+# Report
+.report/
+
+# Document
+.document/
+
+# File
+.file/
+
+# Record
+.record/
+
+# Entry
+.entry/
+
+# Item
+.item/
+
+# Element
+.element/
+
+# Component
+.component/
+
+# Part
+.part/
+
+# Piece
+.piece/
+
+# Fragment
+.fragment/
+
+# Segment
+.segment/
+
+# Section
+.section/
+
+# Portion
+.portion/
+
+# Share
+.share/
+
+# Fraction
+.fraction/
+
+# Percentage
+.percentage/
+
+# Ratio
+.ratio/
+
+# Proportion
+.proportion/
+
+# Rate
+.rate/
+
+# Speed
+.speed/
+
+# Velocity
+.velocity/
+
+# Acceleration
+.acceleration/
+
+# Momentum
+.momentum/
+
+# Force
+.force/
+
+# Energy
+.energy/
+
+# Power
+.power/
+
+# Strength
+.strength/
+
+# Intensity
+.intensity/
+
+# Magnitude
+.magnitude/
+
+# Amplitude
+.amplitude/
+
+# Frequency
+.frequency/
+
+# Wavelength
+.wavelength/
+
+# Period
+.period/
+
+# Duration
+.duration/
+
+# Time
+.time/
+
+# Moment
+.moment/
+
+# Instant
+.instant/
+
+# Second
+.second/
+
+# Minute
+.minute/
+
+# Hour
+.hour/
+
+# Day
+.day/
+
+# Week
+.week/
+
+# Month
+.month/
+
+# Year
+.year/
+
+# Decade
+.decade/
+
+# Century
+.century/
+
+# Millennium
+.millennium/
+
+# Era
+.era/
+
+# Age
+.age/
+
+# Epoch
+.epoch/
+
+# Period
+.period/
+
+# Phase
+.phase/
+
+# Stage
+.stage/
+
+# Step
+.step/
+
+# Process
+.process/
+
+# Procedure
+.procedure/
+
+# Method
+.method/
+
+# Technique
+.technique/
+
+# Approach
+.approach/
+
+# Strategy
+.strategy/
+
+# Plan
+.plan/
+
+# Scheme
+.scheme/
+
+# Design
+.design/
+
+# Blueprint
+.blueprint/
+
+# Specification
+.specification/
+
+# Requirement
+.requirement/
+
+# Criteria
+.criteria/
+
+# Standard
+.standard/
+
+# Guideline
+.guideline/
+
+# Rule
+.rule/
+
+# Regulation
+.regulation/
+
+# Policy
+.policy/
+
+# Law
+.law/
+
+# Act
+.act/
+
+# Statute
+.statute/
+
+# Code
+.code/
+
+# Ordinance
+.ordinance/
+
+# Decree
+.decree/
+
+# Order
+.order/
+
+# Command
+.command/
+
+# Instruction
+.instruction/
+
+# Direction
+.direction/
+
+# Guidance
+.guidance/
+
+# Advice
+.advice/
+
+# Recommendation
+.recommendation/
+
+# Suggestion
+.suggestion/
+
+# Proposal
+.proposal/
+
+# Idea
+.idea/
+
+# Concept
+.concept/
+
+# Notion
+.notion/
+
+# Thought
+.thought/
+
+# Theory
+.theory/
