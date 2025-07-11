@@ -36,7 +36,7 @@ class DatabaseSetup {
       password: process.env.DB_PASSWORD || '',
       charset: 'utf8mb4'
     };
-    this.dbName = process.env.DB_NAME || 'news_site';
+    this.dbName = process.env.DB_NAME || 'markabadatabase';
   }
 
   async createConnection(includeDatabase = false) {

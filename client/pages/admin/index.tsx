@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import Layout from '../../components/Layout/Layout';
-import AdminNav from '../../components/admin/AdminNav';
+import { useRouter } from 'next/router';
+import { toast } from 'react-hot-toast';
+import AdminLayout from '../../components/Layout/AdminLayout';
 import { FiFileText, FiFolder, FiUsers, FiEye, FiTrendingUp, FiImage } from 'react-icons/fi';
 
 interface DashboardStats {
@@ -14,58 +15,84 @@ interface DashboardStats {
   featuredPosts: number;
   totalCategories: number;
   totalViews: number;
+  totalUsers: number;
+  activeUsers: number;
+  recentPosts: number;
+}
+
+interface RecentPost {
+  id: number;
+  title: string;
+  status: string;
+  created_at: string;
+  author: string;
+  category: string;
 }
 
 const AdminDashboard: React.FC = () => {
+  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats>({
     totalPosts: 0,
     publishedPosts: 0,
     draftPosts: 0,
     featuredPosts: 0,
     totalCategories: 0,
-    totalViews: 0
+    totalViews: 0,
+    totalUsers: 0,
+    activeUsers: 0,
+    recentPosts: 0
   });
+  const [recentPosts, setRecentPosts] = useState<RecentPost[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchDashboardStats();
+    fetchStats();
   }, []);
 
-  const fetchDashboardStats = async () => {
+  const fetchStats = async () => {
     try {
-      // Fetch posts stats
-      const postsResponse = await fetch('/api/posts?limit=1000');
-      const postsData = await postsResponse.json();
+      setLoading(true);
+      const token = localStorage.getItem('token');
       
-      if (postsData.success) {
-        const posts = postsData.data.posts || [];
-        const publishedPosts = posts.filter((post: any) => post.is_published).length;
-        const draftPosts = posts.filter((post: any) => !post.is_published).length;
-        const featuredPosts = posts.filter((post: any) => post.is_featured).length;
-        const totalViews = posts.reduce((sum: number, post: any) => sum + (post.views || 0), 0);
-        
-        setStats(prev => ({
-          ...prev,
-          totalPosts: posts.length,
-          publishedPosts,
-          draftPosts,
-          featuredPosts,
-          totalViews
-        }));
+      if (!token) {
+        router.push('/auth/login');
+        return;
       }
-      
-      // Fetch categories stats
-      const categoriesResponse = await fetch('/api/categories');
-      const categoriesData = await categoriesResponse.json();
-      
-      if (categoriesData.success) {
-        setStats(prev => ({
-          ...prev,
-          totalCategories: categoriesData.data?.length || 0
-        }));
+
+      // Fetch dashboard stats from new admin API
+      const response = await fetch('/api/admin/dashboard/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setStats({
+            totalPosts: data.data.totals.posts || 0,
+            totalCategories: data.data.totals.categories || 0,
+            totalUsers: data.data.totals.users || 0,
+            publishedPosts: data.data.totals.published_posts || 0,
+            draftPosts: data.data.totals.draft_posts || 0,
+            featuredPosts: data.data.totals.featured_posts || 0,
+            totalViews: data.data.totals.total_views || 0,
+            activeUsers: data.data.totals.active_users || 0,
+            recentPosts: data.data.totals.recent_posts || 0
+          });
+          
+          // Set recent activity
+          if (data.data.recent_activity) {
+            setRecentPosts(data.data.recent_activity);
+          }
+        }
+      } else if (response.status === 401) {
+        router.push('/auth/login');
       }
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
+      console.error('Error fetching stats:', error);
+      toast.error('خطأ في جلب الإحصائيات');
     } finally {
       setLoading(false);
     }
@@ -113,6 +140,20 @@ const AdminDashboard: React.FC = () => {
       icon: FiEye,
       color: 'bg-red-500',
       link: '/admin/posts'
+    },
+    {
+      title: 'المستخدمين',
+      value: stats.totalUsers,
+      icon: FiUsers,
+      color: 'bg-pink-500',
+      link: '/admin/users'
+    },
+    {
+      title: 'مقالات حديثة',
+      value: stats.recentPosts,
+      icon: FiTrendingUp,
+      color: 'bg-orange-500',
+      link: '/admin/posts'
     }
   ];
 
@@ -141,12 +182,10 @@ const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <Layout>
+    <AdminLayout title="لوحة التحكم" description="لوحة تحكم إدارة الموقع">
       <Head>
         <title>لوحة التحكم - نيوز مركبة</title>
       </Head>
-      
-      <AdminNav />
 
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -203,6 +242,32 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
+          {/* Recent Activity */}
+          {recentPosts.length > 0 && (
+            <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">النشاط الأخير</h2>
+              <div className="space-y-3">
+                {recentPosts.slice(0, 5).map((post) => (
+                  <div key={post.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900">{post.title}</h3>
+                      <p className="text-sm text-gray-600">
+                        {post.category} • {post.author} • {new Date(post.created_at).toLocaleDateString('ar-SA')}
+                      </p>
+                    </div>
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      post.status === 'published' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {post.status === 'published' ? 'منشور' : 'مسودة'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Image Storage Information */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <h3 className="text-lg font-semibold text-blue-800 mb-4">معلومات تخزين الصور</h3>
@@ -229,7 +294,7 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 };
 

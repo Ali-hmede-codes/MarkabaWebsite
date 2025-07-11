@@ -11,7 +11,7 @@ async function setupSocialMedia() {
       host: process.env.DB_HOST || 'localhost',
       user: process.env.DB_USER || 'root',
       password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'news_site',
+      database: process.env.DB_NAME || 'markabadatabase',
       charset: 'utf8mb4'
     });
     

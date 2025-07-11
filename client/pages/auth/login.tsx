@@ -23,43 +23,17 @@ const AdminLogin: React.FC = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [attempts, setAttempts] = useState(0);
-  const [lockoutTime, setLockoutTime] = useState(0);
+
   
   const { login, isAuthenticated, user } = useAuth();
   const router = useRouter();
 
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated && user?.role === 'admin') {
-      router.replace('/admin');
-    }
-  }, [isAuthenticated, user, router]);
+  // Note: Redirect logic is now handled by middleware
 
-  // Handle lockout timer
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (lockoutTime > 0) {
-      timer = setInterval(() => {
-        setLockoutTime(prev => {
-          if (prev <= 1) {
-            setAttempts(0);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [lockoutTime]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (lockoutTime > 0) {
-      toast.error(`Account locked. Try again in ${Math.ceil(lockoutTime / 60)} minutes.`);
-      return;
-    }
 
     if (!formData.username || !formData.password) {
       toast.error('Please fill in all fields');
@@ -85,39 +59,12 @@ const AdminLogin: React.FC = () => {
       
       await login(loginData);
       
-      // Reset attempts on successful login
-      setAttempts(0);
-      setLockoutTime(0);
-      
       // Redirect to admin panel
-      router.push('/admin');
+      router.replace('/admin');
       
     } catch (error: any) {
-      // Handle specific backend error responses
+      // Handle error responses
       const errorMessage = error.message || 'Login failed. Please try again.';
-      
-      // Handle account lockout
-      if (errorMessage.includes('locked') || errorMessage.includes('15 minutes')) {
-        setLockoutTime(15 * 60);
-        setAttempts(3);
-      } 
-      // Handle remaining attempts
-      else if (errorMessage.includes('attempts remaining')) {
-        const match = errorMessage.match(/(\d+) attempts remaining/);
-        if (match) {
-          const remaining = parseInt(match[1]);
-          setAttempts(3 - remaining);
-        }
-      }
-      // Handle rate limiting
-      else if (errorMessage.includes('Too many login attempts')) {
-        setLockoutTime(15 * 60);
-      }
-      // Handle other errors
-      else {
-        setAttempts(prev => Math.min(prev + 1, 3));
-      }
-      
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -149,11 +96,7 @@ const AdminLogin: React.FC = () => {
     }
   };
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
+
 
   return (
     <>
@@ -197,7 +140,7 @@ const AdminLogin: React.FC = () => {
                     required
                     value={formData.username}
                     onChange={handleInputChange}
-                    disabled={lockoutTime > 0 || isLoading}
+                    disabled={isLoading}
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     placeholder="Enter your username or email"
                     autoComplete="username"
@@ -221,14 +164,14 @@ const AdminLogin: React.FC = () => {
                     required
                     value={formData.password}
                     onChange={handleInputChange}
-                    disabled={lockoutTime > 0 || isLoading}
+                    disabled={isLoading}
                     className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     placeholder="Enter your password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    disabled={lockoutTime > 0 || isLoading}
+                    disabled={isLoading}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center disabled:cursor-not-allowed"
                   >
                     {showPassword ? (
@@ -277,7 +220,7 @@ const AdminLogin: React.FC = () => {
                   type="checkbox"
                   checked={formData.remember_me}
                   onChange={handleInputChange}
-                  disabled={lockoutTime > 0 || isLoading}
+                  disabled={isLoading}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:cursor-not-allowed"
                 />
                 <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-700">
@@ -285,27 +228,12 @@ const AdminLogin: React.FC = () => {
                 </label>
               </div>
 
-              {/* Failed Attempts Warning */}
-              {attempts > 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <p className="text-sm text-yellow-800">
-                    ⚠️ {attempts} failed attempt{attempts > 1 ? 's' : ''}. {3 - attempts} remaining.
-                  </p>
-                </div>
-              )}
 
-              {lockoutTime > 0 && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-sm text-red-800">
-                    🔒 Account locked. Try again in {formatTime(lockoutTime)}
-                  </p>
-                </div>
-              )}
 
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={lockoutTime > 0 || isLoading}
+                disabled={isLoading}
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? (
@@ -313,8 +241,6 @@ const AdminLogin: React.FC = () => {
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                     Authenticating...
                   </div>
-                ) : lockoutTime > 0 ? (
-                  'Account Locked'
                 ) : (
                   'Sign In'
                 )}

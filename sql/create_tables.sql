@@ -1,8 +1,8 @@
 -- News Site Database Schema (Arabic-Only)
 -- Optimized structure based on update_to_arabic_only.sql requirements
 
-CREATE DATABASE IF NOT EXISTS news_site CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE news_site;
+CREATE DATABASE IF NOT EXISTS markabadatabase CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE markabadatabase;
 
 -- Users table
 CREATE TABLE users (

@@ -40,7 +40,7 @@ jspm_packages/
 
 # Optional npm cache directory
 .npm
-.env
+
 # Optional eslint cache
 .eslintcache
 
@@ -223,7 +223,7 @@ temp/
 *.zip
 
 # Custom project files
-custom_news_site_readme*.md
+custom_markabadatabase_readme*.md
 
 # SSL certificates
 *.pem

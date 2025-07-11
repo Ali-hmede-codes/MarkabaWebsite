@@ -867,7 +867,7 @@ router.delete('/:id', auth, canEditContent, async (req, res) => {
     const postId = parseInt(req.params.id, 10);
     
     // Check if post exists
-    const post = await queryOne('SELECT * FROM posts WHERE id = ?', [postId]);
+    const post = await queryOne('SELECT id, title_ar, featured_image FROM posts WHERE id = ?', [postId]);
     if (!post) {
       return res.status(404).json({
         success: false,
@@ -936,7 +936,7 @@ router.patch('/bulk/status', auth, requireAdminOrEditor, async (req, res) => {
     if (isPublished) {
       // Create files for newly published posts
       const posts = await query(
-        `SELECT * FROM posts WHERE id IN (${placeholders})`,
+        `SELECT id, title_ar, content_ar, excerpt_ar, slug, featured_image, category_id, author_id, is_published, is_featured, meta_description_ar, tags, created_at, updated_at FROM posts WHERE id IN (${placeholders})`,
         post_ids
       );
       

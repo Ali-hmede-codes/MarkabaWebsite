@@ -1,68 +1,84 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
-import Layout from '../../components/Layout/Layout';
-import AdminNav from '../../components/admin/AdminNav';
-import { FiPlus, FiEdit, FiTrash2, FiEye, FiImage, FiSave, FiX } from 'react-icons/fi';
+import AdminLayout from '../../components/Layout/AdminLayout';
+import { 
+  FiPlus, 
+  FiEdit, 
+  FiTrash2, 
+  FiEye, 
+  FiEyeOff, 
+  FiStar, 
+  FiSearch,
+  FiFilter,
+  FiMoreVertical,
+  FiImage,
+  FiCalendar,
+  FiFileText
+} from 'react-icons/fi';
+import { toast } from 'react-hot-toast';
+import Link from 'next/link';
 
 interface Post {
   id: number;
   title_ar: string;
   content_ar: string;
   excerpt_ar: string;
-  slug: string;
-  category_id: number;
-  featured_image?: string;
-  is_featured: boolean;
+  featured_image: string;
   is_published: boolean;
+  is_featured: boolean;
   views: number;
+  category_id: number;
+  category_name_ar: string;
   created_at: string;
-  category_name_ar?: string;
+  updated_at: string;
 }
 
 interface Category {
   id: number;
   name_ar: string;
-  slug: string;
 }
 
-const AdminPosts: React.FC = () => {
-  const router = useRouter();
+const PostsManagement: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingPost, setEditingPost] = useState<Post | null>(null);
-  const [uploading, setUploading] = useState(false);
-  
-  // Form state
-  const [formData, setFormData] = useState({
-    title_ar: '',
-    content_ar: '',
-    excerpt_ar: '',
-    category_id: '',
-    featured_image: '',
-    is_featured: false,
-    is_published: false,
-    tags: ''
-  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
   useEffect(() => {
     fetchPosts();
     fetchCategories();
-  }, []);
+  }, [currentPage, searchTerm, selectedCategory, statusFilter]);
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('/api/posts');
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: '10',
+        ...(searchTerm && { search: searchTerm }),
+        ...(selectedCategory && { category: selectedCategory }),
+        ...(statusFilter !== 'all' && { status: statusFilter })
+      });
+
+      const response = await fetch(`/api/posts?${params}`);
       const data = await response.json();
+
       if (data.success) {
         setPosts(data.data.posts || []);
+        setTotalPages(Math.ceil((data.data.total || 0) / 10));
+      } else {
+        toast.error('فشل في تحميل المقالات');
       }
     } catch (error) {
       console.error('Error fetching posts:', error);
+      toast.error('حدث خطأ في تحميل المقالات');
     } finally {
       setLoading(false);
     }
@@ -72,469 +88,420 @@ const AdminPosts: React.FC = () => {
     try {
       const response = await fetch('/api/categories');
       const data = await response.json();
-      if (data.success) {
-        setCategories(data.data || []);
+      if (data.success && Array.isArray(data.data)) {
+        setCategories(data.data);
+      } else {
+        console.warn('Categories data is not an array:', data);
+        setCategories([]);
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setCategories([]);
+      toast.error('فشل في تحميل التصنيفات');
     }
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_type', 'post');
-
+  const togglePublishStatus = async (post: Post) => {
     try {
-      const response = await fetch('/api/media/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setFormData(prev => ({ ...prev, featured_image: data.data.file_url }));
-        alert('تم رفع الصورة بنجاح!');
-      } else {
-        alert('فشل في رفع الصورة: ' + data.message);
-      }
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('حدث خطأ أثناء رفع الصورة');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.title_ar.trim() || !formData.content_ar.trim()) {
-      alert('يرجى ملء العنوان والمحتوى');
-      return;
-    }
-
-    try {
-      const url = editingPost ? `/api/posts/${editingPost.id}` : '/api/posts';
-      const method = editingPost ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
+      const response = await fetch(`/api/posts/${post.id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          category_id: parseInt(formData.category_id),
-          tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : []
-        }),
+          ...post,
+          is_published: !post.is_published
+        })
       });
 
       const data = await response.json();
       if (data.success) {
-        alert(editingPost ? 'تم تحديث المقال بنجاح!' : 'تم إنشاء المقال بنجاح!');
-        setShowForm(false);
-        setEditingPost(null);
-        resetForm();
-        fetchPosts();
+        setPosts(posts.map(p => 
+          p.id === post.id 
+            ? { ...p, is_published: !p.is_published }
+            : p
+        ));
+        toast.success(
+          post.is_published ? 'تم إلغاء نشر المقال' : 'تم نشر المقال'
+        );
       } else {
-        alert('فشل في حفظ المقال: ' + data.message);
+        toast.error('فشل في تحديث حالة النشر');
       }
     } catch (error) {
-      console.error('Error saving post:', error);
-      alert('حدث خطأ أثناء حفظ المقال');
+      console.error('Error toggling publish status:', error);
+      toast.error('حدث خطأ في تحديث حالة النشر');
     }
   };
 
-  const handleEdit = (post: Post) => {
-    setEditingPost(post);
-    setFormData({
-      title_ar: post.title_ar,
-      content_ar: post.content_ar,
-      excerpt_ar: post.excerpt_ar || '',
-      category_id: post.category_id.toString(),
-      featured_image: post.featured_image || '',
-      is_featured: post.is_featured,
-      is_published: post.is_published,
-      tags: ''
-    });
-    setShowForm(true);
-  };
-
-  const handleDelete = async (postId: number) => {
-    if (!confirm('هل أنت متأكد من حذف هذا المقال؟')) return;
-
+  const toggleFeaturedStatus = async (post: Post) => {
     try {
-      const response = await fetch(`/api/posts/${postId}`, {
-        method: 'DELETE',
+      const response = await fetch(`/api/posts/${post.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...post,
+          is_featured: !post.is_featured
+        })
       });
 
       const data = await response.json();
       if (data.success) {
-        alert('تم حذف المقال بنجاح!');
-        fetchPosts();
+        setPosts(posts.map(p => 
+          p.id === post.id 
+            ? { ...p, is_featured: !p.is_featured }
+            : p
+        ));
+        toast.success(
+          post.is_featured ? 'تم إلغاء تمييز المقال' : 'تم تمييز المقال'
+        );
       } else {
-        alert('فشل في حذف المقال: ' + data.message);
+        toast.error('فشل في تحديث حالة التمييز');
+      }
+    } catch (error) {
+      console.error('Error toggling featured status:', error);
+      toast.error('حدث خطأ في تحديث حالة التمييز');
+    }
+  };
+
+  const deletePost = async () => {
+    if (!postToDelete) return;
+
+    try {
+      const response = await fetch(`/api/posts/${postToDelete.id}`, {
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setPosts(posts.filter(p => p.id !== postToDelete.id));
+        toast.success('تم حذف المقال بنجاح');
+        setShowDeleteModal(false);
+        setPostToDelete(null);
+      } else {
+        toast.error('فشل في حذف المقال');
       }
     } catch (error) {
       console.error('Error deleting post:', error);
-      alert('حدث خطأ أثناء حذف المقال');
+      toast.error('حدث خطأ في حذف المقال');
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      title_ar: '',
-      content_ar: '',
-      excerpt_ar: '',
-      category_id: '',
-      featured_image: '',
-      is_featured: false,
-      is_published: false,
-      tags: ''
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('ar-SA', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
-  const closeForm = () => {
-    setShowForm(false);
-    setEditingPost(null);
-    resetForm();
-  };
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = post.title_ar.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = !selectedCategory || post.category_id.toString() === selectedCategory;
+    const matchesStatus = statusFilter === 'all' || 
+                         (statusFilter === 'published' && post.is_published) ||
+                         (statusFilter === 'draft' && !post.is_published) ||
+                         (statusFilter === 'featured' && post.is_featured);
+    
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
 
   return (
-    <Layout>
-      <Head>
-        <title>إدارة المقالات - نيوز مركبة</title>
-      </Head>
-      
-      <AdminNav />
-
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div className="flex justify-between items-center">
-              <h1 className="text-3xl font-bold text-gray-900">إدارة المقالات</h1>
-              <button
-                onClick={() => setShowForm(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-              >
-                <FiPlus size={20} />
-                مقال جديد
-              </button>
-            </div>
+    <AdminLayout title="إدارة المقالات" description="إنشاء وتعديل وحذف المقالات">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">إدارة المقالات</h1>
+            <p className="text-gray-600 mt-1">إنشاء وتعديل وحذف المقالات</p>
           </div>
+          <Link href="/admin/posts/new">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 rtl:space-x-reverse transition-colors">
+              <FiPlus size={20} />
+              <span>مقال جديد</span>
+            </button>
+          </Link>
+        </div>
 
-          {/* Create/Edit Form */}
-          {showForm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900">
-                      {editingPost ? 'تعديل المقال' : 'إنشاء مقال جديد'}
-                    </h2>
-                    <button
-                      onClick={closeForm}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      <FiX size={24} />
-                    </button>
-                  </div>
-
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Title */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        العنوان *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.title_ar}
-                        onChange={(e) => setFormData({ ...formData, title_ar: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                        dir="rtl"
-                      />
-                    </div>
-
-                    {/* Category */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        التصنيف *
-                      </label>
-                      <select
-                        value={formData.category_id}
-                        onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                      >
-                        <option value="">اختر التصنيف</option>
-                        {categories.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name_ar}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Featured Image */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        الصورة المميزة
-                      </label>
-                      <div className="space-y-3">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          disabled={uploading}
-                        />
-                        {uploading && (
-                          <div className="text-blue-600 text-sm">جاري رفع الصورة...</div>
-                        )}
-                        {formData.featured_image && (
-                          <div className="mt-2">
-                            <img
-                              src={formData.featured_image}
-                              alt="Featured"
-                              className="w-32 h-32 object-cover rounded-lg border"
-                            />
-                            <p className="text-sm text-gray-600 mt-1">
-                              مسار الصورة: {formData.featured_image}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Excerpt */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        المقتطف
-                      </label>
-                      <textarea
-                        value={formData.excerpt_ar}
-                        onChange={(e) => setFormData({ ...formData, excerpt_ar: e.target.value })}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        dir="rtl"
-                      />
-                    </div>
-
-                    {/* Content */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        المحتوى *
-                      </label>
-                      <textarea
-                        value={formData.content_ar}
-                        onChange={(e) => setFormData({ ...formData, content_ar: e.target.value })}
-                        rows={10}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                        dir="rtl"
-                      />
-                    </div>
-
-                    {/* Tags */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        الكلمات المفتاحية (مفصولة بفواصل)
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.tags}
-                        onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="مثال: سياسة, اقتصاد, رياضة"
-                        dir="rtl"
-                      />
-                    </div>
-
-                    {/* Options */}
-                    <div className="flex gap-6">
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={formData.is_featured}
-                          onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
-                          className="mr-2"
-                        />
-                        مقال مميز
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={formData.is_published}
-                          onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
-                          className="mr-2"
-                        />
-                        نشر المقال
-                      </label>
-                    </div>
-
-                    {/* Submit Buttons */}
-                    <div className="flex gap-4 pt-4">
-                      <button
-                        type="submit"
-                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-                      >
-                        <FiSave size={20} />
-                        {editingPost ? 'تحديث المقال' : 'حفظ المقال'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={closeForm}
-                        className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
-                      >
-                        إلغاء
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+        {/* Filters */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Search */}
+            <div className="relative">
+              <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+              <input
+                type="text"
+                placeholder="البحث في المقالات..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                dir="rtl"
+              />
             </div>
-          )}
 
-          {/* Posts List */}
-          <div className="bg-white rounded-lg shadow-sm">
-            {loading ? (
-              <div className="p-8 text-center">
-                <div className="text-gray-500">جاري تحميل المقالات...</div>
-              </div>
-            ) : posts.length === 0 ? (
-              <div className="p-8 text-center">
-                <div className="text-gray-500">لا توجد مقالات حتى الآن</div>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        العنوان
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        التصنيف
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        الحالة
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        المشاهدات
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        تاريخ الإنشاء
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        الإجراءات
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {posts.map((post) => (
-                      <tr key={post.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center">
-                            {post.featured_image && (
-                              <img
-                                src={post.featured_image}
-                                alt={post.title_ar}
-                                className="w-12 h-12 object-cover rounded-lg mr-3"
-                              />
-                            )}
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">
-                                {post.title_ar}
-                              </div>
-                              {post.excerpt_ar && (
-                                <div className="text-sm text-gray-500 truncate max-w-xs">
-                                  {post.excerpt_ar}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {post.category_name_ar || 'غير محدد'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex gap-2">
-                            {post.is_published ? (
-                              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                منشور
-                              </span>
-                            ) : (
-                              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                مسودة
-                              </span>
-                            )}
-                            {post.is_featured && (
-                              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                مميز
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {post.views}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {new Date(post.created_at).toLocaleDateString('ar-SA')}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => window.open(`/post/${post.id}/${post.slug}`, '_blank')}
-                              className="text-blue-600 hover:text-blue-900"
-                              title="عرض"
-                            >
-                              <FiEye size={18} />
-                            </button>
-                            <button
-                              onClick={() => handleEdit(post)}
-                              className="text-green-600 hover:text-green-900"
-                              title="تعديل"
-                            >
-                              <FiEdit size={18} />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(post.id)}
-                              className="text-red-600 hover:text-red-900"
-                              title="حذف"
-                            >
-                              <FiTrash2 size={18} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+            {/* Category Filter */}
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">جميع التصنيفات</option>
+              {Array.isArray(categories) && categories.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name_ar}
+                </option>
+              ))}
+            </select>
 
-          {/* Image Storage Info */}
-          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-blue-800 mb-2">معلومات تخزين الصور</h3>
-            <div className="text-sm text-blue-700 space-y-1">
-              <p><strong>مجلد تخزين صور المقالات:</strong> /uploads/posts/[post_id]/images/</p>
-              <p><strong>مجلد تخزين الصور العامة:</strong> /uploads/general/</p>
-              <p><strong>أنواع الملفات المدعومة:</strong> JPG, PNG, GIF, WebP</p>
-              <p><strong>الحد الأقصى لحجم الملف:</strong> 10 ميجابايت</p>
+            {/* Status Filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">جميع الحالات</option>
+              <option value="published">منشور</option>
+              <option value="draft">مسودة</option>
+              <option value="featured">مميز</option>
+            </select>
+
+            {/* Results Count */}
+            <div className="flex items-center text-sm text-gray-600">
+              <FiFilter className="ml-2" size={16} />
+              <span>{filteredPosts.length} مقال</span>
             </div>
           </div>
         </div>
+
+        {/* Posts Table */}
+        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+          {loading ? (
+            <div className="p-8 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="text-gray-600 mt-2">جاري التحميل...</p>
+            </div>
+          ) : filteredPosts.length === 0 ? (
+            <div className="p-8 text-center">
+              <FiFileText className="mx-auto h-12 w-12 text-gray-400" />
+              <p className="text-gray-600 mt-2">لا توجد مقالات</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      المقال
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      التصنيف
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      الحالة
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      المشاهدات
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      التاريخ
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      الإجراءات
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredPosts.map((post) => (
+                    <tr key={post.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center">
+                          {post.featured_image && (
+                            <div className="flex-shrink-0 h-12 w-12 ml-4">
+                              <img
+                                className="h-12 w-12 rounded-lg object-cover"
+                                src={post.featured_image}
+                                alt={post.title_ar}
+                              />
+                            </div>
+                          )}
+                          <div>
+                            <div className="text-sm font-medium text-gray-900 line-clamp-2">
+                              {post.title_ar}
+                            </div>
+                            <div className="text-sm text-gray-500 line-clamp-1">
+                              {post.excerpt_ar}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {post.category_name_ar}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            post.is_published 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {post.is_published ? 'منشور' : 'مسودة'}
+                          </span>
+                          {post.is_featured && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                              مميز
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex items-center">
+                          <FiEye className="ml-1 text-gray-400" size={14} />
+                          {post.views?.toLocaleString('ar-SA') || 0}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <FiCalendar className="ml-1 text-gray-400" size={14} />
+                          {formatDate(post.created_at)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                          {/* Toggle Publish */}
+                          <button
+                            onClick={() => togglePublishStatus(post)}
+                            className={`p-2 rounded-lg transition-colors ${
+                              post.is_published
+                                ? 'text-green-600 hover:bg-green-100'
+                                : 'text-gray-400 hover:bg-gray-100'
+                            }`}
+                            title={post.is_published ? 'إلغاء النشر' : 'نشر'}
+                          >
+                            {post.is_published ? <FiEye size={16} /> : <FiEyeOff size={16} />}
+                          </button>
+
+                          {/* Toggle Featured */}
+                          <button
+                            onClick={() => toggleFeaturedStatus(post)}
+                            className={`p-2 rounded-lg transition-colors ${
+                              post.is_featured
+                                ? 'text-yellow-600 hover:bg-yellow-100'
+                                : 'text-gray-400 hover:bg-gray-100'
+                            }`}
+                            title={post.is_featured ? 'إلغاء التمييز' : 'تمييز'}
+                          >
+                            <FiStar size={16} />
+                          </button>
+
+                          {/* Edit */}
+                          <Link href={`/admin/posts/edit/${post.id}`}>
+                            <button className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="تعديل">
+                              <FiEdit size={16} />
+                            </button>
+                          </Link>
+
+                          {/* Delete */}
+                          <button
+                            onClick={() => {
+                              setPostToDelete(post);
+                              setShowDeleteModal(true);
+                            }}
+                            className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                            title="حذف"
+                          >
+                            <FiTrash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg">
+            <div className="text-sm text-gray-700">
+              صفحة {currentPage} من {totalPages}
+            </div>
+            <div className="flex space-x-2 rtl:space-x-reverse">
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                السابق
+              </button>
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                التالي
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-    </Layout>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && postToDelete && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <div className="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <FiTrash2 className="h-6 w-6 text-red-600" />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:mr-4 sm:text-right">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      حذف المقال
+                    </h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        هل أنت متأكد من حذف المقال "{postToDelete.title_ar}"؟ لا يمكن التراجع عن هذا الإجراء.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  onClick={deletePost}
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  حذف
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setPostToDelete(null);
+                  }}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </AdminLayout>
   );
 };
 
-export default AdminPosts;
+export default PostsManagement;

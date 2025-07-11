@@ -26,12 +26,12 @@ This guide will help you configure and set up the MySQL database for testing the
 
 3. **Create Database**
    - Click "New" to create a new database
-   - Name it `news_site`
+   - Name it `markabadatabase`
    - Set collation to `utf8mb4_unicode_ci`
    - Click "Create"
 
 4. **Import Database Schema**
-   - Select the `news_site` database
+   - Select the `markabadatabase` database
    - Click "Import" tab
    - Choose file: `sql/create_tables.sql`
    - Click "Go" to execute
@@ -43,10 +43,10 @@ This guide will help you configure and set up the MySQL database for testing the
 mysql -u root -p
 
 # Create database
-CREATE DATABASE news_site CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE markabadatabase CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 # Use the database
-USE news_site;
+USE markabadatabase;
 
 # Import the schema
 source /path/to/NewsMarkaba/sql/create_tables.sql;
@@ -59,7 +59,7 @@ source /path/to/NewsMarkaba/sql/create_tables.sql;
    DB_HOST=localhost
    DB_USER=root
    DB_PASSWORD=yourpassword  # Change this to your MySQL password
-   DB_NAME=news_site
+   DB_NAME=markabadatabase
    PORT=5000
    JWT_SECRET=your_super_secret_key_change_this_in_production
    UPLOAD_PATH=uploads/
@@ -155,7 +155,7 @@ The database includes these main tables:
    - Try resetting MySQL root password
 
 3. **Database Not Found**
-   - Ensure `news_site` database exists
+   - Ensure `markabadatabase` database exists
    - Re-run the SQL schema file
 
 4. **Port Already in Use**
@@ -167,9 +167,9 @@ The database includes these main tables:
 If you need to reset the database:
 
 ```sql
-DROP DATABASE IF EXISTS news_site;
-CREATE DATABASE news_site CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE news_site;
+DROP DATABASE IF EXISTS markabadatabase;
+CREATE DATABASE markabadatabase CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE markabadatabase;
 source /path/to/sql/create_tables.sql;
 ```
 

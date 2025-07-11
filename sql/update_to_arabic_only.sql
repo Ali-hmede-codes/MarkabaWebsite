@@ -1,7 +1,7 @@
 -- SQL script to update existing database to Arabic-only structure
 -- Run this script to remove English columns and update existing data
 
-USE news_site;
+USE markabadatabase;
 
 -- Update categories table - remove English columns
 ALTER TABLE categories 

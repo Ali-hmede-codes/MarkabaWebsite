@@ -41,12 +41,12 @@
 ### للمشاريع الموجودة:
 1. **احتياط مهم**: قم بعمل نسخة احتياطية من قاعدة البيانات قبل التحديث
    ```bash
-   mysqldump -u username -p news_site > backup_before_arabic_update.sql
+   mysqldump -u username -p markabadatabase > backup_before_arabic_update.sql
    ```
 
 2. قم بتشغيل سكريبت التحديث:
    ```bash
-   mysql -u username -p news_site < sql/update_to_arabic_only.sql
+   mysql -u username -p markabadatabase < sql/update_to_arabic_only.sql
    ```
 
 3. تحقق من البيانات الموجودة:

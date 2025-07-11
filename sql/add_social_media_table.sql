@@ -1,5 +1,5 @@
 -- Add social media table to the database
-USE news_site;
+USE markabadatabase;
 
 -- Social media links table
 CREATE TABLE social_media (

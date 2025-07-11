@@ -1,5 +1,5 @@
 -- Fix site_settings table to match enhanced settings route expectations
-USE news_site;
+USE markabadatabase;
 
 -- Add missing columns to site_settings table
 ALTER TABLE site_settings 
