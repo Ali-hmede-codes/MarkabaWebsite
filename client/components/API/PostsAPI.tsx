@@ -21,6 +21,12 @@ interface PostsAPIRenderProps {
   posts: Post[];
   currentPost: Post | null;
   filters: PostFilters;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
   
   // Loading states
   loading: boolean;
@@ -181,6 +187,12 @@ const PostsAPI: React.FC<PostsAPIProps> = ({
     posts: postsData?.posts || [],
     currentPost: (currentPost as Post) || null,
     filters,
+    pagination: postsData?.pagination ? {
+      page: postsData.pagination.page || postsData.pagination.current_page || 1,
+      limit: postsData.pagination.limit || postsData.pagination.per_page || 10,
+      total: postsData.pagination.total || 0,
+      totalPages: postsData.pagination.pages || postsData.pagination.last_page || 1
+    } : undefined,
     
     // Loading states
     loading,

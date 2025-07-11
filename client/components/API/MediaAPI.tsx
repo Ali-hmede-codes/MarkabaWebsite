@@ -56,6 +56,7 @@ const MediaAPI: React.FC<MediaAPIProps> = ({
   itemsPerPage = 12
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<(string | number)[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // API hooks
@@ -89,6 +90,7 @@ const MediaAPI: React.FC<MediaAPIProps> = ({
 
   // Extract media files and pagination from response
   const mediaFiles = Array.isArray(mediaData) ? (mediaData as MediaFile[]) : (mediaData as { data?: MediaFile[] })?.data || [];
+  const paginationData = (mediaData as any)?.pagination || null;
 
   // Actions
   const fetchMedia = useCallback(async (page: number = 1, limit: number = itemsPerPage, filters: Record<string, unknown> = {}) => {

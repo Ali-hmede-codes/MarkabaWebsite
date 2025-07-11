@@ -7,6 +7,7 @@
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "start-dev": "node start-dev.js",
     "start-vps": "node start-vps.js",
+    "start-frontend": "node start-frontend.js",
     "dev:client": "cd client && npm run dev",
     "dev:server": "cd server && npm run dev",
     "build": "npm run build:client && npm run build:server",

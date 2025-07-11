@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const path = require('path');
 const fs = require('fs').promises;
+
 require('dotenv').config();
 
 // Import database connection
@@ -133,6 +134,37 @@ app.use(express.urlencoded({
 // Static file serving for uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
   maxAge: '1d',
+  etag: true,
+  lastModified: true
+}));
+
+// Serve Next.js static files
+const clientBuildPath = path.join(__dirname, '../client/.next');
+const clientPublicPath = path.join(__dirname, '../client/public');
+
+// Serve Next.js static assets
+app.use('/_next', express.static(path.join(clientBuildPath, 'static'), {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true
+}));
+
+// Serve public assets
+app.use('/images', express.static(path.join(clientPublicPath, 'images'), {
+  maxAge: '1d',
+  etag: true,
+  lastModified: true
+}));
+
+app.use('/content', express.static(path.join(clientPublicPath, 'content'), {
+  maxAge: '1d',
+  etag: true,
+  lastModified: true
+}));
+
+// Serve other public files
+app.use(express.static(clientPublicPath, {
+  maxAge: '1h',
   etag: true,
   lastModified: true
 }));
@@ -326,14 +358,123 @@ app.use('/api/*', (req, res) => {
   });
 });
 
-// Handle all other 404s
-app.use('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    error: 'Not Found',
-    message: 'The requested resource was not found',
-    api_base: '/api'
-  });
+// Serve Next.js frontend for all non-API routes
+app.get('*', async (req, res) => {
+  // Skip API routes
+  if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/') || req.path.startsWith('/_next/')) {
+    return res.status(404).json({
+      success: false,
+      error: 'Not Found',
+      message: 'The requested resource was not found',
+      api_base: '/api'
+    });
+  }
+
+  try {
+    // Check if Next.js build exists
+    const indexPath = path.join(__dirname, '../client/.next/server/pages/index.html');
+    
+    // Try to serve the built Next.js page
+    try {
+      await fs.access(indexPath);
+      res.sendFile(indexPath);
+    } catch (error) {
+      // Fallback to a simple HTML page that loads the Next.js app
+      const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Markaba</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+        }
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        .message {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .link {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        .status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📰 News Markaba</div>
+        <div class="message">
+            Welcome to News Markaba! Your backend server is running successfully.
+        </div>
+        <div class="links">
+            <a href="/api" class="link">📚 API Documentation</a>
+            <a href="/api/posts" class="link">📝 Posts API</a>
+            <a href="/api/categories" class="link">📂 Categories API</a>
+            <a href="/health" class="link">💚 Health Check</a>
+        </div>
+        <div class="status">
+            <h3>🚀 Server Status</h3>
+            <p><strong>Environment:</strong> ${process.env.NODE_ENV || 'development'}</p>
+            <p><strong>Port:</strong> ${PORT}</p>
+            <p><strong>API Base:</strong> /api</p>
+            <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+        <div style="margin-top: 2rem; opacity: 0.7;">
+            <p>To access the full frontend, please build the Next.js client:</p>
+            <code style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 5px;">cd client && npm run build</code>
+        </div>
+    </div>
+</body>
+</html>`;
+      res.send(htmlContent);
+    }
+  } catch (error) {
+    console.error('Error serving frontend:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Server Error',
+      message: 'Unable to serve frontend'
+    });
+  }
 });
 
 // Graceful shutdown handling
