@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "start-dev": "node start-dev.js",
+    "start-vps": "node start-vps.js",
     "dev:client": "cd client && npm run dev",
     "dev:server": "cd server && npm run dev",
     "build": "npm run build:client && npm run build:server",
@@ -50,7 +51,7 @@
   "bugs": {
     "url": "https://github.com/yourusername/newsmarkaba/issues"
   },
-  "homepage": "https://newsmarkaba.com",
+  "homepage": "http://69.62.115.12/",
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"
