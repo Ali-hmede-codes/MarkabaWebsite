@@ -1,0 +1,113 @@
+{
+  "site": {
+    "name": "مـركـبـا - الـمـنـصـة الاخـبـاريـة",
+    "tagline": "أخبارك من مصدر موثوق",
+    "description": "موقع إخباري شامل يقدم آخر الأخبار والتحليلات من جميع أنحاء العالم",
+    "keywords": "أخبار، سياسة، اقتصاد، رياضة، تكنولوجيا، صحة، ثقافة",
+    "email": "info@newsmarkaba.com",
+    "phone": "+966 11 123 4567",
+    "address": "لبـــــنان , بيروت"
+  },
+  "header": {
+    "search_placeholder": "ابحث في الأخبار...",
+    "menu": "القائمة",
+    "close_menu": "إغلاق القائمة",
+    "search": "بحث",
+    "home": "الرئيسية"
+  },
+  "navigation": {
+    "home": "الرئيسية",
+    "categories": "الأقسام",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "breaking_news": "عاجل"
+  },
+  "homepage": {
+    "hero_title": "أخبارك من مصدر موثوق",
+    "hero_subtitle": "تابع آخر الأخبار والتطورات",
+    "featured_posts": "الأخبار المميزة",
+    "latest_posts": "آخر الأخبار",
+    "trending_posts": "الأكثر قراءة",
+    "load_more": "تحميل المزيد",
+    "read_more": "اقرأ المزيد",
+    "no_posts": "لا توجد مقالات متاحة",
+    "loading": "جاري التحميل..."
+  },
+  "category": {
+    "posts_in": "المقالات في",
+    "no_posts_found": "لم يتم العثور على مقالات في هذا القسم",
+    "back_to_home": "العودة للرئيسية",
+    "page": "صفحة",
+    "of": "من",
+    "previous": "السابق",
+    "next": "التالي",
+    "breadcrumb_home": "الرئيسية",
+    "breadcrumb_categories": "الأقسام"
+  },
+  "post": {
+    "by": "بواسطة",
+    "published_on": "نُشر في",
+    "reading_time": "دقائق قراءة",
+    "share": "مشاركة",
+    "related_posts": "مقالات ذات صلة",
+    "tags": "الوسوم"
+  },
+  "categories": {
+    "politics": "السياسة",
+    "sports": "الرياضة",
+    "economy": "الاقتصاد",
+    "technology": "التكنولوجيا",
+    "health": "الصحة",
+    "culture": "الثقافة",
+    "world": "العالم",
+    "local": "محلي"
+  },
+  "footer": {
+    "about_title": "عن الموقع",
+    "categories_title": "الأقسام",
+    "quick_links_title": "روابط سريعة",
+    "stay_connected": "ابق على تواصل",
+    "newsletter_text": "اشترك في نشرتنا الإخبارية للحصول على آخر الأخبار",
+    "email_placeholder": "بريدك الإلكتروني",
+    "subscribe": "اشتراك",
+    "follow_us": "تابعنا على",
+    "rights_reserved": "جميع الحقوق محفوظة",
+    "privacy": "الخصوصية",
+    "terms": "الشروط",
+    "sitemap": "خريطة الموقع",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "advertising": "الإعلانات",
+    "quick_links": [
+      {
+        "label": "من نحن",
+        "href": "/about"
+      },
+      {
+        "label": "اتصل بنا",
+        "href": "/contact"
+      },
+      {
+        "label": "سياسة الخصوصية",
+        "href": "/privacy"
+      },
+      {
+        "label": "شروط الاستخدام",
+        "href": "/terms"
+      },
+      {
+        "label": "الإعلانات",
+        "href": "/advertising"
+      }
+    ]
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "try_again": "حاول مرة أخرى",
+    "no_results": "لا توجد نتائج",
+    "search_results": "نتائج البحث",
+    "date_format": "DD/MM/YYYY",
+    "time_format": "HH:mm"
+  }
+}
