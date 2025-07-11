@@ -72,7 +72,10 @@ const corsOptions = {
       'http://localhost:3001',
       'http://127.0.0.1:3000',
       'http://127.0.0.1:3001',
-      'http://69.62.115.12:3000'
+      'http://69.62.115.12',
+      'http://69.62.115.12:3000',
+      'http://69.62.115.12:3001',
+      'http://69.62.115.12:5000'
     ];
     
     // Add production domains from environment

@@ -6,10 +6,14 @@ const nextConfig = {
   
   // Image optimization
   images: {
-    domains: ['localhost', '127.0.0.1'],
-    formats: ['image/webp', 'image/avif'],
+    domains: ['localhost', '127.0.0.1', '69.62.115.12'],
+    unoptimized: process.env.NODE_ENV === 'production',
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    formats: ['image/webp'],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
   // Environment variables will be automatically loaded from .env and .env.local files

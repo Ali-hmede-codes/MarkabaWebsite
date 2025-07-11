@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:production": "NODE_ENV=production next build && next export",
     "start": "next start",
+    "start:production": "NODE_ENV=production next start -p 80",
     "lint": "next lint",
-    "export": "next export"
+    "export": "next export",
+    "deploy": "npm run build:production"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
