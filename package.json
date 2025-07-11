@@ -23,8 +23,10 @@
     "test": "npm run test:client && npm run test:server",
     "test:client": "cd client && npm run test",
     "test:server": "cd server && npm run test",
-    "db:setup": "psql -d newsmarkaba -f sql/create_tables.sql",
-    "db:reset": "dropdb newsmarkaba && createdb newsmarkaba && npm run db:setup"
+    "db:setup": "node setup-database.js",
+    "db:reset": "dropdb newsmarkaba && createdb newsmarkaba && npm run db:setup",
+    "update-domain": "node scripts/update-domain.js",
+    "deploy:help": "echo \"Usage: npm run update-domain <domain> [server_port] [client_port] [protocol]\" && echo \"Example: npm run update-domain newsmarkaba.com 5001 443 https\""
   },
   "keywords": [
     "news",
