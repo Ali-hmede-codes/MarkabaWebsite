@@ -10,6 +10,9 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   
+  // Allow cross-origin requests from production server
+  allowedDevOrigins: ['69.62.115.12'],
+  
   // Image optimization
   images: {
     remotePatterns: [
