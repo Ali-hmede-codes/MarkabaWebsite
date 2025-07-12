@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 
-import path from 'path';
-import { config } from 'dotenv';
+const path = require('path');
+
+const { config } = require('dotenv');
 
 // Load environment variables from parent directory
 config({ path: path.resolve(process.cwd(), '../.env') });
@@ -106,4 +107,4 @@ const nextConfig = {
   // output: 'export',
 };
 
-export default nextConfig;
+module.exports = nextConfig;
