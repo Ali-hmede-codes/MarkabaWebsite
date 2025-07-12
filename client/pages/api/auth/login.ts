@@ -52,7 +52,7 @@ export default async function handler(
     }
 
     // Forward request to backend auth service
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000/api/v2';
     const response = await fetch(`${backendUrl}/auth/login`, {
       method: 'POST',
       headers: {

@@ -292,11 +292,11 @@ const Custom404: React.FC<Custom404Props> = ({ popularPosts, categories }) => {
 export const getStaticProps: GetStaticProps = async () => {
   try {
     // Fetch popular posts
-    const postsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2'}/posts?limit=10&sort=popular`);
+    const postsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000/api/v2'}/posts?limit=10&sort=popular`);
     const postsData = await postsResponse.json();
     
     // Fetch categories
-    const categoriesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2'}/categories?limit=8`);
+    const categoriesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000/api/v2'}/categories?limit=8`);
     const categoriesData = await categoriesResponse.json();
 
     return {

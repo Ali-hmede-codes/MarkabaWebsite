@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v2';
+import { API_BASE_URL } from '../../lib/api/config';
 
 export default async function handler(
   req: NextApiRequest,

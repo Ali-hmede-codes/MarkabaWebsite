@@ -1,12 +1,37 @@
 /** @type {import('next').NextConfig} */
 
+import path from 'path';
+import { config } from 'dotenv';
+
+// Load environment variables from parent directory
+config({ path: path.resolve(process.cwd(), '../.env') });
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   
   // Image optimization
   images: {
-    domains: ['localhost', '127.0.0.1', '69.62.115.12'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '5000',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '5000',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '69.62.115.12',
+        port: '5000',
+        pathname: '/uploads/**',
+      },
+    ],
     unoptimized: process.env.NODE_ENV === 'production',
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
@@ -16,7 +41,13 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
-  // Environment variables will be automatically loaded from .env and .env.local files
+  // Environment variables loaded from parent .env file
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_UPLOAD_URL: process.env.NEXT_PUBLIC_UPLOAD_URL,
+    NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,
+    NEXT_PUBLIC_CLIENT_URL: process.env.NEXT_PUBLIC_CLIENT_URL,
+  },
   
   // Internationalization
   i18n: {
@@ -63,7 +94,7 @@ const nextConfig = {
   
   // Experimental features
   experimental: {
-    optimizeCss: true,
+    // Remove deprecated options
     scrollRestoration: true,
   },
   
@@ -72,4 +103,4 @@ const nextConfig = {
   // output: 'export',
 };
 
-module.exports = nextConfig;
+export default nextConfig;
