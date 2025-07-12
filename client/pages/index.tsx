@@ -58,7 +58,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchBreakingNews = async () => {
       try {
-        const response = await fetch('/api/breaking-news?active=true');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2'}/breaking-news?active=true`);
         if (response.ok) {
           const data = await response.json();
           setBreakingNews(data.data || []);

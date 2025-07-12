@@ -2,9 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { APIResponse } from './types';
-
-// Base API configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000/api/v2';
+import { API_BASE_URL } from '../../lib/api/config';
 
 // Create axios instance
 const apiClient = axios.create({
