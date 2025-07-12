@@ -106,7 +106,7 @@ A modern, bilingual (Arabic/English) news website built with Next.js, Node.js, a
    
    **Client (.env.local)**
    ```env
-   NEXT_PUBLIC_API_URL=http://localhost:5000
+   NEXT_PUBLIC_API_URL=http://69.62.115.12:5000
    NEXT_PUBLIC_SITE_URL=http://localhost:3000
    NEXT_PUBLIC_SITE_NAME=NewsMarkaba
    
@@ -128,7 +128,7 @@ A modern, bilingual (Arabic/English) news website built with Next.js, Node.js, a
 
 6. **Access the application**
    - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
+   - Backend API: http://69.62.115.12:5000
 
 ## 📁 Project Structure
 

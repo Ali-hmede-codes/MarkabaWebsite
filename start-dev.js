@@ -126,8 +126,8 @@ setTimeout(() => {
   log('🎉 Development Environment Started!', 'bright');
   log('', 'reset');
   log('📍 Server URLs:', 'cyan');
-  log('   • API: http://localhost:5000/api/v2', 'reset');
-  log('   • Docs: http://localhost:5000/api-docs', 'reset');
+  log('   • API: http://69.62.115.12:5000/api/v2', 'reset');
+  log('   • Docs: http://69.62.115.12:5000/api-docs', 'reset');
   log('', 'reset');
   log('📍 Client URLs:', 'cyan');
   log('   • Website: http://localhost:3000 (or 3001 if 3000 is busy)', 'reset');

@@ -152,9 +152,9 @@ async function main() {
     
     log('\n' + '🎉 News Markaba is ready!', 'green');
     log('=' .repeat(60), 'cyan');
-    log('🌐 Website: http://localhost:5000', 'bright');
-    log('📚 API Docs: http://localhost:5000/api', 'bright');
-    log('💚 Health Check: http://localhost:5000/health', 'bright');
+    log('🌐 Website: http://69.62.115.12:5000', 'bright');
+    log('📚 API Docs: http://69.62.115.12:5000/api', 'bright');
+    log('💚 Health Check: http://69.62.115.12:5000/health', 'bright');
     log('=' .repeat(60), 'cyan');
     
     // Handle graceful shutdown

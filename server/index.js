@@ -6,7 +6,16 @@ const compression = require('compression');
 const path = require('path');
 const fs = require('fs').promises;
 
-require('dotenv').config();
+// Load environment variables from parent directory
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+
+console.log('Environment loaded:');
+console.log('- NODE_ENV:', process.env.NODE_ENV);
+console.log('- PORT:', process.env.PORT);
+console.log('- DB_HOST:', process.env.DB_HOST);
+console.log('- DB_NAME:', process.env.DB_NAME);
+console.log('- FRONTEND_URL:', process.env.FRONTEND_URL);
+console.log('- BACKEND_URL:', process.env.BACKEND_URL);
 
 // Import database connection
 const { testConnection } = require('./db');
@@ -571,7 +580,7 @@ const startServer = async () => {
     console.log('✅ Upload directories initialized');
 
     // Start the server
-    const server = app.listen(PORT, () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       console.log('🚀 News Markaba Enhanced Server Started');
       console.log(`📡 Server running on port ${PORT}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
