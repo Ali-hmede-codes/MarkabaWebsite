@@ -181,7 +181,7 @@ async function populateDatabase() {
       const post = postsData[i];
       await connection.execute(
         `INSERT INTO posts (title_ar, content_ar, excerpt_ar, slug, category_id, author_id, featured_image, 
-         is_published, is_featured, view_count, created_at, updated_at) 
+         is_published, is_featured, views, created_at, updated_at) 
          VALUES (?, ?, ?, ?, ?, 1, ?, 1, 0, 0, NOW(), NOW())`,
         [
           post.title_ar,
