@@ -68,17 +68,17 @@ const breakingNewsData = [
 // Sample Arabic posts data
 const postsData = [
   {
-    title: 'التطورات الاقتصادية الجديدة وأثرها على السوق المحلي',
-    content: 'تشهد الأسواق المحلية تطورات إيجابية ملحوظة خلال الفترة الأخيرة، حيث ارتفعت مؤشرات النمو الاقتصادي وتحسنت معدلات التوظيف. هذه التطورات تأتي نتيجة للسياسات الاقتصادية الجديدة التي تبنتها الحكومة والتي تهدف إلى تنويع مصادر الدخل وتعزيز الاستثمار في القطاعات الحيوية.',
-    excerpt: 'تشهد الأسواق المحلية تطورات إيجابية ملحوظة مع ارتفاع مؤشرات النمو',
+    title_ar: 'التطورات الاقتصادية الجديدة وأثرها على السوق المحلي',
+    content_ar: 'تشهد الأسواق المحلية تطورات إيجابية ملحوظة خلال الفترة الأخيرة، حيث ارتفعت مؤشرات النمو الاقتصادي وتحسنت معدلات التوظيف. هذه التطورات تأتي نتيجة للسياسات الاقتصادية الجديدة التي تبنتها الحكومة والتي تهدف إلى تنويع مصادر الدخل وتعزيز الاستثمار في القطاعات الحيوية.',
+    excerpt_ar: 'تشهد الأسواق المحلية تطورات إيجابية ملحوظة مع ارتفاع مؤشرات النمو',
     slug: 'التطورات-الاقتصادية-الجديدة-وأثرها-على-السوق-المحلي',
     category_id: 5,
     featured_image: '/images/economy1.jpg'
   },
   {
-    title: 'التعليم الرقمي: مستقبل التعلم في العصر الحديث',
-    content: 'يشهد قطاع التعليم تحولاً جذرياً نحو الرقمنة، حيث تتبنى المؤسسات التعليمية تقنيات حديثة لتطوير العملية التعليمية. هذا التحول يشمل استخدام المنصات الرقمية، والذكاء الاصطناعي، والواقع الافتراضي لتحسين جودة التعليم وجعله أكثر تفاعلية وفعالية.',
-    excerpt: 'قطاع التعليم يشهد تحولاً جذرياً نحو الرقمنة والتقنيات الحديثة',
+    title_ar: 'التعليم الرقمي: مستقبل التعلم في العصر الحديث',
+    content_ar: 'يشهد قطاع التعليم تحولاً جذرياً نحو الرقمنة، حيث تتبنى المؤسسات التعليمية تقنيات حديثة لتطوير العملية التعليمية. هذا التحول يشمل استخدام المنصات الرقمية، والذكاء الاصطناعي، والواقع الافتراضي لتحسين جودة التعليم وجعله أكثر تفاعلية وفعالية.',
+    excerpt_ar: 'قطاع التعليم يشهد تحولاً جذرياً نحو الرقمنة والتقنيات الحديثة',
     slug: 'التعليم-الرقمي-مستقبل-التعلم-في-العصر-الحديث',
     category_id: 2,
     featured_image: '/images/education1.jpg'
@@ -169,10 +169,10 @@ async function populateDatabase() {
     for (let i = 0; i < breakingNewsData.length; i++) {
       const news = breakingNewsData[i];
       await connection.execute(
-        'INSERT INTO breaking_news (title, content, priority, is_active, created_at, updated_at) VALUES (?, ?, ?, 1, NOW(), NOW())',
-        [news.title, news.content, news.priority]
-      );
-      console.log(`   ${i + 1}. ${news.title.substring(0, 50)}...`);
+          'INSERT INTO breaking_news (title_ar, content_ar, priority, is_active, created_at, updated_at) VALUES (?, ?, ?, 1, NOW(), NOW())',
+          [news.title_ar, news.content_ar, news.priority]
+        );
+      console.log(`   ${i + 1}. ${news.title_ar.substring(0, 50)}...`);
     }
     
     // Insert posts
@@ -180,19 +180,19 @@ async function populateDatabase() {
     for (let i = 0; i < postsData.length; i++) {
       const post = postsData[i];
       await connection.execute(
-        `INSERT INTO posts (title, content, excerpt, slug, category_id, author_id, featured_image, 
+        `INSERT INTO posts (title_ar, content_ar, excerpt_ar, slug, category_id, author_id, featured_image, 
          is_published, is_featured, view_count, created_at, updated_at) 
          VALUES (?, ?, ?, ?, ?, 1, ?, 1, 0, 0, NOW(), NOW())`,
         [
-          post.title,
-          post.content,
-          post.excerpt,
+          post.title_ar,
+          post.content_ar,
+          post.excerpt_ar,
           post.slug,
           post.category_id,
           post.featured_image
         ]
       );
-      console.log(`   ${i + 1}. ${post.title.substring(0, 50)}...`);
+      console.log(`   ${i + 1}. ${post.title_ar.substring(0, 50)}...`);
     }
     
     // Get counts
