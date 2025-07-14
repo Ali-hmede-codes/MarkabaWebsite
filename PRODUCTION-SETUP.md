@@ -96,7 +96,7 @@ pm2 logs news-markaba-web
 ```bash
 mysql -u root -p
 SHOW DATABASES;
-USE news_site;
+USE markabadatabase;
 SHOW TABLES;
 ```
 

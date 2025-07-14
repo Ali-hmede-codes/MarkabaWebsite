@@ -149,10 +149,10 @@ pm2 monit
 ### Database Backup:
 ```bash
 # Create backup
-mysqldump -u root -p news_site > backup_$(date +%Y%m%d_%H%M%S).sql
+mysqldump -u root -p markabadatabase > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # Restore backup
-mysql -u root -p news_site < backup_file.sql
+mysql -u root -p markabadatabase < backup_file.sql
 ```
 
 ## 🔄 Updates & Maintenance
