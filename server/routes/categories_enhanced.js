@@ -191,9 +191,9 @@ router.get('/:slug', async (req, res) => {
       const finalPostsSort = validPostsSortFields.includes(posts_sort) ? posts_sort : 'created_at';
       const finalPostsOrder = validPostsOrders.includes(posts_order) ? posts_order : 'desc';
       
-      // Get posts
+      // Get posts (Arabic only - English not supported)
       posts = await query(
-        `SELECT p.id, p.title, p.title_ar, p.excerpt, p.excerpt_ar, p.slug,
+        `SELECT p.id, p.title_ar, p.excerpt_ar, p.slug,
                 p.featured_image, p.views, p.reading_time, p.created_at, p.is_featured,
                 u.username as author_name, u.display_name as author_display_name
          FROM posts p
