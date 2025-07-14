@@ -69,17 +69,16 @@ router.get('/', async (req, res) => {
     
     // Apply filters
     if (search) {
-      queryStr += ' AND (c.name LIKE ? OR c.name_ar LIKE ? OR c.description LIKE ? OR c.description_ar LIKE ?)';
+      queryStr += ' AND (c.name_ar LIKE ? OR c.description_ar LIKE ?)';
       const searchTerm = `%${search}%`;
-      params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+      params.push(searchTerm, searchTerm);
     }
     
     if (language) {
       if (language === 'ar') {
         queryStr += ' AND (c.name_ar IS NOT NULL AND c.name_ar != "")';
-      } else if (language === 'en') {
-        queryStr += ' AND (c.name IS NOT NULL AND c.name != "")';
       }
+      // Note: Only Arabic language is supported in this schema
     }
     
     // Handle empty categories filter

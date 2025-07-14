@@ -8,9 +8,9 @@ const router = express.Router();
 router.get('/public', async (req, res) => {
   try {
     const settings = await query(
-      `SELECT setting_key, setting_value, data_type
+      `SELECT setting_key, setting_value_ar as setting_value, setting_type as data_type
        FROM site_settings 
-       WHERE is_public = 1
+       WHERE is_editable = 1
        ORDER BY setting_key`
     );
     
@@ -63,8 +63,8 @@ router.get('/', auth, requireAdmin, async (req, res) => {
     const { category, search } = req.query;
     
     let queryStr = `
-      SELECT setting_key, setting_value, data_type, category, description, 
-             description_ar, is_public, created_at, updated_at
+      SELECT setting_key, setting_value_ar as setting_value, setting_type as data_type, 
+             category, description, is_editable, created_at, updated_at
       FROM site_settings
       WHERE 1=1
     `;
@@ -78,9 +78,9 @@ router.get('/', auth, requireAdmin, async (req, res) => {
     }
     
     if (search) {
-      queryStr += ' AND (setting_key LIKE ? OR description LIKE ? OR description_ar LIKE ?)';
+      queryStr += ' AND (setting_key LIKE ? OR description LIKE ?)';
       const searchTerm = `%${search}%`;
-      params.push(searchTerm, searchTerm, searchTerm);
+      params.push(searchTerm, searchTerm);
     }
     
     queryStr += ' ORDER BY category, setting_key';
@@ -119,7 +119,7 @@ router.get('/', auth, requireAdmin, async (req, res) => {
       groupedSettings[cat].push({
         ...setting,
         setting_value: value,
-        is_public: Boolean(setting.is_public)
+        is_editable: Boolean(setting.is_editable)
       });
     });
     
@@ -147,8 +147,8 @@ router.get('/:key', auth, requireAdmin, async (req, res) => {
     const { key } = req.params;
     
     const setting = await queryOne(
-      `SELECT setting_key, setting_value, data_type, category, description, 
-              description_ar, is_public, created_at, updated_at
+      `SELECT setting_key, setting_value_ar as setting_value, setting_type as data_type, 
+              category, description, is_editable, created_at, updated_at
        FROM site_settings
        WHERE setting_key = ?`,
       [key]
@@ -188,7 +188,7 @@ router.get('/:key', auth, requireAdmin, async (req, res) => {
       data: {
         ...setting,
         setting_value: value,
-        is_public: Boolean(setting.is_public)
+        is_editable: Boolean(setting.is_editable)
       }
     });
     
