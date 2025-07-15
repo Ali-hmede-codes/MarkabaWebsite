@@ -29,7 +29,7 @@ const generateBreakingNewsSlug = (title, title_ar) => {
   return slug || 'breaking-news';
 };
 
-// Get active breaking news (up to 5 items) - Public endpoint
+// Get active breaking news (up to 5 items) - Public endpoint (NO AUTH REQUIRED)
 router.get('/active', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit, 10) || 5, 5); // Max 5 breaking news

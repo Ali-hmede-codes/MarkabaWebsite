@@ -1,18 +1,18 @@
 {
   "results": {
-    "Fajr": "4:11 %am%",
-    "Duha": "5:34 %am%",
-    "Dhuhr": "12:42 %pm%",
+    "Fajr": "4:15 %am%",
+    "Duha": "5:37 %am%",
+    "Dhuhr": "12:43 %pm%",
     "Asr": "4:27 %pm%",
-    "Maghrib": "7:50 %pm%",
-    "Isha": "9:12 %pm%"
+    "Maghrib": "7:48 %pm%",
+    "Isha": "9:09 %pm%"
   },
   "settings": {
     "method": "2",
     "juristic": "0"
   },
   "success": true,
-  "lastUpdated": "2025-07-10T15:05:46.330Z",
+  "lastUpdated": "2025-07-15T06:23:08.430Z",
   "location": {
     "country": "Lebanon",
     "city": "Beirut",

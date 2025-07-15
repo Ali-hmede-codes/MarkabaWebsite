@@ -145,11 +145,45 @@ const canEditContent = async (req, res, next) => {
   }
 };
 
+// Optional authentication middleware (doesn't fail if no token)
+const optionalAuth = async (req, res, next) => {
+  try {
+    const authHeader = req.header('Authorization');
+    const token = authHeader ? authHeader.replace('Bearer ', '') : null;
+    
+    if (!token) {
+      req.user = null;
+      return next();
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await queryOne(
+      'SELECT id, username, email, display_name, avatar, role, is_active FROM users WHERE id = ? AND is_active = 1',
+      [decoded.id]
+    );
+    
+    if (user) {
+      req.user = user;
+      // Update last login timestamp
+      await query('UPDATE users SET last_login = NOW() WHERE id = ?', [user.id]);
+    } else {
+      req.user = null;
+    }
+    
+    next();
+  } catch (error) {
+    console.error('Optional authentication error:', error);
+    req.user = null;
+    next();
+  }
+};
+
 // Legacy middleware for backward compatibility
 const verifyToken = auth;
 
 module.exports = {
   auth,
+  optionalAuth,
   verifyToken, // Legacy support
   requireRole,
   requireAdmin,

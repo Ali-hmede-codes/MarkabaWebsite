@@ -72,7 +72,7 @@ async function updatePostFiles(postId, postData) {
 // Export the function for potential future use
 module.exports.updatePostFiles = updatePostFiles;
 
-// GET / - Enhanced filtering system for posts
+// GET / - Enhanced filtering system for posts - Public endpoint (NO AUTH REQUIRED)
 router.get('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;

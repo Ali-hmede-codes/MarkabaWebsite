@@ -17,12 +17,18 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
     ...options,
   };
 
-  // Add auth token if available (from cookies)
+  // Add auth token if available (from cookies or localStorage)
   if (typeof window !== 'undefined') {
-    const token = document.cookie
+    // Try to get token from cookies first
+    let token = document.cookie
       .split('; ')
       .find(row => row.startsWith('token='))
       ?.split('=')[1];
+    
+    // Fallback to localStorage if not in cookies
+    if (!token) {
+      token = localStorage.getItem('token');
+    }
     
     if (token) {
       defaultOptions.headers = {

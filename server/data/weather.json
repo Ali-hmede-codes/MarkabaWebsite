@@ -13,35 +13,35 @@
   ],
   "base": "stations",
   "main": {
-    "temp": 297.13,
-    "feels_like": 296.84,
-    "temp_min": 297.13,
-    "temp_max": 297.13,
-    "pressure": 1005,
-    "humidity": 48,
-    "sea_level": 1005,
+    "temp": 293.25,
+    "feels_like": 291.73,
+    "temp_min": 293.25,
+    "temp_max": 293.25,
+    "pressure": 1006,
+    "humidity": 16,
+    "sea_level": 1006,
     "grnd_level": 866
   },
   "visibility": 10000,
   "wind": {
-    "speed": 4.21,
-    "deg": 301,
-    "gust": 5.86
+    "speed": 2.2,
+    "deg": 256,
+    "gust": 2.13
   },
   "clouds": {
     "all": 0
   },
-  "dt": 1752159943,
+  "dt": 1752560387,
   "sys": {
     "country": "LB",
-    "sunrise": 1752114814,
-    "sunset": 1752166190
+    "sunrise": 1752546990,
+    "sunset": 1752598086
   },
   "timezone": 10800,
   "id": 272103,
   "name": "لبنان",
   "cod": 200,
-  "lastUpdated": "2025-07-10T15:05:43.941Z",
+  "lastUpdated": "2025-07-15T06:23:05.150Z",
   "location": {
     "country": "Lebanon",
     "city": "Beirut",
