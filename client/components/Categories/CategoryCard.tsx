@@ -25,7 +25,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         <div className="relative h-32 w-full">
           <Image
             src={category.image}
-            alt={category.name}
+            alt={category.name_ar}
             fill
             className="object-cover rounded-t-lg"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -40,7 +40,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             href={`/categories/${category.slug}`}
             className="hover:text-blue-600 transition-colors"
           >
-            {category.name}
+            {category.name_ar}
           </Link>
         </h3>
         

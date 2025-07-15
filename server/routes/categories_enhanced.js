@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
     } = req.query;
     
     // Valid sort fields
-    const validSortFields = ['sort_order', 'name', 'name_ar', 'created_at', 'post_count'];
+    const validSortFields = ['sort_order', 'name_ar', 'created_at', 'post_count'];
     const validSortOrders = ['asc', 'desc'];
     
     const finalSortBy = validSortFields.includes(sort_by) ? sort_by : 'sort_order';
@@ -518,11 +518,10 @@ router.get('/:id/stats', auth, requireAdminOrEditor, async (req, res) => {
       success: true,
       data: {
         category: {
-          id: category.id,
-          name: category.name,
-          name_ar: category.name_ar,
-          slug: category.slug
-        },
+            id: category.id,
+            name_ar: category.name_ar,
+            slug: category.slug
+          },
         statistics: stats[0],
         top_posts: topPosts.map(post => ({
           ...post,

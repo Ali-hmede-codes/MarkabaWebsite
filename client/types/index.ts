@@ -30,11 +30,12 @@ export interface RegisterData {
 // Category types
 export interface Category {
   id: number;
-  name: string;
-  name_ar?: string;
+  name_ar: string;
   slug: string;
-  description?: string;
-  image?: string;
+  description_ar?: string;
+  color?: string;
+  sort_order?: number;
+  is_active?: boolean;
   post_count?: number;
   created_at: string;
   updated_at: string;

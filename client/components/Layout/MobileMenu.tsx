@@ -64,7 +64,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categories }) 
       icon: TagIcon,
       expandable: true,
       children: categories.map(category => ({
-        title: category.name,
+        title: category.name_ar,
         href: `/category/${category.slug}`
       }))
     },

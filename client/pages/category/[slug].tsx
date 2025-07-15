@@ -84,7 +84,7 @@ const CategoryPage: React.FC = () => {
     );
   }
 
-  const categoryName = (content.categories as Record<string, string>)[currentCategory.slug] || currentCategory.name;
+  const categoryName = (content.categories as Record<string, string>)[currentCategory.slug] || currentCategory.name_ar;
   const pageTitle = `${content.category.posts_in} ${categoryName} - ${content.site.name}`;
   const pageDescription = `تصفح جميع أخبار ${categoryName} على ${content.site.name}`;
 

@@ -250,7 +250,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
                           )}
                           {post.category && (
                             <span className="inline-block mt-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
-                              {post.category.name}
+                              {post.category.name_ar}
                             </span>
                           )}
                         </Link>

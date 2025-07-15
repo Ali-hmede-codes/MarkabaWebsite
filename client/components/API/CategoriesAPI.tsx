@@ -226,7 +226,7 @@ const CategoriesAPI: React.FC<CategoriesAPIProps> = ({
               </div>
               
               <h4 className="font-medium text-gray-900">{category.name_ar}</h4>
-              <p className="text-sm text-gray-600">{category.name}</p>
+              <p className="text-sm text-gray-600">{category.name_ar}</p>
               
               {category.description_ar && (
                 <p className="text-sm text-gray-500 mt-2 line-clamp-2">
