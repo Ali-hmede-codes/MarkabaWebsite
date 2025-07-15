@@ -86,13 +86,26 @@ router.get('/', async (req, res) => {
       queryStr += ' AND (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1) > 0';
     }
     
-    // Count total categories
-    const countQuery = queryStr.replace(
-      /SELECT c\.\*.*?FROM categories c/s,
-      'SELECT COUNT(*) as total FROM categories c'
-    );
+    // Build separate count query to avoid parameter mismatch
+    let countQueryStr = 'SELECT COUNT(*) as total FROM categories c WHERE 1=1';
+    const countParams = [];
     
-    const totalResult = await query(countQuery, params);
+    // Apply same filters to count query
+    if (search) {
+      countQueryStr += ' AND (c.name_ar LIKE ? OR c.description_ar LIKE ?)';
+      const searchTerm = `%${search}%`;
+      countParams.push(searchTerm, searchTerm);
+    }
+    
+    if (language === 'ar') {
+      countQueryStr += ' AND (c.name_ar IS NOT NULL AND c.name_ar != "")';
+    }
+    
+    if (include_empty === 'false') {
+      countQueryStr += ' AND (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1) > 0';
+    }
+    
+    const totalResult = await query(countQueryStr, countParams);
     const total = totalResult[0].total;
     
     // Add ordering
