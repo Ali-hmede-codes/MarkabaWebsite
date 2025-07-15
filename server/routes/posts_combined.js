@@ -6,6 +6,7 @@ const { validate, postSchema } = require('../middlewares/validation');
 const { auth, requireAuthorOrEditor, canEditContent, requireAdminOrEditor } = require('../middlewares/auth');
 const { generateArabicSlug, calculateReadingTime, createPostFiles, deletePostFiles } = require('../utils/postUtils');
 
+
 const router = express.Router();
 
 // Enhanced post file management functions (from posts_enhanced.js)
@@ -1018,11 +1019,11 @@ router.patch('/bulk/status', auth, requireAdminOrEditor, async (req, res) => {
   try {
     const { post_ids, status } = req.body;
     
-    if (!Array.isArray(post_ids) || post_ids.length === 0) {
+    if (!Array.isArray(post_ids) || post_ids.length === 0 || post_ids.some(id => typeof id !== 'number' && (typeof id !== 'string' || id.trim() === '' || Number.isNaN(Number(id))))) {
       return res.status(400).json({
         success: false,
         error: 'Validation error',
-        message: 'post_ids must be a non-empty array'
+        message: 'post_ids must be a non-empty array of valid numbers'
       });
     }
     

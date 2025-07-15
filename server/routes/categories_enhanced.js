@@ -608,11 +608,11 @@ router.delete('/bulk', auth, requireAdmin, async (req, res) => {
   try {
     const { category_ids } = req.body;
     
-    if (!Array.isArray(category_ids) || category_ids.length === 0) {
+    if (!Array.isArray(category_ids) || category_ids.length === 0 || category_ids.some(id => Number.isNaN(Number(id)))) {
       return res.status(400).json({
         success: false,
         error: 'Validation error',
-        message: 'category_ids must be a non-empty array'
+        message: 'category_ids must be a non-empty array of valid numbers'
       });
     }
     
