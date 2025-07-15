@@ -200,13 +200,85 @@ router.get('/', async (req, res) => {
       params.push(parseInt(max_views, 10));
     }
     
-    // Count total posts
-    const countQuery = queryStr.replace(
-      /SELECT p\.\*.*?FROM posts p/s,
-      'SELECT COUNT(*) as total FROM posts p'
-    );
+    // Count total posts - Build separate count query to avoid parameter mismatch
+    let countQueryStr = `
+      SELECT COUNT(*) as total
+      FROM posts p
+      LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN users u ON p.author_id = u.id
+      WHERE 1=1
+    `;
     
-    const totalResult = await query(countQuery, params);
+    // Apply the same filters to count query
+    if (status && status !== 'all') {
+      if (status === 'published') {
+        countQueryStr += ' AND p.is_published = 1';
+      } else if (status === 'draft') {
+        countQueryStr += ' AND p.is_published = 0';
+      }
+    }
+    
+    if (category) {
+      if (Number.isNaN(Number(category))) {
+        countQueryStr += ' AND c.slug = ?';
+      } else {
+        countQueryStr += ' AND p.category_id = ?';
+      }
+    }
+    
+    if (author) {
+      if (Number.isNaN(Number(author))) {
+        countQueryStr += ' AND u.username = ?';
+      } else {
+        countQueryStr += ' AND p.author_id = ?';
+      }
+    }
+    
+    if (featured !== undefined) {
+      countQueryStr += ' AND p.is_featured = ?';
+    }
+    
+    if (search) {
+      countQueryStr += ' AND (p.title_ar LIKE ? OR p.content_ar LIKE ? OR p.excerpt_ar LIKE ?)';
+    }
+    
+    if (language) {
+      if (language === 'ar') {
+        countQueryStr += ' AND (p.title_ar IS NOT NULL AND p.title_ar != "")';
+      }
+    }
+    
+    if (tags) {
+      const tagArray = Array.isArray(tags) ? tags : tags.split(',');
+      const tagConditions = tagArray.map(() => 'JSON_CONTAINS(p.tags, ?)');
+      countQueryStr += ` AND (${tagConditions.join(' OR ')})`;
+    }
+    
+    if (date_from) {
+      countQueryStr += ' AND DATE(p.created_at) >= ?';
+    }
+    
+    if (date_to) {
+      countQueryStr += ' AND DATE(p.created_at) <= ?';
+    }
+    
+    if (min_reading_time) {
+      countQueryStr += ' AND p.reading_time >= ?';
+    }
+    
+    if (max_reading_time) {
+      countQueryStr += ' AND p.reading_time <= ?';
+    }
+    
+    if (min_views) {
+      countQueryStr += ' AND p.views >= ?';
+    }
+    
+    if (max_views) {
+      countQueryStr += ' AND p.views <= ?';
+    }
+    
+    const totalResult = await query(countQueryStr, params);
     const total = totalResult[0].total;
     
     // Add ordering and pagination
