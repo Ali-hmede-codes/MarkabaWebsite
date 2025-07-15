@@ -20,14 +20,24 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
   // Add auth token if available (from cookies or localStorage)
   if (typeof window !== 'undefined') {
     // Try to get token from cookies first
-    let token = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('token='))
-      ?.split('=')[1];
+    let token: string | null = null;
+    try {
+      token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1] || null;
+    } catch (error) {
+      console.warn('Error reading cookies:', error);
+    }
     
     // Fallback to localStorage if not in cookies
     if (!token) {
-      token = localStorage.getItem('token');
+      try {
+        token = localStorage.getItem('token');
+      } catch (error) {
+        console.warn('localStorage not available:', error);
+        token = null;
+      }
     }
     
     if (token) {
