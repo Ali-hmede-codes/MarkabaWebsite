@@ -231,12 +231,12 @@ const SitemapPage: React.FC<SitemapPageProps> = ({ categories, recentPosts }) =>
                           href={`/categories/${category.slug}`}
                           className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
                         >
-                          {theme.language === 'ar' ? category.name_ar : category.name}
+                          {category.name_ar}
                         </Link>
                       </h3>
-                      {category.description && (
+                      {category.description_ar && (
                         <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
-                          {category.description}
+                          {category.description_ar}
                         </p>
                       )}
                       <div className="flex items-center justify-between">
@@ -337,12 +337,12 @@ const SitemapPage: React.FC<SitemapPageProps> = ({ categories, recentPosts }) =>
                           href={`/posts/${post.slug}`}
                           className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
                         >
-                          {theme.language === 'ar' ? post.title_ar : post.title}
+                          {post.title_ar}
                         </Link>
                       </h3>
-                      {post.excerpt && (
+                      {post.excerpt_ar && (
                         <p className="text-gray-600 dark:text-gray-400 text-sm mb-2 line-clamp-2">
-                          {theme.language === 'ar' ? post.excerpt_ar : post.excerpt}
+                          {post.excerpt_ar}
                         </p>
                       )}
                       <div className="flex items-center justify-between">
