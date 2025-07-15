@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { APIResponse } from './types';
-import { API_BASE_URL } from '../../lib/api/config';
+import { API_BASE_URL } from '../../lib/api';
 
 // Create axios instance
 const apiClient = axios.create({
