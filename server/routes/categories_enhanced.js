@@ -1,13 +1,13 @@
 const express = require('express');
 const { query, queryOne } = require('../db');
-const { validate, categorySchema } = require('../middlewares/validation');
+// const { validate, categorySchema } = require('../middlewares/validation');
 const { auth, requireAdmin, requireAdminOrEditor } = require('../middlewares/auth');
 
 const router = express.Router();
 
 // Enhanced Arabic slug generation for categories
-const generateCategorySlug = (name, name_ar) => {
-  const sourceName = name_ar || name;
+const generateCategorySlug = (name_ar) => {
+  if (!name_ar) return 'category';
   
   const arabicMap = {
     'ا': 'a', 'أ': 'a', 'إ': 'i', 'آ': 'aa',
@@ -19,7 +19,7 @@ const generateCategorySlug = (name, name_ar) => {
     'ء': '', 'ئ': 'y', 'ؤ': 'w', 'لا': 'la'
   };
   
-  const slug = sourceName.toLowerCase()
+  const slug = name_ar.toLowerCase()
     .replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, (match) => arabicMap[match] || match)
     .replace(/[^a-z0-9\u0600-\u06FF\s-]/g, '')
     .replace(/\s+/g, '-')
@@ -29,122 +29,73 @@ const generateCategorySlug = (name, name_ar) => {
   return slug || 'category';
 };
 
-// Get all categories with enhanced filtering - Public endpoint
+// GET /api/v2/categories - Get all categories
 router.get('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = Math.min(parseInt(req.query.limit, 10) || 20, 50);
     const offset = (page - 1) * limit;
+    const search = req.query.search || '';
+    const includePostCount = req.query.include_post_count !== 'false';
+    const includeEmpty = req.query.include_empty !== 'false';
     
-    const {
-      search,
-      language,
-      include_post_count = 'true',
-      include_empty = 'true',
-      sort_by = 'sort_order',
-      sort_order = 'asc'
-    } = req.query;
+    // Base query
+    let baseQuery = `
+      SELECT c.id, c.name_ar, c.slug, c.description_ar, c.color, c.sort_order, c.is_active, c.created_at, c.updated_at
+    `;
     
-    // Valid sort fields
-    const validSortFields = ['sort_order', 'name_ar', 'created_at', 'post_count'];
-    const validSortOrders = ['asc', 'desc'];
-    
-    const finalSortBy = validSortFields.includes(sort_by) ? sort_by : 'sort_order';
-    const finalSortOrder = validSortOrders.includes(sort_order) ? sort_order : 'asc';
-    
-    let queryStr = `
-      SELECT c.*`;
-    
-    if (include_post_count === 'true') {
-      queryStr += `,
-             (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1) as post_count`;
+    if (includePostCount) {
+      baseQuery += `, (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1) as post_count`;
     }
     
-    queryStr += `
-      FROM categories c
-      WHERE 1=1
-    `;
+    baseQuery += ` FROM categories c WHERE c.is_active = 1`;
     
     const params = [];
     
-    // Apply filters
+    // Add search filter
     if (search) {
-      queryStr += ' AND (c.name_ar LIKE ? OR c.description_ar LIKE ?)';
-      const searchTerm = `%${search}%`;
-      params.push(searchTerm, searchTerm);
+      baseQuery += ` AND (c.name_ar LIKE ? OR c.description_ar LIKE ?)`;
+      params.push(`%${search}%`, `%${search}%`);
     }
     
-    if (language) {
-      if (language === 'ar') {
-        queryStr += ' AND (c.name_ar IS NOT NULL AND c.name_ar != "")';
-      }
-      // Note: Only Arabic language is supported in this schema
+    // Filter empty categories if requested
+    if (!includeEmpty) {
+      baseQuery += ` AND (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1) > 0`;
     }
     
-    // Handle empty categories filter
-    if (include_empty === 'false') {
-      queryStr += ' AND (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1) > 0';
-    }
-    
-    // Build separate count query to avoid parameter mismatch
-    let countQueryStr = 'SELECT COUNT(*) as total FROM categories c WHERE 1=1';
+    // Get total count
+    let countQuery = `SELECT COUNT(*) as total FROM categories c WHERE c.is_active = 1`;
     const countParams = [];
     
-    // Apply same filters to count query
     if (search) {
-      countQueryStr += ' AND (c.name_ar LIKE ? OR c.description_ar LIKE ?)';
-      const searchTerm = `%${search}%`;
-      countParams.push(searchTerm, searchTerm);
+      countQuery += ` AND (c.name_ar LIKE ? OR c.description_ar LIKE ?)`;
+      countParams.push(`%${search}%`, `%${search}%`);
     }
     
-    if (language === 'ar') {
-      countQueryStr += ' AND (c.name_ar IS NOT NULL AND c.name_ar != "")';
+    if (!includeEmpty) {
+      countQuery += ` AND (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1) > 0`;
     }
     
-    if (include_empty === 'false') {
-      countQueryStr += ' AND (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1) > 0';
-    }
+    const [totalResult, categories] = await Promise.all([
+      query(countQuery, countParams),
+      query(`${baseQuery} ORDER BY c.sort_order ASC, c.name_ar ASC LIMIT ? OFFSET ?`, [...params, limit, offset])
+    ]);
     
-    const totalResult = await query(countQueryStr, countParams);
     const total = totalResult[0].total;
-    
-    // Add ordering
-    if (finalSortBy === 'post_count' && include_post_count === 'true') {
-      queryStr += ` ORDER BY post_count ${finalSortOrder.toUpperCase()}`;
-    } else {
-      queryStr += ` ORDER BY c.${finalSortBy} ${finalSortOrder.toUpperCase()}`;
-    }
-    
-    // Add pagination
-    queryStr += ' LIMIT ? OFFSET ?';
-    params.push(limit, offset);
-    
-    const categories = await query(queryStr, params);
-    
-    // Process categories
-    const processedCategories = categories.map(category => ({
-      ...category,
-      post_count: include_post_count === 'true' ? (category.post_count || 0) : undefined,
-      url: `/category/${category.slug}`
-    }));
     
     res.json({
       success: true,
       data: {
-        categories: processedCategories,
+        categories: categories.map(cat => ({
+          ...cat,
+          is_active: Boolean(cat.is_active),
+          post_count: includePostCount ? (cat.post_count || 0) : undefined
+        })),
         pagination: {
           page,
           limit,
           total,
           pages: Math.ceil(total / limit)
-        },
-        filters: {
-          search,
-          language,
-          include_post_count,
-          include_empty,
-          sort_by: finalSortBy,
-          sort_order: finalSortOrder
         }
       }
     });
@@ -159,93 +110,67 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get single category by slug with posts - Public endpoint
+// GET /api/v2/categories/:slug - Get single category by slug
 router.get('/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    const {
-      include_posts = 'true',
-      posts_page = 1,
-      posts_limit = 10,
-      posts_sort = 'created_at',
-      posts_order = 'desc'
-    } = req.query;
+    const includePosts = req.query.include_posts !== 'false';
+    const postsPage = parseInt(req.query.posts_page, 10) || 1;
+    const postsLimit = Math.min(parseInt(req.query.posts_limit, 10) || 10, 50);
+    const postsOffset = (postsPage - 1) * postsLimit;
     
     // Get category
     const category = await queryOne(
-      `SELECT c.*,
+      `SELECT c.*, 
               (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1) as post_count
-       FROM categories c
-       WHERE c.slug = ?`,
+       FROM categories c 
+       WHERE c.slug = ? AND c.is_active = 1`,
       [slug]
     );
     
     if (!category) {
       return res.status(404).json({
         success: false,
-        error: 'Category not found',
-        message: 'The requested category does not exist'
+        error: 'Category not found'
       });
     }
     
-    let posts = [];
-    let postsPagination = null;
+    const result = {
+      ...category,
+      is_active: Boolean(category.is_active)
+    };
     
     // Get posts if requested
-    if (include_posts === 'true') {
-      const postsPageNum = parseInt(posts_page, 10) || 1;
-      const postsLimitNum = Math.min(parseInt(posts_limit, 10) || 10, 50);
-      const postsOffset = (postsPageNum - 1) * postsLimitNum;
-      
-      // Valid sort fields for posts
-      const validPostsSortFields = ['created_at', 'updated_at', 'title', 'views'];
-      const validPostsOrders = ['asc', 'desc'];
-      
-      const finalPostsSort = validPostsSortFields.includes(posts_sort) ? posts_sort : 'created_at';
-      const finalPostsOrder = validPostsOrders.includes(posts_order) ? posts_order : 'desc';
-      
-      // Get posts (Arabic only - English not supported)
-      posts = await query(
-        `SELECT p.id, p.title_ar, p.excerpt_ar, p.slug,
-                p.featured_image, p.views, p.reading_time, p.created_at, p.is_featured,
-                u.username as author_name, u.display_name as author_display_name
+    if (includePosts) {
+      const posts = await query(
+        `SELECT p.id, p.title_ar, p.excerpt_ar, p.slug, p.featured_image, 
+                p.views, p.reading_time, p.created_at, p.is_featured,
+                u.username, u.display_name
          FROM posts p
          LEFT JOIN users u ON p.author_id = u.id
          WHERE p.category_id = ? AND p.is_published = 1
-         ORDER BY p.${finalPostsSort} ${finalPostsOrder.toUpperCase()}
+         ORDER BY p.created_at DESC
          LIMIT ? OFFSET ?`,
-        [category.id, postsLimitNum, postsOffset]
+        [category.id, postsLimit, postsOffset]
       );
       
-      // Process posts
-      posts = posts.map(post => ({
+      result.posts = posts.map(post => ({
         ...post,
-        is_featured: Boolean(post.is_featured),
-        url: `/post/${post.id}/${post.slug}`
+        is_featured: Boolean(post.is_featured)
       }));
       
-      postsPagination = {
-        page: postsPageNum,
-        limit: postsLimitNum,
+      result.posts_pagination = {
+        page: postsPage,
+        limit: postsLimit,
         total: category.post_count,
-        pages: Math.ceil(category.post_count / postsLimitNum)
+        pages: Math.ceil(category.post_count / postsLimit)
       };
     }
     
-    const response = {
+    res.json({
       success: true,
-      data: {
-        ...category,
-        url: `/category/${category.slug}`
-      }
-    };
-    
-    if (include_posts === 'true') {
-      response.data.posts = posts;
-      response.data.posts_pagination = postsPagination;
-    }
-    
-    res.json(response);
+      data: result
+    });
     
   } catch (error) {
     console.error('Error fetching category:', error);
@@ -257,63 +182,51 @@ router.get('/:slug', async (req, res) => {
   }
 });
 
-// Create new category (Admin only)
-router.post('/', auth, requireAdmin, validate(categorySchema), async (req, res) => {
+// POST /api/v2/categories - Create new category (Admin only)
+router.post('/', auth, requireAdmin, async (req, res) => {
   try {
-    const {
-      name_ar,
-      description_ar = '',
-      color = '#007bff',
-      sort_order = 0
-    } = req.body;
+    const { name_ar, description_ar = '', color = '#007bff', sort_order = 0 } = req.body;
     
-    // Validate required fields
-    if (!name_ar) {
+    if (!name_ar || name_ar.trim() === '') {
       return res.status(400).json({
         success: false,
-        error: 'Validation error',
-        message: 'name_ar is required'
+        error: 'name_ar is required'
       });
     }
     
-    // Generate slug
-    const baseSlug = generateCategorySlug(null, name_ar);
+    // Generate unique slug
+    const baseSlug = generateCategorySlug(name_ar);
     let slug = baseSlug;
+    let counter = 1;
     
-    // Ensure slug uniqueness
+    // Check for existing slugs and generate unique one
     const existingSlugs = await query('SELECT slug FROM categories WHERE slug LIKE ?', [`${baseSlug}%`]);
     const slugSet = new Set(existingSlugs.map(row => row.slug));
     
-    let finalSlug = slug;
-    let slugCounter = 1;
-    while (slugSet.has(finalSlug)) {
-      finalSlug = `${baseSlug}-${slugCounter}`;
-      slugCounter += 1;
+    while (slugSet.has(slug)) {
+      slug = `${baseSlug}-${counter}`;
+      counter += 1;
     }
-    slug = finalSlug;
     
     // Insert category
     const result = await query(
-      `INSERT INTO categories (
-        name_ar, description_ar, slug, color, sort_order, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
-      [name_ar, description_ar, slug, color, sort_order]
+      `INSERT INTO categories (name_ar, description_ar, slug, color, sort_order, created_at, updated_at) 
+       VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
+      [name_ar.trim(), description_ar.trim(), slug, color, sort_order]
     );
     
-    const categoryId = result.insertId;
-    
-    // Fetch created category
-    const createdCategory = await queryOne(
+    // Get created category
+    const newCategory = await queryOne(
       'SELECT * FROM categories WHERE id = ?',
-      [categoryId]
+      [result.insertId]
     );
     
     res.status(201).json({
       success: true,
       message: 'Category created successfully',
       data: {
-        ...createdCategory,
-        url: `/category/${createdCategory.slug}`
+        ...newCategory,
+        is_active: Boolean(newCategory.is_active)
       }
     });
     
@@ -327,93 +240,101 @@ router.post('/', auth, requireAdmin, validate(categorySchema), async (req, res) 
   }
 });
 
-// Update category (Admin only)
-router.put('/:id', auth, requireAdmin, validate(categorySchema), async (req, res) => {
+// PUT /api/v2/categories/:id - Update category (Admin only)
+router.put('/:id', auth, requireAdmin, async (req, res) => {
   try {
     const categoryId = parseInt(req.params.id, 10);
     
-    // Check if category exists
-    const existingCategory = await queryOne('SELECT * FROM categories WHERE id = ?', [categoryId]);
-    if (!existingCategory) {
-      return res.status(404).json({
+    if (Number.isNaN(categoryId)) {
+      return res.status(400).json({
         success: false,
-        error: 'Category not found',
-        message: 'The requested category does not exist'
+        error: 'Invalid category ID'
       });
     }
     
-    const {
-      name_ar,
-      description_ar,
-      color,
-      sort_order
-    } = req.body;
-    
-    // Handle slug regeneration if name changed
-    let slug = existingCategory.slug;
-    if (name_ar && name_ar !== existingCategory.name_ar) {
-      const baseSlug = generateCategorySlug(null, name_ar || existingCategory.name_ar);
-      slug = baseSlug;
-      
-      // Ensure slug uniqueness (excluding current category)
-      const existingSlugs = await query('SELECT slug FROM categories WHERE slug LIKE ? AND id != ?', [`${baseSlug}%`, categoryId]);
-      const slugSet = new Set(existingSlugs.map(row => row.slug));
-      
-      let finalSlug = slug;
-      let slugCounter = 1;
-      while (slugSet.has(finalSlug)) {
-        finalSlug = `${baseSlug}-${slugCounter}`;
-        slugCounter += 1;
-      }
-      slug = finalSlug;
+    // Check if category exists
+    const existing = await queryOne('SELECT * FROM categories WHERE id = ?', [categoryId]);
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        error: 'Category not found'
+      });
     }
     
-    // Build update query dynamically
-    const updateFields = [];
-    const updateValues = [];
+    const { name_ar, description_ar, color, sort_order, is_active } = req.body;
+    
+    // Build update query
+    const updates = [];
+    const params = [];
     
     if (name_ar !== undefined) {
-      updateFields.push('name_ar = ?');
-      updateValues.push(name_ar);
+      updates.push('name_ar = ?');
+      params.push(name_ar.trim());
+      
+      // Regenerate slug if name changed
+      if (name_ar !== existing.name_ar) {
+        const baseSlug = generateCategorySlug(name_ar);
+        let slug = baseSlug;
+        let counter = 1;
+        
+        // Check for existing slugs and generate unique one
+        const existingSlugs = await query('SELECT slug FROM categories WHERE slug LIKE ? AND id != ?', [`${baseSlug}%`, categoryId]);
+        const slugSet = new Set(existingSlugs.map(row => row.slug));
+        
+        while (slugSet.has(slug)) {
+          slug = `${baseSlug}-${counter}`;
+          counter += 1;
+        }
+        
+        updates.push('slug = ?');
+        params.push(slug);
+      }
     }
+    
     if (description_ar !== undefined) {
-      updateFields.push('description_ar = ?');
-      updateValues.push(description_ar);
+      updates.push('description_ar = ?');
+      params.push(description_ar.trim());
     }
+    
     if (color !== undefined) {
-      updateFields.push('color = ?');
-      updateValues.push(color);
+      updates.push('color = ?');
+      params.push(color);
     }
+    
     if (sort_order !== undefined) {
-      updateFields.push('sort_order = ?');
-      updateValues.push(sort_order);
+      updates.push('sort_order = ?');
+      params.push(sort_order);
     }
     
-    // Always update these fields
-    updateFields.push('slug = ?', 'updated_at = NOW()');
-    updateValues.push(slug);
+    if (is_active !== undefined) {
+      updates.push('is_active = ?');
+      params.push(is_active ? 1 : 0);
+    }
     
-    // Add category ID for WHERE clause
-    updateValues.push(categoryId);
+    if (updates.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No fields to update'
+      });
+    }
     
-    // Execute update
+    updates.push('updated_at = NOW()');
+    params.push(categoryId);
+    
     await query(
-      `UPDATE categories SET ${updateFields.join(', ')} WHERE id = ?`,
-      updateValues
+      `UPDATE categories SET ${updates.join(', ')} WHERE id = ?`,
+      params
     );
     
-    // Fetch updated category
-    const updatedCategory = await queryOne(
-      'SELECT * FROM categories WHERE id = ?',
-      [categoryId]
-    );
+    // Get updated category
+    const updated = await queryOne('SELECT * FROM categories WHERE id = ?', [categoryId]);
     
     res.json({
       success: true,
       message: 'Category updated successfully',
       data: {
-        ...updatedCategory,
-        url: `/category/${updatedCategory.slug}`
+        ...updated,
+        is_active: Boolean(updated.is_active)
       }
     });
     
@@ -427,18 +348,88 @@ router.put('/:id', auth, requireAdmin, validate(categorySchema), async (req, res
   }
 });
 
-// Delete category (Admin only)
+// DELETE /api/v2/categories/bulk - Bulk delete categories (Admin only)
+router.delete('/bulk', auth, requireAdmin, async (req, res) => {
+  try {
+    const { category_ids } = req.body;
+    
+    if (!Array.isArray(category_ids) || category_ids.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'category_ids must be a non-empty array'
+      });
+    }
+    
+    // Validate all IDs are numbers
+    const validIds = category_ids.filter(id => !Number.isNaN(parseInt(id, 10))).map(id => parseInt(id, 10));
+    
+    if (validIds.length !== category_ids.length) {
+      return res.status(400).json({
+        success: false,
+        error: 'All category_ids must be valid numbers'
+      });
+    }
+    
+    // Check for categories with posts
+    const placeholders = validIds.map(() => '?').join(',');
+    const categoriesWithPosts = await query(
+      `SELECT c.id, c.name_ar, COUNT(p.id) as post_count
+       FROM categories c
+       LEFT JOIN posts p ON c.id = p.category_id
+       WHERE c.id IN (${placeholders})
+       GROUP BY c.id, c.name_ar
+       HAVING post_count > 0`,
+      validIds
+    );
+    
+    if (categoriesWithPosts.length > 0) {
+      return res.status(409).json({
+        success: false,
+        error: 'Some categories have posts',
+        data: { categories_with_posts: categoriesWithPosts }
+      });
+    }
+    
+    // Delete categories
+    const result = await query(
+      `DELETE FROM categories WHERE id IN (${placeholders})`,
+      validIds
+    );
+    
+    res.json({
+      success: true,
+      message: `${result.affectedRows} categories deleted successfully`,
+      data: { affected_rows: result.affectedRows }
+    });
+    
+  } catch (error) {
+    console.error('Error in bulk delete:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete categories',
+      message: error.message
+    });
+  }
+});
+
+// DELETE /api/v2/categories/:id - Delete category (Admin only)
 router.delete('/:id', auth, requireAdmin, async (req, res) => {
   try {
     const categoryId = parseInt(req.params.id, 10);
+    
+    if (Number.isNaN(categoryId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid category ID'
+      });
+    }
     
     // Check if category exists
     const category = await queryOne('SELECT * FROM categories WHERE id = ?', [categoryId]);
     if (!category) {
       return res.status(404).json({
         success: false,
-        error: 'Category not found',
-        message: 'The requested category does not exist'
+        error: 'Category not found'
       });
     }
     
@@ -451,8 +442,8 @@ router.delete('/:id', auth, requireAdmin, async (req, res) => {
     if (postCount.count > 0) {
       return res.status(409).json({
         success: false,
-        error: 'Category has posts',
-        message: `Cannot delete category. It contains ${postCount.count} posts. Please move or delete the posts first.`
+        error: 'Cannot delete category with posts',
+        message: `Category has ${postCount.count} posts. Please move or delete them first.`
       });
     }
     
@@ -474,40 +465,45 @@ router.delete('/:id', auth, requireAdmin, async (req, res) => {
   }
 });
 
-// Get category statistics (Admin/Editor only)
+// GET /api/v2/categories/:id/stats - Get category statistics (Admin/Editor only)
 router.get('/:id/stats', auth, requireAdminOrEditor, async (req, res) => {
   try {
     const categoryId = parseInt(req.params.id, 10);
+    
+    if (Number.isNaN(categoryId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid category ID'
+      });
+    }
     
     // Check if category exists
     const category = await queryOne('SELECT * FROM categories WHERE id = ?', [categoryId]);
     if (!category) {
       return res.status(404).json({
         success: false,
-        error: 'Category not found',
-        message: 'The requested category does not exist'
+        error: 'Category not found'
       });
     }
     
-    // Get detailed statistics
-    const stats = await query(`
+    // Get statistics
+    const stats = await queryOne(`
       SELECT 
         COUNT(*) as total_posts,
         SUM(CASE WHEN is_published = 1 THEN 1 ELSE 0 END) as published_posts,
         SUM(CASE WHEN is_published = 0 THEN 1 ELSE 0 END) as draft_posts,
         SUM(CASE WHEN is_featured = 1 AND is_published = 1 THEN 1 ELSE 0 END) as featured_posts,
-        SUM(views) as total_views,
-        AVG(views) as avg_views,
-        MAX(views) as max_views,
-        AVG(reading_time) as avg_reading_time,
-        COUNT(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 END) as recent_posts
+        COALESCE(SUM(views), 0) as total_views,
+        COALESCE(AVG(views), 0) as avg_views,
+        COALESCE(MAX(views), 0) as max_views,
+        COALESCE(AVG(reading_time), 0) as avg_reading_time
       FROM posts 
       WHERE category_id = ?
     `, [categoryId]);
     
-    // Get top posts in this category
+    // Get top posts
     const topPosts = await query(`
-      SELECT id, title, title_ar, slug, views, is_featured, created_at
+      SELECT id, title_ar, slug, views, is_featured, created_at
       FROM posts 
       WHERE category_id = ? AND is_published = 1
       ORDER BY views DESC 
@@ -518,15 +514,14 @@ router.get('/:id/stats', auth, requireAdminOrEditor, async (req, res) => {
       success: true,
       data: {
         category: {
-            id: category.id,
-            name_ar: category.name_ar,
-            slug: category.slug
-          },
-        statistics: stats[0],
+          id: category.id,
+          name_ar: category.name_ar,
+          slug: category.slug
+        },
+        statistics: stats,
         top_posts: topPosts.map(post => ({
           ...post,
-          is_featured: Boolean(post.is_featured),
-          url: `/post/${post.id}/${post.slug}`
+          is_featured: Boolean(post.is_featured)
         }))
       }
     });
@@ -536,177 +531,6 @@ router.get('/:id/stats', auth, requireAdminOrEditor, async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch category statistics',
-      message: error.message
-    });
-  }
-});
-
-// Get categories overview/statistics (Admin/Editor only)
-router.get('/stats/overview', auth, requireAdminOrEditor, async (req, res) => {
-  try {
-    // Get overall statistics
-    const overallStats = await query(`
-      SELECT 
-        COUNT(*) as total_categories,
-        COUNT(CASE WHEN (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1) > 0 THEN 1 END) as categories_with_posts,
-        AVG((SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.is_published = 1)) as avg_posts_per_category
-      FROM categories c
-    `);
-    
-    // Get top categories by post count
-    const topCategories = await query(`
-      SELECT c.id, c.name, c.name_ar, c.slug,
-             COUNT(p.id) as post_count,
-             SUM(p.views) as total_views
-      FROM categories c
-      LEFT JOIN posts p ON c.id = p.category_id AND p.is_published = 1
-      GROUP BY c.id, c.name, c.name_ar, c.slug
-      ORDER BY post_count DESC, total_views DESC
-      LIMIT 10
-    `);
-    
-    // Get recent activity
-    const recentActivity = await query(`
-      SELECT c.id, c.name, c.name_ar, c.slug,
-             COUNT(p.id) as recent_posts
-      FROM categories c
-      LEFT JOIN posts p ON c.id = p.category_id AND p.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-      GROUP BY c.id, c.name, c.name_ar, c.slug
-      HAVING recent_posts > 0
-      ORDER BY recent_posts DESC
-      LIMIT 5
-    `);
-    
-    res.json({
-      success: true,
-      data: {
-        summary: overallStats[0],
-        top_categories: topCategories.map(cat => ({
-          ...cat,
-          url: `/category/${cat.slug}`
-        })),
-        recent_activity: recentActivity.map(cat => ({
-          ...cat,
-          url: `/category/${cat.slug}`
-        }))
-      }
-    });
-    
-  } catch (error) {
-    console.error('Error fetching categories overview:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch categories overview',
-      message: error.message
-    });
-  }
-});
-
-// Bulk delete categories (Admin only)
-router.delete('/bulk', auth, requireAdmin, async (req, res) => {
-  try {
-    const { category_ids } = req.body;
-    
-    if (!Array.isArray(category_ids) || category_ids.length === 0 || category_ids.some(id => Number.isNaN(Number(id)))) {
-      return res.status(400).json({
-        success: false,
-        error: 'Validation error',
-        message: 'category_ids must be a non-empty array of valid numbers'
-      });
-    }
-    
-    // Check if any categories have posts
-    const placeholders = category_ids.map(() => '?').join(',');
-    const categoriesWithPosts = await query(
-      `SELECT c.id, c.name, c.name_ar, COUNT(p.id) as post_count
-       FROM categories c
-       LEFT JOIN posts p ON c.id = p.category_id
-       WHERE c.id IN (${placeholders})
-       GROUP BY c.id, c.name, c.name_ar
-       HAVING post_count > 0`,
-      category_ids
-    );
-    
-    if (categoriesWithPosts.length > 0) {
-      return res.status(409).json({
-        success: false,
-        error: 'Categories have posts',
-        message: 'Cannot delete categories that contain posts',
-        data: {
-          categories_with_posts: categoriesWithPosts
-        }
-      });
-    }
-    
-    // Delete categories
-    const result = await query(
-      `DELETE FROM categories WHERE id IN (${placeholders})`,
-      category_ids
-    );
-    
-    res.json({
-      success: true,
-      message: `${result.affectedRows} categories deleted successfully`,
-      data: {
-        affected_rows: result.affectedRows
-      }
-    });
-    
-  } catch (error) {
-    console.error('Error in bulk delete:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to delete categories',
-      message: error.message
-    });
-  }
-});
-
-// Update categories sort order (Admin only)
-router.patch('/reorder', auth, requireAdmin, async (req, res) => {
-  try {
-    const { categories } = req.body;
-    
-    if (!Array.isArray(categories) || categories.length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'Validation error',
-        message: 'categories must be a non-empty array with id and sort_order fields'
-      });
-    }
-    
-    // Validate each category object
-    const invalidCategory = categories.find(cat => !cat.id || typeof cat.sort_order !== 'number');
-    if (invalidCategory) {
-      return res.status(400).json({
-        success: false,
-        error: 'Validation error',
-        message: 'Each category must have id and sort_order fields'
-      });
-    }
-    
-    // Update sort orders
-    await Promise.all(categories.map(cat => 
-      query(
-        'UPDATE categories SET sort_order = ?, updated_at = NOW() WHERE id = ?',
-        [cat.sort_order, cat.id]
-      )
-    ));
-    
-    
-    res.json({
-      success: true,
-      message: 'Categories reordered successfully',
-      data: {
-        updated_count: categories.length
-      }
-    });
-    
-  } catch (error) {
-    console.error('Error reordering categories:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to reorder categories',
       message: error.message
     });
   }
