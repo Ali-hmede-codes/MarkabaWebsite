@@ -167,10 +167,17 @@ router.get('/', async (req, res) => {
     }
     
     if (tags) {
-      const tagArray = Array.isArray(tags) ? tags : tags.split(',');
-      const tagConditions = tagArray.map(() => 'JSON_CONTAINS(p.tags, ?)');
-      queryStr += ` AND (${tagConditions.join(' OR ')})`;
-      tagArray.forEach(tag => params.push(`"${tag.trim()}"`));
+      let tagArray = [];
+      if (Array.isArray(tags)) {
+        tagArray = tags.filter(tag => tag && tag.trim() !== '');
+      } else if (typeof tags === 'string' && tags.trim() !== '') {
+        tagArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+      }
+      if (tagArray.length > 0) {
+        const tagConditions = tagArray.map(() => 'JSON_CONTAINS(p.tags, ?)');
+        queryStr += ` AND (${tagConditions.join(' OR ')})`;
+        tagArray.forEach(tag => params.push(`"${tag}"`));
+      }
     }
     
     if (date_from) {
@@ -259,10 +266,17 @@ router.get('/', async (req, res) => {
     }
     
     if (tags) {
-      const tagArray = Array.isArray(tags) ? tags : tags.split(',');
-      const tagConditions = tagArray.map(() => 'JSON_CONTAINS(p.tags, ?)');
-      countQueryStr += ` AND (${tagConditions.join(' OR ')})`;
-      tagArray.forEach(tag => countParams.push(`"${tag.trim()}"`));
+      let tagArray = [];
+      if (Array.isArray(tags)) {
+        tagArray = tags.filter(tag => tag && tag.trim() !== '');
+      } else if (typeof tags === 'string' && tags.trim() !== '') {
+        tagArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+      }
+      if (tagArray.length > 0) {
+        const tagConditions = tagArray.map(() => 'JSON_CONTAINS(p.tags, ?)');
+        countQueryStr += ` AND (${tagConditions.join(' OR ')})`;
+        tagArray.forEach(tag => countParams.push(`"${tag}"`));
+      }
     }
     
     if (date_from) {
