@@ -9,8 +9,8 @@ router.get('/public', async (req, res) => {
   try {
     const settings = await query(
       `SELECT setting_key, 
-              COALESCE(setting_value_ar, setting_value) as setting_value, 
-              COALESCE(data_type, setting_type) as data_type
+              setting_value_ar as setting_value, 
+              setting_type as data_type
        FROM site_settings 
        WHERE is_editable = 1
        ORDER BY setting_key`
@@ -66,8 +66,8 @@ router.get('/', auth, requireAdmin, async (req, res) => {
     
     let queryStr = `
       SELECT setting_key, 
-             COALESCE(setting_value_ar, setting_value) as setting_value, 
-             COALESCE(data_type, setting_type) as data_type, 
+             setting_value_ar as setting_value, 
+             setting_type as data_type, 
              category, description, is_editable, created_at, updated_at
       FROM site_settings
       WHERE 1=1
@@ -152,8 +152,8 @@ router.get('/:key', auth, requireAdmin, async (req, res) => {
     
     const setting = await queryOne(
       `SELECT setting_key, 
-              COALESCE(setting_value_ar, setting_value) as setting_value, 
-              COALESCE(data_type, setting_type) as data_type, 
+              setting_value_ar as setting_value, 
+              setting_type as data_type, 
               category, description, is_editable, created_at, updated_at
        FROM site_settings
        WHERE setting_key = ?`,
@@ -293,7 +293,7 @@ router.put('/:key', auth, requireAdmin, async (req, res) => {
       // Update existing setting
       await query(
         `UPDATE site_settings 
-         SET setting_value_ar = ?, data_type = ?, category = ?, description = ?, 
+         SET setting_value_ar = ?, setting_type = ?, category = ?, description = ?, 
              description_ar = ?, is_public = ?, updated_at = NOW()
          WHERE setting_key = ?`,
         [processedValue, data_type, category, description, description_ar, is_public ? 1 : 0, key]
@@ -302,7 +302,7 @@ router.put('/:key', auth, requireAdmin, async (req, res) => {
       // Create new setting
       await query(
         `INSERT INTO site_settings 
-         (setting_key, setting_value_ar, data_type, category, description, description_ar, is_public, created_at, updated_at)
+         (setting_key, setting_value_ar, setting_type, category, description, description_ar, is_public, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
         [key, processedValue, data_type, category, description, description_ar, is_public ? 1 : 0]
       );
@@ -310,7 +310,7 @@ router.put('/:key', auth, requireAdmin, async (req, res) => {
     
     // Fetch the updated/created setting
     const updatedSetting = await queryOne(
-      `SELECT setting_key, setting_value_ar, data_type, category, description, 
+      `SELECT setting_key, setting_value_ar, setting_type, category, description, 
               description_ar, is_public, created_at, updated_at
        FROM site_settings
        WHERE setting_key = ?`,
@@ -319,7 +319,7 @@ router.put('/:key', auth, requireAdmin, async (req, res) => {
     
     // Convert value for response
     let responseValue = updatedSetting.setting_value_ar;
-    switch (updatedSetting.data_type) {
+    switch (updatedSetting.setting_type) {
       case 'boolean':
         responseValue = responseValue === '1' || responseValue === 'true';
         break;
@@ -445,7 +445,7 @@ router.patch('/bulk', auth, requireAdmin, async (req, res) => {
             // Update existing setting
             await query(
               `UPDATE site_settings 
-               SET setting_value_ar = ?, data_type = ?, category = ?, description = ?, 
+               SET setting_value_ar = ?, setting_type = ?, category = ?, description = ?, 
                    description_ar = ?, is_public = ?, updated_at = NOW()
                WHERE setting_key = ?`,
               [processedValue, data_type, category, description, description_ar, is_public ? 1 : 0, setting_key]
@@ -454,7 +454,7 @@ router.patch('/bulk', auth, requireAdmin, async (req, res) => {
             // Create new setting
             await query(
               `INSERT INTO site_settings 
-               (setting_key, setting_value_ar, data_type, category, description, description_ar, is_public, created_at, updated_at)
+               (setting_key, setting_value_ar, setting_type, category, description, description_ar, is_public, created_at, updated_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
               [setting_key, processedValue, data_type, category, description, description_ar, is_public ? 1 : 0]
             );
@@ -685,7 +685,7 @@ router.post('/reset', auth, requireAdmin, async (req, res) => {
     await Promise.all(settingsToInsert.map(setting => 
       query(
         `INSERT INTO site_settings 
-         (setting_key, setting_value, data_type, category, description, description_ar, is_public, created_at, updated_at)
+         (setting_key, setting_value, setting_type, category, description, description_ar, is_public, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
         [
           setting.key,

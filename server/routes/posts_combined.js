@@ -108,7 +108,7 @@ router.get('/', async (req, res) => {
 
     let queryStr = `
       SELECT p.*, 
-             COALESCE(c.name_ar, c.name) as category_name, 
+             c.name_ar as category_name, 
              c.slug as category_slug,
              u.username as author_name, u.display_name as author_display_name
       FROM posts p
@@ -341,8 +341,8 @@ router.get('/featured', async (req, res) => {
     
     let queryStr = `
       SELECT p.*, 
-             COALESCE(c.name_ar, c.name) as category_name, 
-             COALESCE(c.name_ar, c.name) as category_name_ar, 
+             c.name_ar as category_name, 
+             c.name_ar as category_name_ar, 
              c.slug as category_slug,
              u.username as author_name, u.display_name as author_display_name
       FROM posts p
@@ -407,8 +407,8 @@ router.get('/trending', async (req, res) => {
     
     let queryStr = `
       SELECT p.*, 
-             COALESCE(c.name_ar, c.name) as category_name, 
-             COALESCE(c.name_ar, c.name) as category_name_ar, 
+             c.name_ar as category_name, 
+             c.name_ar as category_name_ar, 
              c.slug as category_slug,
              u.username as author_name, u.display_name as author_display_name
       FROM posts p
@@ -473,8 +473,8 @@ router.get('/:id/:slug', async (req, res) => {
     // Get the main post
     const post = await queryOne(
       `SELECT p.*, 
-              COALESCE(c.name_ar, c.name) as category_name, 
-              COALESCE(c.name_ar, c.name) as category_name_ar, 
+              c.name_ar as category_name, 
+              c.name_ar as category_name_ar, 
               c.slug as category_slug, c.color as category_color,
               u.username as author_name, u.display_name as author_display_name,
               u.avatar as author_avatar, u.bio as author_bio
@@ -533,8 +533,8 @@ router.get('/:id/:slug', async (req, res) => {
       relatedPosts = await query(
         `SELECT p.id, p.title_ar, p.slug, p.excerpt_ar,
                 p.featured_image, p.views, p.reading_time, p.created_at,
-                COALESCE(c.name_ar, c.name) as category_name, 
-                COALESCE(c.name_ar, c.name) as category_name_ar, 
+                c.name_ar as category_name, 
+                c.name_ar as category_name_ar, 
                 c.slug as category_slug
          FROM posts p
          LEFT JOIN categories c ON p.category_id = c.id
