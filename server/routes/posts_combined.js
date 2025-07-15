@@ -118,6 +118,7 @@ router.get('/', async (req, res) => {
     `;
     
     const params = [];
+    const countParams = [];
     
     // Apply filters
     if (status && status !== 'all') {
@@ -202,7 +203,7 @@ router.get('/', async (req, res) => {
       params.push(parseInt(max_views, 10));
     }
     
-    // Count total posts - Build separate count query to avoid parameter mismatch
+    // Count total posts - Build separate count query with separate parameters
     let countQueryStr = `
       SELECT COUNT(*) as total
       FROM posts p
@@ -211,7 +212,7 @@ router.get('/', async (req, res) => {
       WHERE 1=1
     `;
     
-    // Apply the same filters to count query
+    // Apply the same filters to count query with separate parameters
     if (status && status !== 'all') {
       if (status === 'published') {
         countQueryStr += ' AND p.is_published = 1';
@@ -223,25 +224,32 @@ router.get('/', async (req, res) => {
     if (category) {
       if (Number.isNaN(Number(category))) {
         countQueryStr += ' AND c.slug = ?';
+        countParams.push(category);
       } else {
         countQueryStr += ' AND p.category_id = ?';
+        countParams.push(parseInt(category, 10));
       }
     }
     
     if (author) {
       if (Number.isNaN(Number(author))) {
         countQueryStr += ' AND u.username = ?';
+        countParams.push(author);
       } else {
         countQueryStr += ' AND p.author_id = ?';
+        countParams.push(parseInt(author, 10));
       }
     }
     
     if (featured !== undefined) {
       countQueryStr += ' AND p.is_featured = ?';
+      countParams.push(featured === 'true' || featured === '1' ? 1 : 0);
     }
     
     if (search) {
       countQueryStr += ' AND (p.title_ar LIKE ? OR p.content_ar LIKE ? OR p.excerpt_ar LIKE ?)';
+      const searchTerm = `%${search}%`;
+      countParams.push(searchTerm, searchTerm, searchTerm);
     }
     
     if (language) {
@@ -254,33 +262,40 @@ router.get('/', async (req, res) => {
       const tagArray = Array.isArray(tags) ? tags : tags.split(',');
       const tagConditions = tagArray.map(() => 'JSON_CONTAINS(p.tags, ?)');
       countQueryStr += ` AND (${tagConditions.join(' OR ')})`;
+      tagArray.forEach(tag => countParams.push(`"${tag.trim()}"`));
     }
     
     if (date_from) {
       countQueryStr += ' AND DATE(p.created_at) >= ?';
+      countParams.push(date_from);
     }
     
     if (date_to) {
       countQueryStr += ' AND DATE(p.created_at) <= ?';
+      countParams.push(date_to);
     }
     
     if (min_reading_time) {
       countQueryStr += ' AND p.reading_time >= ?';
+      countParams.push(parseInt(min_reading_time, 10));
     }
     
     if (max_reading_time) {
       countQueryStr += ' AND p.reading_time <= ?';
+      countParams.push(parseInt(max_reading_time, 10));
     }
     
     if (min_views) {
       countQueryStr += ' AND p.views >= ?';
+      countParams.push(parseInt(min_views, 10));
     }
     
     if (max_views) {
       countQueryStr += ' AND p.views <= ?';
+      countParams.push(parseInt(max_views, 10));
     }
     
-    const totalResult = await query(countQueryStr, params);
+    const totalResult = await query(countQueryStr, countParams);
     const total = totalResult[0].total;
     
     // Add ordering and pagination

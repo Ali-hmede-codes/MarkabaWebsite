@@ -9,8 +9,8 @@ router.get('/public', async (req, res) => {
   try {
     const settings = await query(
       `SELECT setting_key, 
-              setting_value_ar as setting_value, 
-              setting_type as data_type
+              COALESCE(setting_value_ar, setting_value) as setting_value, 
+              COALESCE(setting_type, data_type) as data_type
        FROM site_settings 
        WHERE is_editable = 1
        ORDER BY setting_key`
@@ -66,8 +66,8 @@ router.get('/', auth, requireAdmin, async (req, res) => {
     
     let queryStr = `
       SELECT setting_key, 
-             setting_value_ar as setting_value, 
-             setting_type as data_type, 
+             COALESCE(setting_value_ar, setting_value) as setting_value, 
+             COALESCE(setting_type, data_type) as data_type, 
              category, description, is_editable, created_at, updated_at
       FROM site_settings
       WHERE 1=1
@@ -152,8 +152,8 @@ router.get('/:key', auth, requireAdmin, async (req, res) => {
     
     const setting = await queryOne(
       `SELECT setting_key, 
-              setting_value_ar as setting_value, 
-              setting_type as data_type, 
+              COALESCE(setting_value_ar, setting_value) as setting_value, 
+              COALESCE(setting_type, data_type) as data_type, 
               category, description, is_editable, created_at, updated_at
        FROM site_settings
        WHERE setting_key = ?`,
