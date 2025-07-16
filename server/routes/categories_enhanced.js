@@ -78,7 +78,7 @@ router.get('/', async (req, res) => {
     
     const [totalResult, categories] = await Promise.all([
       query(countQuery, countParams),
-      query(`${baseQuery} ORDER BY c.sort_order ASC, c.name_ar ASC LIMIT ? OFFSET ?`, [...params, parseInt(limit, 10), parseInt(offset, 10)])
+      query(`${baseQuery} ORDER BY c.sort_order ASC, c.name_ar ASC LIMIT ? OFFSET ?`, [...params, limit, offset])
     ]);
     
     const total = totalResult[0].total;
