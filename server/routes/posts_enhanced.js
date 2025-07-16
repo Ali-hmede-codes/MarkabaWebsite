@@ -229,10 +229,9 @@ router.get('/', async (req, res) => {
     const total = totalResult[0].total;
     
     // Get posts with pagination
-    const postsQuery = `${baseQuery} ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
-    const postsParams = [...params, parseInt(limit, 10), parseInt(offset, 10)];
+    const postsQuery = `${baseQuery} ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ${parseInt(limit, 10)} OFFSET ${parseInt(offset, 10)}`;
     
-    const posts = await query(postsQuery, postsParams);
+    const posts = await query(postsQuery, params);
     
     // Process posts
     const processedPosts = posts.map(post => ({

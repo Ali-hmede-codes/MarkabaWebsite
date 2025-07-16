@@ -411,8 +411,7 @@ router.get('/', auth, requireAdminOrEditor, async (req, res) => {
     const total = totalResult[0].total;
     
     // Add ordering and pagination
-    queryStr += ` ORDER BY m.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
-    params.push(parseInt(limit, 10), parseInt(offset, 10));
+    queryStr += ` ORDER BY m.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ${parseInt(limit, 10)} OFFSET ${parseInt(offset, 10)}`;
     
     const files = await query(queryStr, params);
     

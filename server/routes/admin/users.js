@@ -67,7 +67,7 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
       ${whereClause}
       GROUP BY u.id
       ORDER BY u.${validSortBy} ${validSortOrder}
-      LIMIT ? OFFSET ?
+      LIMIT ${parseInt(limit, 10)} OFFSET ${offset}
     `;
     
     const countQuery = `
@@ -77,7 +77,7 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
     `;
     
     // Execute queries
-    const [users] = await db.execute(usersQuery, [...queryParams, parseInt(limit, 10), offset]);
+    const [users] = await db.execute(usersQuery, queryParams);
     const [countResult] = await db.execute(countQuery, queryParams);
     
     const total = countResult[0].total;

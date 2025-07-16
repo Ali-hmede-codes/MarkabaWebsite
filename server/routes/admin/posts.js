@@ -129,7 +129,7 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
       LEFT JOIN categories c ON p.category_id = c.id
       ${whereClause}
       ${orderByClause}
-      LIMIT ? OFFSET ?
+      LIMIT ${parseInt(limit, 10)} OFFSET ${offset}
     `;
     
     const countQuery = `
@@ -141,7 +141,7 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
     `;
     
     // Execute queries
-    const [posts] = await db.execute(postsQuery, [...queryParams, parseInt(limit, 10), offset]);
+    const [posts] = await db.execute(postsQuery, queryParams);
     const [countResult] = await db.execute(countQuery, queryParams);
     
     const total = countResult[0].total;
