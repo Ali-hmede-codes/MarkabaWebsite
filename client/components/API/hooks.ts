@@ -123,7 +123,7 @@ export function useWeather() {
 }
 
 export function useBreakingNews() {
-  return useAPI('/breaking-news', {
+  return useAPI('/breaking-news/active', {
     immediate: true,
   });
 }

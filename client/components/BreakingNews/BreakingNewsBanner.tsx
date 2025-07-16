@@ -28,7 +28,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   useEffect(() => {
     const fetchBreakingNews = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000/api/v2'}/breaking-news?active=true`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000/api/v2'}/breaking-news/active`);
         if (!response.ok) {
           throw new Error('Failed to fetch breaking news');
         }
