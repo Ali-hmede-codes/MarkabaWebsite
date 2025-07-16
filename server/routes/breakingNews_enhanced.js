@@ -1,7 +1,7 @@
 const express = require('express');
 const { query, queryOne } = require('../db');
 const { validate, breakingNewsSchema } = require('../middlewares/validation');
-const { auth, requireAdmin, requireAdminOrEditor } = require('../middlewares/auth');
+const { auth, optionalAuth, requireAdmin, requireAdminOrEditor } = require('../middlewares/auth');
 
 const router = express.Router();
 
@@ -184,9 +184,49 @@ router.get('/:id/:slug', async (req, res) => {
   }
 });
 
-// Get all breaking news with enhanced filtering (Admin/Editor only)
-router.get('/', auth, requireAdminOrEditor, async (req, res) => {
+// Get all breaking news with enhanced filtering (Admin/Editor only) or active publicly if ?active=true
+router.get('/', optionalAuth, async (req, res) => {
   try {
+    if (req.query.active === 'true') {
+      const limit = Math.min(parseInt(req.query.limit, 10) || 5, 5);
+      const { language, include_content = 'false' } = req.query;
+      let queryStr = `
+        SELECT id, title_ar as title, ${include_content === 'true' ? 'content_ar as content,' : ''}
+               slug, priority, views, created_at, updated_at
+        FROM breaking_news 
+        WHERE is_active = 1
+      `;
+      const params = [];
+      if (language) {
+        if (language === 'ar') {
+          queryStr += ' AND (title_ar IS NOT NULL AND title_ar != "")';
+        }
+      }
+      queryStr += ' ORDER BY priority DESC, created_at DESC LIMIT ?';
+      params.push(limit);
+      const breakingNews = await query(queryStr, params);
+      const processedNews = breakingNews.map(news => ({
+        ...news,
+        is_active: true,
+        url: `/breaking/${news.id}/${news.slug}`
+      }));
+      res.json({
+        success: true,
+        data: processedNews,
+        meta: {
+          total: processedNews.length,
+          limit,
+          language: language || 'all'
+        }
+      });
+      return;
+    }
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Access denied. No token provided.' });
+    }
+    if (req.user.role !== 'admin' && req.user.role !== 'editor') {
+      return res.status(403).json({ success: false, message: 'Access denied. Insufficient privileges.' });
+    }
     const page = parseInt(req.query.page, 10) || 1;
     const limit = Math.min(parseInt(req.query.limit, 10) || 10, 50);
     const offset = (page - 1) * limit;
