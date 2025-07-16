@@ -35,6 +35,10 @@ router.get('/', async (req, res) => {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = Math.min(parseInt(req.query.limit, 10) || 20, 50);
     const offset = (page - 1) * limit;
+    
+    // Ensure parameters are proper integers for MySQL
+    const limitInt = Number(limit);
+    const offsetInt = Number(offset);
     const search = req.query.search || '';
     const includePostCount = req.query.include_post_count !== 'false';
     const includeEmpty = req.query.include_empty !== 'false';
@@ -78,7 +82,7 @@ router.get('/', async (req, res) => {
     
     const [totalResult, categories] = await Promise.all([
       query(countQuery, countParams),
-      query(`${baseQuery} ORDER BY c.sort_order ASC, c.name_ar ASC LIMIT ? OFFSET ?`, [...params, parseInt(limit, 10), parseInt(offset, 10)])
+      query(`${baseQuery} ORDER BY c.sort_order ASC, c.name_ar ASC LIMIT ? OFFSET ?`, [...params, limitInt, offsetInt])
     ]);
     
     const total = totalResult[0].total;
@@ -93,9 +97,9 @@ router.get('/', async (req, res) => {
         })),
         pagination: {
           page,
-          limit,
+          limit: limitInt,
           total,
-          pages: Math.ceil(total / limit)
+          pages: Math.ceil(total / limitInt)
         }
       }
     });
