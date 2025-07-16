@@ -230,7 +230,7 @@ router.get('/', async (req, res) => {
     
     // Get posts with pagination
     const postsQuery = `${baseQuery} ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
-    const postsParams = [...params, limit, offset];
+    const postsParams = [...params, parseInt(limit, 10), parseInt(offset, 10)];
     
     const posts = await query(postsQuery, postsParams);
     

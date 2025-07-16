@@ -78,7 +78,7 @@ router.get('/', async (req, res) => {
     
     const [totalResult, categories] = await Promise.all([
       query(countQuery, countParams),
-      query(`${baseQuery} ORDER BY c.sort_order ASC, c.name_ar ASC LIMIT ? OFFSET ?`, [...params, limit, offset])
+      query(`${baseQuery} ORDER BY c.sort_order ASC, c.name_ar ASC LIMIT ? OFFSET ?`, [...params, parseInt(limit, 10), parseInt(offset, 10)])
     ]);
     
     const total = totalResult[0].total;
@@ -151,7 +151,7 @@ router.get('/:slug', async (req, res) => {
          WHERE p.category_id = ? AND p.is_published = 1
          ORDER BY p.created_at DESC
          LIMIT ? OFFSET ?`,
-        [category.id, postsLimit, postsOffset]
+        [category.id, parseInt(postsLimit, 10), parseInt(postsOffset, 10)]
       );
       
       result.posts = posts.map(post => ({

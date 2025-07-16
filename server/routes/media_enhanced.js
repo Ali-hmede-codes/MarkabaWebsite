@@ -7,6 +7,17 @@ const { auth, requireAdminOrEditor } = require('../middlewares/auth');
 
 const router = express.Router();
 
+// Helper function to format file size
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return `${parseFloat((bytes / k**i).toFixed(2))} ${sizes[i]}`;
+}
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -15,7 +26,7 @@ const storage = multer.diskStorage({
       let uploadPath;
       
       switch (uploadType) {
-        case 'post':
+        case 'post': {
           const postId = req.body.post_id;
           if (postId) {
             uploadPath = path.join(process.cwd(), 'uploads', 'posts', postId.toString(), 'images');
@@ -23,6 +34,7 @@ const storage = multer.diskStorage({
             uploadPath = path.join(process.cwd(), 'uploads', 'posts', 'temp');
           }
           break;
+        }
         case 'breaking_news':
           uploadPath = path.join(process.cwd(), 'uploads', 'breaking_news');
           break;
@@ -45,7 +57,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     // Generate unique filename
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = `${Date.now()  }-${  Math.round(Math.random() * 1E9)}`;
     const ext = path.extname(file.originalname);
     const name = path.basename(file.originalname, ext)
       .replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '-')
@@ -135,7 +147,7 @@ router.post('/upload', auth, requireAdminOrEditor, upload.single('file'), async 
         req.file.originalname,
         req.file.path,
         fileUrl,
-        fileInfo?.size || 0,
+        fileInfo ? fileInfo.size : 0,
         req.file.mimetype,
         upload_type,
         post_id || null,
@@ -205,7 +217,7 @@ router.post('/upload/multiple', auth, requireAdminOrEditor, upload.array('files'
     const uploadedFiles = [];
     const errors = [];
     
-    for (const file of req.files) {
+    const fileProcessingPromises = req.files.map(async (file) => {
       try {
         const fileInfo = await getFileInfo(file.path);
         const fileUrl = generateFileUrl(file.path);
@@ -221,7 +233,7 @@ router.post('/upload/multiple', auth, requireAdminOrEditor, upload.array('files'
             file.originalname,
             file.path,
             fileUrl,
-            fileInfo?.size || 0,
+            fileInfo ? fileInfo.size : 0,
             file.mimetype,
             upload_type,
             post_id || null,
@@ -240,17 +252,16 @@ router.post('/upload/multiple', auth, requireAdminOrEditor, upload.array('files'
           [mediaId]
         );
         
-        uploadedFiles.push({
-          ...media,
-          file_size_formatted: formatFileSize(media.file_size)
-        });
+        return {
+          success: true,
+          data: {
+            ...media,
+            file_size_formatted: formatFileSize(media.file_size)
+          }
+        };
         
       } catch (error) {
         console.error(`Error processing file ${file.originalname}:`, error);
-        errors.push({
-          filename: file.originalname,
-          error: error.message
-        });
         
         // Clean up file
         try {
@@ -258,8 +269,27 @@ router.post('/upload/multiple', auth, requireAdminOrEditor, upload.array('files'
         } catch (unlinkError) {
           console.error('Error cleaning up file:', unlinkError);
         }
+        
+        return {
+          success: false,
+          filename: file.originalname,
+          error: error.message
+        };
       }
-    }
+    });
+    
+    const results = await Promise.all(fileProcessingPromises);
+    
+    results.forEach(result => {
+      if (result.success) {
+        uploadedFiles.push(result.data);
+      } else {
+        errors.push({
+          filename: result.filename,
+          error: result.error
+        });
+      }
+    });
     
     res.status(uploadedFiles.length > 0 ? 201 : 400).json({
       success: uploadedFiles.length > 0,
@@ -275,13 +305,14 @@ router.post('/upload/multiple', auth, requireAdminOrEditor, upload.array('files'
     
     // Clean up all files
     if (req.files) {
-      for (const file of req.files) {
+      const cleanupPromises = req.files.map(async (file) => {
         try {
           await fs.unlink(file.path);
         } catch (unlinkError) {
           console.error('Error cleaning up file:', unlinkError);
         }
-      }
+      });
+      await Promise.all(cleanupPromises);
     }
     
     res.status(500).json({
@@ -295,8 +326,8 @@ router.post('/upload/multiple', auth, requireAdminOrEditor, upload.array('files'
 // Get media files with filtering
 router.get('/', auth, requireAdminOrEditor, async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = Math.min(parseInt(req.query.limit) || 20, 50);
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = Math.min(parseInt(req.query.limit, 10) || 20, 50);
     const offset = (page - 1) * limit;
     
     const {
@@ -335,7 +366,7 @@ router.get('/', auth, requireAdminOrEditor, async (req, res) => {
     
     if (post_id) {
       queryStr += ' AND m.post_id = ?';
-      params.push(parseInt(post_id));
+      params.push(parseInt(post_id, 10));
     }
     
     if (mime_type) {
@@ -357,7 +388,7 @@ router.get('/', auth, requireAdminOrEditor, async (req, res) => {
     
     if (uploaded_by) {
       queryStr += ' AND m.uploaded_by = ?';
-      params.push(parseInt(uploaded_by));
+      params.push(parseInt(uploaded_by, 10));
     }
     
     if (date_from) {
@@ -381,7 +412,7 @@ router.get('/', auth, requireAdminOrEditor, async (req, res) => {
     
     // Add ordering and pagination
     queryStr += ` ORDER BY m.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
-    params.push(limit, offset);
+    params.push(parseInt(limit, 10), parseInt(offset, 10));
     
     const files = await query(queryStr, params);
     
@@ -430,7 +461,7 @@ router.get('/', auth, requireAdminOrEditor, async (req, res) => {
 // Get single media file
 router.get('/:id', auth, requireAdminOrEditor, async (req, res) => {
   try {
-    const mediaId = parseInt(req.params.id);
+    const mediaId = parseInt(req.params.id, 10);
     
     const media = await queryOne(
       `SELECT m.*, u.username as uploaded_by_username, u.display_name as uploaded_by_display_name
@@ -475,7 +506,7 @@ router.get('/:id', auth, requireAdminOrEditor, async (req, res) => {
 // Update media file metadata
 router.put('/:id', auth, requireAdminOrEditor, async (req, res) => {
   try {
-    const mediaId = parseInt(req.params.id);
+    const mediaId = parseInt(req.params.id, 10);
     
     // Check if media exists
     const existingMedia = await queryOne('SELECT * FROM media WHERE id = ?', [mediaId]);
@@ -561,7 +592,7 @@ router.put('/:id', auth, requireAdminOrEditor, async (req, res) => {
 // Delete media file
 router.delete('/:id', auth, requireAdminOrEditor, async (req, res) => {
   try {
-    const mediaId = parseInt(req.params.id);
+    const mediaId = parseInt(req.params.id, 10);
     
     // Get media file info
     const media = await queryOne('SELECT * FROM media WHERE id = ?', [mediaId]);
@@ -675,16 +706,17 @@ router.delete('/bulk', auth, requireAdminOrEditor, async (req, res) => {
     );
     
     // Try to delete physical files
-    const deletionResults = [];
-    for (const media of mediaFiles) {
+    const deletionPromises = mediaFiles.map(async (media) => {
       try {
         await fs.unlink(media.file_path);
-        deletionResults.push({ id: media.id, filename: media.filename, deleted: true });
+        return { id: media.id, filename: media.filename, deleted: true };
       } catch (fileError) {
         console.warn(`Could not delete physical file ${media.filename}:`, fileError.message);
-        deletionResults.push({ id: media.id, filename: media.filename, deleted: false, error: fileError.message });
+        return { id: media.id, filename: media.filename, deleted: false, error: fileError.message };
       }
-    }
+    });
+    
+    const deletionResults = await Promise.all(deletionPromises);
     
     res.json({
       success: true,
@@ -766,16 +798,5 @@ router.get('/stats/overview', auth, requireAdminOrEditor, async (req, res) => {
     });
   }
 });
-
-// Helper function to format file size
-function formatFileSize(bytes) {
-  if (bytes === 0) return '0 Bytes';
-  
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
 
 module.exports = router;

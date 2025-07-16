@@ -274,7 +274,7 @@ router.get('/', auth, requireAdminOrEditor, async (req, res) => {
     
     // Add ordering and pagination
     queryStr += ` ORDER BY ${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
-    params.push(limit, offset);
+    params.push(parseInt(limit, 10), parseInt(offset, 10));
     
     const breakingNews = await query(queryStr, params);
     

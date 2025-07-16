@@ -315,7 +315,7 @@ router.get('/', async (req, res) => {
     
     // Add ordering and pagination
     queryStr += ` ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
-    params.push(limit, offset);
+    params.push(parseInt(limit, 10), parseInt(offset, 10));
     
     const posts = await query(queryStr, params);
     

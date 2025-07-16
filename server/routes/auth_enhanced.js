@@ -12,8 +12,8 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || '30d';
-const MAX_LOGIN_ATTEMPTS = parseInt(process.env.MAX_LOGIN_ATTEMPTS) || 3; // Reduced to 3 for admin
-const LOCKOUT_TIME = parseInt(process.env.LOCKOUT_TIME) || 15 * 60 * 1000; // 15 minutes
+const MAX_LOGIN_ATTEMPTS = parseInt(process.env.MAX_LOGIN_ATTEMPTS, 10) || 3; // Reduced to 3 for admin
+const LOCKOUT_TIME = parseInt(process.env.LOCKOUT_TIME, 10) || 15 * 60 * 1000; // 15 minutes
 const ADMIN_MIN_PASSWORD_LENGTH = 8;
 const ADMIN_REQUIRE_COMPLEX_PASSWORD = true;
 

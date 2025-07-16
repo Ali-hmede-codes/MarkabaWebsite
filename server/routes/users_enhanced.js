@@ -8,8 +8,8 @@ const router = express.Router();
 // Get all users with filtering (Admin only)
 router.get('/', auth, requireAdmin, async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = Math.min(parseInt(req.query.limit) || 20, 50);
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = Math.min(parseInt(req.query.limit, 10) || 20, 50);
     const offset = (page - 1) * limit;
     
     const {
@@ -80,7 +80,7 @@ router.get('/', auth, requireAdmin, async (req, res) => {
     
     // Add ordering and pagination
     queryStr += ` ORDER BY u.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
-    params.push(limit, offset);
+    params.push(parseInt(limit, 10), parseInt(offset, 10));
     
     const users = await query(queryStr, params);
     
@@ -131,7 +131,7 @@ router.get('/', auth, requireAdmin, async (req, res) => {
 // Get single user by ID (Admin only)
 router.get('/:id', auth, requireAdmin, async (req, res) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = parseInt(req.params.id, 10);
     
     const user = await queryOne(
       `SELECT u.id, u.username, u.email, u.display_name, u.role, u.is_active, 
@@ -290,7 +290,7 @@ router.post('/', auth, requireAdmin, async (req, res) => {
 // Update user (Admin only)
 router.put('/:id', auth, requireAdmin, async (req, res) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = parseInt(req.params.id, 10);
     
     // Check if user exists
     const existingUser = await queryOne('SELECT * FROM users WHERE id = ?', [userId]);
@@ -433,7 +433,7 @@ router.put('/:id', auth, requireAdmin, async (req, res) => {
 // Delete user (Admin only)
 router.delete('/:id', auth, requireAdmin, async (req, res) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = parseInt(req.params.id, 10);
     
     // Prevent admin from deleting themselves
     if (userId === req.user.id) {
@@ -489,7 +489,7 @@ router.delete('/:id', auth, requireAdmin, async (req, res) => {
 // Toggle user active status (Admin only)
 router.patch('/:id/toggle-status', auth, requireAdmin, async (req, res) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = parseInt(req.params.id, 10);
     
     // Prevent admin from deactivating themselves
     if (userId === req.user.id) {
@@ -540,7 +540,7 @@ router.patch('/:id/toggle-status', auth, requireAdmin, async (req, res) => {
 // Unlock user account (Admin only)
 router.patch('/:id/unlock', auth, requireAdmin, async (req, res) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = parseInt(req.params.id, 10);
     
     // Check if user exists
     const user = await queryOne('SELECT id, account_locked_until FROM users WHERE id = ?', [userId]);
@@ -579,7 +579,7 @@ router.patch('/:id/unlock', auth, requireAdmin, async (req, res) => {
 // Reset user password (Admin only)
 router.patch('/:id/reset-password', auth, requireAdmin, async (req, res) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = parseInt(req.params.id, 10);
     const { new_password } = req.body;
     
     if (!new_password) {
