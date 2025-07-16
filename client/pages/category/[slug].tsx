@@ -12,7 +12,7 @@ const CategoryPage: React.FC = () => {
   const { slug } = router.query;
   const { content } = useContent();
   const { data: categories } = useCategories();
-  const { data: posts, loading, error } = usePosts();
+  const { data: posts, loading, error } = usePosts({ category: slug });
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,19 +21,18 @@ const CategoryPage: React.FC = () => {
   // Find current category and filter posts
   useEffect(() => {
     if (categories && slug) {
-      const categoriesArray = Array.isArray(categories) ? categories : (categories as any)?.data || [];
+      const categoriesArray = categories?.categories || [];
       const category = categoriesArray.find((cat: Category) => cat.slug === slug);
       setCurrentCategory(category || null);
     }
   }, [categories, slug]);
 
   useEffect(() => {
-    if (posts && currentCategory) {
-      const postsArray = Array.isArray(posts) ? posts : (posts as any)?.data || [];
-      const filtered = postsArray.filter((post: Post) => post.category_id === currentCategory.id);
-      setFilteredPosts(filtered);
+    if (posts) {
+      const postsArray = posts?.posts || [];
+      setFilteredPosts(postsArray);
     }
-  }, [posts, currentCategory]);
+  }, [posts]);
 
   // Pagination
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
@@ -115,17 +114,17 @@ const CategoryPage: React.FC = () => {
         </div>
 
         {/* Category Header */}
-        <div className="bg-white">
-          <div className="container mx-auto px-4 py-8">
+        <div className="bg-gray-100 py-8">
+          <div className="container mx-auto px-4">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-800 mb-4">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 أخبار {categoryName}
               </h1>
-              <p className="text-gray-600 max-w-2xl mx-auto">
+              <p className="text-gray-700 max-w-2xl mx-auto mb-4">
                 {pageDescription}
               </p>
-              <div className="mt-4 text-sm text-gray-500">
-                {filteredPosts.length} مقال
+              <div className="text-sm text-gray-600 bg-white px-4 py-1 rounded inline-block">
+                {filteredPosts.length} مقال متاح
               </div>
             </div>
           </div>
@@ -158,14 +157,14 @@ const CategoryPage: React.FC = () => {
             <>
               <div className="featured-grid">
                 {currentPosts.map((post) => (
-                  <article key={post.id} className="news-card">
+                  <article key={post.id} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col">
                     {/* Post Image */}
                     {post.featured_image && (
-                      <div className="news-card-image">
+                      <div className="w-full h-48 relative">
                         <img
                           src={post.featured_image}
-                          alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          alt={post.title_ar || post.title}
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     )}
@@ -180,9 +179,9 @@ const CategoryPage: React.FC = () => {
                       </div>
 
                       {/* Post Title */}
-                      <h2 className="news-card-title">
-                        <Link href={`/post/${post.slug}`} className="hover:text-blue-600 transition-colors">
-                          {post.title}
+                      <h2 className="text-xl font-bold text-gray-900 mb-2">
+                        <Link href={`/post/${post.slug}`} className="hover:text-blue-700 transition-colors">
+                          {post.title_ar || post.title}
                         </Link>
                       </h2>
 

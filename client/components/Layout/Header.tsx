@@ -50,7 +50,7 @@ const Header: React.FC = () => {
   };
   
   // Get logo from database settings
-  const logoUrl = getSetting('site_logo', 'ar') || '/images/logo.png';
+  const logoUrl = getSetting('site_logo', 'ar') || '/images/logo_new.png';
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,18 +137,18 @@ const Header: React.FC = () => {
             {/* Logo and Site Info */}
             <div className="flex items-center space-x-3 lg:space-x-4 rtl:space-x-reverse">
               <div className="relative group">
-                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+                <div className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center"> {/* Adjust h- and w- values here to change logo size easily */}
                   {logoUrl ? (
                     <Image
-                      src={logoUrl}
-                      alt={content?.site?.name || 'Logo'}
-                      width={64}
-                      height={64}
-                      className="w-full h-full object-cover rounded-xl transition-transform duration-300 group-hover:scale-110"
-                      priority
-                    />
+                          src={logoUrl}
+                          alt={content?.site?.name || 'Logo'}
+                          layout="fill"
+                          objectFit="contain"
+                          className="transition-transform duration-300 group-hover:scale-110"
+                          priority
+                        />
                   ) : (
-                    <span className="text-white font-bold text-lg lg:text-2xl">م</span>
+                    <span className="text-blue-800 font-bold text-base lg:text-lg">م</span>
                   )}
                 </div>
                 <div className="absolute -inset-1 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10"></div>
