@@ -160,7 +160,7 @@ const CategoryPage: React.FC = () => {
                   <article key={post.id} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col">
                     {/* Post Image */}
                     {post.featured_image && (
-                      <div className="w-full h-48 relative">
+                      <div className="w-full aspect-[4/3] relative">
                         <img
                           src={post.featured_image}
                           alt={post.title_ar || post.title}
