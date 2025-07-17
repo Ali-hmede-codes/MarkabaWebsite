@@ -73,12 +73,13 @@ export function useAPI<T = unknown>(endpoint: string, options?: {
     }
   }, [endpoint, options]);
 
+  const optionsKey = JSON.stringify(options);
+
   useEffect(() => {
-    if (!hasInitialized && options?.immediate !== false && options?.method !== 'POST') {
-      setHasInitialized(true);
+    if (options?.immediate !== false && options?.method !== 'POST') {
       execute();
     }
-  }, [execute, options?.immediate, options?.method, hasInitialized]);
+  }, [execute, optionsKey]);
 
   return {
     data,
