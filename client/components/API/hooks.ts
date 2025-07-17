@@ -44,6 +44,8 @@ export function useAPI<T = unknown>(endpoint: string, options?: {
   const [error, setError] = useState<string | null>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
 
+  const optionsKey = JSON.stringify(options);
+
   const execute = useCallback(async (customData?: Record<string, unknown>, customParams?: Record<string, unknown>) => {
     setLoading(true);
     setError(null);
@@ -71,9 +73,7 @@ export function useAPI<T = unknown>(endpoint: string, options?: {
     } finally {
       setLoading(false);
     }
-  }, [endpoint, options]);
-
-  const optionsKey = JSON.stringify(options);
+  }, [endpoint, optionsKey]);
 
   useEffect(() => {
     if (options?.immediate !== false && options?.method !== 'POST') {
