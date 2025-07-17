@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap');
 
 /* Import Enhanced Responsive Styles */
 @import './responsive.css';
@@ -20,7 +20,7 @@
   
   /* RTL support */
   [dir="rtl"] {
-    font-family: 'Noto Sans Arabic', Arial, sans-serif;
+    font-family: 'Amiri', 'Noto Sans Arabic', Arial, sans-serif;
   }
   
   /* Custom scrollbar */

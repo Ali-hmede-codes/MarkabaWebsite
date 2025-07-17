@@ -3,6 +3,7 @@ import React from 'react';
 import { useAPI } from '../../components/API/hooks';
 import Image from 'next/image';
 import Head from 'next/head';
+import Layout from '../../components/Layout/Layout';
 
 type Post = {
   id: number;
@@ -32,14 +33,10 @@ const SinglePostPage: React.FC = () => {
   if (error || !post) return <div className="text-center py-10 text-red-500">المنشور غير موجود</div>;
 
   return (
-    <>
-      <Head>
-        <title>{post.title_ar}</title>
-        <meta name="description" content={post.excerpt_ar} />
-      </Head>
-      <article className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">{post.title_ar}</h1>
-        <div className="flex items-center mb-6 text-gray-600">
+    <Layout title={post.title_ar} description={post.excerpt_ar}>
+      <article className="max-w-4xl mx-auto px-4 py-8 bg-white text-blue-900">
+        <h1 className="text-3xl font-bold mb-4 text-blue-800">{post.title_ar}</h1>
+        <div className="flex items-center mb-6 text-blue-600">
           <span className="mr-4">{post.author_name}</span>
           <span className="mr-4">{new Date(post.created_at).toLocaleDateString('ar-EG')}</span>
           <span className="mr-4">{post.reading_time} دقائق قراءة</span>
@@ -50,12 +47,12 @@ const SinglePostPage: React.FC = () => {
             <Image src={post.featured_image} alt={post.title_ar} fill className="object-cover rounded-lg" />
           </div>
         )}
-        <div className="prose max-w-none mb-8" dangerouslySetInnerHTML={{ __html: post.content_ar }} />
-        <div className="border-t pt-4">
-          <span className="text-gray-500">التصنيف: {post.category_name_ar}</span>
+        <div className="prose max-w-none mb-8 text-gray-800" dangerouslySetInnerHTML={{ __html: post.content_ar }} />
+        <div className="border-t pt-4 border-blue-200">
+          <span className="text-blue-500">التصنيف: {post.category_name_ar}</span>
         </div>
       </article>
-    </>
+    </Layout>
   );
 };
 

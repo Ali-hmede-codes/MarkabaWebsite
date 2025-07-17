@@ -112,7 +112,7 @@ const HomePage: React.FC = () => {
       title={content?.site?.name || 'News Site'}
       description={content?.site?.description || 'Latest News and Updates'}
     >
-      <div className="bg-gray-50 min-h-screen" dir="rtl">
+      <div className="bg-white min-h-screen" dir="rtl">
         {/* Breaking News Ticker */}
         <section className="bg-red-600 text-white py-2 overflow-hidden relative">
           <div className="flex items-center">
