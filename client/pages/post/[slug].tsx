@@ -31,11 +31,17 @@ const SinglePostPage: React.FC = () => {
     }
   }, [router.isReady, slug]);
 
-  const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', { 
+  const { data: response, loading, error, refetch } = useAPI<{ posts: Post[]; total: number }>('/posts', { 
     params: { slug, limit: 1, page: 1 },
     immediate: enabled
   });
   const post = response?.posts?.[0];
+
+  useEffect(() => {
+    if (enabled && slug) {
+      refetch();
+    }
+  }, [slug, enabled, refetch]);
 
   if (!slug) return <div className="text-center py-10">جاري التحميل...</div>;
 
