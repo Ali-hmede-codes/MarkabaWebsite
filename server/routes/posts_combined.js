@@ -210,6 +210,11 @@ router.get('/', async (req, res) => {
       queryStr += ' AND p.views <= ?';
       params.push(parseInt(max_views, 10));
     }
+
+    if (req.query.slug) {
+      queryStr += ' AND p.slug = ?';
+      params.push(req.query.slug);
+    }
     
     // Count total posts - Build separate count query with separate parameters
     let countQueryStr = `
@@ -308,6 +313,11 @@ router.get('/', async (req, res) => {
     if (max_views) {
       countQueryStr += ' AND p.views <= ?';
       countParams.push(parseInt(max_views, 10));
+    }
+
+    if (req.query.slug) {
+      countQueryStr += ' AND p.slug = ?';
+      countParams.push(req.query.slug);
     }
     
     const totalResult = await query(countQueryStr, countParams);
