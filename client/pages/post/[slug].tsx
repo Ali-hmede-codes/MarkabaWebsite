@@ -23,25 +23,16 @@ const SinglePostPage: React.FC = () => {
   const { slug: slugParam } = router.query;
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
 
-  const [enabled, setEnabled] = useState(false);
-
-  useEffect(() => {
-    if (router.isReady && slug) {
-      setEnabled(true);
-    }
-  }, [router.isReady, slug]);
-
   const { data: response, loading, error, refetch } = useAPI<{ posts: Post[]; total: number }>('/posts', { 
-    params: { slug, limit: 1, page: 1 },
-    immediate: enabled
+    immediate: false
   });
   const post = response?.posts?.[0];
 
   useEffect(() => {
-    if (enabled && slug) {
-      refetch();
+    if (router.isReady && slug) {
+      refetch(undefined, { slug, limit: 1, page: 1 });
     }
-  }, [slug, enabled, refetch]);
+  }, [router.isReady, slug, refetch]);
 
   if (!slug) return <div className="text-center py-10">جاري التحميل...</div>;
 
