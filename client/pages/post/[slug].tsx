@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAPI } from '../../components/API/hooks';
 import Image from 'next/image';
 import Head from 'next/head';
@@ -23,7 +23,18 @@ const SinglePostPage: React.FC = () => {
   const { slug: slugParam } = router.query;
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
 
-  const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', { params: { slug, limit: 1, page: 1 } });
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    if (router.isReady && slug) {
+      setEnabled(true);
+    }
+  }, [router.isReady, slug]);
+
+  const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', { 
+    params: { slug, limit: 1, page: 1 },
+    immediate: enabled
+  });
   const post = response?.posts?.[0];
 
   if (!slug) return <div className="text-center py-10">جاري التحميل...</div>;
