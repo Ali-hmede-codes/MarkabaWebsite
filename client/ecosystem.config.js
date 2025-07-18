@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'newsmarkaba-frontend',
-      script: './node_modules/next/dist/bin/next',
-      args: 'start',
+      script: 'npm',
+      args: 'run dev',
       instances: 'max',
       exec_mode: 'cluster',
       env: {
