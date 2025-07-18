@@ -70,9 +70,9 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   const displayedNews: NewsItem[] = combineNews ? [...lastNews, ...breakingNews] : lastNews;
 
   return (
-    <div className={`bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl shadow-lg ${className}`}>
+    <div className={`bg-white p-6 rounded-xl shadow-md ${className}`}>
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-2xl font-bold text-indigo-800">آخر الأخبار</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">آخر الأخبار</h2>
         <div className="flex items-center">
           <span className="mr-2 text-gray-700">العاجل</span>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -87,11 +87,11 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
           </label>
         </div>
       </div>
-      <div className="overflow-x-auto flex space-x-6 pb-4 snap-x snap-mandatory">
+      <div className="overflow-x-auto flex space-x-4 pb-4 snap-x snap-mandatory">
         {displayedNews.map((news, index) => (
-          <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className={`min-w-[320px] p-6 border border-gray-200 rounded-xl shadow-md ${news.isBreaking ? 'bg-red-50 hover:bg-red-100' : 'bg-white hover:bg-gray-50'} transition-colors duration-200 snap-center`}>
+          <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className={`min-w-[300px] p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ${news.isBreaking ? 'bg-red-50' : 'bg-gray-50'}`}> 
             <h3 className="font-semibold text-lg text-gray-900 mb-2">{news.title_ar || news.title}</h3>
-            <p className="text-gray-700 mb-3">{news.content_ar || news.content}</p>
+            <p className="text-gray-600 text-sm">{news.content_ar || news.content}</p>
             <p className="text-sm text-gray-500">{timeAgo(news.created_at)}</p>
           </div>
         ))}
