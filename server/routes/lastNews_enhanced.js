@@ -92,14 +92,40 @@ router.post('/', auth, requireAdminOrEditor, validate(breakingNewsSchema), async
 });
 
 // PUT update last news (admin)
-router.put('/:id', auth, requireAdminOrEditor, validate(breakingNewsSchema), async (req, res) => {
+router.put('/:id', auth, requireAdminOrEditor, async (req, res) => {
   try {
     const { title_ar, content_ar, priority, is_active } = req.body;
-    const slug = title_ar ? generateLastNewsSlug(title_ar) : undefined;
-    await query(
-      'UPDATE last_news SET title_ar = ?, content_ar = ?, slug = COALESCE(?, slug), priority = ?, is_active = ? WHERE id = ?',
-      [title_ar, content_ar, slug, priority, is_active, req.params.id]
-    );
+    const setClauses = [];
+    const params = [];
+
+    if (title_ar !== undefined) {
+      setClauses.push('title_ar = ?');
+      params.push(title_ar);
+      const slug = generateLastNewsSlug(title_ar);
+      setClauses.push('slug = ?');
+      params.push(slug);
+    }
+    if (content_ar !== undefined) {
+      setClauses.push('content_ar = ?');
+      params.push(content_ar);
+    }
+    if (priority !== undefined) {
+      setClauses.push('priority = ?');
+      params.push(priority);
+    }
+    if (is_active !== undefined) {
+      setClauses.push('is_active = ?');
+      params.push(is_active);
+    }
+
+    if (setClauses.length === 0) {
+      return res.status(400).json({ success: false, error: 'No fields to update' });
+    }
+
+    const queryStr = `UPDATE last_news SET ${setClauses.join(', ')} WHERE id = ?`;
+    params.push(req.params.id);
+
+    await query(queryStr, params);
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
