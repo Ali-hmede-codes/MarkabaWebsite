@@ -3,8 +3,8 @@ module.exports = {
     {
       name: 'newsmarkaba-frontend',
       script: 'npm',
-      args: 'run dev',
-      instances: 'max',
+      args: 'run start',
+      instances: 1,
       exec_mode: 'cluster',
       env: {
         NODE_ENV: 'production',
