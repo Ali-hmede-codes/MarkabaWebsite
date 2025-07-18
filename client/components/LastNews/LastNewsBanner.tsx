@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // Added useRef
 // Remove import { Switch } from '@headlessui/react';
 
 
@@ -32,6 +32,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   const [combineNews, setCombineNews] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -63,18 +64,55 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
     Promise.all([fetchLastNews(), fetchBreakingNews()]).finally(() => setLoading(false));
   }, [combineNews]);
 
-  if (loading) return <div>جاري التحميل...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
-  if (lastNews.length === 0) return null;
-
+  // Move before early returns
   const displayedNews: NewsItem[] = combineNews ? [...lastNews, ...breakingNews] : lastNews;
 
+  useEffect(() => {
+    let scrollInterval: NodeJS.Timeout;
+    let isInteracting = false;
+
+    const startAutoScroll = () => {
+      scrollInterval = setInterval(() => {
+        if (scrollRef.current && !isInteracting) {
+          scrollRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+          if (scrollRef.current.scrollLeft + scrollRef.current.clientWidth >= scrollRef.current.scrollWidth) {
+            scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+          }
+        }
+      }, 3000);
+    };
+
+    const handleInteraction = () => {
+      isInteracting = true;
+      clearInterval(scrollInterval);
+      setTimeout(() => {
+        isInteracting = false;
+        startAutoScroll();
+      }, 5000);
+    };
+
+    startAutoScroll();
+
+    const currentRef = scrollRef.current;
+    currentRef?.addEventListener('touchstart', handleInteraction);
+    currentRef?.addEventListener('mousedown', handleInteraction);
+
+    return () => {
+      clearInterval(scrollInterval);
+      currentRef?.removeEventListener('touchstart', handleInteraction);
+      currentRef?.removeEventListener('mousedown', handleInteraction);
+    };
+  }, [lastNews, breakingNews, combineNews]);
+
+  if (loading) return <div>جاري التحميل...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+  if (displayedNews.length === 0) return null;
+
   return (
-    <div className={`bg-white p-6 rounded-xl shadow-md ${className}`}>
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">آخر الأخبار</h2>
+    <div className={`p-4 ${className}`}> {/* Removed bg-white, rounded-xl, shadow-md for integration */}
+      <div className="flex justify-end items-center mb-2"> {/* Removed h2 */}
         <div className="flex items-center">
-          <span className="mr-2 text-gray-700">العاجل</span>
+          <span className="mr-2 text-red-600 font-bold">العاجل</span> {/* Bold red */}
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
@@ -87,9 +125,9 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
           </label>
         </div>
       </div>
-      <div className="overflow-x-auto flex space-x-4 pb-4 snap-x snap-mandatory">
+      <div className="overflow-x-auto flex space-x-6 pb-4 snap-x snap-mandatory" ref={scrollRef}> {/* Increased space-x-4 to space-x-6 */}
         {displayedNews.map((news, index) => (
-          <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className={`min-w-[300px] p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ${news.isBreaking ? 'bg-red-50' : 'bg-gray-50'}`}> 
+          <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className={`min-w-[300px] p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ${news.isBreaking ? 'bg-red-50' : ''}`}> {/* Removed bg-gray-50 for no color */}
             <h3 className="font-semibold text-lg text-gray-900 mb-2">{news.title_ar || news.title}</h3>
             <p className="text-gray-600 text-sm">{news.content_ar || news.content}</p>
             <p className="text-sm text-gray-500">{timeAgo(news.created_at)}</p>
@@ -99,6 +137,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
     </div>
   );
 };
+
 export default LastNewsBanner;
 
 function timeAgo(date: string): string {
