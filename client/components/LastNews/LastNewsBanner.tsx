@@ -77,35 +77,35 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
 
   return (
     <div className={` ${className}`} dir="rtl">
-      <div className="mb-6 sm:mb-8 text-center">
-        <div className="responsive-flex justify-center mb-4 items-center">
-          <FiClock className="text-blue-500 text-2xl sm:text-3xl ml-2 sm:ml-3" />
-          <h2 className="section-title font-bold text-gray-800">آخر الأخبار</h2>
-          <div className="flex items-center mr-4">
-            <span className="ml-2 text-yellow-300 font-bold">العاجل</span>
-            <label className="relative inline-flex items-center cursor-pointer mr-2">
+      <div className="mb-4 sm:mb-6 text-center">
+        <div className="responsive-flex justify-center mb-3 sm:mb-4 items-center">
+          <FiClock className="text-blue-500 text-xl sm:text-3xl ml-1 sm:ml-3" />
+          <h2 className="section-title font-bold text-gray-800 text-lg sm:text-xl">آخر الأخبار</h2>
+          <div className="flex items-center mr-3 sm:mr-4">
+            <span className="ml-1 sm:ml-2 text-yellow-300 font-bold text-sm sm:text-base">العاجل</span>
+            <label className="relative inline-flex items-center cursor-pointer mr-1 sm:mr-2">
               <input
                 type="checkbox"
                 checked={combineNews}
                 onChange={(e) => setCombineNews(e.target.checked)}
                 className="sr-only"
               />
-              <div className={`w-11 h-6 rounded-full ${combineNews ? 'bg-white' : 'bg-gray-300'}`}></div>
-              <div className={`absolute left-1 top-1 w-4 h-4 bg-blue-600 rounded-full transition-transform ${combineNews ? 'translate-x-5 bg-blue-600' : 'translate-x-0'}`}></div>
+              <div className={`w-9 sm:w-11 h-5 sm:h-6 rounded-full ${combineNews ? 'bg-white' : 'bg-gray-300'}`}></div>
+              <div className={`absolute left-1 top-1 w-3 sm:w-4 h-3 sm:h-4 bg-blue-600 rounded-full transition-transform ${combineNews ? 'translate-x-4 sm:translate-x-5 bg-blue-600' : 'translate-x-0'}`}></div>
             </label>
           </div>
         </div>
-        <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto mt-2 rounded-full"></div>
+        <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto mt-1 sm:mt-2 rounded-full"></div>
       </div>
-      <div className="rounded-lg h-[600px] overflow-y-auto p-4">
-        <div className="space-y-4">
+      <div className="rounded-lg h-[600px] overflow-y-auto p-2 sm:p-4">
+        <div className="space-y-2 sm:space-y-4">
           {displayedNews.map((news, index) => (
             <div 
               key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} 
-              className={`p-4 rounded-lg transition-all duration-300 ${news.isBreaking ? 'border-r-4 border-red-500' : 'border-r-4 border-blue-300'}`}
+              className={`p-2 sm:p-4 rounded-lg transition-all duration-300 ${news.isBreaking ? 'border-r-4 border-red-500' : 'border-r-4 border-blue-300'}`}
             >
-              <h3 className="font-semibold text-md text-blue-800 mb-2 hover:text-blue-600 transition-colors">{news.title_ar || news.title}</h3>
-              <p className="text-gray-700 text-sm mb-2">{news.content_ar || news.content}</p>
+              <h3 className="font-semibold text-sm sm:text-md text-blue-800 mb-1 sm:mb-2 hover:text-blue-600 transition-colors">{news.title_ar || news.title}</h3>
+              <p className="text-gray-700 text-xs sm:text-sm mb-1 sm:mb-2">{news.content_ar || news.content}</p>
               <p className="text-xs text-gray-500">{timeAgo(news.created_at)}</p>
             </div>
           ))}

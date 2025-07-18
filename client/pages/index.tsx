@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto responsive-padding">
           {/* Latest Articles and Last News Section */}
           <section className="mb-16">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-6">
               <LatestArticles className="order-1" />
               <LastNewsBanner className="order-2 md:order-2 h-full" />
             </div>
