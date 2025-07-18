@@ -70,11 +70,11 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   const displayedNews: NewsItem[] = combineNews ? [...lastNews, ...breakingNews] : lastNews;
 
   return (
-    <div className={`bg-gray-100 p-4 ${className}`}>
+    <div className={`bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl shadow-lg ${className}`}>
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-xl font-bold">آخر الأخبار</h2>
+        <h2 className="text-2xl font-bold text-indigo-800">آخر الأخبار</h2>
         <div className="flex items-center">
-          <span className="mr-2">العاجل</span>
+          <span className="mr-2 text-gray-700">العاجل</span>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
@@ -82,16 +82,16 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
               onChange={(e) => setCombineNews(e.target.checked)}
               className="sr-only"
             />
-            <div className={`w-11 h-6 rounded-full ${combineNews ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
+            <div className={`w-11 h-6 rounded-full ${combineNews ? 'bg-indigo-600' : 'bg-gray-200'}`}></div>
             <div className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform ${combineNews ? 'translate-x-5' : 'translate-x-0'}`}></div>
           </label>
         </div>
       </div>
-      <div className="overflow-x-auto flex space-x-4 pb-2">
+      <div className="overflow-x-auto flex space-x-6 pb-4 snap-x snap-mandatory">
         {displayedNews.map((news, index) => (
-          <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className={`min-w-[300px] p-4 border rounded ${news.isBreaking ? 'bg-red-100' : 'bg-white'}`}>
-            <h3 className="font-semibold">{news.title_ar || news.title}</h3>
-            <p>{news.content_ar || news.content}</p>
+          <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className={`min-w-[320px] p-6 border border-gray-200 rounded-xl shadow-md ${news.isBreaking ? 'bg-red-50 hover:bg-red-100' : 'bg-white hover:bg-gray-50'} transition-colors duration-200 snap-center`}>
+            <h3 className="font-semibold text-lg text-gray-900 mb-2">{news.title_ar || news.title}</h3>
+            <p className="text-gray-700 mb-3">{news.content_ar || news.content}</p>
             <p className="text-sm text-gray-500">{timeAgo(news.created_at)}</p>
           </div>
         ))}
