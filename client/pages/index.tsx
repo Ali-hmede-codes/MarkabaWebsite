@@ -3,17 +3,15 @@ import Link from 'next/link';
 import Layout from '../components/Layout/Layout';
 import { useContent } from '../hooks/useContent';
 import { usePosts, useCategories } from '../components/API/hooks';
-import { Post, Category } from '../components/API/types';
+import { Post } from '../components/API/types';
 import { 
-  FiCalendar, 
-  FiUser, 
+  FiCalendar,  
   FiEye, 
-  FiArrowRight, 
   FiClock,
   FiSun,
-  FiCloudRain,
-  FiMapPin,
-  FiTrendingUp
+  FiCloudRain , FiMapPin,
+  FiTrendingUp,
+  FiBook
 } from 'react-icons/fi';
 import LastNewsBanner from '../components/LastNews/LastNewsBanner';
 
@@ -152,6 +150,69 @@ const HomePage: React.FC = () => {
             </div>
             
             <LastNewsBanner />
+          </section>
+
+          {/* مقالات Section */}
+          <section className="mb-24">
+            <div className="mb-6 sm:mb-8 text-center">
+              <div className="responsive-flex justify-center mb-4">
+                <FiBook className="text-purple-500 text-2xl sm:text-3xl ml-2 sm:ml-3" />
+                <h2 className="section-title font-bold text-gray-800">مقالات</h2>
+              </div>
+              <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-purple-500 to-purple-600 mx-auto mt-2 rounded-full"></div>
+            </div>
+            
+            {posts.length > 0 && (
+              <div className="featured-grid">
+                {posts.slice(0, 8).map((post, index) => (
+                  <article key={post.id} className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 aspect-square flex flex-col">
+                    <div className="relative flex-1 overflow-hidden">
+                      {post.featured_image ? (
+                        <img
+                          src={post.featured_image}
+                          alt={post.title_ar || post.title}
+                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                          <span className="text-white text-4xl font-bold">{index + 1}</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                      <div className="absolute top-3 right-3">
+                        <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-gradient-to-r from-purple-500 to-purple-600 rounded-full shadow-lg">
+                          {getCategoryName(post.category_id)}
+                        </span>
+                      </div>
+                      {post.views && (
+                        <div className="absolute top-3 left-3 flex items-center bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
+                          <FiEye size={12} className="ml-1 rtl:ml-0 rtl:mr-1 text-white" />
+                          <span className="text-white text-xs font-medium">{formatViews(post.views)}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4 flex-shrink-0">
+                      <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-2 line-clamp-2 hover:text-purple-600 transition-colors leading-tight">
+                        <Link href={`/post/${post.slug}`}>
+                          {post.title_ar || post.title}
+                        </Link>
+                      </h3>
+                      {(post.content_ar || post.content) && (
+                        <p className="text-gray-600 text-xs mb-2 line-clamp-1">
+                          {truncateText((post.content_ar || post.content).replace(/<[^>]*>/g, ''), 50)}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <div className="flex items-center">
+                          <FiCalendar size={10} className="ml-1 rtl:ml-0 rtl:mr-1" />
+                          {formatDate(post.created_at)}
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
           </section>
 
           {/* الأخبار المميزة Section */}

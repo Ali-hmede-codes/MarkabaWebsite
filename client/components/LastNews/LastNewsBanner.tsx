@@ -92,6 +92,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
           <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className={`min-w-[300px] p-4 border rounded ${news.isBreaking ? 'bg-red-100' : 'bg-white'}`}>
             <h3 className="font-semibold">{news.title_ar || news.title}</h3>
             <p>{news.content_ar || news.content}</p>
+            <p className="text-sm text-gray-500">{timeAgo(news.created_at)}</p>
           </div>
         ))}
       </div>
@@ -99,3 +100,16 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   );
 };
 export default LastNewsBanner;
+
+function timeAgo(date: string): string {
+  const now = new Date();
+  const past = new Date(date);
+  const diff = Math.floor((now.getTime() - past.getTime()) / 1000);
+
+  if (diff < 60) return 'منذ لحظات';
+  if (diff < 3600) return `منذ ${Math.floor(diff / 60)} دقيقة`;
+  if (diff < 86400) return `منذ ${Math.floor(diff / 3600)} ساعة`;
+  if (diff < 2592000) return `منذ ${Math.floor(diff / 86400)} يوم`;
+  if (diff < 31536000) return `منذ ${Math.floor(diff / 2592000)} شهر`;
+  return `منذ ${Math.floor(diff / 31536000)} سنة`;
+}
