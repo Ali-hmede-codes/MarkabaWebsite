@@ -31,16 +31,11 @@ const generateLastNewsSlug = (title_ar) => {
 router.get('/active', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit, 10) || 5, 5);
-    const breakingNews = await query(
-      'SELECT * FROM breaking_news WHERE is_active = 1 ORDER BY priority DESC, created_at DESC LIMIT ?',
+    const lastNews = await query(
+      'SELECT * FROM last_news WHERE is_active = 1 ORDER BY priority DESC, created_at DESC LIMIT ?',
       [limit]
     );
-    const normalNews = await query(
-      'SELECT id, title_ar as title, slug, created_at FROM posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT ?',
-      [limit]
-    );
-    const combined = [...breakingNews, ...normalNews].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, limit);
-    res.json({ success: true, data: combined });
+    res.json({ success: true, data: lastNews });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

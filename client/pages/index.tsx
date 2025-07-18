@@ -163,10 +163,10 @@ const HomePage: React.FC = () => {
             </div>
             
             {posts.length > 0 && (
-              <div className="featured-grid">
+              <div className="flex overflow-x-auto space-x-4 rtl:space-x-reverse pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-purple-100">
                 {posts.slice(0, 8).map((post, index) => (
-                  <article key={post.id} className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 aspect-square flex flex-col">
-                    <div className="relative flex-1 overflow-hidden">
+                  <article key={post.id} className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 flex-shrink-0 w-64 sm:w-72" style={{scrollSnapAlign: 'start'}}>
+                    <div className="relative h-40 sm:h-48 overflow-hidden">
                       {post.featured_image ? (
                         <img
                           src={post.featured_image}
@@ -191,7 +191,7 @@ const HomePage: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <div className="p-4 flex-shrink-0">
+                    <div className="p-4">
                       <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-2 line-clamp-2 hover:text-purple-600 transition-colors leading-tight">
                         <Link href={`/post/${post.slug}`}>
                           {post.title_ar || post.title}
