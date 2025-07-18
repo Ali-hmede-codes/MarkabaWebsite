@@ -2,11 +2,11 @@ module.exports = {
   apps: [
     {
       name: 'newsmarkaba-frontend',
-      script: 'npm',
+      script: './node_modules/next/dist/bin/next',
       args: 'start',
       cwd: 'd:\\NewsMarkaba\\client',
-      instances: 'max', // Or specify a number for clustering
-      exec_mode: 'fork',
+      instances: 'max',
+      exec_mode: 'cluster',
       env: {
         NODE_ENV: 'production',
         // Add other .env variables here if needed
