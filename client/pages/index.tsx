@@ -14,6 +14,7 @@ import {
   FiBook
 } from 'react-icons/fi';
 import LastNewsBanner from '../components/LastNews/LastNewsBanner';
+import LatestArticles from '../components/LatestArticles/LatestArticles';
 
 const HomePage: React.FC = () => {
   const { content } = useContent();
@@ -136,24 +137,16 @@ const HomePage: React.FC = () => {
         </section>
 
         <div className="container mx-auto responsive-padding">
-          {/* آخر الأخبار Section - Placed first after breaking news */}
+          {/* Latest Articles and Last News Section */}
           <section className="mb-16">
-            {/* Section Title */}
-            <div className="mb-6 sm:mb-8 text-center">
-              <div className="responsive-flex justify-center mb-4">
-                <FiClock className="text-blue-600 text-2xl sm:text-3xl ml-2 sm:ml-3" />
-                <h2 className="section-title font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                  آخر الأخبار
-                </h2>
-              </div>
-              <div className="w-24 sm:w-32 h-1 bg-gradient-to-r from-blue-500 to-blue-700 mx-auto rounded-full"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <LatestArticles className="order-1" />
+              <LastNewsBanner className="order-2 md:order-2 h-full" />
             </div>
-            
-            <LastNewsBanner />
           </section>
 
           {/* مقالات Section */}
-          <section className="mb-24">
+          <section id="articles-section" className="mb-24">
             <div className="mb-6 sm:mb-8 text-center">
               <div className="responsive-flex justify-center mb-4">
                 <FiBook className="text-purple-500 text-2xl sm:text-3xl ml-2 sm:ml-3" />

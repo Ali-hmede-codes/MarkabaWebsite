@@ -53,7 +53,7 @@ router.get('/active', async (req, res) => {
     }
     
     queryStr += ' ORDER BY priority DESC, created_at DESC LIMIT ?';
-    params.push(limit);
+    params.push(limit.toString());
     
     const breakingNews = await query(queryStr, params);
     

@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react'; // Added useRef
-// Remove import { Switch } from '@headlessui/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { FiClock } from 'react-icons/fi';
+
+
 
 
 
@@ -22,9 +24,9 @@ type NewsItem = {
 
 
 
-interface LastNewsBannerProps {
+type LastNewsBannerProps = {
   className?: string;
-}
+};
 
 const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   const [lastNews, setLastNews] = useState<NewsItem[]>([]);
@@ -67,72 +69,47 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   // Move before early returns
   const displayedNews: NewsItem[] = combineNews ? [...lastNews, ...breakingNews] : lastNews;
 
-  useEffect(() => {
-    let scrollInterval: NodeJS.Timeout;
-    let isInteracting = false;
 
-    const startAutoScroll = () => {
-      scrollInterval = setInterval(() => {
-        if (scrollRef.current && !isInteracting) {
-          scrollRef.current.scrollBy({ left: 320, behavior: 'smooth' });
-          if (scrollRef.current.scrollLeft + scrollRef.current.clientWidth >= scrollRef.current.scrollWidth) {
-            scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-          }
-        }
-      }, 3000);
-    };
-
-    const handleInteraction = () => {
-      isInteracting = true;
-      clearInterval(scrollInterval);
-      setTimeout(() => {
-        isInteracting = false;
-        startAutoScroll();
-      }, 5000);
-    };
-
-    startAutoScroll();
-
-    const currentRef = scrollRef.current;
-    currentRef?.addEventListener('touchstart', handleInteraction);
-    currentRef?.addEventListener('mousedown', handleInteraction);
-
-    return () => {
-      clearInterval(scrollInterval);
-      currentRef?.removeEventListener('touchstart', handleInteraction);
-      currentRef?.removeEventListener('mousedown', handleInteraction);
-    };
-  }, [lastNews, breakingNews, combineNews]);
 
   if (loading) return <div>جاري التحميل...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
   if (displayedNews.length === 0) return null;
 
   return (
-    <div className={`p-4 ${className}`}> {/* Removed bg-white, rounded-xl, shadow-md for integration */}
-      <div className="flex justify-end items-center mb-2"> {/* Removed h2 */}
-        <div className="flex items-center">
-          <span className="mr-2 text-red-600 font-bold">العاجل</span> {/* Bold red */}
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={combineNews}
-              onChange={(e) => setCombineNews(e.target.checked)}
-              className="sr-only"
-            />
-            <div className={`w-11 h-6 rounded-full ${combineNews ? 'bg-indigo-600' : 'bg-gray-200'}`}></div>
-            <div className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform ${combineNews ? 'translate-x-5' : 'translate-x-0'}`}></div>
-          </label>
-        </div>
-      </div>
-      <div className="overflow-x-auto flex space-x-6 pb-4 snap-x snap-mandatory" ref={scrollRef}> {/* Increased space-x-4 to space-x-6 */}
-        {displayedNews.map((news, index) => (
-          <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className={`min-w-[300px] p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ${news.isBreaking ? 'bg-red-50' : ''}`}> {/* Removed bg-gray-50 for no color */}
-            <h3 className="font-semibold text-lg text-gray-900 mb-2">{news.title_ar || news.title}</h3>
-            <p className="text-gray-600 text-sm">{news.content_ar || news.content}</p>
-            <p className="text-sm text-gray-500">{timeAgo(news.created_at)}</p>
+    <div className={` ${className}`} dir="rtl">
+      <div className="mb-6 sm:mb-8 text-center">
+        <div className="responsive-flex justify-center mb-4 items-center">
+          <FiClock className="text-blue-500 text-2xl sm:text-3xl ml-2 sm:ml-3" />
+          <h2 className="section-title font-bold text-gray-800">آخر الأخبار</h2>
+          <div className="flex items-center mr-4">
+            <span className="ml-2 text-yellow-300 font-bold">العاجل</span>
+            <label className="relative inline-flex items-center cursor-pointer mr-2">
+              <input
+                type="checkbox"
+                checked={combineNews}
+                onChange={(e) => setCombineNews(e.target.checked)}
+                className="sr-only"
+              />
+              <div className={`w-11 h-6 rounded-full ${combineNews ? 'bg-white' : 'bg-gray-300'}`}></div>
+              <div className={`absolute left-1 top-1 w-4 h-4 bg-blue-600 rounded-full transition-transform ${combineNews ? 'translate-x-5 bg-blue-600' : 'translate-x-0'}`}></div>
+            </label>
           </div>
-        ))}
+        </div>
+        <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto mt-2 rounded-full"></div>
+      </div>
+      <div className="rounded-lg h-[600px] overflow-y-auto p-4">
+        <div className="space-y-4">
+          {displayedNews.map((news, index) => (
+            <div 
+              key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} 
+              className={`p-4 rounded-lg transition-all duration-300 ${news.isBreaking ? 'border-r-4 border-red-500' : 'border-r-4 border-blue-300'}`}
+            >
+              <h3 className="font-semibold text-md text-blue-800 mb-2 hover:text-blue-600 transition-colors">{news.title_ar || news.title}</h3>
+              <p className="text-gray-700 text-sm mb-2">{news.content_ar || news.content}</p>
+              <p className="text-xs text-gray-500">{timeAgo(news.created_at)}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
