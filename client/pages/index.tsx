@@ -15,6 +15,7 @@ import {
   FiMapPin,
   FiTrendingUp
 } from 'react-icons/fi';
+import LastNewsBanner from '../components/LastNews/LastNewsBanner';
 
 const HomePage: React.FC = () => {
   const { content } = useContent();
@@ -137,7 +138,7 @@ const HomePage: React.FC = () => {
         </section>
 
         <div className="container mx-auto responsive-padding">
-          {/* آخر الأخبار Section */}
+          {/* آخر الأخبار Section - Placed first after breaking news */}
           <section className="mb-16">
             {/* Section Title */}
             <div className="mb-6 sm:mb-8 text-center">
@@ -150,81 +151,7 @@ const HomePage: React.FC = () => {
               <div className="w-24 sm:w-32 h-1 bg-gradient-to-r from-blue-500 to-blue-700 mx-auto rounded-full"></div>
             </div>
             
-            {/* Horizontal Scrollable Posts */}
-             <div className="relative">
-               {postsLoading ? (
-                 <div className="flex justify-center items-center h-64">
-                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                   <span className="mr-3 text-gray-600">جاري التحميل...</span>
-                 </div>
-               ) : latestPosts.length === 0 ? (
-                 <div className="text-center py-12">
-                   <p className="text-gray-600">لا توجد أخبار متاحة</p>
-                 </div>
-               ) : (
-                 <>
-                   {/* Fade edges */}
-                   <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
-                   <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
-                   
-                   {/* Scrollable container */}
-                   <div className="horizontal-scroll py-4">
-                     <div className="horizontal-scroll-content">
-                       {latestPosts.map((post, index) => (
-                         <article key={post.id} className="horizontal-scroll-item news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 group">
-                           <div className="relative news-card-image overflow-hidden">
-                             {post.featured_image ? (
-                               <img
-                                 src={post.featured_image}
-                                 alt={post.title_ar || post.title}
-                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                               />
-                             ) : (
-                               <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                 <span className="text-white text-4xl font-bold">{index + 1}</span>
-                               </div>
-                             )}
-                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                             <div className="absolute top-3 right-3">
-                               <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg">
-                                 {getCategoryName(post.category_id)}
-                               </span>
-                             </div>
-                             {post.views && (
-                               <div className="absolute top-3 left-3 flex items-center bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
-                                 <FiEye size={12} className="ml-1 rtl:ml-0 rtl:mr-1 text-white" />
-                                 <span className="text-white text-xs font-medium">{formatViews(post.views)}</span>
-                               </div>
-                             )}
-                           </div>
-                           <div className="news-card-content">
-                             <h3 className="news-card-title font-bold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors leading-tight group-hover:text-blue-600">
-                               <Link href={`/post/${post.slug}`}>
-                                 {post.title_ar || post.title}
-                               </Link>
-                             </h3>
-                             {(post.content_ar || post.content) && (
-                               <p className="news-card-excerpt text-gray-600 mb-3 line-clamp-2 leading-relaxed">
-                                 {truncateText((post.content_ar || post.content).replace(/<[^>]*>/g, ''), 100)}
-                               </p>
-                             )}
-                             <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
-                               <div className="flex items-center">
-                                 <FiCalendar size={12} className="ml-1 rtl:ml-0 rtl:mr-1" />
-                                 <span>{formatDate(post.created_at)}</span>
-                               </div>
-                               <div className="flex items-center text-blue-600">
-                                 <FiArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
-                               </div>
-                             </div>
-                           </div>
-                         </article>
-                       ))}
-                     </div>
-                   </div>
-                 </>
-               )}
-             </div>
+            <LastNewsBanner />
           </section>
 
           {/* الأخبار المميزة Section */}
