@@ -27,13 +27,17 @@ const generateLastNewsSlug = (title_ar) => {
   return slug || 'last-news';
 };
 
+function prepareParams(params) {
+  return params.map(p => typeof p === 'number' ? String(p) : p);
+}
+
 // GET active last news (public)
 router.get('/active', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit, 10) || 5, 5);
     const lastNews = await query(
       'SELECT * FROM last_news WHERE is_active = 1 ORDER BY priority DESC, created_at DESC LIMIT ?',
-      [limit]
+      prepareParams([limit])
     );
     res.json({ success: true, data: lastNews });
   } catch (error) {
@@ -58,7 +62,7 @@ router.get('/', auth, requireAdminOrEditor, async (req, res) => {
     }
     queryStr += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
     params.push(parseInt(limit, 10), parseInt(offset, 10));
-    const news = await query(queryStr, params);
+    const news = await query(queryStr, prepareParams(params));
     res.json({ success: true, data: news });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -68,7 +72,7 @@ router.get('/', auth, requireAdminOrEditor, async (req, res) => {
 // GET single last news (public)
 router.get('/:id', async (req, res) => {
   try {
-    const news = await queryOne('SELECT * FROM last_news WHERE id = ?', [req.params.id]);
+    const news = await queryOne('SELECT * FROM last_news WHERE id = ?', prepareParams([req.params.id]));
     if (!news) return res.status(404).json({ success: false, error: 'Not found' });
     res.json({ success: true, data: news });
   } catch (error) {
@@ -83,7 +87,7 @@ router.post('/', auth, requireAdminOrEditor, validate(breakingNewsSchema), async
     const slug = generateLastNewsSlug(title_ar);
     const result = await query(
       'INSERT INTO last_news (title_ar, content_ar, slug, priority, is_active) VALUES (?, ?, ?, ?, ?)',
-      [title_ar, content_ar, slug, priority, is_active]
+      prepareParams([title_ar, content_ar, slug, priority, is_active])
     );
     res.status(201).json({ success: true, data: { id: result.insertId } });
   } catch (error) {
@@ -125,7 +129,7 @@ router.put('/:id', auth, requireAdminOrEditor, async (req, res) => {
     const queryStr = `UPDATE last_news SET ${setClauses.join(', ')} WHERE id = ?`;
     params.push(req.params.id);
 
-    await query(queryStr, params);
+    await query(queryStr, prepareParams(params));
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -135,7 +139,7 @@ router.put('/:id', auth, requireAdminOrEditor, async (req, res) => {
 // DELETE last news (admin)
 router.delete('/:id', auth, requireAdmin, async (req, res) => {
   try {
-    await query('DELETE FROM last_news WHERE id = ?', [req.params.id]);
+    await query('DELETE FROM last_news WHERE id = ?', prepareParams([req.params.id]));
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
