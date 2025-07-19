@@ -74,10 +74,12 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
             onClick={() => {
               const articlesSection = document.getElementById('articles-section');
               if (articlesSection) {
-                articlesSection.scrollIntoView({ behavior: 'smooth' });
+                const yOffset = -160; // Adjust based on header height
+                const y = articlesSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                window.scrollTo({ top: y, behavior: 'smooth' });
               }
             }}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-colors duration-300 text-sm sm:text-base"
+            className="text-blue-600 hover:text-blue-800 underline font-semibold text-sm sm:text-base transition-colors duration-300"
           >
             عرض المزيد
           </button>

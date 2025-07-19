@@ -98,15 +98,12 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto mt-1 sm:mt-2 rounded-full"></div>
       </div>
       <div className="rounded-lg h-[600px] overflow-y-auto p-2 sm:p-4">
-        <div className="space-y-2 sm:space-y-4">
+        <div className="space-y-4">
           {displayedNews.map((news, index) => (
-            <div 
-              key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} 
-              className={`p-2 sm:p-4 rounded-lg transition-all duration-300 ${news.isBreaking ? 'border-r-4 border-red-500' : 'border-r-4 border-blue-300'}`}
-            >
-              <h3 className="font-semibold text-sm sm:text-md text-blue-800 mb-1 sm:mb-2 hover:text-blue-600 transition-colors">{news.title_ar || news.title}</h3>
-              <p className="text-gray-700 text-xs sm:text-sm mb-1 sm:mb-2">{news.content_ar || news.content}</p>
-              <p className="text-xs text-gray-500">{timeAgo(news.created_at)}</p>
+            <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
+              <h3 className={`font-semibold text-lg sm:text-xl ${news.isBreaking ? 'text-red-600' : 'text-black'} mb-1 hover:text-blue-600 transition-colors`}>{news.title_ar || news.title}</h3>
+              <p className="text-sm text-gray-500 mb-2">{timeAgo(news.created_at)}</p>
+              {index < displayedNews.length - 1 && <div className="w-12 h-0.5 bg-blue-500 mx-auto my-2"></div>}
             </div>
           ))}
         </div>
