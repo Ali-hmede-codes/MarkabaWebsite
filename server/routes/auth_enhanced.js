@@ -12,8 +12,6 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || '30d';
-const MAX_LOGIN_ATTEMPTS = parseInt(process.env.MAX_LOGIN_ATTEMPTS, 10) || 3; // Reduced to 3 for admin
-const LOCKOUT_TIME = parseInt(process.env.LOCKOUT_TIME, 10) || 15 * 60 * 1000; // 15 minutes
 const ADMIN_MIN_PASSWORD_LENGTH = 8;
 const ADMIN_REQUIRE_COMPLEX_PASSWORD = true;
 
@@ -141,15 +139,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
       });
     }
     
-    // Check for account lockout
-    if (user.lockout_until && new Date() < new Date(user.lockout_until)) {
-      const lockoutRemaining = Math.ceil((new Date(user.lockout_until) - new Date()) / 1000 / 60);
-      return res.status(423).json({
-        success: false,
-        error: 'Account locked',
-        message: `Account is locked due to too many failed login attempts. Try again in ${lockoutRemaining} minutes.`
-      });
-    }
+    
     
     // Additional security check for admin users
     if (user.role !== 'admin') {
@@ -165,30 +155,13 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, user.password);
     
     if (!isValidPassword) {
-      // Increment failed login attempts
-      const failedAttempts = (user.failed_login_attempts || 0) + 1;
-      let lockoutUntil = null;
-      
-      if (failedAttempts >= MAX_LOGIN_ATTEMPTS) {
-        lockoutUntil = new Date(Date.now() + LOCKOUT_TIME);
-      }
-      
-      await query(
-        'UPDATE users SET failed_login_attempts = ?, lockout_until = ?, updated_at = NOW() WHERE id = ?',
-        [failedAttempts, lockoutUntil, user.id]
-      );
-      
       // Log failed login attempt
       console.log(`Failed admin login attempt: ${user.username} from IP: ${clientIP}`);
-      
-      const message = failedAttempts >= MAX_LOGIN_ATTEMPTS 
-        ? `Account locked due to too many failed attempts. Try again in ${Math.ceil(LOCKOUT_TIME / 1000 / 60)} minutes.`
-        : `Invalid credentials. ${MAX_LOGIN_ATTEMPTS - failedAttempts} attempts remaining.`;
       
       return res.status(401).json({
         success: false,
         error: 'Authentication failed',
-        message
+        message: 'Invalid credentials'
       });
     }
     
@@ -202,7 +175,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
       });
     }
     
-    // Successful login - reset failed attempts and generate tokens
+    // Successful login - generate tokens
     const { accessToken, refreshToken } = generateTokens(user);
     const expiresIn = remember_me ? REFRESH_TOKEN_EXPIRES_IN : JWT_EXPIRES_IN;
     
@@ -210,8 +183,6 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     await query(
       `UPDATE users SET 
         last_login = NOW(), 
-        failed_login_attempts = 0, 
-        lockout_until = NULL,
         last_login_ip = ?,
         refresh_token = ?,
         refresh_token_expires = DATE_ADD(NOW(), INTERVAL ? DAY),
