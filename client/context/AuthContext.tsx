@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 setUser(response.data.user);
                 setCookie('user', JSON.stringify(response.data.user), {
                   maxAge: 7 * 24 * 60 * 60, // 7 days
-                  secure: process.env.NODE_ENV === 'production',
+                  secure: window.location.protocol === 'https:',
                   sameSite: 'strict',
                 });
               }
@@ -91,7 +91,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Set cookies
         setCookie('token', userToken, {
           maxAge: 7 * 24 * 60 * 60, // 7 days
-          secure: process.env.NODE_ENV === 'production',
+          secure: window.location.protocol === 'https:',
           sameSite: 'strict',
         });
         setCookie('user', JSON.stringify(userData), {

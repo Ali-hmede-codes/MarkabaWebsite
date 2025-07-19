@@ -5,6 +5,26 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const user = request.cookies.get('user')?.value;
   
+  // Check if accessing admin login page
+  if (request.nextUrl.pathname === '/admin/adminstratorpage/login') {
+    // If user is already authenticated and is admin, redirect to settings
+    if (token && user) {
+      try {
+        const userData = JSON.parse(user);
+        if (userData.role === 'admin') {
+          return NextResponse.redirect(new URL('/admin/adminstratorpage/settings', request.url));
+        }
+      } catch (error) {
+        // Invalid user data, clear cookies and continue to login
+        const response = NextResponse.next();
+        response.cookies.delete('token');
+        response.cookies.delete('user');
+        return response;
+      }
+    }
+    return NextResponse.next();
+  }
+
   // Check if accessing login page
   if (request.nextUrl.pathname === '/auth/login') {
     // If user is already authenticated and is admin, redirect to admin panel

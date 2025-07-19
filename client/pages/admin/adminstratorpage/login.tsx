@@ -28,6 +28,13 @@ const AdminLogin: React.FC = () => {
   const { login, isAuthenticated, user } = useAuth();
   const router = useRouter();
 
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'admin') {
+      toast.success('Login successful! Redirecting to settings...');
+      window.location.href = '/admin/adminstratorpage/settings';
+    }
+  }, [isAuthenticated, user, router]);
+
   // Note: Redirect logic is now handled by middleware
 
 
@@ -60,7 +67,7 @@ const AdminLogin: React.FC = () => {
       await login(loginData);
       
       // Redirect to admin panel
-      router.replace('/admin/adminstratorpage/settings');
+      window.location.href = '/admin/adminstratorpage/settings';
       
     } catch (error: any) {
       // Handle error responses
