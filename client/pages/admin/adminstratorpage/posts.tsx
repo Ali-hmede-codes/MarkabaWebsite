@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AdminLayout from '../../components/Layout/AdminLayout';
+import AdminLayout from '../../../components/Layout/AdminLayout';
 import { 
   FiPlus, 
   FiEdit, 
@@ -218,7 +218,7 @@ const PostsManagement: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900">إدارة المقالات</h1>
             <p className="text-gray-600 mt-1">إنشاء وتعديل وحذف المقالات</p>
           </div>
-          <Link href="/admin/posts/new">
+          <Link href="/admin/adminstratorpage/posts/new">
             <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 rtl:space-x-reverse transition-colors">
               <FiPlus size={20} />
               <span>مقال جديد</span>
@@ -399,7 +399,7 @@ const PostsManagement: React.FC = () => {
                           </button>
 
                           {/* Edit */}
-                          <Link href={`/admin/posts/edit/${post.id}`}>
+                          <Link href={`/admin/adminstratorpage/posts/edit/${post.id}`}>
                             <button className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="تعديل">
                               <FiEdit size={16} />
                             </button>

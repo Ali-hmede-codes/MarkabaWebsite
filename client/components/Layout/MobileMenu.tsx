@@ -223,7 +223,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categories }) 
           {/* Admin Panel (if user is admin) */}
           {user && user.role === 'admin' && (
             <Link
-              href="/admin"
+              href="/admin/adminstratorpage"
               onClick={handleLinkClick}
               className="flex items-center space-x-3 rtl:space-x-reverse px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
             >

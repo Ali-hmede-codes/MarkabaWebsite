@@ -14,40 +14,40 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
   
   const navItems = [
     {
-      href: '/admin',
+      href: '/admin/adminstratorpage',
       label: 'لوحة التحكم',
       icon: FiHome,
-      active: router.pathname === '/admin'
+      active: router.pathname === '/admin/adminstratorpage'
     },
     {
-      href: '/admin/posts',
+      href: '/admin/adminstratorpage/posts',
       label: 'المقالات',
       icon: FiFileText,
-      active: router.pathname === '/admin/posts'
+      active: router.pathname === '/admin/adminstratorpage/posts'
     },
     {
-      href: '/admin/categories',
+      href: '/admin/adminstratorpage/categories',
       label: 'التصنيفات',
       icon: FiFolder,
-      active: router.pathname === '/admin/categories'
+      active: router.pathname === '/admin/adminstratorpage/categories'
     },
     {
-      href: '/admin/media',
+      href: '/admin/adminstratorpage/media',
       label: 'الوسائط',
       icon: FiImage,
-      active: router.pathname === '/admin/media'
+      active: router.pathname === '/admin/adminstratorpage/media'
     },
     {
-      href: '/admin/users',
+      href: '/admin/adminstratorpage/users',
       label: 'المستخدمون',
       icon: FiUsers,
-      active: router.pathname === '/admin/users'
+      active: router.pathname === '/admin/adminstratorpage/users'
     },
     {
-      href: '/admin/settings',
+      href: '/admin/adminstratorpage/settings',
       label: 'الإعدادات',
       icon: FiSettings,
-      active: router.pathname === '/admin/settings'
+      active: router.pathname === '/admin/adminstratorpage/settings'
     }
   ];
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { toast } from 'react-hot-toast';
-import AdminLayout from '../../components/Layout/AdminLayout';
+import AdminLayout from '../../../components/Layout/AdminLayout';
 import { FiSave, FiRefreshCw, FiDatabase, FiMail, FiShield, FiGlobe, FiImage, FiSettings } from 'react-icons/fi';
 
 interface Setting {
@@ -41,7 +41,7 @@ const AdminSettings: React.FC = () => {
         return;
       }
 
-      const response = await fetch('/api/admin/settings', {
+      const response = await fetch('/api/admin/adminstratorpage/settings', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -75,7 +75,7 @@ const AdminSettings: React.FC = () => {
   const fetchSystemInfo = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/admin/settings/system-info', {
+      const response = await fetch('/api/admin/adminstratorpage/settings/system-info', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -118,7 +118,7 @@ const AdminSettings: React.FC = () => {
         setting_value: setting.setting_value
       }));
 
-      const response = await fetch('/api/admin/settings/bulk', {
+      const response = await fetch('/api/admin/adminstratorpage/settings/bulk', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -148,7 +148,7 @@ const AdminSettings: React.FC = () => {
       setTestingEmail(true);
       const token = localStorage.getItem('token');
       
-      const response = await fetch('/api/admin/settings/test-email', {
+      const response = await fetch('/api/admin/adminstratorpage/settings/test-email', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

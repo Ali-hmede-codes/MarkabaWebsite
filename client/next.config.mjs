@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 
-const path = require('path');
-
-const { config } = require('dotenv');
+import path from 'path';
+import { config } from 'dotenv';
 
 // Load environment variables from parent directory
 config({ path: path.resolve(process.cwd(), '../.env') });
@@ -63,7 +62,7 @@ const nextConfig = {
   // Redirects
   async redirects() {
     return [
-      // Remove the redirect since /admin/index.tsx already handles the admin dashboard
+      // Remove the redirect since /admin/adminstratorpage/index.tsx already handles the admin dashboard
     ];
   },
   
@@ -107,4 +106,4 @@ const nextConfig = {
   // output: 'export',
 };
 
-module.exports = nextConfig;
+export default nextConfig;

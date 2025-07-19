@@ -66,7 +66,7 @@ export default function HomePage() {
 ### 2. Basic Admin Panel Implementation
 
 ```typescript
-// pages/admin/index.tsx - Admin Dashboard
+// pages/admin/adminstratorpage/index.tsx - Admin Dashboard
 import React from 'react';
 import { PostsAPI, UsersAPI, SettingsAPI } from '@/components/API';
 import { useAuth } from '@/context/AuthContext';
@@ -152,7 +152,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('auth-token');
   
-  if (request.nextUrl.pathname.startsWith('/admin')) {
+  if (request.nextUrl.pathname.startsWith('/admin/adminstratorpage')) {
     if (!token) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
@@ -168,7 +168,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*']
+  matcher: ['/admin/adminstratorpage/:path*']
 };
 ```
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import AdminLayout from '../../components/Layout/AdminLayout';
+import AdminLayout from '../../../components/Layout/AdminLayout';
 import { FiPlus, FiEdit, FiTrash2, FiSearch, FiSave, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 

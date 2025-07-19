@@ -7,15 +7,14 @@ import { toast } from 'react-hot-toast';
 import { FiSave, FiArrowLeft, FiImage, FiEye } from 'react-icons/fi';
 import Link from 'next/link';
 
-interface Post {
-  id: number;
+interface PostForm {
   title_ar: string;
   content_ar: string;
   excerpt_ar: string;
   featured_image: string;
   is_published: boolean;
   is_featured: boolean;
-  category_id: number;
+  category_id: number | string;
   meta_description_ar?: string;
   tags?: string;
 }
@@ -25,50 +24,30 @@ interface Category {
   name_ar: string;
 }
 
-const EditPost: React.FC = () => {
+const NewPost: React.FC = () => {
   const router = useRouter();
-  const { id } = router.query;
-  const [post, setPost] = useState<Post | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [post, setPost] = useState<PostForm>({
+    title_ar: '',
+    content_ar: '',
+    excerpt_ar: '',
+    featured_image: '',
+    is_published: false,
+    is_featured: false,
+    category_id: '',
+    tags: ''
+  });
 
   useEffect(() => {
-    if (id) {
-      fetchPost();
-      fetchCategories();
-    }
-  }, [id]);
-
-  const fetchPost = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/posts/${id}?t=${Date.now()}`, {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      });
-      const data = await response.json();
-      
-      if (data.success) {
-        setPost(data.data);
-      } else {
-        toast.error('فشل في تحميل المقال');
-        router.push('/admin/posts');
-      }
-    } catch (error) {
-      console.error('Error fetching post:', error);
-      toast.error('حدث خطأ في تحميل المقال');
-      router.push('/admin/posts');
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchCategories();
+  }, []);
 
   const fetchCategories = async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/categories');
       const data = await response.json();
       if (data.success && Array.isArray(data.data)) {
@@ -79,38 +58,54 @@ const EditPost: React.FC = () => {
     } catch (error) {
       console.error('Error fetching categories:', error);
       setCategories([]);
+      toast.error('فشل في تحميل التصنيفات');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleInputChange = (field: keyof Post, value: string | number | boolean) => {
-    if (post) {
-      setPost({ ...post, [field]: value });
-    }
+  const handleInputChange = (field: keyof PostForm, value: string | number | boolean) => {
+    setPost({ ...post, [field]: value });
   };
 
   const handleSave = async () => {
-    if (!post) return;
+    // Validation
+    if (!post.title_ar.trim()) {
+      toast.error('العنوان العربي مطلوب');
+      return;
+    }
+    if (!post.content_ar.trim()) {
+      toast.error('المحتوى العربي مطلوب');
+      return;
+    }
+    if (!post.category_id) {
+      toast.error('التصنيف مطلوب');
+      return;
+    }
 
     try {
       setSaving(true);
-      const response = await fetch(`/api/posts/${id}`, {
-        method: 'PUT',
+      const response = await fetch('/api/posts', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(post)
+        body: JSON.stringify({
+          ...post,
+          category_id: parseInt(post.category_id.toString())
+        })
       });
 
       const data = await response.json();
       if (data.success) {
-        toast.success('تم حفظ المقال بنجاح');
-        router.push('/admin/posts');
+        toast.success('تم إنشاء المقال بنجاح');
+        router.push('/admin/adminstratorpage/posts');
       } else {
-        toast.error('فشل في حفظ المقال');
+        toast.error(data.message || 'فشل في إنشاء المقال');
       }
     } catch (error) {
-      console.error('Error saving post:', error);
-      toast.error('حدث خطأ في حفظ المقال');
+      console.error('Error creating post:', error);
+      toast.error('حدث خطأ في إنشاء المقال');
     } finally {
       setSaving(false);
     }
@@ -127,33 +122,18 @@ const EditPost: React.FC = () => {
     );
   }
 
-  if (!post) {
-    return (
-      <AdminLayout>
-        <div className="p-8 text-center">
-          <p className="text-gray-600">المقال غير موجود</p>
-          <Link href="/admin/posts">
-            <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-              العودة إلى المقالات
-            </button>
-          </Link>
-        </div>
-      </AdminLayout>
-    );
-  }
-
   return (
     <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
-            <Link href="/admin/posts">
+            <Link href="/admin/adminstratorpage/posts">
               <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
                 <FiArrowLeft size={20} />
               </button>
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900">تعديل المقال</h1>
+            <h1 className="text-2xl font-bold text-gray-900">مقال جديد</h1>
           </div>
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
             <button
@@ -183,15 +163,15 @@ const EditPost: React.FC = () => {
                 العنوان *
               </label>
               <input
-                type="text"
-                value={post.title_ar || ''}
-                onChange={(e) => handleInputChange('title_ar', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-medium text-gray-900"
-                dir="rtl"
-                placeholder="أدخل عنوان المقال"
-                style={{ fontFamily: 'Noto Sans Arabic, sans-serif' }}
-                required
-              />
+              type="text"
+              value={post.title_ar}
+              onChange={(e) => setPost({...post, title_ar: e.target.value})}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-medium text-gray-900"
+              dir="rtl"
+              placeholder="أدخل عنوان المقال"
+              style={{ fontFamily: 'Noto Sans Arabic, sans-serif' }}
+              required
+            />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -202,8 +182,8 @@ const EditPost: React.FC = () => {
                 التصنيف *
               </label>
               <select
-                value={post.category_id || ''}
-                onChange={(e) => handleInputChange('category_id', parseInt(e.target.value))}
+                value={post.category_id}
+                onChange={(e) => setPost({...post, category_id: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 required
               >
@@ -224,9 +204,24 @@ const EditPost: React.FC = () => {
               <input
                 type="url"
                 value={post.featured_image || ''}
-                onChange={(e) => handleInputChange('featured_image', e.target.value)}
+                onChange={(e) => setPost({...post, featured_image: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="رابط الصورة"
+              />
+            </div>
+
+            {/* Tags */}
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                الكلمات المفتاحية
+              </label>
+              <input
+                type="text"
+                value={post.tags || ''}
+                onChange={(e) => setPost({...post, tags: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                placeholder="كلمة1، كلمة2، كلمة3"
+                dir="rtl"
               />
             </div>
 
@@ -239,7 +234,7 @@ const EditPost: React.FC = () => {
               </label>
               <textarea
                 value={post.excerpt_ar || ''}
-                onChange={(e) => handleInputChange('excerpt_ar', e.target.value)}
+                onChange={(e) => setPost({...post, excerpt_ar: e.target.value})}
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900"
                 dir="rtl"
@@ -255,7 +250,7 @@ const EditPost: React.FC = () => {
               </label>
               <textarea
                 value={post.content_ar || ''}
-                onChange={(e) => handleInputChange('content_ar', e.target.value)}
+                onChange={(e) => setPost({...post, content_ar: e.target.value})}
                 rows={12}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y min-h-[300px] text-gray-900"
                 dir="rtl"
@@ -268,26 +263,26 @@ const EditPost: React.FC = () => {
             {/* Status Options */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                حالة المقال
+                خيارات النشر
               </label>
               <div className="flex items-center space-x-6 rtl:space-x-reverse">
                 <label className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     checked={post.is_published}
-                    onChange={(e) => handleInputChange('is_published', e.target.checked)}
-                    className="ml-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    onChange={(e) => setPost({...post, is_published: e.target.checked})}
+                    className="ml-2 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  منشور
+                  <span className="text-gray-700 font-medium">منشور</span>
                 </label>
                 <label className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     checked={post.is_featured}
-                    onChange={(e) => handleInputChange('is_featured', e.target.checked)}
-                    className="ml-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    onChange={(e) => setPost({...post, is_featured: e.target.checked})}
+                    className="ml-2 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  مميز
+                  <span className="text-gray-700 font-medium">مميز</span>
                 </label>
               </div>
             </div>
@@ -298,4 +293,4 @@ const EditPost: React.FC = () => {
   );
 };
 
-export default EditPost;
+export default NewPost;

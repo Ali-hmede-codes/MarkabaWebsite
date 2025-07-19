@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { FiEye, FiEyeOff, FiLock, FiUser, FiShield } from 'react-icons/fi';
 

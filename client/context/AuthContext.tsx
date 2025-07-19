@@ -192,7 +192,7 @@ export const withAuth = <P extends object>(
 
         if (requiredRole && !hasRole(requiredRole)) {
           toast.error('You do not have permission to access this page');
-          router.replace('/admin');
+          router.replace('/admin/adminstratorpage');
           return;
         }
       }

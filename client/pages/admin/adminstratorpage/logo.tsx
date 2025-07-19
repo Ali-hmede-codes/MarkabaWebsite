@@ -1,6 +1,6 @@
 import React from 'react';
-import Layout from '../../components/Layout/Layout';
-import LogoSettings from '../../components/admin/LogoSettings';
+import Layout from '../../../components/Layout/Layout';
+import LogoSettings from '../../../components/admin/LogoSettings';
 
 const AdminLogoPage: React.FC = () => {
   return (

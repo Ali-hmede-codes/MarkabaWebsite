@@ -11,7 +11,7 @@ export default async function handler(
   
   try {
     // Build the backend URL - users endpoint is under admin
-    let backendUrl = `${API_BASE_URL}/admin/users`;
+    let backendUrl = `${API_BASE_URL}/admin/adminstratorpage/users`;
     
     // Handle specific user ID
     if (id) {

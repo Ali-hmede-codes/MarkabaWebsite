@@ -11,7 +11,7 @@ export default async function handler(
   
   try {
     // Build the backend URL for specific post (admin endpoint for editing)
-    const backendUrl = `${API_BASE_URL}/admin/posts/${id}`;
+    const backendUrl = `${API_BASE_URL}/admin/adminstratorpage/posts/${id}`;
     
     // Get auth token from cookies
     const token = req.cookies.token;

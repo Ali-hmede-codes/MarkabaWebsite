@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
       try {
         const userData = JSON.parse(user);
         if (userData.role === 'admin') {
-          return NextResponse.redirect(new URL('/admin', request.url));
+          return NextResponse.redirect(new URL('/admin/adminstratorpage', request.url));
         }
       } catch (error) {
         // Invalid user data, clear cookies and continue to login
@@ -26,10 +26,10 @@ export function middleware(request: NextRequest) {
   }
   
   // Check if accessing admin pages
-  if (request.nextUrl.pathname.startsWith('/admin')) {
+  if (request.nextUrl.pathname.startsWith('/admin/adminstratorpage') && request.nextUrl.pathname !== '/admin/adminstratorpage/login') {
     if (!token || !user) {
       // Redirect to login page if not authenticated
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+      return NextResponse.redirect(new URL('/admin/adminstratorpage/login', request.url));
     }
     
     try {
@@ -50,5 +50,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/auth/:path*']
+  matcher: ['/admin/adminstratorpage/:path*']
 };

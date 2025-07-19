@@ -5,7 +5,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { toast } from 'react-hot-toast';
-import AdminLayout from '../../components/Layout/AdminLayout';
+import AdminLayout from '../../../components/Layout/AdminLayout';
 import { FiFileText, FiFolder, FiUsers, FiEye, FiTrendingUp, FiImage } from 'react-icons/fi';
 
 interface DashboardStats {
@@ -60,7 +60,7 @@ const AdminDashboard: React.FC = () => {
       }
 
       // Fetch dashboard stats from new admin API
-      const response = await fetch('/api/admin/dashboard/stats', {
+      const response = await fetch('/api/admin/adminstratorpage/dashboard/stats', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -104,56 +104,56 @@ const AdminDashboard: React.FC = () => {
       value: stats.totalPosts,
       icon: FiFileText,
       color: 'bg-blue-500',
-      link: '/admin/posts'
+      link: '/admin/adminstratorpage/posts'
     },
     {
       title: 'المقالات المنشورة',
       value: stats.publishedPosts,
       icon: FiEye,
       color: 'bg-green-500',
-      link: '/admin/posts?status=published'
+      link: '/admin/adminstratorpage/posts?status=published'
     },
     {
       title: 'المسودات',
       value: stats.draftPosts,
       icon: FiFileText,
       color: 'bg-yellow-500',
-      link: '/admin/posts?status=draft'
+      link: '/admin/adminstratorpage/posts?status=draft'
     },
     {
       title: 'المقالات المميزة',
       value: stats.featuredPosts,
       icon: FiTrendingUp,
       color: 'bg-purple-500',
-      link: '/admin/posts?featured=true'
+      link: '/admin/adminstratorpage/posts?featured=true'
     },
     {
       title: 'التصنيفات',
       value: stats.totalCategories,
       icon: FiFolder,
       color: 'bg-indigo-500',
-      link: '/admin/categories'
+      link: '/admin/adminstratorpage/categories'
     },
     {
       title: 'إجمالي المشاهدات',
       value: stats.totalViews.toLocaleString('ar-SA'),
       icon: FiEye,
       color: 'bg-red-500',
-      link: '/admin/posts'
+      link: '/admin/adminstratorpage/posts'
     },
     {
       title: 'المستخدمين',
       value: stats.totalUsers,
       icon: FiUsers,
       color: 'bg-pink-500',
-      link: '/admin/users'
+      link: '/admin/adminstratorpage/users'
     },
     {
       title: 'مقالات حديثة',
       value: stats.recentPosts,
       icon: FiTrendingUp,
       color: 'bg-orange-500',
-      link: '/admin/posts'
+      link: '/admin/adminstratorpage/posts'
     }
   ];
 
@@ -162,21 +162,21 @@ const AdminDashboard: React.FC = () => {
       title: 'إنشاء مقال جديد',
       description: 'أضف مقالاً جديداً إلى الموقع',
       icon: FiFileText,
-      link: '/admin/posts',
+      link: '/admin/adminstratorpage/posts',
       color: 'bg-blue-600'
     },
     {
       title: 'إدارة التصنيفات',
       description: 'إضافة وتعديل تصنيفات المقالات',
       icon: FiFolder,
-      link: '/admin/categories',
+      link: '/admin/adminstratorpage/categories',
       color: 'bg-green-600'
     },
     {
       title: 'رفع الوسائط',
       description: 'رفع الصور والملفات',
       icon: FiImage,
-      link: '/admin/media',
+      link: '/admin/adminstratorpage/media',
       color: 'bg-purple-600'
     }
   ];
