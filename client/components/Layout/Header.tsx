@@ -90,11 +90,11 @@ const Header: React.FC = () => {
         <div className="container mx-auto px-4 lg:px-8 flex justify-between items-center text-sm">
           <div className="flex items-center space-x-4 rtl:space-x-reverse animate-fade-in">
             <span className="font-medium bg-white/10 px-3 py-1 rounded-full text-sm">
-              {new Date().toLocaleDateString('ar-SA', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+              {new Date().toLocaleDateString('ar-SA-u-ca-gregory', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
             </span>
             <span className="text-blue-200 hidden sm:inline">|</span>
             <span className="font-mono text-blue-100 text-sm">
-              {new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}
+              {new Date().toLocaleTimeString('ar-SA-u-nu-latn', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
