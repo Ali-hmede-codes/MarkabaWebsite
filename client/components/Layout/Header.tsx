@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { FiSearch, FiMenu, FiX, FiFacebook, FiTwitter, FiInstagram, FiYoutube, FiLinkedin, FiSend, FiMessageCircle, FiChevronDown } from 'react-icons/fi';
+import { FiSearch, FiMenu, FiX } from 'react-icons/fi';
+import { SiFacebook, SiTwitter, SiInstagram, SiYoutube, SiLinkedin, SiTelegram, SiWhatsapp, SiTiktok } from 'react-icons/si';
 import { useContent } from '../../hooks/useContent';
 import { useSettingsContext } from '../../context/SettingsContext';
 import { useCategories, useSocialMedia } from '../API/hooks';
@@ -31,21 +32,23 @@ const Header: React.FC = () => {
   const getSocialIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
       case 'facebook':
-        return FiFacebook;
+        return SiFacebook;
       case 'twitter':
-        return FiTwitter;
+        return SiTwitter;
       case 'instagram':
-        return FiInstagram;
+        return SiInstagram;
       case 'youtube':
-        return FiYoutube;
+        return SiYoutube;
       case 'linkedin':
-        return FiLinkedin;
+        return SiLinkedin;
       case 'telegram':
-        return FiSend;
+        return SiTelegram;
       case 'whatsapp':
-        return FiMessageCircle;
+        return SiWhatsapp;
+      case 'tiktok':
+        return SiTiktok;
       default:
-        return FiFacebook;
+        return SiFacebook;
     }
   };
   
@@ -148,7 +151,7 @@ const Header: React.FC = () => {
                           priority
                         />
                   ) : (
-                    <span className="text-blue-800 font-bold text-base lg:text-lg">م</span>
+                    <span className="text-[#363636] md:text-blue-800 font-bold text-base lg:text-lg">م</span>
                   )}
                 </div>
                 <div className="absolute -inset-1 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10"></div>
@@ -304,6 +307,35 @@ const Header: React.FC = () => {
                       <div className="col-span-2 px-3 py-2 text-sm text-gray-400 text-center">
                         لا توجد أقسام متاحة
                       </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Social Media in Mobile Menu */}
+                <div className="space-y-2 border-t border-gray-100 pt-3">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-2">وسائل التواصل الاجتماعي</h3>
+                  <div className="flex flex-wrap justify-center gap-4">
+                    {socialMediaLinks
+                      .filter((link: SocialMedia) => Boolean(link.is_active))
+                      .sort((a: SocialMedia, b: SocialMedia) => a.sort_order - b.sort_order)
+                      .map((link: SocialMedia) => {
+                        const IconComponent = getSocialIcon(link.platform);
+                        return (
+                          <a
+                            key={link.id}
+                            href={link.url.trim().replace(/`/g, '')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#363636] hover:text-blue-600 hover:scale-110 transition-all duration-200 p-2 rounded-full hover:bg-blue-50"
+                            title={link.name_ar}
+                          >
+                            <IconComponent size={24} />
+                          </a>
+                        );
+                      })
+                    }
+                    {socialMediaLoading && (
+                      <div className="text-gray-400 text-sm">جاري التحميل...</div>
                     )}
                   </div>
                 </div>

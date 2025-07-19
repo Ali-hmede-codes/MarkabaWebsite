@@ -5,14 +5,18 @@ import {
   FiPhone,
   FiMapPin,
   FiArrowUp,
-  FiFacebook,
-  FiTwitter,
-  FiInstagram,
-  FiYoutube,
-  FiLinkedin,
-  FiSend,
   FiMessageCircle
 } from 'react-icons/fi';
+import { 
+  SiFacebook,
+  SiTwitter,
+  SiInstagram,
+  SiYoutube,
+  SiLinkedin,
+  SiTelegram,
+  SiWhatsapp,
+  SiTiktok
+} from 'react-icons/si';
 import { useContent } from '../../hooks/useContent';
 import { useCategories, useSocialMedia } from '../API/hooks';
 import type { Category, SocialMedia } from '../API/types';
@@ -24,26 +28,29 @@ const Footer: React.FC = () => {
   const { data: socialMediaData, loading: socialMediaLoading } = useSocialMedia();
   const categories = categoriesResponse?.categories || [];
   const socialMediaLinks: SocialMedia[] = (socialMediaData && Array.isArray(socialMediaData)) ? socialMediaData : [];
+  const whatsappLink = socialMediaLinks.find(link => link.platform.toLowerCase() === 'whatsapp');
   
   // Function to get icon component for social media platform
   const getSocialIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
       case 'facebook':
-        return FiFacebook;
+        return SiFacebook;
       case 'twitter':
-        return FiTwitter;
+        return SiTwitter;
       case 'instagram':
-        return FiInstagram;
+        return SiInstagram;
       case 'youtube':
-        return FiYoutube;
+        return SiYoutube;
       case 'linkedin':
-        return FiLinkedin;
+        return SiLinkedin;
       case 'telegram':
-        return FiSend;
+        return SiTelegram;
       case 'whatsapp':
-        return FiMessageCircle;
+        return SiWhatsapp;
+      case 'tiktok':
+        return SiTiktok;
       default:
-        return FiFacebook;
+        return SiFacebook;
     }
   };
   
@@ -64,6 +71,8 @@ const Footer: React.FC = () => {
         return 'hover:text-blue-500';
       case 'whatsapp':
         return 'hover:text-green-500';
+      case 'tiktok':
+        return 'hover:text-black';
       default:
         return 'hover:text-blue-600';
     }
@@ -119,19 +128,12 @@ const Footer: React.FC = () => {
 
   return (
     <>
-      <footer className="bg-gray-900 text-gray-300" dir="rtl">
+      <footer className="bg-gradient-to-b from-gray-900 to-gray-800 text-gray-300 shadow-lg" dir="rtl">
         <div className="container mx-auto responsive-padding py-8 sm:py-12">
-          <div className="footer-grid">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* About Section */}
             <div className="footer-section">
-              <div className="responsive-flex space-x-2 rtl:space-x-reverse">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm sm:text-lg">ن</span>
-                </div>
-                <span className="text-lg sm:text-xl font-bold text-white">
-                  {content.site.name}
-                </span>
-              </div>
+
               <p className="text-gray-400 leading-relaxed responsive-text">
                 {content.site.description}
               </p>
@@ -197,24 +199,24 @@ const Footer: React.FC = () => {
                 {content.footer.stay_connected}
               </h3>
               
-              {/* Newsletter Signup */}
-              <div className="space-y-3">
-                <p className="text-gray-400 responsive-text">
-                  {content.footer.newsletter_text}
+              {/* WhatsApp Channel Subscription */}
+              <div className="space-y-4 bg-gray-800 p-4 sm:p-6 rounded-lg shadow-md">
+                <p className="text-gray-200 text-base sm:text-lg font-semibold">
+                  اشترك في قناتنا على الواتساب للحصول على آخر الأخبار
                 </p>
-                <form className="flex flex-col space-y-2">
-                  <input
-                    type="email"
-                    placeholder={content.footer.email_placeholder}
-                    className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent responsive-text touch-target"
-                  />
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 responsive-text font-medium touch-target"
+                {whatsappLink ? (
+                  <a
+                    href={whatsappLink?.url || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-md hover:shadow-xl text-base sm:text-lg font-bold transform hover:scale-105"
                   >
-                    {content.footer.subscribe}
-                  </button>
-                </form>
+                    <FiMessageCircle className="w-6 h-6 ml-3 rtl:ml-0 rtl:mr-3" />
+                    انضم الآن
+                  </a>
+                ) : (
+                  <p className="text-gray-400 text-base">قناة الواتساب غير متوفرة حالياً</p>
+                )}
               </div>
 
               {/* Social Media Links */}
@@ -232,7 +234,7 @@ const Footer: React.FC = () => {
                       return (
                         <a
                           key={link.id}
-                          href={link.url.trim().replace(/`/g, '')}
+                          href={link?.url?.trim()?.replace(/`/g, '') || '#'}
                           target="_blank"
                           rel="noopener noreferrer"
                           className={`text-gray-400 ${hoverColor} transition-colors duration-200 touch-target p-1`}
