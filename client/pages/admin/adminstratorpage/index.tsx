@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-hot-toast';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { FiFileText, FiFolder, FiUsers, FiEye, FiTrendingUp, FiImage } from 'react-icons/fi';
-import { withAuth } from '../../../context/AuthContext';
+import { useAuth, withAuth } from '../../../context/AuthContext';
 
 interface DashboardStats {
   totalPosts: number;
@@ -45,6 +45,7 @@ const AdminDashboard: React.FC = () => {
   });
   const [recentPosts, setRecentPosts] = useState<RecentPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
   useEffect(() => {
     fetchStats();
@@ -53,14 +54,10 @@ const AdminDashboard: React.FC = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      
       if (!token) {
         router.push('/admin/adminstratorpage/login');
         return;
       }
-
-      // Fetch dashboard stats from new admin API
       const response = await fetch('/api/admin/adminstratorpage/dashboard/stats', {
         headers: {
           'Authorization': `Bearer ${token}`,
