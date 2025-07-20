@@ -19,7 +19,9 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
     // Group settings by category
     const groupedSettings = {};
     settings.forEach(setting => {
-      const [category, key] = setting.setting_key.split('_', 2);
+      const parts = setting.setting_key.split('_', 2);
+      const category = parts[0] || 'general';
+      const key = parts[1] || parts[0];
       if (!groupedSettings[category]) {
         groupedSettings[category] = {};
       }
