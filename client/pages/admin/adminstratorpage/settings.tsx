@@ -42,7 +42,7 @@ const AdminSettings: React.FC = () => {
         return;
       }
 
-      const data = await apiRequest('/admin/settings');
+      const data = await apiRequest('/admin/adminstratorpage/settings');
     if (data.success) {
       // Group settings by category
       const grouped = data.data.reduce((acc: SettingsGroup, setting: Setting) => {
@@ -64,7 +64,7 @@ const AdminSettings: React.FC = () => {
 
   const fetchSystemInfo = async () => {
     try {
-    const data = await apiRequest('/admin/settings/system/info');
+    const data = await apiRequest('/admin/adminstratorpage/settings/system/info');
     if (data.success) {
       setSystemInfo(data.data);
     }
@@ -96,7 +96,7 @@ const AdminSettings: React.FC = () => {
       setting_value: setting.setting_value
     }));
 
-    const data = await apiRequest('/admin/settings/bulk', {
+    const data = await apiRequest('/admin/adminstratorpage/settings/bulk', {
       method: 'PUT',
       body: JSON.stringify({ settings: flatSettings })
     });
@@ -117,7 +117,7 @@ const AdminSettings: React.FC = () => {
   const testEmailConfig = async () => {
     try {
       setTestingEmail(true);
-      const data = await apiRequest('/admin/settings/test-email', {
+      const data = await apiRequest('/admin/adminstratorpage/settings/test-email', {
       method: 'POST'
     });
 
