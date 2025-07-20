@@ -100,7 +100,8 @@ const NewPost: React.FC = () => {
         formData.append('featured_image', selectedFile);
       }
 
-      const response = await fetch('/api/admin/adminstratorpage/posts', {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE}/api/admin/adminstratorpage/posts`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
