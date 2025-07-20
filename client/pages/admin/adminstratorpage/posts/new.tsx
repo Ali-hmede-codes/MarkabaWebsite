@@ -6,6 +6,7 @@ import AdminLayout from '../../../../components/Layout/AdminLayout';
 import { toast } from 'react-hot-toast';
 import { FiSave, FiArrowLeft, FiImage, FiEye } from 'react-icons/fi';
 import Link from 'next/link';
+import { useAuth } from '../../../../context/AuthContext';
 
 interface PostForm {
   title_ar: string;
@@ -25,6 +26,7 @@ interface Category {
 }
 
 const NewPost: React.FC = () => {
+  const { token } = useAuth();
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,8 +100,11 @@ const NewPost: React.FC = () => {
         formData.append('featured_image', selectedFile);
       }
 
-      const response = await fetch('/api/posts', {
+      const response = await fetch('/api/admin/adminstratorpage/posts', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData
       });
 

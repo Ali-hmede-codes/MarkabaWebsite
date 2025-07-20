@@ -46,12 +46,6 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
       active: router.pathname === '/admin/adminstratorpage/last-news'
     },
     {
-      href: '/admin/adminstratorpage/media',
-      label: 'الوسائط',
-      icon: FiImage,
-      active: router.pathname === '/admin/adminstratorpage/media'
-    },
-    {
       href: '/admin/adminstratorpage/users',
       label: 'المستخدمون',
       icon: FiUsers,
