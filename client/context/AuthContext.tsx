@@ -87,6 +87,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Set state
         setUser(userData);
         setToken(userToken);
+        console.log('AuthContext: User set to', userData);
+        console.log('AuthContext: Token set to', userToken);
+        console.log('AuthContext: isAuthenticated will be', Boolean(userData && userToken));
 
         // Set cookies
         setCookie('token', userToken, {
@@ -96,7 +99,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
         setCookie('user', JSON.stringify(userData), {
           maxAge: 7 * 24 * 60 * 60, // 7 days
-          secure: process.env.NODE_ENV === 'production',
+          secure: window.location.protocol === 'https:',
           sameSite: 'strict',
         });
 

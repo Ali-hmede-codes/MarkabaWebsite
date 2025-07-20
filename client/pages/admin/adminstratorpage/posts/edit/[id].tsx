@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import AdminLayout from '../../../../../components/Layout/AdminLayout';
 import { toast } from 'react-hot-toast';
-import { FiSave, FiArrowLeft, FiImage, FiEye } from 'react-icons/fi';
+import { FiSave, FiArrowLeft , FiEye } from 'react-icons/fi';
 import Link from 'next/link';
 
 interface Post {
@@ -33,6 +33,7 @@ const EditPost: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -93,12 +94,21 @@ const EditPost: React.FC = () => {
 
     try {
       setSaving(true);
+      const formData = new FormData();
+      formData.append('title_ar', post.title_ar);
+      formData.append('content_ar', post.content_ar);
+      formData.append('excerpt_ar', post.excerpt_ar);
+      formData.append('category_id', post.category_id.toString());
+      formData.append('is_published', post.is_published.toString());
+      formData.append('is_featured', post.is_featured.toString());
+      formData.append('tags', post.tags || '');
+      if (selectedFile) {
+        formData.append('featured_image', selectedFile);
+      }
+
       const response = await fetch(`/api/posts/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(post)
+        body: formData
       });
 
       const data = await response.json();
@@ -109,7 +119,7 @@ const EditPost: React.FC = () => {
         toast.error('فشل في حفظ المقال');
       }
     } catch (error) {
-      console.error('Error saving post:', error);
+      //console.error('Error saving post:', error);
       toast.error('حدث خطأ في حفظ المقال');
     } finally {
       setSaving(false);
@@ -174,126 +184,157 @@ const EditPost: React.FC = () => {
           </div>
         </div>
 
-        {/* Form */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <div className="space-y-6">
-            {/* Arabic Title */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                العنوان *
-              </label>
-              <input
-                type="text"
-                value={post.title_ar || ''}
-                onChange={(e) => handleInputChange('title_ar', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-medium text-gray-900"
-                dir="rtl"
-                placeholder="أدخل عنوان المقال"
-                style={{ fontFamily: 'Noto Sans Arabic, sans-serif' }}
-                required
+        {previewMode ? (
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <h2 className="text-2xl font-bold mb-4">{post.title_ar}</h2>
+            {(selectedFile || post.featured_image) && (
+              <img 
+                src={selectedFile ? URL.createObjectURL(selectedFile) : post.featured_image}
+                alt="Featured"
+                className="w-full max-w-md mb-4"
               />
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-            {/* Category */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                التصنيف *
-              </label>
-              <select
-                value={post.category_id || ''}
-                onChange={(e) => handleInputChange('category_id', parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                required
-              >
-                <option value="">اختر التصنيف</option>
-                {Array.isArray(categories) && categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name_ar}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Featured Image */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                الصورة المميزة
-              </label>
-              <input
-                type="url"
-                value={post.featured_image || ''}
-                onChange={(e) => handleInputChange('featured_image', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                placeholder="رابط الصورة"
-              />
-            </div>
-
-            </div>
-
-            {/* Arabic Excerpt */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                المقتطف
-              </label>
-              <textarea
-                value={post.excerpt_ar || ''}
-                onChange={(e) => handleInputChange('excerpt_ar', e.target.value)}
-                rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900"
-                dir="rtl"
-                placeholder="وصف مختصر للمقال"
-                style={{ fontFamily: 'Noto Sans Arabic, sans-serif', lineHeight: '1.8' }}
-              />
-            </div>
-
-            {/* Arabic Content */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                المحتوى *
-              </label>
-              <textarea
-                value={post.content_ar || ''}
-                onChange={(e) => handleInputChange('content_ar', e.target.value)}
-                rows={12}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y min-h-[300px] text-gray-900"
-                dir="rtl"
-                required
-                placeholder="محتوى المقال باللغة العربية"
-                style={{ fontFamily: 'Noto Sans Arabic, sans-serif', lineHeight: '1.8', fontSize: '16px' }}
-              />
-            </div>
-
-            {/* Status Options */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                حالة المقال
-              </label>
-              <div className="flex items-center space-x-6 rtl:space-x-reverse">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={post.is_published}
-                    onChange={(e) => handleInputChange('is_published', e.target.checked)}
-                    className="ml-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                  />
-                  منشور
+            )}
+            <p className="text-gray-600 mb-4">{post.excerpt_ar}</p>
+            <div className="prose" dangerouslySetInnerHTML={{ __html: post.content_ar }} />
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="space-y-6">
+              {/* Arabic Title */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  العنوان *
                 </label>
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={post.is_featured}
-                    onChange={(e) => handleInputChange('is_featured', e.target.checked)}
-                    className="ml-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                  />
-                  مميز
+                <input
+                  type="text"
+                  value={post.title_ar || ''}
+                  onChange={(e) => handleInputChange('title_ar', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-medium text-gray-900"
+                  dir="rtl"
+                  placeholder="أدخل عنوان المقال"
+                  style={{ fontFamily: 'Noto Sans Arabic, sans-serif' }}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  التصنيف *
                 </label>
+                <select
+                  value={post.category_id || ''}
+                  onChange={(e) => handleInputChange('category_id', parseInt(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  required
+                >
+                  <option value="">اختر التصنيف</option>
+                  {Array.isArray(categories) && categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.name_ar}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Featured Image */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  الصورة المميزة
+                </label>
+                {post.featured_image && (
+                  <img src={post.featured_image} alt="Current featured" className="w-32 h-32 object-cover mb-2" />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              {/* Tags */}
+              <div className="lg:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  الكلمات المفتاحية
+                </label>
+                <input
+                  type="text"
+                  value={post.tags || ''}
+                  onChange={(e) => handleInputChange('tags', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  placeholder="كلمة1، كلمة2، كلمة3"
+                  dir="rtl"
+                />
+              </div>
+
+              </div>
+
+              {/* Arabic Excerpt */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  المقتطف
+                </label>
+                <textarea
+                  value={post.excerpt_ar || ''}
+                  onChange={(e) => handleInputChange('excerpt_ar', e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900"
+                  dir="rtl"
+                  placeholder="وصف مختصر للمقال"
+                  style={{ fontFamily: 'Noto Sans Arabic, sans-serif', lineHeight: '1.8' }}
+                />
+              </div>
+
+              {/* Arabic Content */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  المحتوى *
+                </label>
+                <textarea
+                  value={post.content_ar || ''}
+                  onChange={(e) => handleInputChange('content_ar', e.target.value)}
+                  rows={12}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y min-h-[300px] text-gray-900"
+                  dir="rtl"
+                  required
+                  placeholder="محتوى المقال باللغة العربية"
+                  style={{ fontFamily: 'Noto Sans Arabic, sans-serif', lineHeight: '1.8', fontSize: '16px' }}
+                />
+              </div>
+
+              {/* Status Options */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  حالة المقال
+                </label>
+                <div className="flex items-center space-x-6 rtl:space-x-reverse">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={post.is_published}
+                      onChange={(e) => handleInputChange('is_published', e.target.checked)}
+                      className="ml-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    />
+                    منشور
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={post.is_featured}
+                      onChange={(e) => handleInputChange('is_featured', e.target.checked)}
+                      className="ml-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    />
+                    مميز
+                  </label>
+                </div>
               </div>
             </div>
           </div>
+        ) }
         </div>
-      </div>
     </AdminLayout>
   );
 };

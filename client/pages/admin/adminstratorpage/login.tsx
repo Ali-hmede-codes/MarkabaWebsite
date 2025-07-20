@@ -29,9 +29,16 @@ const AdminLogin: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === 'admin') {
-      toast.success('Login successful! Redirecting to settings...');
-      window.location.href = '/admin/adminstratorpage/settings';
+    console.log('useEffect checking: isAuthenticated =', isAuthenticated, ', user.role =', user?.role);
+      if (isAuthenticated && user?.role === 'admin') {
+      try {
+        toast.success('Login successful! Redirecting to settings...');
+        console.log('useEffect redirect triggered');
+        window.location.href = '/admin/adminstratorpage/settings';
+      } catch (error) {
+        console.error('Redirect error:', error);
+        toast.error('Redirect failed. Please navigate manually.');
+      }
     }
   }, [isAuthenticated, user, router]);
 
@@ -66,8 +73,10 @@ const AdminLogin: React.FC = () => {
       
       await login(loginData);
       
-      // Redirect to admin panel
-      window.location.href = '/admin/adminstratorpage/settings';
+      toast.success('Login successful!');
+      setTimeout(() => {
+        window.location.href = '/admin/adminstratorpage/settings';
+      }, 100);
       
     } catch (error: any) {
       // Handle error responses

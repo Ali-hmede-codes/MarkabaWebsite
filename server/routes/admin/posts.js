@@ -3,6 +3,7 @@ const { body, validationResult, param } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const sharp = require('sharp');
 const db = require('../../config/database');
 const { auth: authenticateToken, requireRole } = require('../../middlewares/auth');
 
@@ -10,19 +11,33 @@ const { auth: authenticateToken, requireRole } = require('../../middlewares/auth
 const router = express.Router();
 
 // Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadPath = path.join(__dirname, '../../uploads/posts');
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = `${Date.now()  }-${  Math.round(Math.random() * 1E9)}`;
-    cb(null, `${file.fieldname  }-${  uniqueSuffix  }${path.extname(file.originalname)}`);
+
+const storage = multer.memoryStorage();
+
+
+async function processImage(file) {
+  const uploadPath = path.join(__dirname, '../../uploads/posts');
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
   }
-});
+  let filename = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+  let filePath = path.join(uploadPath, filename);
+
+  if (fs.existsSync(filePath)) {
+    const ext = path.extname(filename);
+    const base = path.basename(filename, ext);
+    const random = Math.random().toString(36).substring(2, 8);
+    filename = `${base}-${random}${ext}`;
+    filePath = path.join(uploadPath, filename);
+  }
+
+  await sharp(file.buffer)
+    .resize({ width: 1200, withoutEnlargement: true })
+    .toFormat('jpeg', { quality: 80 })
+    .toFile(filePath);
+
+  return `/uploads/posts/${filename}`;
+}
 
 const upload = multer({
   storage: storage,
@@ -363,7 +378,7 @@ router.post('/',
       // Handle featured image
       let featured_image = null;
       if (req.file) {
-        featured_image = `/uploads/posts/${req.file.filename}`;
+        featured_image = await processImage(req.file);
       }
       
       // Convert status to is_published boolean for database storage
@@ -557,7 +572,7 @@ router.put('/:id',
             fs.unlinkSync(oldImagePath);
           }
         }
-        updateData.featured_image = `/uploads/posts/${req.file.filename}`;
+        updateData.featured_image = await processImage(req.file);
       }
       
       // Convert status to is_published boolean
