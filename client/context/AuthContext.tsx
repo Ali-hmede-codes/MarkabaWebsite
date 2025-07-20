@@ -121,10 +121,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   // Logout function
-  const logout = () => {
-    clearAuth();
-    toast.success('Logged out successfully');
-    router.replace('/admin/adminstratorpage/login');
+  const logout = async () => {
+    try {
+      await authApi.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      clearAuth();
+      toast.success('Logged out successfully');
+      router.replace('/auth/login');
+    }
   };
 
   // Check if user is authenticated

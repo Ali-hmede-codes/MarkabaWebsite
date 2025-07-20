@@ -3,7 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FiHome, FiFileText, FiFolder, FiUsers, FiSettings, FiImage } from 'react-icons/fi';
+import { FiHome, FiFileText, FiFolder, FiUsers, FiSettings, FiImage, FiAlertTriangle, FiClock } from 'react-icons/fi';
+import { useAuth } from '../../context/AuthContext';
 
 interface AdminNavProps {
   className?: string;
@@ -11,6 +12,7 @@ interface AdminNavProps {
 
 const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
   const router = useRouter();
+  const { logout } = useAuth();
   
   const navItems = [
     {
@@ -30,6 +32,18 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
       label: 'التصنيفات',
       icon: FiFolder,
       active: router.pathname === '/admin/adminstratorpage/categories'
+    },
+    {
+      href: '/admin/adminstratorpage/breaking-news',
+      label: 'الأخبار العاجلة',
+      icon: FiAlertTriangle, // Add appropriate icon
+      active: router.pathname === '/admin/adminstratorpage/breaking-news'
+    },
+    {
+      href: '/admin/adminstratorpage/last-news',
+      label: 'آخر الأخبار',
+      icon: FiClock, // Add appropriate icon
+      active: router.pathname === '/admin/adminstratorpage/last-news'
     },
     {
       href: '/admin/adminstratorpage/media',
@@ -88,7 +102,10 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
             >
               عرض الموقع
             </Link>
-            <button className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+            <button 
+              onClick={logout}
+              className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+            >
               تسجيل الخروج
             </button>
           </div>
