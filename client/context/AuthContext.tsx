@@ -64,7 +64,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         }
       } catch (error) {
-       // console.error('Error initializing auth:', error);
         clearAuth();
       } finally {
         setLoading(false);
@@ -79,7 +78,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       const response = await authApi.login(credentials);
-      //console.log('Login response:', response);
 
       if (response.data?.user && response.data?.token) {
         const { user: userData, token: userToken } = response.data;
@@ -87,9 +85,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Set state
         setUser(userData);
         setToken(userToken);
-        console.log('AuthContext: User set to', userData);
-        console.log('AuthContext: Token set to', userToken);
-        console.log('AuthContext: isAuthenticated will be', Boolean(userData && userToken));
 
         // Set cookies
         setCookie('token', userToken, {
@@ -108,21 +103,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         throw new Error('Login failed - invalid response');
       }
+      router.replace('/admin/adminstratorpage/settings'); // Redirect to settings after successful login
     } catch (error: any) {
       // Handle specific error responses from backend
       if (error.response) {
         const status = error.response.status;
         const message = error.response.data?.message || error.message;
         
-        if (status === 429) {
-          throw new Error('Too many login attempts. Please try again in 15 minutes.');
-        } else if (status === 403) {
-          throw new Error('Admin access required');
-        } else if (status === 423) {
-          throw new Error(message); // Account locked message from backend
-        } else {
           throw new Error(message || 'Login failed. Please try again.');
-        }
       } else {
         const message = error.message || 'Login failed. Please try again.';
         throw new Error(message);
@@ -136,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     clearAuth();
     toast.success('Logged out successfully');
-    router.replace('/auth/login');
+    router.replace('/admin/adminstratorpage/login');
   };
 
   // Check if user is authenticated
@@ -160,6 +148,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated,
     hasRole,
   };
+
+  // Route change handler
+  useEffect(() => {
+    const handleRouteChange = async () => {
+      if (token) {
+        try {
+          const response = await authApi.verifyToken();
+          if (response.success && response.data?.valid && response.data.user) {
+            setUser(response.data.user);
+          } else {
+            clearAuth();
+            router.replace('/admin/adminstratorpage/login');
+          }
+        } catch (error) {
+          clearAuth();
+          router.replace('/admin/adminstratorpage/login');
+        }
+      }
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [token, router, clearAuth]);
 
   return (
     <AuthContext.Provider value={value}>
@@ -189,7 +203,7 @@ export const withAuth = <P extends object>(
     useEffect(() => {
       if (!loading) {
         if (!isAuthenticated) {
-          router.replace('/auth/login');
+          router.replace('/admin/adminstratorpage/login');
           return;
         }
 

@@ -15,10 +15,7 @@ const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || '30d';
 const ADMIN_MIN_PASSWORD_LENGTH = 8;
 const ADMIN_REQUIRE_COMPLEX_PASSWORD = true;
 
-// Rate limiting for login attempts
-const loginAttempts = new Map();
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-const MAX_ATTEMPTS_PER_IP = 5;
+
 
 // Password complexity check
 const isPasswordComplex = (password) => {
@@ -33,24 +30,7 @@ const isPasswordComplex = (password) => {
          hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar;
 };
 
-// Rate limiting check
-const checkRateLimit = (clientIP) => {
-  const now = Date.now();
-  const attempts = loginAttempts.get(clientIP) || [];
-  
-  // Clean old attempts
-  const recentAttempts = attempts.filter(time => now - time < RATE_LIMIT_WINDOW);
-  
-  if (recentAttempts.length >= MAX_ATTEMPTS_PER_IP) {
-    return false;
-  }
-  
-  // Add current attempt
-  recentAttempts.push(now);
-  loginAttempts.set(clientIP, recentAttempts);
-  
-  return true;
-};
+
 
 // Generate secure tokens
 const generateTokens = (user) => {
@@ -75,15 +55,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     const clientIP = req.ip || req.connection.remoteAddress;
     const userAgent = req.get('User-Agent') || 'Unknown';
     
-    // Rate limiting check
-    if (!checkRateLimit(clientIP)) {
-      console.log(`Rate limit exceeded for IP: ${clientIP}`);
-      return res.status(429).json({
-        success: false,
-        error: 'Rate limit exceeded',
-        message: 'Too many login attempts. Please try again in 15 minutes.'
-      });
-    }
+
     
     // Validate input - require either username or email
     if (!username && !email) {

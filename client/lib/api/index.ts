@@ -3,7 +3,7 @@
 import { LoginCredentials, AuthResponse, User } from '../../components/API/types';
 
 // Base API configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000/api/v2';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
 
 // API request helper
 export const apiRequest = async (endpoint: string, options: RequestInit = {}) => {

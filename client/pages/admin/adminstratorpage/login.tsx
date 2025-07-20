@@ -28,21 +28,7 @@ const AdminLogin: React.FC = () => {
   const { login, isAuthenticated, user } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    console.log('useEffect checking: isAuthenticated =', isAuthenticated, ', user.role =', user?.role);
-      if (isAuthenticated && user?.role === 'admin') {
-      try {
-        toast.success('Login successful! Redirecting to settings...');
-        console.log('useEffect redirect triggered');
-        window.location.href = '/admin/adminstratorpage/settings';
-      } catch (error) {
-        console.error('Redirect error:', error);
-        toast.error('Redirect failed. Please navigate manually.');
-      }
-    }
-  }, [isAuthenticated, user, router]);
-
-  // Note: Redirect logic is now handled by middleware
+  // Redirect handled in AuthContext
 
 
 
@@ -74,9 +60,6 @@ const AdminLogin: React.FC = () => {
       await login(loginData);
       
       toast.success('Login successful!');
-      setTimeout(() => {
-        window.location.href = '/admin/adminstratorpage/settings';
-      }, 100);
       
     } catch (error: any) {
       // Handle error responses

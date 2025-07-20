@@ -6,6 +6,8 @@ import AdminLayout from '../../../components/Layout/AdminLayout';
 import { FiPlus, FiEdit, FiTrash2, FiSearch, FiSave, FiX, FiEye, FiEyeOff, FiKey } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
+import { useAuth } from '../../../context/AuthContext';
+
 interface User {
   id: number;
   username: string;
@@ -63,24 +65,33 @@ const AdminUsers: React.FC = () => {
     fetchUsers();
   }, []);
 
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/users');
-      const data = await response.json();
-
-      if (data.success) {
-        setUsers(data.data || []);
-      } else {
-        toast.error('فشل في تحميل المستخدمين');
+  // Inside AdminUsers component
+    const { token } = useAuth();
+  
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/users', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+  
+        if (data.success) {
+          setUsers(data.data || []);
+        } else {
+          toast.error('فشل في تحميل المستخدمين');
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        toast.error('حدث خطأ في تحميل المستخدمين');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      toast.error('حدث خطأ في تحميل المستخدمين');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+  
+
 
   const validateForm = (): boolean => {
     const errors: Partial<UserForm> = {};
@@ -143,10 +154,12 @@ const AdminUsers: React.FC = () => {
         delete submitData.password;
       }
 
+      // In handleSubmit
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(submitData),
       });
@@ -174,10 +187,12 @@ const AdminUsers: React.FC = () => {
     }
 
     try {
+      // In handlePasswordChange
       const response = await fetch(`/api/users/${passwordForm.userId}/password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ password: passwordForm.newPassword }),
       });
@@ -221,10 +236,12 @@ const AdminUsers: React.FC = () => {
 
   const toggleUserStatus = async (userId: number, currentStatus: boolean) => {
     try {
+      // In toggleUserStatus
       const response = await fetch(`/api/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ is_active: !currentStatus }),
       });
@@ -247,8 +264,12 @@ const AdminUsers: React.FC = () => {
 
   const handleDelete = async (userId: number) => {
     try {
+      // In handleDelete
       const response = await fetch(`/api/users/${userId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();

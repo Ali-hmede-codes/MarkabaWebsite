@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-hot-toast';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { FiSave, FiRefreshCw, FiDatabase, FiMail, FiShield, FiGlobe, FiImage, FiSettings } from 'react-icons/fi';
+import { apiRequest } from '@/lib/api';
 
 interface Setting {
   id: number;
@@ -41,29 +42,18 @@ const AdminSettings: React.FC = () => {
         return;
       }
 
-      const response = await fetch('/api/admin/adminstratorpage/settings', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const data = await apiRequest('/admin/settings');
+    if (data.success) {
+      // Group settings by category
+      const grouped = data.data.reduce((acc: SettingsGroup, setting: Setting) => {
+        if (!acc[setting.category]) {
+          acc[setting.category] = [];
         }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          // Group settings by category
-          const grouped = data.data.reduce((acc: SettingsGroup, setting: Setting) => {
-            if (!acc[setting.category]) {
-              acc[setting.category] = [];
-            }
-            acc[setting.category].push(setting);
-            return acc;
-          }, {});
-          setSettings(grouped);
-        }
-      } else if (response.status === 401) {
-        router.push('/auth/login');
-      }
+        acc[setting.category].push(setting);
+        return acc;
+      }, {});
+      setSettings(grouped);
+    }
     } catch (error) {
       console.error('Error fetching settings:', error);
       toast.error('خطأ في جلب الإعدادات');
@@ -74,23 +64,13 @@ const AdminSettings: React.FC = () => {
 
   const fetchSystemInfo = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/admin/adminstratorpage/settings/system-info', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setSystemInfo(data.data);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching system info:', error);
+    const data = await apiRequest('/admin/settings/system/info');
+    if (data.success) {
+      setSystemInfo(data.data);
     }
+  } catch (error) {
+    console.error('Error fetching system info:', error);
+  }
   };
 
   const handleSettingChange = (settingKey: string, value: string) => {
@@ -110,31 +90,22 @@ const AdminSettings: React.FC = () => {
   const saveSettings = async () => {
     try {
       setSaving(true);
-      const token = localStorage.getItem('token');
-      
       // Flatten settings for API
-      const flatSettings = Object.values(settings).flat().map(setting => ({
-        setting_key: setting.setting_key,
-        setting_value: setting.setting_value
-      }));
+    const flatSettings = Object.values(settings).flat().map(setting => ({
+      setting_key: setting.setting_key,
+      setting_value: setting.setting_value
+    }));
 
-      const response = await fetch('/api/admin/adminstratorpage/settings/bulk', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ settings: flatSettings })
-      });
+    const data = await apiRequest('/admin/settings/bulk', {
+      method: 'PUT',
+      body: JSON.stringify({ settings: flatSettings })
+    });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          toast.success('تم حفظ الإعدادات بنجاح');
-        }
-      } else {
-        toast.error('خطأ في حفظ الإعدادات');
-      }
+    if (data.success) {
+      toast.success('تم حفظ الإعدادات بنجاح');
+    } else {
+      toast.error('خطأ في حفظ الإعدادات');
+    }
     } catch (error) {
       console.error('Error saving settings:', error);
       toast.error('خطأ في حفظ الإعدادات');
@@ -146,26 +117,15 @@ const AdminSettings: React.FC = () => {
   const testEmailConfig = async () => {
     try {
       setTestingEmail(true);
-      const token = localStorage.getItem('token');
-      
-      const response = await fetch('/api/admin/adminstratorpage/settings/test-email', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const data = await apiRequest('/admin/settings/test-email', {
+      method: 'POST'
+    });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          toast.success('تم إرسال رسالة اختبار بنجاح');
-        } else {
-          toast.error(data.message || 'فشل في إرسال رسالة الاختبار');
-        }
-      } else {
-        toast.error('خطأ في اختبار البريد الإلكتروني');
-      }
+    if (data.success) {
+      toast.success('تم إرسال رسالة اختبار بنجاح');
+    } else {
+      toast.error(data.message || 'فشل في إرسال رسالة الاختبار');
+    }
     } catch (error) {
       console.error('Error testing email:', error);
       toast.error('خطأ في اختبار البريد الإلكتروني');
