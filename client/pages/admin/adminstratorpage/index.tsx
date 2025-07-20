@@ -170,13 +170,7 @@ const AdminDashboard: React.FC = () => {
       link: '/admin/adminstratorpage/categories',
       color: 'bg-green-600'
     },
-    {
-      title: 'رفع الوسائط',
-      description: 'رفع الصور والملفات',
-      icon: FiImage,
-      link: '/admin/adminstratorpage/media',
-      color: 'bg-purple-600'
-    }
+    
   ];
 
   return (
