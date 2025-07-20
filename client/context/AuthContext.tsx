@@ -103,7 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         throw new Error('Login failed - invalid response');
       }
-      router.replace('/admin/adminstratorpage/settings'); // Redirect to settings after successful login
+      router.replace('/admin/adminstratorpage'); // Redirect to main admin dashboard after successful login
     } catch (error: any) {
       // Handle specific error responses from backend
       if (error.response) {
