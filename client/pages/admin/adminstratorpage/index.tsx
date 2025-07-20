@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-hot-toast';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { FiFileText, FiFolder, FiUsers, FiEye, FiTrendingUp, FiImage } from 'react-icons/fi';
+import { withAuth } from '../../../context/AuthContext';
 
 interface DashboardStats {
   totalPosts: number;
@@ -55,7 +56,7 @@ const AdminDashboard: React.FC = () => {
       const token = localStorage.getItem('token');
       
       if (!token) {
-        router.push('/auth/login');
+        router.push('/admin/adminstratorpage/login');
         return;
       }
 
@@ -298,4 +299,4 @@ const AdminDashboard: React.FC = () => {
   );
 };
 
-export default AdminDashboard;
+export default withAuth(AdminDashboard, 'admin');
