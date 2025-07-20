@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { FiSave, FiRefreshCw, FiDatabase, FiMail, FiShield, FiGlobe, FiImage, FiSettings } from 'react-icons/fi';
 import { apiRequest } from '@/lib/api';
+import { withAuth } from '@/context/AuthContext';
 
 interface Setting {
   id: number;
@@ -36,12 +37,6 @@ const AdminSettings: React.FC = () => {
 
   const fetchSettings = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        router.push('/auth/login');
-        return;
-      }
-
       const data = await apiRequest('/admin/adminstratorpage/settings');
     if (data.success) {
       // Group settings by category
@@ -365,4 +360,4 @@ const AdminSettings: React.FC = () => {
   );
 };
 
-export default AdminSettings;
+export default withAuth(AdminSettings, 'admin');

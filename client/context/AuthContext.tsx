@@ -149,31 +149,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     hasRole,
   };
 
-  // Route change handler
-  useEffect(() => {
-    const handleRouteChange = async () => {
-      if (token) {
-        try {
-          const response = await authApi.verifyToken();
-          if (response.success && response.data?.valid && response.data.user) {
-            setUser(response.data.user);
-          } else {
-            clearAuth();
-            router.replace('/admin/adminstratorpage/login');
-          }
-        } catch (error) {
-          clearAuth();
-          router.replace('/admin/adminstratorpage/login');
-        }
-      }
-    };
-
-    router.events.on('routeChangeComplete', handleRouteChange);
-
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-    };
-  }, [token, router, clearAuth]);
+  // Remove the problematic route change handler that was causing redirects
 
   return (
     <AuthContext.Provider value={value}>
