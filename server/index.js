@@ -141,8 +141,17 @@ app.use(express.urlencoded({
   limit: '10mb' 
 }));
 
-// Static file serving for uploads
-app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
+// Static file serving for uploads with conditional caching
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'), isDevelopment ? {
+  maxAge: 0,
+  etag: false,
+  lastModified: false,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+} : {
   maxAge: '1d',
   etag: true,
   lastModified: true
@@ -159,21 +168,37 @@ app.use('/_next', express.static(path.join(clientBuildPath, 'static'), {
   lastModified: true
 }));
 
-// Serve public assets
-app.use('/images', express.static(path.join(clientPublicPath, 'images'), {
+// Serve public assets with conditional caching
+const staticOptions = isDevelopment ? {
+  maxAge: 0,
+  etag: false,
+  lastModified: false,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+} : {
   maxAge: '1d',
   etag: true,
   lastModified: true
-}));
+};
 
-app.use('/content', express.static(path.join(clientPublicPath, 'content'), {
-  maxAge: '1d',
-  etag: true,
-  lastModified: true
-}));
+app.use('/images', express.static(path.join(clientPublicPath, 'images'), staticOptions));
+
+app.use('/content', express.static(path.join(clientPublicPath, 'content'), staticOptions));
 
 // Serve other public files
-app.use(express.static(clientPublicPath, {
+app.use(express.static(clientPublicPath, isDevelopment ? {
+  maxAge: 0,
+  etag: false,
+  lastModified: false,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+} : {
   maxAge: '1h',
   etag: true,
   lastModified: true
