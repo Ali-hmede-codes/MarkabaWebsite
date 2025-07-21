@@ -176,7 +176,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <AdminLayout title="لوحة التحكم" description="لوحة تحكم إدارة الموقع">
       <Head>
-        <title>لوحة التحكم - نيوز مركبة</title>
+        <title>لوحة التحكم - مركبا</title>
       </Head>
 
       <div className="min-h-screen bg-gray-50 py-8">
@@ -184,7 +184,7 @@ const AdminDashboard: React.FC = () => {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">لوحة التحكم</h1>
-            <p className="text-gray-600 mt-2">مرحباً بك في لوحة تحكم نيوز مركبة</p>
+            <p className="text-gray-600 mt-2">مرحباً بك في لوحة تحكم منصة مركبا</p>
           </div>
 
           {/* Stats Cards */}

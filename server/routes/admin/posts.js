@@ -288,9 +288,9 @@ router.post('/',
     body('category_id')
       .isInt()
       .withMessage('معرف التصنيف يجب أن يكون رقماً'),
-    body('status')
-      .isIn(['draft', 'published'])
-      .withMessage('حالة المقال غير صحيحة'),
+    body('is_published')
+      .isBoolean()
+      .withMessage('حالة النشر يجب أن تكون true أو false'),
     body('is_featured')
       .optional()
       .isBoolean()
@@ -321,7 +321,9 @@ router.post('/',
         meta_description_ar 
       } = req.body;
       
-      const { category_id, status } = req.body;
+      const { category_id, is_published } = req.body;
+      const isPublished = is_published === 'true' || is_published === '1';
+      const isFeatured = is_featured === 'true' || is_featured === '1';
       
       // Sanitize and trim input data
       if (title_ar) title_ar = title_ar.trim();
@@ -345,8 +347,8 @@ router.post('/',
       }
       
       // Set default values
-      excerpt_ar = excerpt_ar || `${content_ar.substring(0, 200)  }...`;
-      is_featured = is_featured !== undefined ? is_featured : false;
+      excerpt_ar = excerpt_ar || `${content_ar.substring(0, 200)}...`;
+      is_featured = is_featured !== undefined ? isFeatured : false;
       meta_description_ar = meta_description_ar || excerpt_ar;
       
       // Check if slug already exists
@@ -356,7 +358,7 @@ router.post('/',
       );
       
       if (existingPosts.length > 0) {
-        slug = `${slug  }-${  Date.now()}`;
+        slug = `${slug}-${Date.now()}`;
       }
       
       // Check if category exists
@@ -389,7 +391,7 @@ router.post('/',
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
         [
           title_ar, slug, content_ar, excerpt_ar, featured_image, category_id, req.user.id,
-          status === 'published' ? 1 : 0, is_featured ? 1 : 0, meta_description_ar
+          isPublished ? 1 : 0, isFeatured ? 1 : 0, meta_description_ar
         ]
       );
       

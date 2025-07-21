@@ -51,7 +51,8 @@ const NewPost: React.FC = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/categories');
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE}/api/categories`);
       const data = await response.json();
       if (data.success && Array.isArray(data.data)) {
         setCategories(data.data);
@@ -101,7 +102,7 @@ const NewPost: React.FC = () => {
       }
 
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE}/admin/adminstratorpage/posts`, {
+      const response = await fetch(`${API_BASE}/api/v2/admin/adminstratorpage/posts`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
