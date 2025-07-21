@@ -52,7 +52,7 @@ const NewPost: React.FC = () => {
     try {
       setLoading(true);
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE}/api/categories`);
+      const response = await fetch(`${API_BASE}/api/v2/admin/adminstratorpage/categories`);
       const data = await response.json();
       if (data.success && Array.isArray(data.data)) {
         setCategories(data.data);
