@@ -57,12 +57,12 @@ const EditPost: React.FC = () => {
         setPost(data.data);
       } else {
         toast.error('فشل في تحميل المقال');
-        router.push('/admin/adminstratorpage/posts');
+        router.push('/admin/administratorpage/posts');
       }
     } catch (error) {
       console.error('Error fetching post:', error);
       toast.error('حدث خطأ في تحميل المقال');
-      router.push('/admin/adminstratorpage/posts');
+      router.push('/admin/administratorpage/posts');
     } finally {
       setLoading(false);
     }
@@ -114,7 +114,7 @@ const EditPost: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         toast.success('تم حفظ المقال بنجاح');
-        router.push('/admin/adminstratorpage/posts');
+        router.push('/admin/administratorpage/posts');
       } else {
         toast.error('فشل في حفظ المقال');
       }
@@ -142,7 +142,7 @@ const EditPost: React.FC = () => {
       <AdminLayout>
         <div className="p-8 text-center">
           <p className="text-gray-600">المقال غير موجود</p>
-          <Link href="/admin/adminstratorpage/posts">
+          <Link href="/admin/administratorpage/posts">
             <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               العودة إلى المقالات
             </button>
@@ -158,7 +158,7 @@ const EditPost: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
-            <Link href="/admin/adminstratorpage/posts">
+            <Link href="/admin/administratorpage/posts">
               <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
                 <FiArrowLeft size={20} />
               </button>
