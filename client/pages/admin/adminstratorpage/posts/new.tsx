@@ -53,7 +53,7 @@ const NewPost: React.FC = () => {
       setLoading(true);
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       console.log('Fetching categories with token:', token);
-      const response = await fetch(`${API_BASE}/admin/adminstratorpage/categories`, {
+      const response = await fetch(`${API_BASE}/api/v2/admin/adminstratorpage/categories`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
