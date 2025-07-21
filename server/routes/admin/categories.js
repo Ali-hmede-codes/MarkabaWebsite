@@ -94,9 +94,10 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor']), async (req,
   } catch (error) {
     console.error('Error fetching categories:', error);
     res.status(500).json({
-      success: false,
-      message: 'خطأ في الخادم الداخلي'
-    });
+    success: false,
+    message: 'خطأ في الخادم الداخلي',
+    error: error.message
+  });
   }
 });
 
