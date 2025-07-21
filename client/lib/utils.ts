@@ -8,7 +8,9 @@
  * @returns The full image URL
  */
 export function getImageUrl(imagePath: string | null | undefined): string {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  let baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  // Remove /api/v2 from the end if present
+  baseUrl = baseUrl.replace(/\/api\/v2$/, '');
 
   if (!imagePath) {
     return `${baseUrl}/uploads/placeholder-news-1.svg`; // Default placeholder image
