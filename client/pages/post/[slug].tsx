@@ -4,6 +4,7 @@ import { useAPI } from '../../components/API/hooks';
 import Image from 'next/image';
 import Head from 'next/head';
 import Layout from '../../components/Layout/Layout';
+import { getImageUrl } from '../../lib/utils';
 
 type Post = {
   id: number;
@@ -45,7 +46,7 @@ const SinglePostPage: React.FC = () => {
           </div>
           {post.featured_image && (
             <div className="relative w-full h-96 mb-8">
-              <Image src={post.featured_image} alt={post.title_ar} fill className="object-cover rounded-lg" />
+              <Image src={getImageUrl(post.featured_image)} alt={post.title_ar} fill className="object-cover rounded-lg" />
             </div>
           )}
           <div className="prose max-w-none mb-8 text-gray-800" dangerouslySetInnerHTML={{ __html: post.content_ar }} />

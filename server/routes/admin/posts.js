@@ -17,8 +17,8 @@ const storage = multer.memoryStorage();
 
 
 async function processImage(file) {
-  // Save images to client/public/images since server serves static files from there
-  const uploadPath = path.join(__dirname, '../../../client/public/images');
+  // Save images to server/public/uploads for backend serving
+  const uploadPath = path.join(__dirname, '../../public/uploads');
   if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
   }
@@ -38,7 +38,7 @@ async function processImage(file) {
     .toFormat('jpeg', { quality: 80 })
     .toFile(filePath);
 
-  return `/images/${filename}`;
+  return `/uploads/${filename}`;
 }
 
 const upload = multer({

@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { FiSave, FiArrowLeft, FiImage, FiEye } from 'react-icons/fi';
 import Link from 'next/link';
 import { useAuth } from '../../../../context/AuthContext';
+import { getImageUrl } from '../../../../lib/utils';
 
 interface PostForm {
   title_ar: string;
@@ -191,7 +192,7 @@ const NewPost: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4">{post.title_ar}</h2>
             {(selectedFile || post.featured_image) && (
               <img 
-                src={selectedFile ? URL.createObjectURL(selectedFile) : post.featured_image}
+                src={selectedFile ? URL.createObjectURL(selectedFile) : getImageUrl(post.featured_image)}
                 alt="Featured"
                 className="w-full max-w-md mb-4"
               />

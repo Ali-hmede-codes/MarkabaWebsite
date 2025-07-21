@@ -53,7 +53,7 @@ const Header: React.FC = () => {
   };
   
   // Get logo from database settings
-  const logoUrl = getSetting('site_logo', 'ar') || '/images/logo_new.png';
+  const logoUrl = getSetting('site_logo', 'ar') || '/uploads/logo_new.png';
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

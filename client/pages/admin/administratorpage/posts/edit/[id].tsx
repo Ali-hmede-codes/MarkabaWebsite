@@ -6,6 +6,7 @@ import AdminLayout from '../../../../../components/Layout/AdminLayout';
 import { toast } from 'react-hot-toast';
 import { FiSave, FiArrowLeft , FiEye } from 'react-icons/fi';
 import Link from 'next/link';
+import { getImageUrl } from '../../../../../lib/utils';
 
 interface Post {
   id: number;
@@ -189,7 +190,7 @@ const EditPost: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4">{post.title_ar}</h2>
             {(selectedFile || post.featured_image) && (
               <img 
-                src={selectedFile ? URL.createObjectURL(selectedFile) : post.featured_image}
+                src={selectedFile ? URL.createObjectURL(selectedFile) : getImageUrl(post.featured_image)}
                 alt="Featured"
                 className="w-full max-w-md mb-4"
               />
@@ -245,7 +246,7 @@ const EditPost: React.FC = () => {
                   الصورة المميزة
                 </label>
                 {post.featured_image && (
-                  <img src={post.featured_image} alt="Current featured" className="w-32 h-32 object-cover mb-2" />
+                  <img src={getImageUrl(post.featured_image)} alt="Current featured" className="w-32 h-32 object-cover mb-2" />
                 )}
                 <input
                   type="file"

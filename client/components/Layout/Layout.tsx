@@ -46,7 +46,7 @@ const Layout: React.FC<LayoutProps> = ({
     title: title || (content?.site.name + ' - ' + content?.site.tagline) || 'أخبار مركبة - آخر الأخبار والتحديثات',
     description: description || content?.site.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من أخبار مركبة.',
     keywords: ['أخبار', 'أخبار عاجلة', 'تحديثات', 'صحافة', 'أحداث جارية'],
-    image: '/images/og-image.jpg',
+    image: '/uploads/logo.png',
     url: typeof window !== 'undefined' ? window.location.href : '',
     type: 'website',
   };
@@ -133,7 +133,7 @@ const Layout: React.FC<LayoutProps> = ({
               url: seoData.url,
               logo: {
                 '@type': 'ImageObject',
-                url: '/images/logo.png',
+                url: '/uploads/logo.png',
               },
               sameAs: [
                 'https://twitter.com/NewsMarkaba',

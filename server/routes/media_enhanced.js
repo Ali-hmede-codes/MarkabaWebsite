@@ -111,7 +111,19 @@ const getFileInfo = async (filePath) => {
 // Helper function to generate file URL
 const generateFileUrl = (filePath) => {
   const relativePath = path.relative(process.cwd(), filePath);
-  return `/${relativePath.replace(/\\/g, '/')}`;
+  // Ensure the URL starts with /uploads since that's how the server serves static files
+  const normalizedPath = relativePath.replace(/\\/g, '/');
+  if (normalizedPath.startsWith('uploads/')) {
+    return `/${normalizedPath}`;
+  } 
+    // If the path doesn't start with uploads/, extract just the uploads part
+    const uploadsIndex = normalizedPath.indexOf('uploads/');
+    if (uploadsIndex !== -1) {
+      return `/${normalizedPath.substring(uploadsIndex)}`;
+    }
+    // Fallback: assume it's in uploads directory
+    return `/uploads/${path.basename(filePath)}`;
+  
 };
 
 // Upload single file

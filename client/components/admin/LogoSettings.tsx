@@ -15,7 +15,7 @@ const LogoSettings: React.FC<LogoSettingsProps> = ({ onClose }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const currentLogo = getSetting('site_logo', 'ar') || '/images/logo.svg';
+  const currentLogo = getSetting('site_logo', 'ar') || '/uploads/logo.svg';
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -116,7 +116,7 @@ const LogoSettings: React.FC<LogoSettingsProps> = ({ onClose }) => {
   
   const resetToDefault = async () => {
     if (confirm('هل أنت متأكد من إعادة تعيين الشعار إلى الافتراضي؟')) {
-      await updateLogoSetting('/images/logo.svg');
+      await updateLogoSetting('/uploads/logo.svg');
     }
   };
 

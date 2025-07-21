@@ -6,6 +6,7 @@ import { useContent } from '../../hooks/useContent';
 import { usePosts, useCategories } from '../../components/API/hooks';
 import { Post, Category } from '../../components/API/types';
 import { FiCalendar, FiUser, FiEye, FiArrowRight } from 'react-icons/fi';
+import { getImageUrl } from '../../lib/utils';
 
 const CategoryPage: React.FC = () => {
   const router = useRouter();
@@ -162,7 +163,7 @@ const CategoryPage: React.FC = () => {
                     {post.featured_image && (
                       <div className="w-full aspect-[16/9] relative">
                         <img
-                          src={post.featured_image}
+                          src={getImageUrl(post.featured_image)}
                           alt={post.title_ar || post.title}
                           className="w-full h-full object-cover"
                         />

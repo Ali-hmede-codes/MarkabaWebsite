@@ -80,7 +80,7 @@ const AboutPage: React.FC = () => {
     {
       name: theme.language === 'ar' ? 'أحمد محمد' : 'Ahmed Mohammed',
       role: theme.language === 'ar' ? 'رئيس التحرير' : 'Editor-in-Chief',
-      image: '/images/team/editor-chief.jpg',
+      image: '/uploads/placeholder-news-1.svg',
       bio: theme.language === 'ar' 
         ? 'صحفي متخصص بخبرة تزيد عن 15 عاماً في مجال الإعلام'
         : 'Specialized journalist with over 15 years of experience in media'
@@ -88,7 +88,7 @@ const AboutPage: React.FC = () => {
     {
       name: theme.language === 'ar' ? 'فاطمة علي' : 'Fatima Ali',
       role: theme.language === 'ar' ? 'محررة الأخبار السياسية' : 'Political News Editor',
-      image: '/images/team/political-editor.jpg',
+      image: '/uploads/placeholder-news-2.svg',
       bio: theme.language === 'ar' 
         ? 'متخصصة في الشؤون السياسية والدولية'
         : 'Specialist in political and international affairs'
@@ -96,7 +96,7 @@ const AboutPage: React.FC = () => {
     {
       name: theme.language === 'ar' ? 'محمد حسن' : 'Mohammed Hassan',
       role: theme.language === 'ar' ? 'محرر الأخبار الرياضية' : 'Sports News Editor',
-      image: '/images/team/sports-editor.jpg',
+      image: '/uploads/placeholder-news-3.svg',
       bio: theme.language === 'ar' 
         ? 'خبير في الأخبار الرياضية المحلية والعالمية'
         : 'Expert in local and international sports news'
@@ -104,7 +104,7 @@ const AboutPage: React.FC = () => {
     {
       name: theme.language === 'ar' ? 'سارة أحمد' : 'Sara Ahmed',
       role: theme.language === 'ar' ? 'محررة التكنولوجيا' : 'Technology Editor',
-      image: '/images/team/tech-editor.jpg',
+      image: '/uploads/placeholder-news-4.svg',
       bio: theme.language === 'ar' 
         ? 'متخصصة في أخبار التكنولوجيا والابتكار'
         : 'Specialist in technology and innovation news'

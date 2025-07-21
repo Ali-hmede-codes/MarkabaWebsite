@@ -9,7 +9,7 @@
  */
 export function getImageUrl(imagePath: string | null | undefined): string {
   if (!imagePath) {
-    return '/images/placeholder.jpg'; // Default placeholder image
+    return '/uploads/placeholder-news-1.svg'; // Default placeholder image
   }
   
   // If it's already a full URL, return as is

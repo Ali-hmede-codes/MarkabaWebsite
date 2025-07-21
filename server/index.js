@@ -142,6 +142,23 @@ app.use(express.urlencoded({
 }));
 
 // Static file serving for uploads with conditional caching
+// Serve from server/public/uploads first (for admin posts)
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), isDevelopment ? {
+  maxAge: 0,
+  etag: false,
+  lastModified: false,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+} : {
+  maxAge: '1d',
+  etag: true,
+  lastModified: true
+}));
+
+// Fallback to root uploads directory (for media_enhanced)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads'), isDevelopment ? {
   maxAge: 0,
   etag: false,
