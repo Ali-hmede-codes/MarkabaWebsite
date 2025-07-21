@@ -236,7 +236,7 @@ const CategoriesAPI: React.FC<CategoriesAPIProps> = ({
               
               <div className="flex items-center justify-between mt-3">
                 <span className="text-xs text-gray-500">
-                  {category.post_count || 0} posts
+                  {category.posts_count || 0} posts
                 </span>
                 <div className="flex space-x-2">
                   <button 

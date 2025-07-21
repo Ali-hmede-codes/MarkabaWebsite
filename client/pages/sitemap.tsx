@@ -244,7 +244,7 @@ const SitemapPage: React.FC<SitemapPageProps> = ({ categories, recentPosts }) =>
                           /categories/{category.slug}
                         </p>
                         <span className="text-xs text-gray-500 dark:text-gray-500">
-                          {category.post_count} {theme.language === 'ar' ? 'مقال' : 'posts'}
+                          {category.posts_count} {theme.language === 'ar' ? 'مقال' : 'posts'}
                         </span>
                       </div>
                     </div>
