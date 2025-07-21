@@ -243,7 +243,7 @@ const Header: React.FC = () => {
                   href={`/category/${category.slug}`}
                   className="px-2 xl:px-3 py-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 text-xs xl:text-sm font-medium border border-transparent hover:border-blue-200 whitespace-nowrap"
                 >
-                  {category.name_ar || category.name}
+                  {category.name_ar}
                 </Link>
               ))}
               {categoriesLoading && (
@@ -295,7 +295,7 @@ const Header: React.FC = () => {
                         className="block px-3 py-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 text-sm font-medium text-center"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        {category.name_ar || category.name}
+                        {category.name_ar}
                       </Link>
                     ))}
                     {categoriesLoading && (

@@ -55,7 +55,7 @@ const PostCard: React.FC<PostCardProps> = ({
         {showCategory && post.category && (
           <div className="mb-2">
             <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded" dir="rtl">
-              {post.category.name_ar || post.category.name}
+              {post.category.name_ar}
             </span>
           </div>
         )}

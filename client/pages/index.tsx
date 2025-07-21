@@ -102,7 +102,7 @@ const HomePage: React.FC = () => {
   const getCategoryName = (categoryId: number) => {
     const category = categories.find((cat) => cat.id === categoryId);
     if (!category) return '';
-    return (content?.categories as Record<string, string>)?.[category.slug] || category.name || '';
+    return (content?.categories as Record<string, string>)?.[category.slug] || category.name_ar || '';
   };
 
   if (!content) return null;

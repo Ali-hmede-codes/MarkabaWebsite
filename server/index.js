@@ -224,7 +224,7 @@ app.get('/api', (req, res) => {
       weather: '/api/weather',
       prayer: '/api/prayer',
       social_media: '/api/social-media',
-      admin: '/api/admin/adminstratorpage'
+      admin: '/api/admin/administratorpage'
     },
     features: [
       'Enhanced Arabic support',
@@ -255,7 +255,7 @@ app.use('/api/v2/settings', settingsEnhancedRoutes);
 app.use('/api/v2/weather', weatherEnhancedRoutes);
 app.use('/api/v2/prayer', prayerEnhancedRoutes);
 app.use('/api/v2/social-media', socialMediaEnhancedRoutes);
-app.use('/api/v2/admin/adminstratorpage', adminRoutes);
+app.use('/api/v2/admin/administratorpage', adminRoutes);
 
 // Legacy v1 routes removed - only enhanced routes available
 
@@ -270,7 +270,7 @@ app.use('/api/settings', settingsEnhancedRoutes);
 app.use('/api/weather', weatherEnhancedRoutes);
 app.use('/api/prayer', prayerEnhancedRoutes);
 app.use('/api/social-media', socialMediaEnhancedRoutes);
-app.use('/api/admin/adminstratorpage', adminRoutes);
+app.use('/api/admin/administratorpage', adminRoutes);
 
 // Error handling middleware
 // eslint-disable-next-line no-unused-vars

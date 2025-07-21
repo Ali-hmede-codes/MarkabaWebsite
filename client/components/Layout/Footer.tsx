@@ -167,7 +167,7 @@ const Footer: React.FC = () => {
                       href={`/category/${category.slug}`}
                       className="footer-link"
                     >
-                      {(content.categories as Record<string, string>)[category.slug] || category.name}
+                      {(content.categories as Record<string, string>)[category.slug] || category.name_ar}
                     </Link>
                   </li>
                 ))}

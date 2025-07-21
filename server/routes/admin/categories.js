@@ -25,7 +25,7 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor']), async (req,
     const queryParams = [];
     
     if (search) {
-      whereConditions.push('(c.name LIKE ? OR c.description LIKE ? OR c.slug LIKE ?)');
+      whereConditions.push('(c.name_ar LIKE ? OR c.description_ar LIKE ? OR c.slug LIKE ?)');
       const searchTerm = `%${search}%`;
       queryParams.push(searchTerm, searchTerm, searchTerm);
     }
@@ -39,7 +39,7 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor']), async (req,
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
     
     // Validate sort parameters - Fixed SQL injection vulnerability
-    const allowedSortFields = ['name', 'slug', 'sort_order', 'is_active', 'created_at', 'updated_at'];
+    const allowedSortFields = ['name_ar', 'slug', 'sort_order', 'is_active', 'created_at', 'updated_at'];
     const validSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'sort_order';
     const validSortOrder = ['ASC', 'DESC'].includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'ASC';
     
@@ -50,16 +50,16 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor']), async (req,
     const categoriesQuery = `
       SELECT 
         c.id,
-        c.name,
+        c.name_ar,
         c.slug,
-        c.description,
+        c.description_ar,
         c.sort_order,
         c.is_active,
         c.created_at,
         c.updated_at,
         COUNT(p.id) as posts_count
       FROM categories c
-      LEFT JOIN posts p ON c.id = p.category_id AND p.status = 'published'
+      LEFT JOIN posts p ON c.id = p.category_id AND p.is_published = 1
       ${whereClause}
       GROUP BY c.id
       ${orderByClause}
@@ -122,16 +122,16 @@ router.get('/:id',
       const [categories] = await db.execute(
         `SELECT 
           c.id,
-          c.name,
+          c.name_ar,
           c.slug,
-          c.description,
+          c.description_ar,
           c.sort_order,
           c.is_active,
           c.created_at,
           c.updated_at,
           COUNT(p.id) as posts_count
         FROM categories c
-        LEFT JOIN posts p ON c.id = p.category_id AND p.status = 'published'
+        LEFT JOIN posts p ON c.id = p.category_id AND p.is_published = 1
         WHERE c.id = ?
         GROUP BY c.id`,
         [id]
@@ -417,7 +417,7 @@ router.delete('/:id',
       
       // Check if category exists
       const [existingCategory] = await db.execute(
-        'SELECT id, name FROM categories WHERE id = ?',
+        'SELECT id, name_ar FROM categories WHERE id = ?',
         [id]
       );
       
@@ -473,12 +473,12 @@ router.get('/stats/overview', authenticateToken, requireRole(['admin', 'editor']
     const [topCategories] = await db.execute(`
       SELECT 
         c.id,
-        c.name,
+        c.name_ar,
         COUNT(p.id) as posts_count
       FROM categories c
-      LEFT JOIN posts p ON c.id = p.category_id AND p.status = 'published'
+      LEFT JOIN posts p ON c.id = p.category_id AND p.is_published = 1
       WHERE c.is_active = 1
-      GROUP BY c.id, c.name
+      GROUP BY c.id, c.name_ar
       ORDER BY posts_count DESC
       LIMIT 5
     `);

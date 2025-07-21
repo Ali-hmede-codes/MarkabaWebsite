@@ -36,7 +36,7 @@ export interface Category {
   color?: string;
   sort_order?: number;
   is_active?: boolean;
-  post_count?: number;
+  posts_count?: number;
   created_at: string;
   updated_at: string;
 }

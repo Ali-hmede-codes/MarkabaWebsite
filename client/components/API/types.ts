@@ -67,17 +67,14 @@ export interface PostsResponse {
 // Category Types
 export interface Category {
   id: number;
-  name: string;
   name_ar: string;
   slug: string;
-  description?: string;
   description_ar?: string;
   color?: string;
   icon?: string;
   image?: string;
   is_active: boolean;
   sort_order: number;
-  post_count?: number;
   posts_count?: number;
   created_at: string;
   updated_at: string;

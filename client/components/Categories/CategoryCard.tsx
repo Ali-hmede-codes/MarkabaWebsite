@@ -45,9 +45,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         </h3>
         
         {/* Description */}
-        {showDescription && category.description && (
-          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-            {category.description}
+        {showDescription && category.description_ar && (
+          <p className="text-gray-600 text-sm mt-2" dir="rtl">
+            {category.description_ar}
           </p>
         )}
         
