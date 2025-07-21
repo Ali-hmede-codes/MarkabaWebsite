@@ -119,7 +119,7 @@ const NewPost: React.FC = () => {
 
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
       formData.append('meta_description_ar', post.meta_description_ar || '');
-      const response = await fetch(`${API_BASE}/admin/posts`, {
+      const response = await fetch(`${API_BASE}/admin/administratorpage/posts`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
