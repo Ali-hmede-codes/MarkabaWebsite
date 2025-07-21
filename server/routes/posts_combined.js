@@ -1,11 +1,53 @@
 const express = require('express');
+
 const fs = require('fs').promises;
+const multer = require('multer');
+const sharp = require('sharp');
 const path = require('path');
 const { query, queryOne } = require('../db');
 const { validate, postSchema } = require('../middlewares/validation');
 const { auth, requireAuthorOrEditor, canEditContent, requireAdminOrEditor } = require('../middlewares/auth');
 const { generateArabicSlug, calculateReadingTime, createPostFiles, deletePostFiles } = require('../utils/postUtils');
 
+
+
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 728 },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    if (mimetype && extname) return cb(null, true);
+    cb(new Error('Only image files are allowed'));
+  }
+});
+
+async function processImage(file) {
+  const uploadPath = path.join(__dirname, '../../public/uploads');
+  
+  try {
+    await fs.mkdir(uploadPath, { recursive: true });
+  } catch (err) {
+    console.log("error")
+  }
+  
+  let filename = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+  let filePath = path.join(uploadPath, filename);
+  
+  if (await fs.access(filePath).then(() => true).catch(() => false)) {
+    const ext = path.extname(filename);
+    const base = path.basename(filename, ext);
+    const random = Math.random().toString(36).substring(2, 8);
+    filename = `${base}-${random}${ext}`;
+    filePath = path.join(uploadPath, filename);
+  }
+  
+  await sharp(file.buffer).resize({ width: 1200, withoutEnlargement: true }).toFormat('jpeg', { quality: 80 }).toFile(filePath);
+  
+  return `/uploads/${filename}`;
+}
 
 const router = express.Router();
 
@@ -654,20 +696,24 @@ router.get('/:id/:slug', async (req, res) => {
 });
 
 // POST / - Create new post with enhanced Arabic support
-router.post('/', auth, requireAuthorOrEditor, validate(postSchema), async (req, res) => {
+router.post('/', auth, requireAuthorOrEditor, upload.single('featured_image'), validate(postSchema), async (req, res) => {
   try {
     const {
       title_ar,
       content_ar,
       excerpt_ar,
       category_id,
-      featured_image,
       tags = [],
       meta_description_ar,
       meta_keywords_ar,
       is_featured = false,
       is_published = false
     } = req.body;
+    
+    let featured_image = req.body.featured_image;
+    if (req.file) {
+      featured_image = await processImage(req.file);
+    }
     
     // Validate required fields
     if (!title_ar) {

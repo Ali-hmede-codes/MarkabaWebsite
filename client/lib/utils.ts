@@ -8,8 +8,10 @@
  * @returns The full image URL
  */
 export function getImageUrl(imagePath: string | null | undefined): string {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
   if (!imagePath) {
-    return '/uploads/placeholder-news-1.svg'; // Default placeholder image
+    return `${baseUrl}/uploads/placeholder-news-1.svg`; // Default placeholder image
   }
   
   // If it's already a full URL, return as is
@@ -17,13 +19,13 @@ export function getImageUrl(imagePath: string | null | undefined): string {
     return imagePath;
   }
   
-  // If it starts with a slash, it's already relative to the domain
+  // Prepend base URL for relative paths
   if (imagePath.startsWith('/')) {
-    return imagePath;
+    return `${baseUrl}${imagePath}`;
   }
   
   // Otherwise, prepend with uploads directory
-  return `/uploads/${imagePath}`;
+  return `${baseUrl}/uploads/${imagePath}`;
 }
 
 /**
