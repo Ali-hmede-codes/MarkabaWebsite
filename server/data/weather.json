@@ -8,40 +8,40 @@
       "id": 800,
       "main": "Clear",
       "description": "سماء صافية",
-      "icon": "01d"
+      "icon": "01n"
     }
   ],
   "base": "stations",
   "main": {
-    "temp": 295.32,
-    "feels_like": 295.13,
-    "temp_min": 295.32,
-    "temp_max": 295.32,
-    "pressure": 1006,
-    "humidity": 59,
-    "sea_level": 1006,
-    "grnd_level": 866
+    "temp": 294.87,
+    "feels_like": 294.98,
+    "temp_min": 294.87,
+    "temp_max": 294.87,
+    "pressure": 1007,
+    "humidity": 72,
+    "sea_level": 1007,
+    "grnd_level": 868
   },
   "visibility": 10000,
   "wind": {
-    "speed": 4.61,
-    "deg": 288,
-    "gust": 3.65
+    "speed": 2.2,
+    "deg": 297,
+    "gust": 2.75
   },
   "clouds": {
-    "all": 0
+    "all": 4
   },
-  "dt": 1753018634,
+  "dt": 1753118068,
   "sys": {
     "country": "LB",
-    "sunrise": 1752979183,
-    "sunset": 1753029942
+    "sunrise": 1753065623,
+    "sunset": 1753116309
   },
   "timezone": 10800,
   "id": 272103,
   "name": "لبنان",
   "cod": 200,
-  "lastUpdated": "2025-07-20T13:37:14.940Z",
+  "lastUpdated": "2025-07-21T17:14:27.759Z",
   "location": {
     "country": "Lebanon",
     "city": "Beirut",
