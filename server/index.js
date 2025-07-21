@@ -141,9 +141,9 @@ app.use(express.urlencoded({
   limit: '10mb' 
 }));
 
-// Static file serving for uploads with conditional caching
+// Static file serving for uploads with NO caching to ensure images update immediately
 // Serve from server/public/uploads first (for admin posts)
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), isDevelopment ? {
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
   maxAge: 0,
   etag: false,
   lastModified: false,
@@ -152,14 +152,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), isDev
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
   }
-} : {
-  maxAge: '1d',
-  etag: true,
-  lastModified: true
 }));
 
 // Fallback to root uploads directory (for media_enhanced)
-app.use('/uploads', express.static(path.join(__dirname, '../uploads'), isDevelopment ? {
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
   maxAge: 0,
   etag: false,
   lastModified: false,
@@ -168,10 +164,6 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads'), isDevelop
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
   }
-} : {
-  maxAge: '1d',
-  etag: true,
-  lastModified: true
 }));
 
 // Serve Next.js static files
@@ -185,8 +177,8 @@ app.use('/_next', express.static(path.join(clientBuildPath, 'static'), {
   lastModified: true
 }));
 
-// Serve public assets with conditional caching
-const staticOptions = isDevelopment ? {
+// Serve public assets with NO caching to ensure images update immediately
+const staticOptions = {
   maxAge: 0,
   etag: false,
   lastModified: false,
@@ -195,18 +187,14 @@ const staticOptions = isDevelopment ? {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
   }
-} : {
-  maxAge: '1d',
-  etag: true,
-  lastModified: true
 };
 
 app.use('/images', express.static(path.join(clientPublicPath, 'images'), staticOptions));
 
 app.use('/content', express.static(path.join(clientPublicPath, 'content'), staticOptions));
 
-// Serve other public files
-app.use(express.static(clientPublicPath, isDevelopment ? {
+// Serve other public files with NO caching
+app.use(express.static(clientPublicPath, {
   maxAge: 0,
   etag: false,
   lastModified: false,
@@ -215,10 +203,6 @@ app.use(express.static(clientPublicPath, isDevelopment ? {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
   }
-} : {
-  maxAge: '1h',
-  etag: true,
-  lastModified: true
 }));
 
 // Health check endpoint
