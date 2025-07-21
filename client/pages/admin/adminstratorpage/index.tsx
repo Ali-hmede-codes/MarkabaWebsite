@@ -55,10 +55,10 @@ const AdminDashboard: React.FC = () => {
     try {
       setLoading(true);
       if (!token) {
-        router.push('/admin/adminstratorpage/login');
+        router.push('/admin/administratorpage/login');
         return;
       }
-      const response = await fetch('/api/admin/adminstratorpage/dashboard/stats', {
+      const response = await fetch('/api/admin/administratorpage/dashboard/stats', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -102,56 +102,56 @@ const AdminDashboard: React.FC = () => {
       value: stats.totalPosts,
       icon: FiFileText,
       color: 'bg-blue-500',
-      link: '/admin/adminstratorpage/posts'
+      link: '/admin/administratorpage/posts'
     },
     {
       title: 'المقالات المنشورة',
       value: stats.publishedPosts,
       icon: FiEye,
       color: 'bg-green-500',
-      link: '/admin/adminstratorpage/posts?status=published'
+      link: '/admin/administratorpage/posts?status=published'
     },
     {
       title: 'المسودات',
       value: stats.draftPosts,
       icon: FiFileText,
       color: 'bg-yellow-500',
-      link: '/admin/adminstratorpage/posts?status=draft'
+      link: '/admin/administratorpage/posts?status=draft'
     },
     {
       title: 'المقالات المميزة',
       value: stats.featuredPosts,
       icon: FiTrendingUp,
       color: 'bg-purple-500',
-      link: '/admin/adminstratorpage/posts?featured=true'
+      link: '/admin/administratorpage/posts?featured=true'
     },
     {
       title: 'التصنيفات',
       value: stats.totalCategories,
       icon: FiFolder,
       color: 'bg-indigo-500',
-      link: '/admin/adminstratorpage/categories'
+      link: '/admin/administratorpage/categories'
     },
     {
       title: 'إجمالي المشاهدات',
       value: stats.totalViews.toLocaleString('ar-SA'),
       icon: FiEye,
       color: 'bg-red-500',
-      link: '/admin/adminstratorpage/posts'
+      link: '/admin/administratorpage/posts'
     },
     {
       title: 'المستخدمين',
       value: stats.totalUsers,
       icon: FiUsers,
       color: 'bg-pink-500',
-      link: '/admin/adminstratorpage/users'
+      link: '/admin/administratorpage/users'
     },
     {
       title: 'مقالات حديثة',
       value: stats.recentPosts,
       icon: FiTrendingUp,
       color: 'bg-orange-500',
-      link: '/admin/adminstratorpage/posts'
+      link: '/admin/administratorpage/posts'
     }
   ];
 
@@ -160,14 +160,14 @@ const AdminDashboard: React.FC = () => {
       title: 'إنشاء مقال جديد',
       description: 'أضف مقالاً جديداً إلى الموقع',
       icon: FiFileText,
-      link: '/admin/adminstratorpage/posts',
+      link: '/admin/administratorpage/posts',
       color: 'bg-blue-600'
     },
     {
       title: 'إدارة التصنيفات',
       description: 'إضافة وتعديل تصنيفات المقالات',
       icon: FiFolder,
-      link: '/admin/adminstratorpage/categories',
+      link: '/admin/administratorpage/categories',
       color: 'bg-green-600'
     },
     

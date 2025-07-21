@@ -147,7 +147,7 @@ export default function HomePage() {
 
 ### For Admin Panel Pages
 ```typescript
-// pages/admin/adminstratorpage/posts.tsx - Admin Posts Management
+// pages/admin/administratorpage/posts.tsx - Admin Posts Management
 import { PostsAPI } from '@/components/API';
 import { useAuth } from '@/context/AuthContext';
 

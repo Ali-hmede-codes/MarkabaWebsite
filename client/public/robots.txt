@@ -6,7 +6,7 @@ User-agent: *
 Allow: /
 
 # Disallow access to admin and private areas
-Disallow: /admin/adminstratorpage/
+Disallow: /admin/administratorpage/
 Disallow: /api/
 Disallow: /auth/
 Disallow: /_next/
@@ -42,7 +42,7 @@ Crawl-delay: 1
 # Google Bot
 User-agent: Googlebot
 Allow: /
-Disallow: /admin/adminstratorpage/
+Disallow: /admin/administratorpage/
 Disallow: /api/
 Disallow: /auth/
 Crawl-delay: 1
@@ -50,7 +50,7 @@ Crawl-delay: 1
 # Bing Bot
 User-agent: Bingbot
 Allow: /
-Disallow: /admin/adminstratorpage/
+Disallow: /admin/administratorpage/
 Disallow: /api/
 Disallow: /auth/
 Crawl-delay: 1
@@ -58,28 +58,28 @@ Crawl-delay: 1
 # Facebook Bot (for Open Graph)
 User-agent: facebookexternalhit
 Allow: /
-Disallow: /admin/adminstratorpage/
+Disallow: /admin/administratorpage/
 Disallow: /api/
 Disallow: /auth/
 
 # Twitter Bot (for Twitter Cards)
 User-agent: Twitterbot
 Allow: /
-Disallow: /admin/adminstratorpage/
+Disallow: /admin/administratorpage/
 Disallow: /api/
 Disallow: /auth/
 
 # WhatsApp Bot (for link previews)
 User-agent: WhatsApp
 Allow: /
-Disallow: /admin/adminstratorpage/
+Disallow: /admin/administratorpage/
 Disallow: /api/
 Disallow: /auth/
 
 # Telegram Bot (for link previews)
 User-agent: TelegramBot
 Allow: /
-Disallow: /admin/adminstratorpage/
+Disallow: /admin/administratorpage/
 Disallow: /api/
 Disallow: /auth/
 

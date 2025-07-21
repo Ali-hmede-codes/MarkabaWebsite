@@ -16,46 +16,46 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
   
   const navItems = [
     {
-      href: '/admin/adminstratorpage',
+      href: '/admin/administratorpage',
       label: 'لوحة التحكم',
       icon: FiHome,
-      active: router.pathname === '/admin/adminstratorpage'
+      active: router.pathname === '/admin/administratorpage'
     },
     {
-      href: '/admin/adminstratorpage/posts',
+      href: '/admin/administratorpage/posts',
       label: 'المقالات',
       icon: FiFileText,
-      active: router.pathname === '/admin/adminstratorpage/posts'
+      active: router.pathname === '/admin/administratorpage/posts'
     },
     {
-      href: '/admin/adminstratorpage/categories',
+      href: '/admin/administratorpage/categories',
       label: 'التصنيفات',
       icon: FiFolder,
-      active: router.pathname === '/admin/adminstratorpage/categories'
+      active: router.pathname === '/admin/administratorpage/categories'
     },
     {
-      href: '/admin/adminstratorpage/breaking-news',
+      href: '/admin/administratorpage/breaking-news',
       label: 'الأخبار العاجلة',
       icon: FiAlertTriangle, // Add appropriate icon
-      active: router.pathname === '/admin/adminstratorpage/breaking-news'
+      active: router.pathname === '/admin/administratorpage/breaking-news'
     },
     {
-      href: '/admin/adminstratorpage/last-news',
+      href: '/admin/administratorpage/last-news',
       label: 'آخر الأخبار',
       icon: FiClock, // Add appropriate icon
-      active: router.pathname === '/admin/adminstratorpage/last-news'
+      active: router.pathname === '/admin/administratorpage/last-news'
     },
     {
-      href: '/admin/adminstratorpage/users',
+      href: '/admin/administratorpage/users',
       label: 'المستخدمون',
       icon: FiUsers,
-      active: router.pathname === '/admin/adminstratorpage/users'
+      active: router.pathname === '/admin/administratorpage/users'
     },
     {
-      href: '/admin/adminstratorpage/settings',
+      href: '/admin/administratorpage/settings',
       label: 'الإعدادات',
       icon: FiSettings,
-      active: router.pathname === '/admin/adminstratorpage/settings'
+      active: router.pathname === '/admin/administratorpage/settings'
     }
   ];
 

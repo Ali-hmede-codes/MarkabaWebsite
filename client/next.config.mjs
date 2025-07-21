@@ -62,7 +62,7 @@ const nextConfig = {
   // Redirects
   async redirects() {
     return [
-      // Remove the redirect since /admin/adminstratorpage/index.tsx already handles the admin dashboard
+      // Remove the redirect since /admin/administratorpage/index.tsx already handles the admin dashboard
     ];
   },
   

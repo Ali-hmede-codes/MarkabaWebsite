@@ -103,7 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         throw new Error('Login failed - invalid response');
       }
-      router.replace('/admin/adminstratorpage'); // Redirect to main admin dashboard after successful login
+      router.replace('/admin/administratorpage'); // Redirect to main admin dashboard after successful login
     } catch (error: any) {
       // Handle specific error responses from backend
       if (error.response) {
@@ -185,13 +185,13 @@ export const withAuth = <P extends object>(
     useEffect(() => {
       if (!loading) {
         if (!isAuthenticated) {
-          router.replace('/admin/adminstratorpage/login');
+          router.replace('/admin/administratorpage/login');
           return;
         }
 
         if (requiredRole && !hasRole(requiredRole)) {
           toast.error('You do not have permission to access this page');
-          router.replace('/admin/adminstratorpage');
+          router.replace('/admin/administratorpage');
           return;
         }
       }

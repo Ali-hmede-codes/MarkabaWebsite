@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ message: 'Authorization header required' });
     }
 
-    let url = `${API_BASE_URL}/admin/adminstratorpage/settings`;
+    let url = `${API_BASE_URL}/admin/administratorpage/settings`;
     let method = req.method;
     let body = undefined;
 

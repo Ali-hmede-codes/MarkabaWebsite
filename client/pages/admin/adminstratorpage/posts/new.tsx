@@ -52,7 +52,7 @@ const NewPost: React.FC = () => {
     try {
       setLoading(true);
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
-      const response = await fetch(`${API_BASE}/admin/categories`, {
+      const response = await fetch(`${API_BASE}/admin/administratorpage/categories`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -130,7 +130,7 @@ const NewPost: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         toast.success('تم إنشاء المقال بنجاح');
-        router.push('/admin/adminstratorpage/posts');
+        router.push('/admin/administratorpage/posts');
       } else {
         toast.error(data.message || 'فشل في إنشاء المقال');
       }
@@ -159,7 +159,7 @@ const NewPost: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
-            <Link href="/admin/adminstratorpage/posts">
+            <Link href="/admin/administratorpage/posts">
               <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
                 <FiArrowLeft size={20} />
               </button>

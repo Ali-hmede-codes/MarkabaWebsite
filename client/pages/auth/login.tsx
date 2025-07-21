@@ -60,7 +60,7 @@ const AdminLogin: React.FC = () => {
       await login(loginData);
       
       // Redirect to admin panel
-      router.replace('/admin/adminstratorpage');
+      router.replace('/admin/administratorpage');
       
     } catch (error: any) {
       // Handle error responses

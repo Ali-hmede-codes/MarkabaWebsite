@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Forward request to backend
-    const response = await fetch(`${API_BASE_URL}/admin/adminstratorpage/settings/system/info`, {
+    const response = await fetch(`${API_BASE_URL}/admin/administratorpage/settings/system/info`, {
       method: 'GET',
       headers: {
         'Authorization': authHeader,
