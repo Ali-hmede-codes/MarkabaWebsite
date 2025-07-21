@@ -51,9 +51,9 @@ const NewPost: React.FC = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
       console.log('Fetching categories with token:', token);
-      const response = await fetch(`${API_BASE}/api/v2/admin/adminstratorpage/categories`, {
+      const response = await fetch(`${API_BASE}/admin/categories`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -106,8 +106,8 @@ const NewPost: React.FC = () => {
         formData.append('featured_image', selectedFile);
       }
 
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE}/api/v2/admin/adminstratorpage/posts`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
+      const response = await fetch(`${API_BASE}/admin/adminstratorpage/posts`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
