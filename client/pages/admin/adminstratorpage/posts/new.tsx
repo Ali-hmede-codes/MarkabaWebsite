@@ -52,7 +52,6 @@ const NewPost: React.FC = () => {
     try {
       setLoading(true);
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
-      console.log('Fetching categories with token:', token);
       const response = await fetch(`${API_BASE}/admin/categories`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -83,12 +82,24 @@ const NewPost: React.FC = () => {
       toast.error('العنوان العربي مطلوب');
       return;
     }
+    if (post.title_ar.length < 5 || post.title_ar.length > 200) {
+      toast.error('عنوان المقال يجب أن يكون بين 5 و 200 حرف');
+      return;
+    }
     if (!post.content_ar.trim()) {
       toast.error('المحتوى العربي مطلوب');
       return;
     }
+    if (post.content_ar.length < 50) {
+      toast.error('محتوى المقال يجب أن يكون 50 حرف على الأقل');
+      return;
+    }
     if (!post.category_id) {
       toast.error('التصنيف مطلوب');
+      return;
+    }
+    if (post.meta_description_ar && post.meta_description_ar.length > 160) {
+      toast.error('وصف SEO يجب أن يكون أقل من 160 حرف');
       return;
     }
 
@@ -107,7 +118,8 @@ const NewPost: React.FC = () => {
       }
 
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
-      const response = await fetch(`${API_BASE}/admin/adminstratorpage/posts`, {
+      formData.append('meta_description_ar', post.meta_description_ar || '');
+      const response = await fetch(`${API_BASE}/admin/posts`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
