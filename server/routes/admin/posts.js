@@ -6,6 +6,7 @@ const fs = require('fs');
 const sharp = require('sharp');
 const db = require('../../config/database');
 const { auth: authenticateToken, requireRole } = require('../../middlewares/auth');
+const { generateArabicSlug, createPostFiles } = require('../../utils/postUtils');
 
 
 const router = express.Router();
@@ -16,7 +17,7 @@ const storage = multer.memoryStorage();
 
 
 async function processImage(file) {
-  const uploadPath = path.join(__dirname, '../../uploads/posts');
+  const uploadPath = path.join(__dirname, '../../public/images');
   if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
   }
@@ -36,7 +37,7 @@ async function processImage(file) {
     .toFormat('jpeg', { quality: 80 })
     .toFile(filePath);
 
-  return `/uploads/posts/${filename}`;
+  return `/images/${filename}`;
 }
 
 const upload = multer({
@@ -85,8 +86,8 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
     }
     
     if (status) {
-      whereConditions.push('p.status = ?');
-      queryParams.push(status);
+      whereConditions.push('p.is_published = ?');
+      queryParams.push(status === 'published' ? 1 : 0);
     }
     
     if (category) {
@@ -114,7 +115,7 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
     
     // Validate sort parameters
-    const allowedSortFields = ['title', 'status', 'is_featured', 'created_at', 'updated_at', 'published_at', 'views'];
+    const allowedSortFields = ['title_ar', 'is_published', 'is_featured', 'created_at', 'updated_at', 'views'];
     const validSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'created_at';
     const validSortOrder = ['ASC', 'DESC'].includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'DESC';
     
@@ -125,16 +126,16 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
     const postsQuery = `
       SELECT 
         p.id,
-        p.title,
+        p.title_ar as title,
         p.slug,
-        p.excerpt,
+        p.excerpt_ar as excerpt,
         p.featured_image,
-        p.status,
+        p.is_published as status,
         p.is_featured,
         p.views,
         p.created_at,
         p.updated_at,
-        p.published_at,
+        
         u.display_name as author_name,
         u.username as author_username,
         c.name_ar as category_name,
@@ -216,13 +217,14 @@ router.get('/:id',
           p.title_ar,
           p.content_ar,
           p.excerpt_ar,
+          p.meta_description_ar,
           p.slug,
           p.featured_image,
           p.category_id,
           p.author_id,
           p.is_published,
           p.is_featured,
-          p.meta_description_ar,
+          
           p.created_at,
           p.updated_at,
           u.display_name as author_name,
@@ -287,7 +289,7 @@ router.post('/',
       .isInt()
       .withMessage('معرف التصنيف يجب أن يكون رقماً'),
     body('status')
-      .isIn(['draft', 'published', 'archived'])
+      .isIn(['draft', 'published'])
       .withMessage('حالة المقال غير صحيحة'),
     body('is_featured')
       .optional()
@@ -329,12 +331,7 @@ router.post('/',
       
       // Generate slug if not provided
       if (!slug) {
-        slug = title_ar
-          .toLowerCase()
-          .replace(/[^a-z0-9\s-]/g, '')
-          .replace(/\s+/g, '-')
-          .replace(/-+/g, '-')
-          .trim('-');
+        slug = generateArabicSlug(title_ar);
       } else {
         slug = slug.trim();
       }
@@ -392,7 +389,7 @@ router.post('/',
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
         [
           title_ar, slug, content_ar, excerpt_ar, featured_image, category_id, req.user.id,
-          status === 'published', is_featured, meta_description_ar
+          status === 'published' ? 1 : 0, is_featured ? 1 : 0, meta_description_ar
         ]
       );
       
@@ -421,6 +418,7 @@ router.post('/',
         [result.insertId]
       );
       
+      await createPostFiles(result.insertId, newPost[0]);
       res.status(201).json({
         success: true,
         message: 'تم إنشاء المقال بنجاح',
