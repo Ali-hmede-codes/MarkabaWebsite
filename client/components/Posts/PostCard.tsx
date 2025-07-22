@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+// import Image from 'next/image'; // Removed to fix CORS issues
 import { Post } from '../API/types';
 import { getImageUrl } from '../../lib/utils';
 
@@ -40,13 +40,12 @@ const PostCard: React.FC<PostCardProps> = ({
     <article className={`bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow ${className}`}>
       {/* Featured Image */}
       {post.featured_image && (
-        <div className="relative h-48 w-full">
-          <Image
+        <div className="relative h-48 w-full overflow-hidden">
+          <img
             src={getImageUrl(post.featured_image)}
             alt={post.title_ar || post.title}
-            fill
-            className="object-cover rounded-t-lg"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="w-full h-full object-cover rounded-t-lg"
+            loading="lazy"
           />
         </div>
       )}

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+// import Image from 'next/image'; // Removed to fix CORS issues
 import { Category } from '../API/types';
 
 interface CategoryCardProps {
@@ -22,13 +22,12 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     <div className={`bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow ${className}`}>
       {/* Category Image */}
       {category.image && (
-        <div className="relative h-32 w-full">
-          <Image
+        <div className="relative h-32 w-full overflow-hidden">
+          <img
             src={category.image}
             alt={category.name_ar}
-            fill
-            className="object-cover rounded-t-lg"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="w-full h-full object-cover rounded-t-lg"
+            loading="lazy"
           />
         </div>
       )}
