@@ -1,6 +1,6 @@
-const cron = require('node-cron');
-const WeatherService = require('./weatherService');
-const PrayerService = require('./prayerService');
+import cron from 'node-cron';
+import WeatherService from './weatherService.cjs';
+import PrayerService from './prayerService.cjs';
 
 /**
  * Scheduler Service
@@ -182,4 +182,4 @@ class Scheduler {
   }
 }
 
-module.exports = Scheduler;
+export default Scheduler;

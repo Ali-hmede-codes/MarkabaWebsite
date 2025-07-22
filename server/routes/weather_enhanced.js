@@ -1,5 +1,5 @@
 const express = require('express');
-const WeatherService = require('../utils/weatherService');
+const WeatherService = require('../utils/weatherService.cjs');
 const { auth } = require('../middlewares/auth');
 
 const router = express.Router();

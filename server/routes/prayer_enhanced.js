@@ -1,5 +1,5 @@
 const express = require('express');
-const PrayerService = require('../utils/prayerService');
+const PrayerService = require('../utils/prayerService.cjs');
 const { auth } = require('../middlewares/auth');
 
 const router = express.Router();
