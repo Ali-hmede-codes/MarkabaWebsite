@@ -1,31 +1,62 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'Authentication required' });
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-  };
+  const { active, limit, language, include_content } = req.query;
+  
+  // Build query parameters
+  const queryParams = new URLSearchParams();
+  if (active) queryParams.append('active', active as string);
+  if (limit) queryParams.append('limit', limit as string);
+  if (language) queryParams.append('language', language as string);
+  if (include_content) queryParams.append('include_content', include_content as string);
+
+  // Determine the endpoint based on query parameters
+  let endpoint = '/last-news';
+  if (active === 'true') {
+    endpoint = '/last-news/active';
+  }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/last-news`, {
-      method,
-      headers,
-      body: method !== 'GET' ? JSON.stringify(req.body) : undefined,
+    const url = `${API_BASE_URL}${endpoint}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    
+    console.log('Fetching from URL:', url);
+    
+    // Create timeout controller
+    const { controller, timeoutId, cleanup } = createTimeoutController();
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: API_HEADERS,
+      signal: controller.signal,
     });
+    
+    cleanup();
+
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Backend error response:', errorText);
+      throw new Error(`Server responded with ${response.status}: ${errorText}`);
+    }
 
     const data = await response.json();
-    res.status(response.status).json(data);
+    console.log('Successfully fetched last news data');
+    res.status(200).json(data);
   } catch (error) {
-    console.error('Proxy error:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
+    const errorResponse = handleApiError(error, endpoint);
+    res.status(errorResponse.status).json({
+      success: false,
+      ...errorResponse
+    });
   }
 }

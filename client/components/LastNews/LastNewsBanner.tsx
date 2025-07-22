@@ -42,7 +42,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
 
     const fetchLastNews = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2'}/last-news/active`);
+        const response = await fetch('/api/last-news?active=true');
         if (!response.ok) throw new Error('Failed to fetch last news');
         const data = await response.json();
         setLastNews((data.data || []).map((item: any) => ({ ...item, isBreaking: false } as NewsItem)));
@@ -54,7 +54,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
     const fetchBreakingNews = async () => {
       if (!combineNews) return;
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2'}/breaking-news/active`);
+        const response = await fetch('/api/breaking-news?active=true');
         if (!response.ok) throw new Error('Failed to fetch breaking news');
         const data = await response.json();
         setBreakingNews((data.data || []).map((item: any) => ({ ...item, isBreaking: true } as NewsItem)));
