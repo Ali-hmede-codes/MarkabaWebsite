@@ -86,7 +86,8 @@ const corsOptions = {
       'http://69.62.115.12',
       'http://69.62.115.12:3000',
       'http://69.62.115.12:3001',
-      'http://69.62.115.12:5000'
+      'http://69.62.115.12:5000',
+      'http://69.62.115.12:5000/uploads'
     ];
     
     // Add production domains from environment
