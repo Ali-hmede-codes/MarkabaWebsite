@@ -9,6 +9,7 @@ const categoriesRoutes = require('./categories');
 const postsRoutes = require('./posts');
 const settingsRoutes = require('./settings');
 const lastNewsRoutes = require('./lastNews');
+const breakingNewsRoutes = require('./breakingNews');
 
 // Mount admin routes
 router.use('/users', usersRoutes);
@@ -16,6 +17,7 @@ router.use('/categories', categoriesRoutes);
 router.use('/posts', postsRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/last-news', lastNewsRoutes);
+router.use('/breaking-news', breakingNewsRoutes);
 
 // Admin dashboard stats endpoint
 router.get('/dashboard/stats', async (req, res) => {
