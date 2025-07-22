@@ -1,6 +1,6 @@
-import https from 'node:https';
-import fs from 'node:fs';
-import path from 'node:path';
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
 class PrayerService {
   constructor() {
@@ -229,4 +229,4 @@ class PrayerService {
   }
 }
 
-export default PrayerService;
+module.exports = PrayerService;

@@ -1,6 +1,6 @@
-import https from 'node:https';
-import fs from 'node:fs/promises';
-import path from 'node:path';
+const https = require('https');
+const fs = require('fs/promises');
+const path = require('path');
 
 /**
  * Weather Service for Lebanon
@@ -164,4 +164,4 @@ class WeatherService {
   }
 }
 
-export default WeatherService;
+module.exports = WeatherService;
