@@ -8,26 +8,29 @@
  * @returns The full image URL
  */
 export function getImageUrl(imagePath: string | null | undefined): string {
-  let baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-  // Remove /api/v2 from the end if present
-  baseUrl = baseUrl.replace(/\/api\/v2$/, '');
+  // Use Next.js proxy to bypass CORS issues
+  const proxyBaseUrl = '/api/proxy';
 
   if (!imagePath) {
-    return `${baseUrl}/uploads/placeholder-news-1.svg`; // Default placeholder image
+    return `${proxyBaseUrl}/uploads/placeholder-news-1.svg`; // Default placeholder image
   }
   
-  // If it's already a full URL, return as is
+  // If it's already a full URL, return as is (for external images)
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
   
-  // Prepend base URL for relative paths
-  if (imagePath.startsWith('/')) {
-    return `${baseUrl}${imagePath}`;
+  // Handle relative paths starting with /
+  if (imagePath.startsWith('/uploads/')) {
+    return `${proxyBaseUrl}${imagePath}`;
   }
   
-  // Otherwise, prepend with uploads directory
-  return `${baseUrl}/uploads/${imagePath}`;
+  if (imagePath.startsWith('/images/')) {
+    return `${proxyBaseUrl}${imagePath}`;
+  }
+  
+  // For paths without leading slash, assume uploads directory
+  return `${proxyBaseUrl}/uploads/${imagePath}`;
 }
 
 /**
