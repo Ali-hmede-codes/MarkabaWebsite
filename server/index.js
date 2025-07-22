@@ -143,7 +143,7 @@ app.use(express.urlencoded({
 
 // Static file serving for uploads with NO caching to ensure images update immediately
 // Serve from server/public/uploads first (for admin posts)
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
+app.use('/uploads', cors(corsOptions), express.static(path.join(__dirname, 'public/uploads'), {
   maxAge: 0,
   etag: false,
   lastModified: false,
@@ -155,7 +155,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
 }));
 
 // Fallback to root uploads directory (for media_enhanced)
-app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
+app.use('/uploads', cors(corsOptions), express.static(path.join(__dirname, '../uploads'), {
   maxAge: 0,
   etag: false,
   lastModified: false,
