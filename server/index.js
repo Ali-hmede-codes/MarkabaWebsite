@@ -24,7 +24,7 @@ const { testConnection } = require('./db');
 const authEnhancedRoutes = require('./routes/auth_enhanced');
 const postsRoutes = require('./routes/posts_combined');
 const categoriesEnhancedRoutes = require('./routes/categories_enhanced');
-const breakingNewsEnhancedRoutes = require('./routes/breakingNews_enhanced');
+const breakingNewsEnhancedRoutes = require('./routes/breakingnews_enhanced');
 const lastNewsEnhancedRoutes = require('./routes/lastNews_enhanced');
 const mediaEnhancedRoutes = require('./routes/media_enhanced');
 const usersEnhancedRoutes = require('./routes/users_enhanced');
@@ -150,7 +150,7 @@ app.use(express.urlencoded({
 }));
 
 // Static file serving for uploads with conditional caching
-app.use('/uploads', express.static(path.join(__dirname, '../uploads'), isDevelopment ? {
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), isDevelopment ? {
   maxAge: 0,
   etag: false,
   lastModified: false,
