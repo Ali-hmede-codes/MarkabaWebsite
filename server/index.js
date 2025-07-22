@@ -1,46 +1,61 @@
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const helmet = require('helmet');
-const compression = require('compression');
-const path = require('path');
-const fs = require('fs').promises;
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import helmet from 'helmet';
+import compression from 'compression';
+import path from 'path';
+import { promises as fs } from 'fs';
+import https from 'https';
+import http from 'http';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+// ES module equivalents for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables from parent directory
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
+// eslint-disable-next-line no-console
 console.log('Environment loaded:');
+// eslint-disable-next-line no-console
 console.log('- NODE_ENV:', process.env.NODE_ENV);
+// eslint-disable-next-line no-console
 console.log('- PORT:', process.env.PORT);
+// eslint-disable-next-line no-console
 console.log('- DB_HOST:', process.env.DB_HOST);
+// eslint-disable-next-line no-console
 console.log('- DB_NAME:', process.env.DB_NAME);
+// eslint-disable-next-line no-console
 console.log('- FRONTEND_URL:', process.env.FRONTEND_URL);
+// eslint-disable-next-line no-console
 console.log('- BACKEND_URL:', process.env.BACKEND_URL);
 
 // Import database connection
-const { testConnection } = require('./db');
+import { testConnection } from './db.js';
 
 // Import enhanced routes
-const authEnhancedRoutes = require('./routes/auth_enhanced');
-const postsRoutes = require('./routes/posts_combined');
-const categoriesEnhancedRoutes = require('./routes/categories_enhanced');
-const breakingNewsEnhancedRoutes = require('./routes/breakingNews_enhanced');
-const lastNewsEnhancedRoutes = require('./routes/lastNews_enhanced');
-const mediaEnhancedRoutes = require('./routes/media_enhanced');
-const usersEnhancedRoutes = require('./routes/users_enhanced');
-const settingsEnhancedRoutes = require('./routes/settings_enhanced');
-const weatherEnhancedRoutes = require('./routes/weather_enhanced');
-const prayerEnhancedRoutes = require('./routes/prayer_enhanced');
-const socialMediaEnhancedRoutes = require('./routes/socialMedia_enhanced');
+import authEnhancedRoutes from './routes/auth_enhanced.js';
+import postsRoutes from './routes/posts_combined.js';
+import categoriesEnhancedRoutes from './routes/categories_enhanced.js';
+import breakingNewsEnhancedRoutes from './routes/breakingNews_enhanced.js';
+import lastNewsEnhancedRoutes from './routes/lastNews_enhanced.js';
+import mediaEnhancedRoutes from './routes/media_enhanced.js';
+import usersEnhancedRoutes from './routes/users_enhanced.js';
+import settingsEnhancedRoutes from './routes/settings_enhanced.js';
+import weatherEnhancedRoutes from './routes/weather_enhanced.js';
+import prayerEnhancedRoutes from './routes/prayer_enhanced.js';
+import socialMediaEnhancedRoutes from './routes/socialMedia_enhanced.js';
 
 // Import admin routes
-const adminRoutes = require('./routes/admin');
+import adminRoutes from './routes/admin/index.js';
 
 // Import images route
-const imagesRoutes = require('./routes/images');
+import imagesRoutes from './routes/images.js';
 
 // Import scheduler service
-const Scheduler = require('./utils/scheduler');
+import Scheduler from './utils/scheduler.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -112,6 +127,7 @@ const corsOptions = {
       callback(null, true);
     } else {
       // Log the blocked origin for debugging
+      // eslint-disable-next-line no-console
       console.log('CORS blocked origin for API:', origin);
       callback(null, true); // Allow anyway for now to fix the issue
     }
@@ -207,6 +223,7 @@ const staticCorsOptions = {
       callback(null, true);
     } else {
       // Log the blocked origin for debugging
+      // eslint-disable-next-line no-console
       console.log('CORS blocked origin:', origin);
       callback(null, true); // Allow anyway for now to fix the issue
     }
@@ -670,6 +687,7 @@ app.get('*', async (req, res) => {
 
 // Graceful shutdown handling
 process.on('SIGTERM', () => {
+  // eslint-disable-next-line no-console
   console.log('SIGTERM received. Shutting down gracefully...');
   
   // Stop scheduler
@@ -677,17 +695,35 @@ process.on('SIGTERM', () => {
     global.scheduler.stop();
   }
   
-  if (global.server) {
-    global.server.close(() => {
-      console.log('Process terminated');
+  let serversToClose = 0;
+  let serversClosed = 0;
+  
+  const checkAllClosed = () => {
+    serversClosed += 1;
+    if (serversClosed >= serversToClose) {
+      // eslint-disable-next-line no-console
+      console.log('All servers closed. Process terminated');
       process.exit(0);
-    });
-  } else {
+    }
+  };
+  
+  if (global.httpServer) {
+    serversToClose += 1;
+    global.httpServer.close(checkAllClosed);
+  }
+  
+  if (global.httpsServer) {
+    serversToClose += 1;
+    global.httpsServer.close(checkAllClosed);
+  }
+  
+  if (serversToClose === 0) {
     process.exit(0);
   }
 });
 
 process.on('SIGINT', () => {
+  // eslint-disable-next-line no-console
   console.log('SIGINT received. Shutting down gracefully...');
   
   // Stop scheduler
@@ -695,18 +731,35 @@ process.on('SIGINT', () => {
     global.scheduler.stop();
   }
   
-  if (global.server) {
-    global.server.close(() => {
-      console.log('Process terminated');
+  let serversToClose = 0;
+  let serversClosed = 0;
+  
+  const checkAllClosed = () => {
+    serversClosed += 1;
+    if (serversClosed >= serversToClose) {
+      console.log('All servers closed. Process terminated');
       process.exit(0);
-    });
-  } else {
+    }
+  };
+  
+  if (global.httpServer) {
+    serversToClose += 1;
+    global.httpServer.close(checkAllClosed);
+  }
+  
+  if (global.httpsServer) {
+    serversToClose += 1;
+    global.httpsServer.close(checkAllClosed);
+  }
+  
+  if (serversToClose === 0) {
     process.exit(0);
   }
 });
 
 // Unhandled promise rejection handling
 process.on('unhandledRejection', (reason, promise) => {
+  // eslint-disable-next-line no-console
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   // Don't exit the process in production, just log the error
   if (!isProduction) {
@@ -716,6 +769,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // Uncaught exception handling
 process.on('uncaughtException', (error) => {
+  // eslint-disable-next-line no-console
   console.error('Uncaught Exception:', error);
   // Exit the process as the application is in an undefined state
   process.exit(1);
@@ -725,16 +779,20 @@ process.on('uncaughtException', (error) => {
 const startServer = async () => {
   try {
     // Test database connection before starting server
+    // eslint-disable-next-line no-console
     console.log('Testing database connection...');
     await testConnection();
+    // eslint-disable-next-line no-console
     console.log('✅ Database connection successful');
 
     // Initialize scheduler service
+    // eslint-disable-next-line no-console
     console.log('Initializing scheduler service...');
     const scheduler = new Scheduler();
     await scheduler.initializeWeatherData();
     await scheduler.initializePrayerData();
     scheduler.start();
+    // eslint-disable-next-line no-console
     console.log('✅ Scheduler service initialized');
 
     // Store scheduler reference for graceful shutdown
@@ -755,23 +813,83 @@ const startServer = async () => {
         await fs.mkdir(dir, { recursive: true });
       } catch (error) {
         if (error.code !== 'EEXIST') {
+          // eslint-disable-next-line no-console
           console.warn(`Warning: Could not create upload directory ${dir}:`, error.message);
         }
       }
     }));
+    // eslint-disable-next-line no-console
     console.log('✅ Upload directories initialized');
 
-    // Start the server
-    const server = app.listen(PORT, '0.0.0.0', () => {
+    // Start HTTP and HTTPS servers
+    let httpServer, httpsServer;
+    
+    // Start HTTP server
+    httpServer = http.createServer(app);
+    httpServer.listen(PORT, '0.0.0.0', () => {
+      // eslint-disable-next-line no-console
       console.log('🚀 News Markaba Enhanced Server Started');
-      console.log(`📡 Server running on port ${PORT}`);
+      // eslint-disable-next-line no-console
+      console.log(`📡 HTTP Server running on port ${PORT}`);
+      // eslint-disable-next-line no-console
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`📚 API Documentation: http://localhost:${PORT}/api`);
-      console.log(`🔍 Health Check: http://localhost:${PORT}/health`);
+    });
+    
+    // Try to start HTTPS server
+    try {
+      const sslPath = path.join(__dirname, 'ssl');
+      const privateKey = await fs.readFile(path.join(sslPath, 'private-key.pem'), 'utf8');
+      const certificate = await fs.readFile(path.join(sslPath, 'certificate.pem'), 'utf8');
+      
+      const credentials = {
+        key: privateKey,
+        cert: certificate
+      };
+      
+      const httpsPort = process.env.HTTPS_PORT || 3443;
+      httpsServer = https.createServer(credentials, app);
+      httpsServer.listen(httpsPort, '0.0.0.0', () => {
+        // eslint-disable-next-line no-console
+        console.log(`🔒 HTTPS Server running on port ${httpsPort}`);
+        // eslint-disable-next-line no-console
+        console.log(`📚 API Documentation: https://69.62.115.12:${httpsPort}/api`);
+        // eslint-disable-next-line no-console
+        console.log(`🔍 Health Check: https://69.62.115.12:${httpsPort}/health`);
+        // eslint-disable-next-line no-console
+        console.log('📋 Available API Versions:');
+        // eslint-disable-next-line no-console
+        console.log(`   • v1 (legacy): https://69.62.115.12:${httpsPort}/api/v1/*`);
+        // eslint-disable-next-line no-console
+        console.log(`   • v2 (enhanced): https://69.62.115.12:${httpsPort}/api/v2/*`);
+        // eslint-disable-next-line no-console
+        console.log(`   • latest: https://69.62.115.12:${httpsPort}/api/*`);
+        // eslint-disable-next-line no-console
+        console.log('✨ Enhanced features enabled:');
+        // eslint-disable-next-line no-console
+        console.log('   • Advanced Arabic support');
+        // eslint-disable-next-line no-console
+        console.log('   • File system integration');
+        console.log('   • Comprehensive filtering');
+        console.log('   • Security middleware');
+        console.log('   • Bulk operations');
+        console.log('   • Statistics & analytics');
+        console.log('   • Automated weather updates for Lebanon');
+        console.log('   • Prayer times for Lebanon with daily updates');
+        console.log(`🌤️  Weather API: https://69.62.115.12:${httpsPort}/api/weather`);
+        console.log(`🕌 Prayer Times API: https://69.62.115.12:${httpsPort}/api/prayer`);
+        console.log('⏰ Weather updates scheduled daily at 6:00 AM (Beirut time)');
+        console.log('🕐 Prayer times updates scheduled daily at 5:00 AM (Beirut time)');
+      });
+      
+    } catch (sslError) {
+      console.warn('⚠️  HTTPS server could not be started:', sslError.message);
+      console.log('📡 Only HTTP server is running');
+      console.log(`📚 API Documentation: http://69.62.115.12:${PORT}/api`);
+      console.log(`🔍 Health Check: http://69.62.115.12:${PORT}/health`);
       console.log('📋 Available API Versions:');
-      console.log(`   • v1 (legacy): http://localhost:${PORT}/api/v1/*`);
-      console.log(`   • v2 (enhanced): http://localhost:${PORT}/api/v2/*`);
-      console.log(`   • latest: http://localhost:${PORT}/api/*`);
+      console.log(`   • v1 (legacy): http://69.62.115.12:${PORT}/api/v1/*`);
+      console.log(`   • v2 (enhanced): http://69.62.115.12:${PORT}/api/v2/*`);
+      console.log(`   • latest: http://69.62.115.12:${PORT}/api/*`);
       console.log('✨ Enhanced features enabled:');
       console.log('   • Advanced Arabic support');
       console.log('   • File system integration');
@@ -781,14 +899,15 @@ const startServer = async () => {
       console.log('   • Statistics & analytics');
       console.log('   • Automated weather updates for Lebanon');
       console.log('   • Prayer times for Lebanon with daily updates');
-      console.log(`🌤️  Weather API: http://localhost:${PORT}/api/weather`);
-      console.log(`🕌 Prayer Times API: http://localhost:${PORT}/api/prayer`);
+      console.log(`🌤️  Weather API: http://69.62.115.12:${PORT}/api/weather`);
+      console.log(`🕌 Prayer Times API: http://69.62.115.12:${PORT}/api/prayer`);
       console.log('⏰ Weather updates scheduled daily at 6:00 AM (Beirut time)');
       console.log('🕐 Prayer times updates scheduled daily at 5:00 AM (Beirut time)');
-    });
+    }
 
-    // Store server reference for graceful shutdown
-    global.server = server;
+    // Store server references for graceful shutdown
+    global.httpServer = httpServer;
+    global.httpsServer = httpsServer;
 
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);

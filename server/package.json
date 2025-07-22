@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "Enhanced News Markaba Server with advanced Arabic support, file system integration, and comprehensive API features",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
