@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { queryOne, query } = require('../db');
+const { queryOne, query } = require('../db.cjs');
 
 // Enhanced authentication middleware
 const auth = async (req, res, next) => {

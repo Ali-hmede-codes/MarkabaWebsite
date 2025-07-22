@@ -1,7 +1,7 @@
 const express = require('express');
-const { query } = require('../db')
-const { auth: authenticateToken } = require('../middlewares/auth')
-const { validateSocialMedia } = require('../middlewares/validation')
+const { query } = require('../db.cjs')
+const { auth: authenticateToken } = require('../middlewares/auth.cjs')
+const { validateSocialMedia } = require('../middlewares/validation.cjs')
 
 const router = express.Router();
 

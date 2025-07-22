@@ -1,7 +1,7 @@
 const express = require('express');
-const { query, queryOne } = require('../db')
-// const { validate, categorySchema } = require('../middlewares/validation');
-const { auth, requireAdmin, requireAdminOrEditor } = require('../middlewares/auth')
+const { query, queryOne } = require('../db.cjs')
+// const { validate, categorySchema } = require('../middlewares/validation.cjs');
+const { auth, requireAdmin, requireAdminOrEditor } = require('../middlewares/auth.cjs')
 
 const router = express.Router();
 

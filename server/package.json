@@ -2,10 +2,10 @@
   "name": "news-markaba-server",
   "version": "2.0.0",
   "description": "Enhanced News Markaba Server with advanced Arabic support, file system integration, and comprehensive API features",
-  "main": "index.js",
+  "main": "index.cjs",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.cjs",
     "dev": "nodemon index.js",
     "dev:watch": "nodemon --watch . --ext js,json index.js",
     "test": "jest",

@@ -1,4 +1,4 @@
-const { query } = require('../db');
+const { query } = require('../db.cjs');
 
 async function runMigration() {
   try {

@@ -2,9 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const { query, queryOne } = require('../db')
-const { validate, loginSchema, registerSchema, changePasswordSchema } = require('../middlewares/validation')
-const { auth, requireAdmin } = require('../middlewares/auth')
+const { query, queryOne } = require('../db.cjs')
+const { validate, loginSchema, registerSchema, changePasswordSchema } = require('../middlewares/validation.cjs')
+const { auth, requireAdmin } = require('../middlewares/auth.cjs')
 
 const router = express.Router();
 

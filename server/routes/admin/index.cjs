@@ -1,9 +1,9 @@
 const express = require('express');
-const usersRoutes = require('./users')
+const usersRoutes = require('./users.cjs')
 const categoriesRoutes = require('./categories.cjs')
-const postsRoutes = require('./posts')
-const settingsRoutes = require('./settings')
-const lastNewsRoutes = require('./lastNews')
+const postsRoutes = require('./posts.cjs')
+const settingsRoutes = require('./settings.cjs')
+const lastNewsRoutes = require('./lastNews.cjs')
 const db = require('../../config/database.cjs')
 
 const router = express.Router();
