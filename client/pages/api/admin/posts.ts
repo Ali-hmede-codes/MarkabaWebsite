@@ -5,7 +5,7 @@ import FormData from 'form-data';
 import fs from 'fs';
 import { Readable } from 'stream';
 
-// Disable body parsing for file uploads
+// Disable body parsing for multipart data
 export const config = {
   api: {
     bodyParser: false,
@@ -21,13 +21,39 @@ export default async function handler(
   }
 
   try {
-    // Parse the multipart form data
-    const form = formidable({
-      multiples: false,
-      keepExtensions: true,
-    });
+    let fields: any = {};
+    let files: any = {};
 
-    const [fields, files] = await form.parse(req);
+    // Check if request is multipart/form-data
+    const contentType = req.headers['content-type'] || '';
+    
+    if (contentType.includes('multipart/form-data')) {
+      // Parse the multipart form data
+      const form = formidable({
+        multiples: false,
+        keepExtensions: true,
+      });
+
+      const [parsedFields, parsedFiles] = await form.parse(req);
+      fields = parsedFields;
+      files = parsedFiles;
+    } else {
+      // Handle JSON or other content types
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk.toString();
+      });
+      
+      await new Promise((resolve) => {
+        req.on('end', resolve);
+      });
+      
+      try {
+        fields = JSON.parse(body);
+      } catch {
+        fields = {};
+      }
+    }
 
     // Create FormData for backend request
     const formData = new FormData();
