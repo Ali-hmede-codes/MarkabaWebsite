@@ -87,7 +87,12 @@ const corsOptions = {
       'http://69.62.115.12:3000',
       'http://69.62.115.12:3001',
       'http://69.62.115.12:5000',
-      'http://69.62.115.12:5000/uploads'
+      'http://69.62.115.12:5000/uploads',
+      'https://69.62.115.12',
+      'https://69.62.115.12:3000',
+      'https://69.62.115.12:3001',
+      'https://69.62.115.12:5000',
+      'https://69.62.115.12:5000/uploads'
     ];
     
     // Add production domains from environment
@@ -177,7 +182,11 @@ const staticCorsOptions = {
       'http://69.62.115.12',
       'http://69.62.115.12:3000',
       'http://69.62.115.12:3001',
-      'http://69.62.115.12:5000'
+      'http://69.62.115.12:5000',
+      'https://69.62.115.12',
+      'https://69.62.115.12:3000',
+      'https://69.62.115.12:3001',
+      'https://69.62.115.12:5000'
     ];
     
     // Add production domains from environment
