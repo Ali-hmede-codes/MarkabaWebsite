@@ -5,6 +5,7 @@ import Link from 'next/link';
 // import Image from 'next/image'; // Removed to fix CORS issues
 import { Post } from '../API/types';
 import { getImageUrl } from '../../lib/utils';
+import SafeImage from '../UI/SafeImage';
 
 interface PostCardProps {
   post: Post;
@@ -41,10 +42,12 @@ const PostCard: React.FC<PostCardProps> = ({
       {/* Featured Image */}
       {post.featured_image && (
         <div className="relative h-48 w-full overflow-hidden">
-          <img
+          <SafeImage
             src={getImageUrl(post.featured_image)}
             alt={post.title_ar || post.title}
             className="w-full h-full object-cover rounded-t-lg"
+            width={400}
+            height={192}
             loading="lazy"
           />
         </div>

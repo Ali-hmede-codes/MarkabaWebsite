@@ -7,27 +7,28 @@
  * @param imagePath - The relative image path
  * @returns The full image URL
  */
-export function getImageUrl(imagePath: string | null | undefined): string {
-  const backendBase = process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/api.*$/, '') || 'http://69.62.115.12:5000';
-
+export const getImageUrl = (imagePath: string | null | undefined): string => {
   if (!imagePath) {
-    return `${backendBase}/uploads/placeholder-news-1.svg`;
+    return '/images/placeholder.jpg';
   }
-  
+
+  // If it's already a full URL, return as is
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
+
+  // Get the backend URL from environment variables
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://69.62.115.12:5000';
   
-  if (imagePath.startsWith('/uploads/')) {
-    return `${backendBase}${imagePath}`;
-  }
+  // Remove /api from the backend URL if present
+  const baseUrl = backendUrl.replace(/\/api.*$/, '');
   
-  if (imagePath.startsWith('/images/')) {
-    return `${backendBase}${imagePath}`;
-  }
+  // Ensure the image path starts with /
+  const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
   
-  return `${backendBase}/uploads/${imagePath}`;
-}
+  // Return the full backend URL for the image
+  return `${baseUrl}${cleanPath}`;
+};
 
 /**
  * Truncate text to a specified length with ellipsis

@@ -36,6 +36,9 @@ const socialMediaEnhancedRoutes = require('./routes/socialMedia_enhanced');
 // Import admin routes
 const adminRoutes = require('./routes/admin');
 
+// Import images route
+const imagesRoutes = require('./routes/images');
+
 // Import scheduler service
 const Scheduler = require('./utils/scheduler');
 
@@ -431,6 +434,7 @@ app.use('/api/v2/weather', weatherEnhancedRoutes);
 app.use('/api/v2/prayer', prayerEnhancedRoutes);
 app.use('/api/v2/social-media', socialMediaEnhancedRoutes);
 app.use('/api/v2/admin/administratorpage', adminRoutes);
+app.use('/api/v2/images', imagesRoutes);
 
 // Legacy v1 routes removed - only enhanced routes available
 
@@ -446,6 +450,7 @@ app.use('/api/weather', weatherEnhancedRoutes);
 app.use('/api/prayer', prayerEnhancedRoutes);
 app.use('/api/social-media', socialMediaEnhancedRoutes);
 app.use('/api/admin/administratorpage', adminRoutes);
+app.use('/api/images', imagesRoutes);
 
 // Error handling middleware
 // eslint-disable-next-line no-unused-vars
