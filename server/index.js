@@ -93,16 +93,24 @@ const corsOptions = {
     if (process.env.FRONTEND_URL) {
       allowedOrigins.push(process.env.FRONTEND_URL);
     }
+    if (process.env.BACKEND_URL) {
+      allowedOrigins.push(process.env.BACKEND_URL);
+    }
     
     if (process.env.ALLOWED_ORIGINS) {
       const additionalOrigins = process.env.ALLOWED_ORIGINS.split(',');
       allowedOrigins.push(...additionalOrigins);
     }
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || isDevelopment) {
+
+    // Allow all origins in development mode
+    if (isDevelopment) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,
