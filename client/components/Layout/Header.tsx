@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+// import Image from 'next/image'; // Removed to fix CORS issues
 import { useRouter } from 'next/router';
 import { FiSearch, FiMenu, FiX } from 'react-icons/fi';
 import { SiFacebook, SiTwitter, SiInstagram, SiYoutube, SiLinkedin, SiTelegram, SiWhatsapp, SiTiktok } from 'react-icons/si';
@@ -142,13 +142,10 @@ const Header: React.FC = () => {
               <div className="relative group">
                 <div className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center"> {/* Adjust h- and w- values here to change logo size easily */}
                   {logoUrl ? (
-                    <Image
+                    <img
                           src={logoUrl}
                           alt={content?.site?.name || 'Logo'}
-                          layout="fill"
-                          objectFit="contain"
-                          className="transition-transform duration-300 group-hover:scale-110"
-                          priority
+                          className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
                         />
                   ) : (
                     <span className="text-[#363636] md:text-blue-800 font-bold text-base lg:text-lg">م</span>

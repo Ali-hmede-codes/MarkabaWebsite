@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { FiUpload, FiImage, FiSave, FiX } from 'react-icons/fi';
 import { useSettingsContext } from '../../context/SettingsContext';
-import Image from 'next/image';
+// import Image from 'next/image'; // Removed to fix CORS issues
 
 interface LogoSettingsProps {
   onClose?: () => void;
@@ -141,11 +141,9 @@ const LogoSettings: React.FC<LogoSettingsProps> = ({ onClose }) => {
         </label>
         <div className="flex justify-center p-4 border-2 border-gray-200 rounded-lg bg-gray-50">
           <div className="w-16 h-16 relative">
-            <Image
+            <img
               src={currentLogo}
               alt="الشعار الحالي"
-              width={64}
-              height={64}
               className="w-full h-full object-contain"
             />
           </div>

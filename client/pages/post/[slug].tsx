@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useAPI } from '../../components/API/hooks';
-import Image from 'next/image';
+// import Image from 'next/image'; // Removed to fix CORS issues
 import Head from 'next/head';
 import Layout from '../../components/Layout/Layout';
 import { getImageUrl } from '../../lib/utils';
@@ -45,8 +45,8 @@ const SinglePostPage: React.FC = () => {
             <span>{post.views} مشاهدات</span>
           </div>
           {post.featured_image && (
-            <div className="relative w-full h-96 mb-8">
-              <Image src={getImageUrl(post.featured_image)} alt={post.title_ar} fill className="object-cover rounded-lg" />
+            <div className="relative w-full h-96 mb-8 overflow-hidden">
+              <img src={getImageUrl(post.featured_image)} alt={post.title_ar} className="w-full h-full object-cover rounded-lg" />
             </div>
           )}
           <div className="prose max-w-none mb-8 text-gray-800" dangerouslySetInnerHTML={{ __html: post.content_ar }} />
