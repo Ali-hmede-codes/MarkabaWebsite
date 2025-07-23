@@ -35,7 +35,7 @@ Upload the entire project folder to your server:
 scp -r NewsMarkaba/ root@69.62.115.12:/var/www/
 
 # Or using SFTP/FTP client
-# Upload to: /var/www/NewsMarkaba/
+# Upload to: /var/www/MarkabaWebsite/
 ```
 
 ### 3. Server Setup
@@ -47,7 +47,7 @@ SSH into your server and run:
 ssh root@69.62.115.12
 
 # Navigate to project directory
-cd /var/www/NewsMarkaba
+cd /var/www/MarkabaWebsite
 
 # Install PM2 globally
 npm install -g pm2
@@ -195,8 +195,8 @@ pm2 set pm2-logrotate:retain 30
 3. **Permission Issues**:
    ```bash
    # Fix file permissions
-   chown -R www-data:www-data /var/www/NewsMarkaba
-   chmod -R 755 /var/www/NewsMarkaba
+   chown -R www-data:www-data /var/www/MarkabaWebsite
+chmod -R 755 /var/www/MarkabaWebsite
    ```
 
 4. **CORS Errors**:

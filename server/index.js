@@ -131,20 +131,24 @@ app.use(cors(corsOptions));
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:5000',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001',
-    'http://127.0.0.1:5000',
-    'http://69.62.115.12',
-    'http://69.62.115.12:3000',
-    'http://69.62.115.12:3001',
-    'http://69.62.115.12:5000',
-    'https://69.62.115.12',
-    'https://69.62.115.12:3000',
-    'https://69.62.115.12:5000'
-  ];
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:5000',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:3001',
+  'http://127.0.0.1:5000',
+  'http://69.62.115.12',
+  'http://69.62.115.12:3000',
+  'http://69.62.115.12:3001',
+  'http://69.62.115.12:5000',
+  'https://69.62.115.12',
+  'https://69.62.115.12:3000',
+  'https://69.62.115.12:5000',
+  'http://markaba.news',
+  'https://markaba.news',
+  'http://www.markaba.news',
+  'https://www.markaba.news'
+];
   
   if (allowedOrigins.includes(origin) || isDevelopment || !origin) {
     res.header('Access-Control-Allow-Origin', origin || '*');
@@ -196,20 +200,24 @@ app.use('/uploads', cors({
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://localhost:5000',
-      'http://127.0.0.1:3000',
-      'http://127.0.0.1:3001',
-      'http://127.0.0.1:5000',
-      'http://69.62.115.12',
-      'http://69.62.115.12:3000',
-      'http://69.62.115.12:3001',
-      'http://69.62.115.12:5000',
-      'https://69.62.115.12',
-      'https://69.62.115.12:3000',
-      'https://69.62.115.12:5000'
-    ];
+       'http://localhost:3000',
+       'http://localhost:3001',
+       'http://localhost:5000',
+       'http://127.0.0.1:3000',
+       'http://127.0.0.1:3001',
+       'http://127.0.0.1:5000',
+       'http://69.62.115.12',
+       'http://69.62.115.12:3000',
+       'http://69.62.115.12:3001',
+       'http://69.62.115.12:5000',
+       'https://69.62.115.12',
+       'https://69.62.115.12:3000',
+       'https://69.62.115.12:5000',
+       'http://markaba.news',
+       'https://markaba.news',
+       'http://www.markaba.news',
+       'https://www.markaba.news'
+     ];
     
     // Add production domains from environment
     if (process.env.FRONTEND_URL) {

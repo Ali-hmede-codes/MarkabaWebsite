@@ -25,7 +25,7 @@
 ### Local Preparation:
 - [ ] Run `node deploy-production.js` to prepare files
 - [ ] Verify build completed successfully
-- [ ] Upload project to server at `/var/www/NewsMarkaba/`
+- [ ] Upload project to server at `/var/www/MarkabaWebsite/`
 
 ### Server Setup:
 - [ ] Install Node.js (v16+)
@@ -35,7 +35,7 @@
 - [ ] Configure firewall (ports 80, 5000, 22)
 
 ### Deployment:
-- [ ] Navigate to project: `cd /var/www/NewsMarkaba`
+- [ ] Navigate to project: `cd /var/www/MarkabaWebsite`
 - [ ] Start services: `pm2 start ecosystem.config.js --env production`
 - [ ] Save PM2 config: `pm2 save && pm2 startup`
 - [ ] Test deployment: `node check-production.js`
@@ -108,8 +108,8 @@ netstat -tulpn | grep :80
 
 ### Permission Issues:
 ```bash
-chown -R www-data:www-data /var/www/NewsMarkaba
-chmod -R 755 /var/www/NewsMarkaba
+chown -R www-data:www-data /var/www/MarkabaWebsite
+chmod -R 755 /var/www/MarkabaWebsite
 ```
 
 ---
