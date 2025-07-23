@@ -149,8 +149,19 @@ app.use(express.urlencoded({
   limit: '10mb' 
 }));
 
-// Static file serving for uploads with conditional caching
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), isDevelopment ? {
+// Static file serving for uploads with conditional caching and CORS headers
+app.use('/uploads', (req, res, next) => {
+  // Set CORS headers for static files
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+}, express.static(path.join(__dirname, 'public/uploads'), isDevelopment ? {
   maxAge: 0,
   etag: false,
   lastModified: false,
