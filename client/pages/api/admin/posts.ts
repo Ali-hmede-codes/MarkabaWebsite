@@ -86,20 +86,14 @@ export default async function handler(
     // Forward request to backend
     const response = await fetch(`${API_BASE_URL}/admin/administratorpage/posts`, {
       method: 'POST',
+      body: formData.getBuffer(),
       headers: {
-        'Authorization': `Bearer ${token}`,
         ...formData.getHeaders(),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: formData as any,
     });
-
     const data = await response.json();
-    
-    if (!response.ok) {
-      return res.status(response.status).json(data);
-    }
-
-    res.status(200).json(data);
+    res.status(response.status).json(data);
   } catch (error) {
     console.error('Error in posts API:', error);
     res.status(500).json({ message: 'Internal server error' });
