@@ -81,12 +81,18 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:5000',
       'http://127.0.0.1:3000',
       'http://127.0.0.1:3001',
-      'http://69.62.115.12',
+      'http://127.0.0.1:5000',
+      'http://127.0.0.1:3306',
+      'http://69.62.115.12:5000/public/images/general',
       'http://69.62.115.12:3000',
       'http://69.62.115.12:3001',
-      'http://69.62.115.12:5000'
+      'http://69.62.115.12:5000',
+      'https://69.62.115.12',
+      'https://69.62.115.12:3000',
+      'https://69.62.115.12:5000'
     ];
     
     // Add production domains from environment
@@ -152,9 +158,29 @@ app.use(express.urlencoded({
 // Static file serving for uploads with conditional caching and CORS headers
 app.use('/uploads', (req, res, next) => {
   // Set CORS headers for static files
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin;
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:5000',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:5000',
+    'http://69.62.115.12',
+    'http://69.62.115.12:3000',
+    'http://69.62.115.12:3001',
+    'http://69.62.115.12:5000',
+    'https://69.62.115.12',
+    'https://69.62.115.12:3000',
+    'https://69.62.115.12:5000'
+  ];
+  
+  if (allowedOrigins.includes(origin) || isDevelopment) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
