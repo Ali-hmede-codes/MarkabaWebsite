@@ -59,8 +59,8 @@ const CreatePost: React.FC = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
-      const response = await fetch(`${API_BASE}/categories`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE}/api/v2/categories`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -72,8 +72,8 @@ const CreatePost: React.FC = () => {
       }
       
       const data = await response.json();
-      if (data.success && Array.isArray(data.data)) {
-        setCategories(data.data);
+      if (data.success && Array.isArray(data.categories)) {
+        setCategories(data.categories);
       } else {
         setCategories([]);
         toast.error('لم يتم العثور على تصنيفات');
@@ -97,8 +97,8 @@ const CreatePost: React.FC = () => {
       const formData = new FormData();
       formData.append('file', file);
       
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
-      const response = await fetch(`${API_BASE}/media/upload`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE}/api/v2/media/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -195,7 +195,7 @@ const CreatePost: React.FC = () => {
         await handleImageUpload(selectedFile);
       }
       
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       
       const postData = {
         title_ar: post.title_ar.trim(),
@@ -210,7 +210,7 @@ const CreatePost: React.FC = () => {
         is_published: post.is_published
       };
       
-      const response = await fetch(`${API_BASE}/posts`, {
+      const response = await fetch(`${API_BASE}/api/posts`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
