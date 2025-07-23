@@ -210,7 +210,7 @@ const CreatePost: React.FC = () => {
         is_published: post.is_published
       };
       
-      const response = await fetch(`${API_BASE}/api/admin/posts`, {
+      const response = await fetch(`${API_BASE}/admin/administratorpage/posts`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
