@@ -42,7 +42,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
         <div className="flex flex-col gap-2 sm:gap-4 mb-1 sm:mb-2">
           {/* Big post */}
           <div className="rounded-lg overflow-hidden transition-shadow duration-300">
-            <div className="aspect-video w-full"><img src={latestPosts[0].featured_image || '/placeholder.jpg'} alt={latestPosts[0].title_ar} className="w-full h-full object-cover" /></div>
+            <div className="aspect-video w-full"><img src={latestPosts[0].featured_image || '/placeholder.svg'} alt={latestPosts[0].title_ar} className="w-full h-full object-cover" /></div>
             <div className="p-1 sm:p-3">
               <h3 className="font-bold text-base sm:text-xl mb-1 sm:mb-3 text-blue-800 hover:text-blue-600 transition-colors">{latestPosts[0].title_ar}</h3>
               <p className="text-gray-700 text-xs sm:text-base mb-3 line-clamp-3">{latestPosts[0].content_ar || latestPosts[0].content}</p>
@@ -56,7 +56,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             {latestPosts.slice(1, 3).map(post => (
               <div key={post.id} className="flex flex-row items-start gap-2 sm:gap-3 rounded-lg transition-shadow duration-300 p-1 sm:p-3 flex-1">
-                <img src={post.featured_image || '/placeholder.jpg'} alt={post.title_ar} className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded" />
+                <img src={post.featured_image || '/placeholder.svg'} alt={post.title_ar} className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded" />
                 <div className="flex flex-col">
                   <h3 className="font-bold text-xs sm:text-sm mb-1 text-blue-800 hover:text-blue-600 transition-colors line-clamp-2">{post.title_ar}</h3>
                   <p className="text-gray-600 text-xs sm:text-sm mb-1 line-clamp-2">{post.content_ar || post.content}</p>

@@ -8,22 +8,17 @@
  * @returns The full image URL
  */
 export function getImageUrl(imagePath: string | null | undefined): string {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
   if (!imagePath) {
-    return '/images/placeholder.jpg'; // Default placeholder image
+    return '/placeholder.svg';
   }
-  
-  // If it's already a full URL, return as is
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
-  
-  // If it starts with a slash, it's already relative to the domain
   if (imagePath.startsWith('/')) {
-    return imagePath;
+    return `${backendUrl}${imagePath}`;
   }
-  
-  // Otherwise, prepend with uploads directory
-  return `/uploads/${imagePath}`;
+  return `${backendUrl}/uploads/${imagePath}`;
 }
 
 /**
