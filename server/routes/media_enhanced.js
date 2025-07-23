@@ -29,23 +29,23 @@ const storage = multer.diskStorage({
         case 'post': {
           const postId = req.body.post_id;
           if (postId) {
-            uploadPath = path.join(process.cwd(), 'uploads', 'posts', postId.toString(), 'images');
+            uploadPath = path.join(process.cwd(), 'public', 'uploads', 'posts', postId.toString(), 'images');
           } else {
-            uploadPath = path.join(process.cwd(), 'uploads', 'posts', 'temp');
+            uploadPath = path.join(process.cwd(), 'public', 'uploads', 'posts', 'temp');
           }
           break;
         }
         case 'breaking_news':
-          uploadPath = path.join(process.cwd(), 'uploads', 'breaking_news');
+          uploadPath = path.join(process.cwd(), 'public', 'uploads', 'breaking_news');
           break;
         case 'category':
-          uploadPath = path.join(process.cwd(), 'uploads', 'categories');
+          uploadPath = path.join(process.cwd(), 'public', 'uploads', 'categories');
           break;
         case 'avatar':
-          uploadPath = path.join(process.cwd(), 'uploads', 'avatars');
+          uploadPath = path.join(process.cwd(), 'public', 'uploads', 'avatars');
           break;
         default:
-          uploadPath = path.join(process.cwd(), 'uploads', 'general');
+          uploadPath = path.join(process.cwd(), 'public', 'uploads', 'general');
       }
       
       // Create directory if it doesn't exist
@@ -110,8 +110,8 @@ const getFileInfo = async (filePath) => {
 
 // Helper function to generate file URL
 const generateFileUrl = (filePath) => {
-  const relativePath = path.relative(process.cwd(), filePath);
-  return `/${relativePath.replace(/\\/g, '/')}`;
+  const relativePath = path.relative(path.join(process.cwd(), 'public'), filePath);
+  return `/uploads/${relativePath.replace(/\\/g, '/')}`;
 };
 
 // Upload single file
@@ -127,10 +127,8 @@ router.post('/upload', auth, requireAdminOrEditor, upload.single('file'), async 
     
     const {
       upload_type = 'general',
-      post_id,
       alt_text = '',
-      caption = '',
-      caption_ar = ''
+      caption = ''
     } = req.body;
     
     const fileInfo = await getFileInfo(req.file.path);
@@ -139,21 +137,18 @@ router.post('/upload', auth, requireAdminOrEditor, upload.single('file'), async 
     // Save to database
     const result = await query(
       `INSERT INTO media (
-        filename, original_name, file_path, file_url, file_size, mime_type,
-        upload_type, post_id, alt_text, caption, caption_ar, uploaded_by, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+        filename, original_name, file_path, file_size, mime_type,
+        type, alt_text, caption, uploaded_by, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
       [
         req.file.filename,
         req.file.originalname,
         req.file.path,
-        fileUrl,
         fileInfo ? fileInfo.size : 0,
         req.file.mimetype,
-        upload_type,
-        post_id || null,
+        upload_type === 'general' ? 'general' : 'post',
         alt_text,
         caption,
-        caption_ar,
         req.user.id
       ]
     );
@@ -174,6 +169,7 @@ router.post('/upload', auth, requireAdminOrEditor, upload.single('file'), async 
       message: 'File uploaded successfully',
       data: {
         ...media,
+        url: fileUrl,
         file_size_formatted: formatFileSize(media.file_size)
       }
     });
