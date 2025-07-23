@@ -127,6 +127,40 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Additional CORS middleware for preflight requests
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:5000',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:5000',
+    'http://69.62.115.12',
+    'http://69.62.115.12:3000',
+    'http://69.62.115.12:3001',
+    'http://69.62.115.12:5000',
+    'https://69.62.115.12',
+    'https://69.62.115.12:3000',
+    'https://69.62.115.12:5000'
+  ];
+  
+  if (allowedOrigins.includes(origin) || isDevelopment || !origin) {
+    res.header('Access-Control-Allow-Origin', origin || '*');
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Max-Age', '86400');
+  
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
+
 // Logging middleware
 if (isDevelopment) {
   app.use(morgan('dev'));
@@ -155,11 +189,13 @@ app.use(express.urlencoded({
   limit: '10mb' 
 }));
 
-// Static file serving for uploads with conditional caching and CORS headers
-app.use('/uploads', (req, res, next) => {
-  // Set CORS headers for static files
-  const origin = req.headers.origin;
-  const allowedOrigins = [
+// Static file serving for uploads with comprehensive CORS headers
+app.use('/uploads', cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
       'http://localhost:5000',
@@ -174,20 +210,31 @@ app.use('/uploads', (req, res, next) => {
       'https://69.62.115.12:3000',
       'https://69.62.115.12:5000'
     ];
-  
-  if (allowedOrigins.includes(origin) || isDevelopment) {
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  
-  next();
-}, express.static(path.join(__dirname, 'public/uploads'), isDevelopment ? {
+    
+    // Add production domains from environment
+    if (process.env.FRONTEND_URL) {
+      allowedOrigins.push(process.env.FRONTEND_URL);
+    }
+    if (process.env.BACKEND_URL) {
+      allowedOrigins.push(process.env.BACKEND_URL);
+    }
+    
+    // Allow all origins in development mode
+    if (isDevelopment) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all for static files
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'HEAD', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cache-Control', 'Pragma'],
+  exposedHeaders: ['Content-Length', 'Content-Type']
+}), express.static(path.join(__dirname, 'public/uploads'), isDevelopment ? {
   maxAge: 0,
   etag: false,
   lastModified: false,
