@@ -95,7 +95,7 @@ export default async function handler(
     const data = await response.json();
     res.status(response.status).json(data);
   } catch (error) {
-    console.error('Error in posts API:', error);
+     console.error('Error in posts API:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 }
