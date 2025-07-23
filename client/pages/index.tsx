@@ -13,6 +13,7 @@ import {
   FiTrendingUp,
   FiBook
 } from 'react-icons/fi';
+import { getImageUrl } from '../utils/imageUtils';
 import LastNewsBanner from '../components/LastNews/LastNewsBanner';
 import LatestArticles from '../components/LatestArticles/LatestArticles';
 
@@ -162,7 +163,7 @@ const HomePage: React.FC = () => {
                     <div className="relative h-40 sm:h-48 overflow-hidden">
                       {post.featured_image ? (
                         <img
-                          src={post.featured_image}
+                          src={getImageUrl(post.featured_image)}
                           alt={post.title_ar || post.title}
                           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                         />
@@ -225,7 +226,7 @@ const HomePage: React.FC = () => {
                     <div className="relative flex-1 overflow-hidden">
                       {post.featured_image ? (
                         <img
-                          src={post.featured_image}
+                          src={getImageUrl(post.featured_image)}
                           alt={post.title_ar || post.title}
                           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                         />

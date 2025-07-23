@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import Link from 'next/link';
+import { getImageUrl } from '../../../utils/imageUtils';
 
 interface Post {
   id: number;
@@ -322,7 +323,7 @@ const PostsManagement: React.FC = () => {
                             <div className="flex-shrink-0 h-12 w-12 ml-4">
                               <img
                                 className="h-12 w-12 rounded-lg object-cover"
-                                src={post.featured_image}
+                                src={getImageUrl(post.featured_image)}
                                 alt={post.title_ar}
                               />
                             </div>

@@ -13,6 +13,7 @@ import {
   MediaAPI,
   SettingsAPI
 } from './index';
+import { getImageUrl } from '../../utils/imageUtils';
 
 // Example 1: Public Website Homepage
 export const PublicHomepage: React.FC = () => {
@@ -223,7 +224,7 @@ export const CustomPostDisplay: React.FC = () => {
               <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 {post.featured_image && (
                   <img 
-                    src={post.featured_image} 
+                    src={getImageUrl(post.featured_image)} 
                     alt={post.title_ar}
                     className="w-full h-48 object-cover"
                   />

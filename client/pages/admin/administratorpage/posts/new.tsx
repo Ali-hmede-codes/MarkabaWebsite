@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { FiSave, FiArrowLeft, FiEye, FiUpload } from 'react-icons/fi';
 import Link from 'next/link';
 import { useAuth } from '../../../../context/AuthContext';
+import { getImageUrl } from '../../../../utils/imageUtils';
 
 interface PostForm {
   title_ar: string;
@@ -291,7 +292,7 @@ const CreatePost: React.FC = () => {
             {post.featured_image && (
               <div className="mb-6">
                 <img 
-                  src={post.featured_image}
+                  src={getImageUrl(post.featured_image)}
                   alt="الصورة المميزة"
                   className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
                 />
@@ -386,7 +387,7 @@ const CreatePost: React.FC = () => {
                     )}
                     {post.featured_image && (
                       <div className="mt-2">
-                        <img src={post.featured_image} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
+                        <img src={getImageUrl(post.featured_image)} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
                       </div>
                     )}
                   </div>
