@@ -60,7 +60,7 @@ const CreatePost: React.FC = () => {
     try {
       setLoading(true);
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE}/api/v2/categories`, {
+      const response = await fetch(`${API_BASE}/categories`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -98,7 +98,7 @@ const CreatePost: React.FC = () => {
       formData.append('file', file);
       
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE}/api/v2/media/upload`, {
+      const response = await fetch(`${API_BASE}/media/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -210,7 +210,7 @@ const CreatePost: React.FC = () => {
         is_published: post.is_published
       };
       
-      const response = await fetch(`${API_BASE}/api/posts`, {
+      const response = await fetch(`${API_BASE}/api/admin/posts`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

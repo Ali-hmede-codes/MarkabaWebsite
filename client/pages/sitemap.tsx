@@ -426,11 +426,11 @@ const SitemapPage: React.FC<SitemapPageProps> = ({ categories, recentPosts }) =>
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
     // Fetch categories
-    const categoriesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000'}/api/v2/categories`);
+    const categoriesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000'}/categories`);
     const categoriesData = await categoriesResponse.json();
     
     // Fetch recent posts
-    const postsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000'}/api/v2/posts?limit=20&sort=latest`);
+    const postsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://69.62.115.12:5000'}/posts?limit=20&sort=latest`);
     const postsData = await postsResponse.json();
 
     return {

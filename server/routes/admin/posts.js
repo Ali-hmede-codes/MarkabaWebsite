@@ -323,8 +323,8 @@ router.post('/',
       } = req.body;
       
       const { category_id, is_published } = req.body;
-      const isPublished = is_published === 'true' || is_published === '1';
-      const isFeatured = is_featured === 'true' || is_featured === '1';
+      const isPublished = is_published === true || is_published === 'true' || is_published === '1';
+      const isFeatured = is_featured === true || is_featured === 'true' || is_featured === '1';
       
       // Sanitize and trim input data
       if (title_ar) title_ar = title_ar.trim();
@@ -376,7 +376,7 @@ router.post('/',
       }
       
       // Handle featured image
-      let featured_image = null;
+      let featured_image = req.body.featured_image || null;
       if (req.file) {
         featured_image = await processImage(req.file);
       }
