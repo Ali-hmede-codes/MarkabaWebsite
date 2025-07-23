@@ -72,8 +72,8 @@ const CreatePost: React.FC = () => {
       }
       
       const data = await response.json();
-      if (data.success && Array.isArray(data.categories)) {
-        setCategories(data.categories);
+      if (data.success && data.data && Array.isArray(data.data.categories)) {
+        setCategories(data.data.categories);
       } else {
         setCategories([]);
         toast.error('لم يتم العثور على تصنيفات');
