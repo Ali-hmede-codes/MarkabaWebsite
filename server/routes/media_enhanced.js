@@ -111,7 +111,7 @@ const getFileInfo = async (filePath) => {
 // Helper function to generate file URL
 const generateFileUrl = (filePath) => {
   const relativePath = path.relative(path.join(process.cwd(), 'public'), filePath);
-  return `/uploads/${relativePath.replace(/\\/g, '/')}`;
+  return `/${relativePath.replace(/\\/g, '/')}`;
 };
 
 // Upload single file
