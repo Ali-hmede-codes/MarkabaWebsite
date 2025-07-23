@@ -160,20 +160,20 @@ app.use('/uploads', (req, res, next) => {
   // Set CORS headers for static files
   const origin = req.headers.origin;
   const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:5000',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001',
-    'http://127.0.0.1:5000',
-    'http://69.62.115.12',
-    'http://69.62.115.12:3000',
-    'http://69.62.115.12:3001',
-    'http://69.62.115.12:5000',
-    'https://69.62.115.12',
-    'https://69.62.115.12:3000',
-    'https://69.62.115.12:5000'
-  ];
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5000',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+      'http://127.0.0.1:5000',
+      'http://69.62.115.12',
+      'http://69.62.115.12:3000',
+      'http://69.62.115.12:3001',
+      'http://69.62.115.12:5000',
+      'https://69.62.115.12',
+      'https://69.62.115.12:3000',
+      'https://69.62.115.12:5000'
+    ];
   
   if (allowedOrigins.includes(origin) || isDevelopment) {
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
