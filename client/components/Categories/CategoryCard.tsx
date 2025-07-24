@@ -46,13 +46,13 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         
         {/* Description */}
         {showDescription && category.description_ar && (
-          <p className="text-gray-600 text-sm mt-2" dir="rtl">
+          <p className="text-black text-sm mt-2" dir="rtl">
             {category.description_ar}
           </p>
         )}
         
         {/* Meta Information */}
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center justify-between text-xs text-black">
           {showPostCount && (
             <span>
               {category.posts_count || 0} {(category.posts_count || 0) === 1 ? 'post' : 'posts'}
