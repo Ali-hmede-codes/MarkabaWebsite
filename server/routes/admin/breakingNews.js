@@ -2,11 +2,11 @@ const express = require('express');
 
 const router = express.Router();
 const db = require('../../config/database');
-const { authenticateToken, requireAdmin } = require('../../middlewares/auth');
+const { auth: authenticateToken, requireRole } = require('../../middlewares/auth');
 
 // Apply authentication middleware to all routes
 router.use(authenticateToken);
-router.use(requireAdmin);
+router.use(requireRole(['admin']));
 
 // Helper function to generate Arabic slug
 function generateSlug(title) {
