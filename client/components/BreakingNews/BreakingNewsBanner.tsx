@@ -93,7 +93,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   return (
     <div className={`relative bg-red-600 text-white ${className}`}>
       {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-red-500 to-red-600 animate-pulse opacity-20" />
+      <div className="absolute inset-0 bg-gradient-to-l from-red-600 via-red-500 to-red-600 animate-pulse opacity-20" />
       
       <div className="relative px-4 py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -172,9 +172,9 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
       {breakingNews.length > 1 && (
         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/30">
           <div 
-            className="h-full bg-white transition-all duration-5000 ease-linear"
+            className="h-full bg-white transition-all duration-5000 ease-linear ml-auto"
             style={{
-              width: `${((currentIndex + 1) / breakingNews.length) * 100}%`
+              width: `${((breakingNews.length - currentIndex) / breakingNews.length) * 100}%`
             }}
           />
         </div>

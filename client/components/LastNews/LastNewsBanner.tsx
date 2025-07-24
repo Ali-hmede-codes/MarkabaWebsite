@@ -67,7 +67,9 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   }, [combineNews]);
 
   // Move before early returns
-  const displayedNews: NewsItem[] = combineNews ? [...lastNews, ...breakingNews] : lastNews;
+  const displayedNews: NewsItem[] = combineNews 
+    ? [...lastNews, ...breakingNews].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    : lastNews;
 
 
 
