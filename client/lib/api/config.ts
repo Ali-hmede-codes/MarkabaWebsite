@@ -1,7 +1,7 @@
 // API configuration and utility functions
 
 // Base API configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://markaba.news/api/v2';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://api.markaba.news/api/v2';
 
 // Default API headers
 export const API_HEADERS = {
