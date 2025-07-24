@@ -5,8 +5,16 @@
 
 // Get the backend URL for serving images
 const getBackendUrl = (): string => {
-  // Use HTTP backend URL (port 5000) instead of the API URL
-  return process.env.NEXT_PUBLIC_SERVER_URL?.replace(':3443', ':5000').replace('https:', 'http:') || 'https://markaba.news';
+  // Use the configured server URL, preserving HTTPS in production
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://api.markaba.news';
+  
+  // In development, use HTTP and port 5000
+  if (process.env.NODE_ENV === 'development') {
+    return serverUrl.replace(':3443', ':5000').replace('https:', 'http:');
+  }
+  
+  // In production, keep HTTPS and use the configured domain
+  return serverUrl;
 };
 
 /**
