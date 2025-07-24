@@ -29,23 +29,23 @@ const storage = multer.diskStorage({
         case 'post': {
           const postId = req.body.post_id;
           if (postId) {
-            uploadPath = path.join(process.cwd(), 'public', 'uploads', 'posts', postId.toString(), 'images');
+            uploadPath = path.join(__dirname, '..', 'public', 'uploads', 'posts', postId.toString(), 'images');
           } else {
-            uploadPath = path.join(process.cwd(), 'public', 'uploads', 'posts', 'temp');
+            uploadPath = path.join(__dirname, '..', 'public', 'uploads', 'posts', 'temp');
           }
           break;
         }
         case 'breaking_news':
-          uploadPath = path.join(process.cwd(), 'public', 'uploads', 'breaking_news');
+          uploadPath = path.join(__dirname, '..', 'public', 'uploads', 'breaking_news');
           break;
         case 'category':
-          uploadPath = path.join(process.cwd(), 'public', 'uploads', 'categories');
+          uploadPath = path.join(__dirname, '..', 'public', 'uploads', 'categories');
           break;
         case 'avatar':
-          uploadPath = path.join(process.cwd(), 'public', 'uploads', 'avatars');
+          uploadPath = path.join(__dirname, '..', 'public', 'uploads', 'avatars');
           break;
         default:
-          uploadPath = path.join(process.cwd(), 'public', 'uploads', 'general');
+          uploadPath = path.join(__dirname, '..', 'public', 'uploads', 'general');
       }
       
       // Create directory if it doesn't exist
@@ -110,7 +110,8 @@ const getFileInfo = async (filePath) => {
 
 // Helper function to generate file URL
 const generateFileUrl = (filePath) => {
-  const relativePath = path.relative(path.join(process.cwd(), 'public'), filePath);
+  const publicPath = path.join(__dirname, '..', 'public');
+  const relativePath = path.relative(publicPath, filePath);
   return `/${relativePath.replace(/\\/g, '/')}`;
 };
 
