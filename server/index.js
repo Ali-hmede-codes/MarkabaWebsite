@@ -202,57 +202,56 @@ app.use(express.urlencoded({
 }));
 
 // Static file serving for uploads with comprehensive CORS headers
-app.use('/uploads', cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, etc.)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-       'http://localhost:3000',
-       'http://localhost:3001',
-       'http://localhost:5000',
-       'http://127.0.0.1:3000',
-       'http://127.0.0.1:3001',
-       'http://127.0.0.1:5000',
-       'http://69.62.115.12',
-       'http://69.62.115.12:3000',
-       'http://69.62.115.12:3001',
-       'http://69.62.115.12:5000',
-       'https://69.62.115.12',
-       'https://69.62.115.12:3000',
-       'https://69.62.115.12:5000',
-       'http://markaba.news',
-       'https://markaba.news',
-       'http://www.markaba.news',
-       'https://www.markaba.news',
-       'http://api.markaba.news',
-       'https://api.markaba.news'
-     ];
-    
-    // Add production domains from environment
-    if (process.env.FRONTEND_URL) {
-      allowedOrigins.push(process.env.FRONTEND_URL);
-    }
-    if (process.env.BACKEND_URL) {
-      allowedOrigins.push(process.env.BACKEND_URL);
-    }
-    
-    // Allow all origins in development mode
-    if (isDevelopment) {
-      return callback(null, true);
-    }
-
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Allow all for static files
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'HEAD', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cache-Control', 'Pragma'],
-  exposedHeaders: ['Content-Length', 'Content-Type']
-}), express.static(path.join(__dirname, 'public/uploads'), isDevelopment ? {
+app.use('/uploads', (req, res, next) => {
+  // Set CORS headers for all upload requests
+  const origin = req.headers.origin;
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001', 
+    'http://localhost:5000',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:5000',
+    'http://69.62.115.12',
+    'http://69.62.115.12:3000',
+    'http://69.62.115.12:3001',
+    'http://69.62.115.12:5000',
+    'https://69.62.115.12',
+    'https://69.62.115.12:3000',
+    'https://69.62.115.12:5000',
+    'http://markaba.news',
+    'https://markaba.news',
+    'http://www.markaba.news',
+    'https://www.markaba.news',
+    'http://api.markaba.news',
+    'https://api.markaba.news'
+  ];
+  
+  // Add environment origins
+  if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL);
+  if (process.env.BACKEND_URL) allowedOrigins.push(process.env.BACKEND_URL);
+  
+  // Set CORS headers
+  if (isDevelopment || !origin || allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  }
+  
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Cache-Control, Pragma');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Expose-Headers', 'Content-Length, Content-Type');
+  
+  // Critical: Set Cross-Origin-Resource-Policy to cross-origin
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+}, express.static(path.join(__dirname, 'public/uploads'), isDevelopment ? {
   maxAge: 0,
   etag: false,
   lastModified: false,
