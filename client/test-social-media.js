@@ -3,7 +3,7 @@
 
 const testSocialMedia = async () => {
   try {
-    const response = await fetch('http://69.62.115.12:5000/api/v2/social-media');
+    const response = await fetch('https://markaba.news/api/v2/social-media');
     const data = await response.json();
     
     console.log('=== SOCIAL MEDIA TEST ===');
