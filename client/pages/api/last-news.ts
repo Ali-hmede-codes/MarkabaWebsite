@@ -11,17 +11,22 @@ export default async function handler(
 
   const { active, limit, language, include_content } = req.query;
   
-  // Build query parameters
-  const queryParams = new URLSearchParams();
-  if (active) queryParams.append('active', active as string);
-  if (limit) queryParams.append('limit', limit as string);
-  if (language) queryParams.append('language', language as string);
-  if (include_content) queryParams.append('include_content', include_content as string);
-
   // Determine the endpoint based on query parameters
   let endpoint = '/last-news';
+  const queryParams = new URLSearchParams();
+  
   if (active === 'true') {
     endpoint = '/last-news/active';
+    // Don't include 'active' parameter for /active endpoint
+    if (limit) queryParams.append('limit', limit as string);
+    if (language) queryParams.append('language', language as string);
+    if (include_content) queryParams.append('include_content', include_content as string);
+  } else {
+    // Include all parameters for general endpoint
+    if (active) queryParams.append('active', active as string);
+    if (limit) queryParams.append('limit', limit as string);
+    if (language) queryParams.append('language', language as string);
+    if (include_content) queryParams.append('include_content', include_content as string);
   }
 
   try {

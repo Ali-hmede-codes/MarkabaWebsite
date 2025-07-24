@@ -353,6 +353,7 @@ app.get('/api', (req, res) => {
       posts: '/api/posts',
       categories: '/api/categories',
       breaking_news: '/api/breaking-news',
+      last_news: '/api/last-news',
       media: '/api/media',
       users: '/api/users',
       settings: '/api/settings',
@@ -399,6 +400,7 @@ app.use('/api/auth', authEnhancedRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/categories', categoriesEnhancedRoutes);
 app.use('/api/breaking-news', breakingNewsEnhancedRoutes);
+app.use('/api/last-news', lastNewsEnhancedRoutes);
 app.use('/api/media', mediaEnhancedRoutes);
 app.use('/api/users', usersEnhancedRoutes);
 app.use('/api/settings', settingsEnhancedRoutes);
