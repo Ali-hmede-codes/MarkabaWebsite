@@ -82,7 +82,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
           <FiClock className="text-blue-500 text-xl sm:text-3xl ml-1 sm:ml-3" />
           <h2 className="section-title font-bold text-gray-800 text-lg sm:text-xl">آخر الأخبار</h2>
           <div className="flex items-center mr-3 sm:mr-4">
-            <span className="ml-1 sm:ml-2 text-yellow-300 font-bold text-sm sm:text-base">العاجل</span>
+            <span className="ml-1 sm:ml-2 text-red-500 font-bold text-sm sm:text-base">العاجل</span>
             <label className="relative inline-flex items-center cursor-pointer mr-1 sm:mr-2">
               <input
                 type="checkbox"
@@ -103,7 +103,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
             <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
               <h3 className={`font-semibold text-lg sm:text-xl ${news.isBreaking ? 'text-red-600' : 'text-black'} mb-1 hover:text-blue-600 transition-colors`}>{news.title_ar || news.title}</h3>
               <p className="text-sm text-gray-500 mb-2">{timeAgo(news.created_at)}</p>
-              {index < displayedNews.length - 1 && <div className="w-12 h-0.5 bg-blue-500 mx-auto my-2"></div>}
+              {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-300 mx-auto my-3"></div>}
             </div>
           ))}
         </div>
