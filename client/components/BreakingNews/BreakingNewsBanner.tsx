@@ -116,32 +116,48 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
               {/* News Text */}
               <div className="flex-1 min-w-0 breaking-news-container overflow-hidden">
                 <div className="relative h-6 flex items-center">
-                  <div className={`animate-scroll-endless ${animationReady ? 'animation-ready' : ''}`}>
+                  <div className={`animate-scroll-endless whitespace-nowrap ${animationReady ? 'animation-ready' : ''}`}>
                     {breakingNews.length > 0 ? (
                       <>
-                        {/* Multiple copies for truly endless scrolling */}
-                        {[...Array(4)].map((_, copyIndex) => (
-                          <div key={`copy-${copyIndex}`} className="inline-flex whitespace-nowrap">
-                            {breakingNews.map((news, index) => (
-                              <span key={`${copyIndex}-${news.id}`} className="inline-block">
-                                {news.link ? (
-                                  <Link
-                                    href={news.link}
-                                    className="text-white hover:text-yellow-300 transition-colors duration-200 leading-tight font-medium"
-                                    target={news.link.startsWith('http') ? '_blank' : '_self'}
-                                    rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                  >
-                                    {news.title}
-                                  </Link>
-                                ) : (
-                                  <span className="text-white leading-tight font-medium">
-                                    {news.title}
-                                  </span>
-                                )}
-                                <span className="text-white mx-8">•</span>
+                        {/* First copy of all breaking news */}
+                        {breakingNews.map((news, index) => (
+                          <span key={`first-${news.id}`} className="inline-block">
+                            {news.link ? (
+                              <Link
+                                href={news.link}
+                                className="text-white hover:text-yellow-300 transition-colors duration-200 leading-tight font-medium"
+                                target={news.link.startsWith('http') ? '_blank' : '_self'}
+                                rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              >
+                                {news.title}
+                              </Link>
+                            ) : (
+                              <span className="text-white leading-tight font-medium">
+                                {news.title}
                               </span>
-                            ))}
-                          </div>
+                            )}
+                            <span className="text-white mx-8">•</span>
+                          </span>
+                        ))}
+                        {/* Second copy for seamless infinite loop */}
+                        {breakingNews.map((news, index) => (
+                          <span key={`second-${news.id}`} className="inline-block">
+                            {news.link ? (
+                              <Link
+                                href={news.link}
+                                className="text-white hover:text-yellow-300 transition-colors duration-200 leading-tight font-medium"
+                                target={news.link.startsWith('http') ? '_blank' : '_self'}
+                                rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              >
+                                {news.title}
+                              </Link>
+                            ) : (
+                              <span className="text-white leading-tight font-medium">
+                                {news.title}
+                              </span>
+                            )}
+                            <span className="text-white mx-8">•</span>
+                          </span>
                         ))}
                       </>
                     ) : (
