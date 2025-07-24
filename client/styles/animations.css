@@ -89,6 +89,13 @@
   animation: scroll-rtl 30s linear infinite;
 }
 
+/* Mobile-specific faster breaking news animation */
+@media (max-width: 768px) {
+  .animate-scroll-rtl {
+    animation: scroll-rtl 15s linear infinite;
+  }
+}
+
 /* Hover effects */
 .hover-lift {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
