@@ -44,7 +44,7 @@ const SinglePostPage: React.FC = () => {
             <span className="mr-4">{new Date(post.created_at).toLocaleDateString('ar-EG')}</span>
           </div>
           {post.featured_image && (
-            <div className="relative w-full h-96 mb-8">
+            <div className="relative w-full h-96 md:h-96 aspect-video md:aspect-auto mb-8">
               <Image src={getImageUrl(post.featured_image)} alt={post.title_ar} fill className="object-cover rounded-lg" />
             </div>
           )}
