@@ -106,8 +106,8 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
           </div>
           
           {/* News Content */}
-          <div className="flex-1 mx-4 min-w-0">
-            <div className="flex items-center space-x-4">
+          <div className="flex-1 mx-4 min-w-0 overflow-hidden">
+            <div className="flex items-center space-x-4 h-6">
               {/* Time */}
               {currentNews.created_at && (
                 <span className="text-xs opacity-90 flex-shrink-0">
@@ -116,21 +116,31 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
               )}
               
               {/* News Text */}
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 overflow-hidden relative">
                 {currentNews.link ? (
                   <Link
                     href={currentNews.link}
-                    className="hover:underline focus:underline focus:outline-none"
+                    className="hover:underline focus:underline focus:outline-none block"
                     target={currentNews.link.startsWith('http') ? '_blank' : '_self'}
                     rel={currentNews.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                   >
-                    <span className="block truncate font-medium">
-                      {currentNews.title}
+                    <span className="block font-medium leading-tight overflow-hidden">
+                      <span 
+                        key={`${currentIndex}-${currentNews.id}`}
+                        className="animate-scroll-rtl inline-block whitespace-nowrap"
+                      >
+                        {currentNews.title}
+                      </span>
                     </span>
                   </Link>
                 ) : (
-                  <span className="block truncate font-medium">
-                    {currentNews.title}
+                  <span className="block font-medium leading-tight overflow-hidden">
+                    <span 
+                      key={`${currentIndex}-${currentNews.id}`}
+                      className="animate-scroll-rtl inline-block whitespace-nowrap"
+                    >
+                      {currentNews.title}
+                    </span>
                   </span>
                 )}
               </div>

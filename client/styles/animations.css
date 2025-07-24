@@ -58,6 +58,15 @@
   }
 }
 
+@keyframes scroll-rtl-smooth {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(calc(100vw + 100%));
+  }
+}
+
 .animate-slide-down {
   animation: slide-down 0.3s ease-out;
 }
@@ -86,13 +95,14 @@
 }
 
 .animate-scroll-rtl {
-  animation: scroll-rtl 30s linear infinite;
+  animation: scroll-rtl-smooth 25s linear infinite;
+  will-change: transform;
 }
 
 /* Mobile-specific faster breaking news animation */
 @media (max-width: 768px) {
   .animate-scroll-rtl {
-    animation: scroll-rtl 15s linear infinite;
+    animation: scroll-rtl-smooth 12s linear infinite;
   }
 }
 
