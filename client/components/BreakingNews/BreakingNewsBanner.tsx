@@ -19,12 +19,12 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   showCloseButton = true
 }) => {
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [animationReady, setAnimationReady] = useState(false);
 
-  // Fetch breaking news
+  // Fetch breaking news with polling for real-time updates
   useEffect(() => {
     const fetchBreakingNews = async () => {
       try {
@@ -35,6 +35,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
         
         const data = await response.json();
         setBreakingNews(data.data || []);
+        setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load breaking news');
       } finally {
@@ -42,7 +43,13 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
       }
     };
 
+    // Initial fetch
     fetchBreakingNews();
+    
+    // Poll for updates every 30 seconds
+    const interval = setInterval(fetchBreakingNews, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   // Auto-rotate breaking news items (disabled for continuous scroll)
@@ -71,8 +78,6 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   if (!isVisible || loading || error || breakingNews.length === 0) {
     return null;
   }
-
-  const currentNews = breakingNews[currentIndex];
 
   const handleClose = () => {
     setIsVisible(false);
@@ -108,58 +113,35 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
           {/* News Content */}
           <div className="flex-1 mx-4 min-w-0 overflow-hidden">
             <div className="flex items-center space-x-4 h-6">
-              {/* Time */}
-              {currentNews.created_at && (
-                <span className="text-xs opacity-90 flex-shrink-0">
-                  {formatDate(currentNews.created_at)}
-                </span>
-              )}
-              
               {/* News Text */}
               <div className="flex-1 min-w-0 breaking-news-container overflow-hidden">
                 <div className="relative h-6 flex items-center">
-                  <div className="animate-scroll-rtl whitespace-nowrap">
+                  <div className={`animate-scroll-endless ${animationReady ? 'animation-ready' : ''}`}>
                     {breakingNews.length > 0 ? (
                       <>
-                        {/* First copy of news items */}
-                        {breakingNews.map((news, index) => (
-                          <span key={`first-${news.id}`} className="inline-block">
-                            {news.link ? (
-                              <Link
-                                href={news.link}
-                                className="text-white hover:text-yellow-300 transition-colors duration-200 leading-tight font-medium"
-                                target={news.link.startsWith('http') ? '_blank' : '_self'}
-                                rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                              >
-                                {news.title}
-                              </Link>
-                            ) : (
-                              <span className="text-white leading-tight font-medium">
-                                {news.title}
+                        {/* Multiple copies for truly endless scrolling */}
+                        {[...Array(4)].map((_, copyIndex) => (
+                          <div key={`copy-${copyIndex}`} className="inline-flex whitespace-nowrap">
+                            {breakingNews.map((news, index) => (
+                              <span key={`${copyIndex}-${news.id}`} className="inline-block">
+                                {news.link ? (
+                                  <Link
+                                    href={news.link}
+                                    className="text-white hover:text-yellow-300 transition-colors duration-200 leading-tight font-medium"
+                                    target={news.link.startsWith('http') ? '_blank' : '_self'}
+                                    rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                  >
+                                    {news.title}
+                                  </Link>
+                                ) : (
+                                  <span className="text-white leading-tight font-medium">
+                                    {news.title}
+                                  </span>
+                                )}
+                                <span className="text-white mx-8">•</span>
                               </span>
-                            )}
-                            <span className="text-white mx-8">•</span>
-                          </span>
-                        ))}
-                        {/* Second copy for seamless loop */}
-                        {breakingNews.map((news, index) => (
-                          <span key={`second-${news.id}`} className="inline-block">
-                            {news.link ? (
-                              <Link
-                                href={news.link}
-                                className="text-white hover:text-yellow-300 transition-colors duration-200 leading-tight font-medium"
-                                target={news.link.startsWith('http') ? '_blank' : '_self'}
-                                rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                              >
-                                {news.title}
-                              </Link>
-                            ) : (
-                              <span className="text-white leading-tight font-medium">
-                                {news.title}
-                              </span>
-                            )}
-                            <span className="text-white mx-8">•</span>
-                          </span>
+                            ))}
+                          </div>
                         ))}
                       </>
                     ) : (
@@ -172,24 +154,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
               </div>
             </div>
           </div>
-          
-          {/* Navigation Dots */}
-          {breakingNews.length > 1 && (
-            <div className="flex items-center space-x-1 flex-shrink-0 mr-4">
-              {breakingNews.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentIndex 
-                      ? 'bg-white' 
-                      : 'bg-white/50 hover:bg-white/75'
-                  }`}
-                  aria-label={`Go to breaking news ${index + 1}`}
-                />
-              ))}
-            </div>
-          )}
+
           
           {/* Close Button */}
           {showCloseButton && (
@@ -203,18 +168,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
           )}
         </div>
       </div>
-      
-      {/* Progress Bar */}
-      {breakingNews.length > 1 && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/30">
-          <div 
-            className="h-full bg-white transition-all duration-5000 ease-linear ml-auto"
-            style={{
-              width: `${((breakingNews.length - currentIndex) / breakingNews.length) * 100}%`
-            }}
-          />
-        </div>
-      )}
+
     </div>
   );
 };

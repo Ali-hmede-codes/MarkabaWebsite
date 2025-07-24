@@ -76,6 +76,16 @@
   }
 }
 
+/* Enhanced endless scroll animation */
+@keyframes scroll-endless {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
 .animate-slide-down {
   animation: slide-down 0.3s ease-out;
 }
@@ -104,9 +114,27 @@
 }
 
 .animate-scroll-rtl {
-  animation: scroll-continuous 60s linear infinite;
+  animation: scroll-endless 60s linear infinite;
+  animation-fill-mode: none;
+  animation-play-state: running;
   will-change: transform;
   display: inline-block;
+  transform-origin: left center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Endless scrolling container */
+.animate-scroll-endless {
+  animation: scroll-endless 60s linear infinite;
+  animation-fill-mode: none;
+  animation-play-state: running;
+  will-change: transform;
+  display: inline-flex;
+  white-space: nowrap;
+  transform-origin: left center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Breaking news container to prevent layout shifts */
@@ -120,14 +148,21 @@
 /* Mobile-specific faster breaking news animation */
 @media (max-width: 768px) {
   .animate-scroll-rtl {
-    animation: scroll-continuous 30s linear infinite;
+    animation: scroll-endless 30s linear infinite;
+    animation-fill-mode: none;
+    animation-play-state: running;
   }
+  
+  .animate-scroll-endless {
+    animation: scroll-endless 30s linear infinite;
+  }
+}
   
   .breaking-news-container {
     mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
   }
-}
+
 
 /* Hover effects */
 .hover-lift {
