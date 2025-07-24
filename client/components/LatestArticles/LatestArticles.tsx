@@ -3,6 +3,7 @@ import { usePosts } from '../API/hooks';
 import { Post } from '../API/types';
 import { FiCalendar, FiEye, FiBook } from 'react-icons/fi';
 import { getImageUrl } from '../../utils/imageUtils';
+import Link from 'next/link';
 
 type LatestArticlesProps = {
   className?: string;
@@ -42,7 +43,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
       <div className="flex flex-col rounded-lg p-1 sm:p-4">
         <div className="flex flex-col gap-2 sm:gap-4 mb-1 sm:mb-2">
           {/* Big post */}
-          <div className="rounded-lg overflow-hidden transition-shadow duration-300">
+          <Link href={`/post/${latestPosts[0].slug}`} className="block rounded-lg overflow-hidden transition-shadow duration-300 hover:shadow-lg cursor-pointer">
             <div className="aspect-video w-full"><img src={getImageUrl(latestPosts[0].featured_image)} alt={latestPosts[0].title_ar} className="w-full h-full object-cover" /></div>
             <div className="p-1 sm:p-3">
               <h3 className="font-bold text-base sm:text-xl mb-1 sm:mb-3 text-blue-800 hover:text-blue-600 transition-colors">{latestPosts[0].title_ar}</h3>
@@ -52,11 +53,11 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
                 <span><FiEye className="inline ml-1" /> {formatViews(latestPosts[0].views || 0)}</span>
               </div>
             </div>
-          </div>
+          </Link>
           {/* Two small posts */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             {latestPosts.slice(1, 3).map(post => (
-              <div key={post.id} className="flex flex-row items-start gap-2 sm:gap-3 rounded-lg transition-shadow duration-300 p-1 sm:p-3 flex-1">
+              <Link key={post.id} href={`/post/${post.slug}`} className="flex flex-row items-start gap-2 sm:gap-3 rounded-lg transition-shadow duration-300 p-1 sm:p-3 flex-1 hover:shadow-lg cursor-pointer">
                 <img src={getImageUrl(post.featured_image)} alt={post.title_ar} className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded" />
                 <div className="flex flex-col">
                   <h3 className="font-bold text-xs sm:text-sm mb-1 text-blue-800 hover:text-blue-600 transition-colors line-clamp-2">{post.title_ar}</h3>
@@ -66,7 +67,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
                     <span><FiEye className="inline ml-1" /> {formatViews(post.views || 0)}</span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

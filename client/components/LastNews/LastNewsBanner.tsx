@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { FiClock } from 'react-icons/fi';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
 
 
 
@@ -21,7 +19,6 @@ type NewsItem = {
   priority?: 'low' | 'medium' | 'high' | 'urgent';
   is_active?: boolean;
   expires_at?: string;
-  slug?: string; // Added slug for navigation
   isBreaking?: boolean; // To distinguish breaking news
 };
 
@@ -104,19 +101,8 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         <div className="space-y-4">
           {displayedNews.map((news, index) => (
             <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
-              {news.isBreaking || !news.slug ? (
-                // Non-clickable for breaking news or items without slug
-                <>
-                  <h3 className={`font-semibold text-lg sm:text-xl ${news.isBreaking ? 'text-red-600' : 'text-black'} mb-1 hover:text-blue-600 transition-colors`}>{news.title_ar || news.title}</h3>
-                  <p className="text-sm text-gray-500 mb-2">{timeAgo(news.created_at)}</p>
-                </>
-              ) : (
-                // Clickable for last news items with slug
-                <Link href={`/last-news/${news.slug}`} className="block hover:bg-gray-50 p-2 rounded transition-colors cursor-pointer">
-                  <h3 className="font-semibold text-lg sm:text-xl text-black mb-1 hover:text-blue-600 transition-colors">{news.title_ar || news.title}</h3>
-                  <p className="text-sm text-gray-500 mb-2">{timeAgo(news.created_at)}</p>
-                </Link>
-              )}
+              <h3 className={`font-semibold text-lg sm:text-xl ${news.isBreaking ? 'text-red-600' : 'text-black'} mb-1 hover:text-blue-600 transition-colors`}>{news.title_ar || news.title}</h3>
+              <p className="text-sm text-gray-500 mb-2">{timeAgo(news.created_at)}</p>
               {index < displayedNews.length - 1 && <div className="w-12 h-0.5 bg-blue-500 mx-auto my-2"></div>}
             </div>
           ))}
