@@ -321,19 +321,7 @@
   overflow: hidden;
 }
 
-/* Breaking news animation */
-@keyframes scroll-rtl {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.animate-scroll-rtl {
-  animation: scroll-rtl 30s linear infinite;
-}
+/* Breaking news animation - moved to animations.css */
 
 /* Utility classes */
 @layer utilities {
