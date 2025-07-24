@@ -45,16 +45,16 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
     fetchBreakingNews();
   }, []);
 
-  // Auto-rotate breaking news items
-  useEffect(() => {
-    if (breakingNews.length <= 1) return;
+  // Auto-rotate breaking news items (disabled for continuous scroll)
+  // useEffect(() => {
+  //   if (breakingNews.length <= 1) return;
 
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % breakingNews.length);
-    }, 5000); // Change every 5 seconds
+  //   const interval = setInterval(() => {
+  //     setCurrentIndex((prev) => (prev + 1) % breakingNews.length);
+  //   }, 5000); // Change every 5 seconds
 
-    return () => clearInterval(interval);
-  }, [breakingNews.length]);
+  //   return () => clearInterval(interval);
+  // }, [breakingNews.length]);
 
   // Auto-hide banner
   useEffect(() => {
@@ -116,24 +116,58 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
               )}
               
               {/* News Text */}
-              <div className="flex-1 min-w-0 breaking-news-container">
+              <div className="flex-1 min-w-0 breaking-news-container overflow-hidden">
                 <div className="relative h-6 flex items-center">
-                  {currentNews.link ? (
-                    <Link
-                      href={currentNews.link}
-                      className="hover:underline focus:underline focus:outline-none absolute inset-0 flex items-center"
-                      target={currentNews.link.startsWith('http') ? '_blank' : '_self'}
-                      rel={currentNews.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    >
-                      <span className="animate-scroll-rtl inline-block whitespace-nowrap font-medium">
-                        {currentNews.title}
+                  <div className="animate-scroll-rtl whitespace-nowrap">
+                    {breakingNews.length > 0 ? (
+                      <>
+                        {/* First copy of news items */}
+                        {breakingNews.map((news, index) => (
+                          <span key={`first-${news.id}`} className="inline-block">
+                            {news.link ? (
+                              <Link
+                                href={news.link}
+                                className="text-white hover:text-yellow-300 transition-colors duration-200 leading-tight font-medium"
+                                target={news.link.startsWith('http') ? '_blank' : '_self'}
+                                rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              >
+                                {news.title}
+                              </Link>
+                            ) : (
+                              <span className="text-white leading-tight font-medium">
+                                {news.title}
+                              </span>
+                            )}
+                            <span className="text-white mx-8">•</span>
+                          </span>
+                        ))}
+                        {/* Second copy for seamless loop */}
+                        {breakingNews.map((news, index) => (
+                          <span key={`second-${news.id}`} className="inline-block">
+                            {news.link ? (
+                              <Link
+                                href={news.link}
+                                className="text-white hover:text-yellow-300 transition-colors duration-200 leading-tight font-medium"
+                                target={news.link.startsWith('http') ? '_blank' : '_self'}
+                                rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              >
+                                {news.title}
+                              </Link>
+                            ) : (
+                              <span className="text-white leading-tight font-medium">
+                                {news.title}
+                              </span>
+                            )}
+                            <span className="text-white mx-8">•</span>
+                          </span>
+                        ))}
+                      </>
+                    ) : (
+                      <span className="text-white leading-tight font-medium">
+                        لا توجد أخبار عاجلة حالياً
                       </span>
-                    </Link>
-                  ) : (
-                    <span className="animate-scroll-rtl inline-block whitespace-nowrap font-medium absolute inset-0 flex items-center">
-                      {currentNews.title}
-                    </span>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

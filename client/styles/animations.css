@@ -69,10 +69,10 @@
 
 @keyframes scroll-continuous {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
   100% {
-    transform: translateX(100vw);
+    transform: translateX(-100%);
   }
 }
 
@@ -104,9 +104,9 @@
 }
 
 .animate-scroll-rtl {
-  animation: scroll-continuous 20s linear infinite;
+  animation: scroll-continuous 60s linear infinite;
   will-change: transform;
-  animation-fill-mode: forwards;
+  display: inline-block;
 }
 
 /* Breaking news container to prevent layout shifts */
@@ -120,7 +120,7 @@
 /* Mobile-specific faster breaking news animation */
 @media (max-width: 768px) {
   .animate-scroll-rtl {
-    animation: scroll-continuous 10s linear infinite;
+    animation: scroll-continuous 30s linear infinite;
   }
   
   .breaking-news-container {
