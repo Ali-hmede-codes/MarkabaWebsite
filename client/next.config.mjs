@@ -11,7 +11,7 @@ const nextConfig = {
   swcMinify: true,
   
   // Allow cross-origin requests from production server
-  allowedDevOrigins: ['markaba.news', '69.62.115.12'],
+  allowedDevOrigins: ['markaba.news', 'www.markaba.news', '69.62.115.12','api.markaba.news'],
   
   // Image optimization
   images: {

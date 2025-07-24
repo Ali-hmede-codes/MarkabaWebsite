@@ -92,7 +92,13 @@ const corsOptions = {
       'http://69.62.115.12:5000',
       'https://69.62.115.12',
       'https://69.62.115.12:3000',
-      'https://69.62.115.12:5000'
+      'https://69.62.115.12:5000',
+      'http://markaba.news',
+      'https://markaba.news',
+      'http://www.markaba.news',
+      'https://www.markaba.news',
+      'http://api.markaba.news',
+      'https://api.markaba.news'
     ];
     
     // Add production domains from environment
@@ -147,7 +153,9 @@ app.use((req, res, next) => {
   'http://markaba.news',
   'https://markaba.news',
   'http://www.markaba.news',
-  'https://www.markaba.news'
+  'https://www.markaba.news',
+  'http://api.markaba.news',
+  'https://api.markaba.news'
 ];
   
   if (allowedOrigins.includes(origin) || isDevelopment || !origin) {
@@ -216,7 +224,9 @@ app.use('/uploads', cors({
        'http://markaba.news',
        'https://markaba.news',
        'http://www.markaba.news',
-       'https://www.markaba.news'
+       'https://www.markaba.news',
+       'http://api.markaba.news',
+       'https://api.markaba.news'
      ];
     
     // Add production domains from environment
