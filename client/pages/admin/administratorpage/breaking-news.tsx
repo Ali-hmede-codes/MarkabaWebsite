@@ -242,7 +242,7 @@ const BreakingNewsManagement: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
             >
               <option value="all">جميع الحالات</option>
               <option value="active">نشط</option>
@@ -252,7 +252,7 @@ const BreakingNewsManagement: React.FC = () => {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
             >
               <option value="all">جميع الأولويات</option>
               <option value="1">عادي</option>
@@ -286,7 +286,7 @@ const BreakingNewsManagement: React.FC = () => {
                     type="text"
                     value={formData.title_ar}
                     onChange={(e) => setFormData({ ...formData, title_ar: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
                     required
                   />
                 </div>
@@ -299,7 +299,7 @@ const BreakingNewsManagement: React.FC = () => {
                     value={formData.content_ar}
                     onChange={(e) => setFormData({ ...formData, content_ar: e.target.value })}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
                   />
                 </div>
                 
@@ -311,7 +311,7 @@ const BreakingNewsManagement: React.FC = () => {
                     type="url"
                     value={formData.link}
                     onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
                     placeholder="https://example.com/news-article"
                   />
                 </div>
@@ -324,7 +324,7 @@ const BreakingNewsManagement: React.FC = () => {
                     <select
                       value={formData.priority}
                       onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
                     >
                       <option value={1}>عادي</option>
                       <option value={2}>مهم</option>
@@ -341,7 +341,7 @@ const BreakingNewsManagement: React.FC = () => {
                     <select
                       value={formData.is_active ? 'true' : 'false'}
                       onChange={(e) => setFormData({ ...formData, is_active: e.target.value === 'true' })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
                     >
                       <option value="true">نشط</option>
                       <option value="false">غير نشط</option>

@@ -208,7 +208,7 @@ const AdminCategories: React.FC = () => {
                 placeholder="البحث في التصنيفات..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
               />
             </div>
           </div>
@@ -335,7 +335,7 @@ const AdminCategories: React.FC = () => {
                   type="text"
                   value={formData.name_ar}
                   onChange={(e) => setFormData({ ...formData, name_ar: e.target.value })}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg text-black ${
                     formErrors.name_ar ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="أدخل اسم التصنيف"
@@ -355,7 +355,7 @@ const AdminCategories: React.FC = () => {
                   value={formData.description_ar}
                   onChange={(e) => setFormData({ ...formData, description_ar: e.target.value })}
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-black"
                   placeholder="وصف مختصر للتصنيف"
                   dir="rtl"
                   style={{ fontFamily: 'Noto Sans Arabic, sans-serif', lineHeight: '1.8' }}
@@ -368,14 +368,14 @@ const AdminCategories: React.FC = () => {
                     ترتيب العرض
                   </label>
                   <input
-                    type="number"
-                    min="0"
-                    value={formData.sort_order}
-                    onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      formErrors.sort_order ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                  />
+                      type="number"
+                      min="0"
+                      value={formData.sort_order}
+                      onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
+                        formErrors.sort_order ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
                   {formErrors.sort_order && (
                     <p className="text-red-500 text-xs mt-1">{formErrors.sort_order}</p>
                   )}
