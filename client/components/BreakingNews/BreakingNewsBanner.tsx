@@ -116,33 +116,25 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
               )}
               
               {/* News Text */}
-              <div className="flex-1 min-w-0 overflow-hidden relative">
-                {currentNews.link ? (
-                  <Link
-                    href={currentNews.link}
-                    className="hover:underline focus:underline focus:outline-none block"
-                    target={currentNews.link.startsWith('http') ? '_blank' : '_self'}
-                    rel={currentNews.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  >
-                    <span className="block font-medium leading-tight overflow-hidden">
-                      <span 
-                        key={`${currentIndex}-${currentNews.id}`}
-                        className="animate-scroll-rtl inline-block whitespace-nowrap"
-                      >
+              <div className="flex-1 min-w-0 breaking-news-container">
+                <div className="relative h-6 flex items-center">
+                  {currentNews.link ? (
+                    <Link
+                      href={currentNews.link}
+                      className="hover:underline focus:underline focus:outline-none absolute inset-0 flex items-center"
+                      target={currentNews.link.startsWith('http') ? '_blank' : '_self'}
+                      rel={currentNews.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    >
+                      <span className="animate-scroll-rtl inline-block whitespace-nowrap font-medium">
                         {currentNews.title}
                       </span>
-                    </span>
-                  </Link>
-                ) : (
-                  <span className="block font-medium leading-tight overflow-hidden">
-                    <span 
-                      key={`${currentIndex}-${currentNews.id}`}
-                      className="animate-scroll-rtl inline-block whitespace-nowrap"
-                    >
+                    </Link>
+                  ) : (
+                    <span className="animate-scroll-rtl inline-block whitespace-nowrap font-medium absolute inset-0 flex items-center">
                       {currentNews.title}
                     </span>
-                  </span>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
