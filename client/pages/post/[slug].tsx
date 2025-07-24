@@ -42,8 +42,6 @@ const SinglePostPage: React.FC = () => {
           <div className="flex items-center mb-6 text-blue-600">
             <span className="mr-4">{post.author_name}</span>
             <span className="mr-4">{new Date(post.created_at).toLocaleDateString('ar-EG')}</span>
-            <span className="mr-4">{post.reading_time} دقائق قراءة</span>
-            <span>{post.views} مشاهدات</span>
           </div>
           {post.featured_image && (
             <div className="relative w-full h-96 mb-8">
