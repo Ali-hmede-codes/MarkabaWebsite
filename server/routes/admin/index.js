@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('../../config/database');
+const { auth: authenticateToken, requireRole } = require('../../middlewares/auth');
 
 const router = express.Router();
 
@@ -10,6 +11,7 @@ const postsRoutes = require('./posts');
 const settingsRoutes = require('./settings');
 const lastNewsRoutes = require('./lastNews');
 const breakingNewsRoutes = require('./breakingNews');
+const dashboardRoutes = require('./dashboard');
 
 // Mount admin routes
 router.use('/users', usersRoutes);
@@ -18,9 +20,10 @@ router.use('/posts', postsRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/last-news', lastNewsRoutes);
 router.use('/breaking-news', breakingNewsRoutes);
+router.use('/dashboard', dashboardRoutes);
 
-// Admin dashboard stats endpoint
-router.get('/dashboard/stats', async (req, res) => {
+// Admin dashboard stats endpoint (fallback - main endpoint is in dashboard.js)
+router.get('/dashboard/stats', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
     
     // Get total counts
