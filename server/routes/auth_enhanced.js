@@ -113,13 +113,14 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     
     
     
-    // Additional security check for admin users
-    if (user.role !== 'admin') {
-      console.log(`Non-admin user attempted admin login: ${user.username || user.email}`);
+    // Validate user role (allow admin, editor, author)
+    const validRoles = ['admin', 'editor', 'author'];
+    if (!validRoles.includes(user.role)) {
+      console.log(`User with invalid role attempted login: ${user.username || user.email} (role: ${user.role})`);
       return res.status(403).json({
         success: false,
         error: 'Access denied',
-        message: 'Admin access required'
+        message: 'Invalid user role'
       });
     }
     
@@ -128,7 +129,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     
     if (!isValidPassword) {
       // Log failed login attempt
-      console.log(`Failed admin login attempt: ${user.username} from IP: ${clientIP}`);
+      console.log(`Failed login attempt: ${user.username} from IP: ${clientIP}`);
       
       return res.status(401).json({
         success: false,
@@ -137,13 +138,13 @@ router.post('/login', validate(loginSchema), async (req, res) => {
       });
     }
     
-    // Check if admin password meets complexity requirements
-    if (!isPasswordComplex(password)) {
+    // Check password complexity requirements for admin users
+    if (user.role === 'admin' && !isPasswordComplex(password)) {
       console.log(`Admin user with weak password: ${user.username || user.email}`);
       return res.status(400).json({
         success: false,
         error: 'Password security',
-        message: 'Password must contain uppercase, lowercase, numbers, and special characters'
+        message: 'Admin password must contain uppercase, lowercase, numbers, and special characters'
       });
     }
     
@@ -168,8 +169,8 @@ router.post('/login', validate(loginSchema), async (req, res) => {
       ]
     );
     
-    // Enhanced logging for admin login
-    console.log(`ADMIN LOGIN SUCCESS: ${user.username || user.email} from IP: ${clientIP} | User-Agent: ${userAgent} | Time: ${new Date().toISOString()}`);
+    // Enhanced logging for user login
+    console.log(`LOGIN SUCCESS: ${user.username || user.email} (${user.role}) from IP: ${clientIP} | User-Agent: ${userAgent} | Time: ${new Date().toISOString()}`);
     
     // Prepare response data with additional security information
     const userData = {
@@ -187,12 +188,13 @@ router.post('/login', validate(loginSchema), async (req, res) => {
       session_expires: remember_me ? '30 days' : '7 days'
     };
     
-    // Set secure HTTP-only cookie for refresh token with enhanced security for admin
+    // Set secure HTTP-only cookie for refresh token
+    const cookieMaxAge = remember_me ? 30 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000; // 30 days or 7 days
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: remember_me ? 7 * 24 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000 // 7 days or 2 hours for admin
+      maxAge: cookieMaxAge
     });
     
     res.json({
