@@ -25,14 +25,19 @@ const SinglePostPage: React.FC = () => {
   const { slug: slugParam } = router.query;
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
   const [copySuccess, setCopySuccess] = useState(false);
+  const [copyMessage, setCopyMessage] = useState('');
 
-  const handleCopyLink = async () => {
+  const handleCopyText = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(text);
       setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
+      setCopyMessage('تم النسخ');
+      setTimeout(() => {
+        setCopySuccess(false);
+        setCopyMessage('');
+      }, 2000);
     } catch (err) {
-      console.error('Failed to copy link:', err);
+      console.error('Failed to copy text:', err);
     }
   };
 
@@ -47,7 +52,7 @@ const SinglePostPage: React.FC = () => {
         console.error('Error sharing:', err);
       }
     } else {
-      handleCopyLink();
+      handleCopyText(window.location.href);
     }
   };
 
@@ -86,9 +91,9 @@ const SinglePostPage: React.FC = () => {
                       <Image 
                         src="/images/logo.png" 
                         alt="مركبا" 
-                        width={28} 
-                        height={28} 
-                        className="object-contain"
+                        width={36} 
+                        height={36} 
+                        className="object-cover"
                       />
                     </div>
                     <div>
@@ -104,15 +109,20 @@ const SinglePostPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                <div className="flex items-center space-x-2 rtl:space-x-reverse relative">
+                  {copyMessage && (
+                    <div className="absolute -top-8 right-0 bg-green-500 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
+                      {copyMessage}
+                    </div>
+                  )}
                   <button 
-                    onClick={handleCopyLink}
+                    onClick={() => handleCopyText(post.excerpt_ar || '')}
                     className={`p-2 transition-colors ${
                       copySuccess 
                         ? 'text-green-600 hover:text-green-700' 
                         : 'text-gray-400 hover:text-gray-600'
                     }`}
-                    title="نسخ الرابط"
+                    title="نسخ النص"
                   >
                     <FiCopy size={16} />
                   </button>
