@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
 import { useAPI } from '../../components/API/hooks';
-import { FiCalendar, FiEye, FiUser } from 'react-icons/fi';
+import { FiCalendar, FiUser, FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
 import Head from 'next/head';
@@ -24,6 +24,32 @@ const SinglePostPage: React.FC = () => {
   const router = useRouter();
   const { slug: slugParam } = router.query;
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: document.title,
+          url: window.location.href
+        });
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      handleCopyLink();
+    }
+  };
 
   const InnerPost = ({ slug }: { slug: string }) => {
     const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', {
@@ -40,23 +66,33 @@ const SinglePostPage: React.FC = () => {
         <article className="max-w-4xl mx-auto px-4 py-8 bg-white">
           {/* Header Box with Logo, Title and Summary - matching the photo style */}
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8 overflow-hidden">
-            {/* Header section with logo and site name */}
-            <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
+            {/* Header section with logo, site name and date */}
+            <div className="bg-red-600 text-white px-6 py-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className="w-8 h-8 rounded overflow-hidden">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden">
                     <Image 
                       src="/images/logo.png" 
                       alt="مركبا" 
-                      width={32} 
-                      height={32} 
+                      width={28} 
+                      height={28} 
                       className="object-contain"
                     />
                   </div>
-                  <h2 className="text-lg font-bold text-gray-800">مركبا</h2>
+                  <div>
+                    <h2 className="text-lg font-bold">مركبا</h2>
+                    <div className="text-sm opacity-90">
+                      {new Date(post.created_at).toLocaleDateString('ar-EG', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-sm text-gray-500">
-                  {new Date(post.created_at).toLocaleDateString('ar-EG')}
+                <div className="text-right">
+                  <div className="text-sm opacity-90">الأخبار</div>
                 </div>
               </div>
             </div>
@@ -87,26 +123,25 @@ const SinglePostPage: React.FC = () => {
                     <FiUser size={16} />
                     <span>{post.author_name}</span>
                   </div>
-                  <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                    <FiEye size={16} />
-                    <span>{post.views} مشاهدة</span>
-                  </div>
                 </div>
                 <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                  <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M3 4v16l5-5h13V4H3z"/>
-                    </svg>
+                  <button 
+                    onClick={handleCopyLink}
+                    className={`p-2 transition-colors ${
+                      copySuccess 
+                        ? 'text-green-600 hover:text-green-700' 
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                    title="نسخ الرابط"
+                  >
+                    <FiCopy size={16} />
                   </button>
-                  <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
-                    </svg>
-                  </button>
-                  <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0 0 2h1v11a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V9h1a1 1 0 0 0 0-2zM10 6a2 2 0 0 1 4 0v1h-4V6zm6 15a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9h8v12z"/>
-                    </svg>
+                  <button 
+                    onClick={handleShare}
+                    className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                    title="مشاركة"
+                  >
+                    <FiShare2 size={16} />
                   </button>
                 </div>
               </div>
