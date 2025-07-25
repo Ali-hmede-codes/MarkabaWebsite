@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { FiClock } from 'react-icons/fi';
+import Link from 'next/link';
 
 
 
@@ -108,6 +109,16 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
               {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-300 mx-auto my-3"></div>}
             </div>
           ))}
+        </div>
+        
+        {/* Show More Button */}
+        <div className="text-center mt-4 mb-2">
+          <Link
+            href="/last-news"
+            className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm"
+          >
+            عرض المزيد
+          </Link>
         </div>
       </div>
     </div>

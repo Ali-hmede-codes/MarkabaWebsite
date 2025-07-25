@@ -40,7 +40,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
         </div>
         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-purple-500 to-purple-600 mx-auto mt-1 sm:mt-2 rounded-full"></div>
       </div>
-      <div className="flex flex-col rounded-lg p-1 sm:p-4">
+      <div className="flex flex-col rounded-lg p-1 sm:p-4 h-[600px]">
         <div className="flex flex-col gap-2 sm:gap-4 mb-1 sm:mb-2">
           {/* Big post */}
           <Link href={`/post/${latestPosts[0].slug}`} className="block rounded-lg overflow-hidden transition-shadow duration-300 hover:shadow-lg cursor-pointer">
@@ -72,19 +72,12 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
           </div>
         </div>
         <div className="text-center mt-auto mb-2 sm:mb-4">
-          <button 
-            onClick={() => {
-              const articlesSection = document.getElementById('articles-section');
-              if (articlesSection) {
-                const yOffset = -160; // Adjust based on header height
-                const y = articlesSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                window.scrollTo({ top: y, behavior: 'smooth' });
-              }
-            }}
+          <Link 
+            href="/last-news"
             className="text-blue-600 hover:text-blue-800 underline font-semibold text-sm sm:text-base transition-colors duration-300"
           >
             عرض المزيد
-          </button>
+          </Link>
         </div>
       </div>
     </div>
