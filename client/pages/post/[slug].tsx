@@ -46,6 +46,7 @@ const SinglePostPage: React.FC = () => {
   };
 
   const InnerPost = ({ slug }: { slug: string }) => {
+    const [fontSize, setFontSize] = useState(16); // Default font size in px
     const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', {
       immediate: true,
       params: { slug, limit: 1, page: 1 }
@@ -163,8 +164,31 @@ const SinglePostPage: React.FC = () => {
              </div>
            )}
 
+           {/* Font Size Controller */}
+           <div className="flex items-center justify-center mb-6 bg-gray-50 rounded-lg p-4">
+             <button 
+               onClick={() => setFontSize(prev => Math.max(12, prev - 2))}
+               className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
+               title="تصغير الخط"
+             >
+               -
+             </button>
+             <span className="mx-4 text-gray-700 font-medium">الخط</span>
+             <button 
+               onClick={() => setFontSize(prev => Math.min(20, prev + 2))}
+               className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
+               title="تكبير الخط"
+             >
+               +
+             </button>
+           </div>
+
            {/* Post Content */}
-           <div className="prose max-w-none mb-8 text-gray-800 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content_ar || post.content }} />
+           <div 
+             className="prose max-w-none mb-8 text-gray-800 leading-relaxed" 
+             style={{ fontSize: `${fontSize}px` }}
+             dangerouslySetInnerHTML={{ __html: post.content_ar || post.content }} 
+           />
             </article>
 
             {/* Sidebar */}
