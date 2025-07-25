@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
-import { useAPI, usePosts } from '../../components/API/hooks';
-import { Post } from '../../components/API/types';
+import { useAPI, usePosts, useBreakingNews } from '../../components/API/hooks';
+import { Post, BreakingNews } from '../../components/API/types';
 import { FiCalendar, FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
@@ -51,12 +51,9 @@ const SinglePostPage: React.FC = () => {
       params: { slug, limit: 1, page: 1 }
     });
     const { data: postsResponse } = usePosts({ limit: 4 });
-    const { data: breakingNewsResponse } = useAPI<{ posts: Post[]; total: number }>('/posts', {
-      immediate: true,
-      params: { featured: true, limit: 4 }
-    });
+    const breakingNewsResponse = useBreakingNews();
     const [latestPosts, setLatestPosts] = useState<Post[]>([]);
-    const [breakingNews, setBreakingNews] = useState<Post[]>([]);
+    const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
     const post = response?.posts?.[0];
 
     useEffect(() => {
@@ -67,8 +64,8 @@ const SinglePostPage: React.FC = () => {
     }, [postsResponse, post]);
 
     useEffect(() => {
-      if (breakingNewsResponse?.posts) {
-        const filtered = breakingNewsResponse.posts.filter((p) => p.id !== post?.id);
+      if (breakingNewsResponse?.data && Array.isArray(breakingNewsResponse.data)) {
+        const filtered = breakingNewsResponse.data.filter((p: BreakingNews) => p.id !== post?.id);
         setBreakingNews(filtered.slice(0, 4));
       }
     }, [breakingNewsResponse, post]);
@@ -212,18 +209,8 @@ const SinglePostPage: React.FC = () => {
                 </h3>
                 <div className="space-y-4">
                   {breakingNews.map((newsPost) => (
-                    <Link key={newsPost.id} href={`/post/${newsPost.slug}`}>
+                    <Link key={newsPost.id} href={`/breaking/${newsPost.id}`}>
                       <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg">
-                        {(newsPost.featured_image || newsPost.image) && (
-                          <div className="relative w-16 h-16 flex-shrink-0">
-                            <Image 
-                              src={getImageUrl(newsPost.featured_image || newsPost.image || '')} 
-                              alt={newsPost.title_ar || newsPost.title} 
-                              fill 
-                              className="object-cover rounded-md" 
-                            />
-                          </div>
-                        )}
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
                             {newsPost.title_ar || newsPost.title}
