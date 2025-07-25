@@ -87,7 +87,7 @@ const SinglePostPage: React.FC = () => {
               <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-500">
                   <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                    <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <div className="w-10 h-10 bg-white-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
                       <Image 
                         src="/images/logo.png" 
                         alt="مركبا" 
