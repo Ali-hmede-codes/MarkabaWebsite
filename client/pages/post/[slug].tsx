@@ -1,24 +1,13 @@
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
-import { useAPI } from '../../components/API/hooks';
-import { FiCalendar, FiUser, FiCopy, FiShare2 } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { useAPI, usePosts } from '../../components/API/hooks';
+import { Post } from '../../components/API/types';
+import { FiCalendar, FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
-import Head from 'next/head';
-import Layout from '../../components/Layout/Layout';
 
-type Post = {
-  id: number;
-  title_ar: string;
-  content_ar: string;
-  featured_image: string;
-  excerpt_ar: string;
-  author_name: string;
-  created_at: string;
-  category_name_ar: string;
-  reading_time: number;
-  views: number;
-};
+import Layout from '../../components/Layout/Layout';
+import Link from 'next/link';
 
 const SinglePostPage: React.FC = () => {
   const router = useRouter();
@@ -61,25 +50,57 @@ const SinglePostPage: React.FC = () => {
       immediate: true,
       params: { slug, limit: 1, page: 1 }
     });
+    const { data: postsResponse } = usePosts({ limit: 4 });
+    const { data: breakingNewsResponse } = useAPI<{ posts: Post[]; total: number }>('/posts', {
+      immediate: true,
+      params: { featured: true, limit: 4 }
+    });
+    const [latestPosts, setLatestPosts] = useState<Post[]>([]);
+    const [breakingNews, setBreakingNews] = useState<Post[]>([]);
     const post = response?.posts?.[0];
+
+    useEffect(() => {
+      if (postsResponse?.posts) {
+        const filtered = postsResponse.posts.filter((p) => p.id !== post?.id);
+        setLatestPosts(filtered.slice(0, 4));
+      }
+    }, [postsResponse, post]);
+
+    useEffect(() => {
+      if (breakingNewsResponse?.posts) {
+        const filtered = breakingNewsResponse.posts.filter((p) => p.id !== post?.id);
+        setBreakingNews(filtered.slice(0, 4));
+      }
+    }, [breakingNewsResponse, post]);
 
     if (loading) return <div className="text-center py-10">جاري التحميل...</div>;
     if (error || !post) return <div className="text-center py-10 text-red-500">المنشور غير موجود</div>;
 
+    const formatDate = (dateString: string) => {
+      return new Date(dateString).toLocaleDateString('ar-EG', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    };
+
     return (
-      <Layout title={post.title_ar} description={post.excerpt_ar}>
-        <article className="max-w-4xl mx-auto px-4 py-8">
+      <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Main Content */}
+            <article className="lg:col-span-3">
           {/* Post Title - Outside the box */}
-          <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">{post.title_ar}</h1>
+          <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">{post.title_ar || post.title}</h1>
           
           {/* Summary Box */}
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8 overflow-hidden">
             {/* Content section */}
             <div className="p-6">
               {/* Post Summary/Excerpt */}
-              {post.excerpt_ar && (
+              {(post.excerpt_ar || post.excerpt) && (
                 <div className="mb-4">
-                  <p className="text-gray-700 text-base leading-relaxed">{post.excerpt_ar}</p>
+                  <p className="text-gray-700 text-base leading-relaxed">{post.excerpt_ar || post.excerpt}</p>
                 </div>
               )}
               
@@ -116,7 +137,7 @@ const SinglePostPage: React.FC = () => {
                     </div>
                   )}
                   <button 
-                    onClick={() => handleCopyText(post.excerpt_ar || '')}
+                    onClick={() => handleCopyText(post.excerpt_ar || post.excerpt || '')}
                     className={`p-2 transition-colors ${
                       copySuccess 
                         ? 'text-green-600 hover:text-green-700' 
@@ -139,15 +160,86 @@ const SinglePostPage: React.FC = () => {
           </div>
 
           {/* Featured Image */}
-           {post.featured_image && (
+           {(post.featured_image || post.image) && (
              <div className="relative w-full aspect-video md:h-96 md:aspect-auto mb-8">
-               <Image src={getImageUrl(post.featured_image)} alt={post.title_ar} fill className="object-cover rounded-lg shadow-lg" />
+               <Image src={getImageUrl(post.featured_image || post.image || '')} alt={post.title_ar || post.title} fill className="object-cover rounded-lg shadow-lg" />
              </div>
            )}
 
            {/* Post Content */}
-           <div className="prose max-w-none mb-8 text-gray-800 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content_ar }} />
-        </article>
+           <div className="prose max-w-none mb-8 text-gray-800 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content_ar || post.content }} />
+            </article>
+
+            {/* Sidebar */}
+            <aside className="lg:col-span-1 space-y-6">
+              {/* Latest Posts Section */}
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
+                  آخر الأخبار
+                </h3>
+                <div className="space-y-4">
+                  {latestPosts.map((latestPost) => (
+                    <Link key={latestPost.id} href={`/post/${latestPost.slug}`}>
+                      <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg">
+                        {(latestPost.featured_image || latestPost.image) && (
+                          <div className="relative w-16 h-16 flex-shrink-0">
+                            <Image 
+                              src={getImageUrl(latestPost.featured_image || latestPost.image || '')} 
+                              alt={latestPost.title_ar || latestPost.title} 
+                              fill 
+                              className="object-cover rounded-md" 
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                            {latestPost.title_ar || latestPost.title}
+                          </h4>
+                          <p className="text-xs text-gray-500">
+                            {formatDate(latestPost.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Breaking News Section */}
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
+                  أخبار عاجلة
+                </h3>
+                <div className="space-y-4">
+                  {breakingNews.map((newsPost) => (
+                    <Link key={newsPost.id} href={`/post/${newsPost.slug}`}>
+                      <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg">
+                        {(newsPost.featured_image || newsPost.image) && (
+                          <div className="relative w-16 h-16 flex-shrink-0">
+                            <Image 
+                              src={getImageUrl(newsPost.featured_image || newsPost.image || '')} 
+                              alt={newsPost.title_ar || newsPost.title} 
+                              fill 
+                              className="object-cover rounded-md" 
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                            {newsPost.title_ar || newsPost.title}
+                          </h4>
+                          <p className="text-xs text-gray-500">
+                            {formatDate(newsPost.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
       </Layout>
     );
   };
