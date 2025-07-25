@@ -209,18 +209,16 @@ const SinglePostPage: React.FC = () => {
                 </h3>
                 <div className="space-y-4">
                   {breakingNews.map((newsPost) => (
-                    <Link key={newsPost.id} href={`/breaking/${newsPost.id}`}>
-                      <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
-                            {newsPost.title_ar || newsPost.title}
-                          </h4>
-                          <p className="text-xs text-gray-500">
-                            {formatDate(newsPost.created_at)}
-                          </p>
-                        </div>
+                    <div key={newsPost.id} className="flex gap-3 p-3 rounded-lg">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-medium text-gray-900 mb-1">
+                          {newsPost.title_ar || newsPost.title}
+                        </h4>
+                        <p className="text-xs text-gray-500">
+                          {formatDate(newsPost.created_at)}
+                        </p>
                       </div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               </div>
