@@ -71,21 +71,10 @@ const SinglePostPage: React.FC = () => {
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8 overflow-hidden">
             {/* Content section */}
             <div className="p-6">
-              {/* Post Summary/Excerpt with Logo */}
+              {/* Post Summary/Excerpt */}
               {post.excerpt_ar && (
-                <div className="mb-4 flex items-start space-x-4 rtl:space-x-reverse">
-                  <div className="flex-1">
-                    <p className="text-gray-700 text-base leading-relaxed">{post.excerpt_ar}</p>
-                  </div>
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
-                    <Image 
-                      src="/images/logo.png" 
-                      alt="مركبا" 
-                      width={40} 
-                      height={40} 
-                      className="object-contain"
-                    />
-                  </div>
+                <div className="mb-4">
+                  <p className="text-gray-700 text-base leading-relaxed">{post.excerpt_ar}</p>
                 </div>
               )}
               
@@ -93,12 +82,12 @@ const SinglePostPage: React.FC = () => {
               <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-500">
                   <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
                       <Image 
                         src="/images/logo.png" 
                         alt="مركبا" 
-                        width={24} 
-                        height={24} 
+                        width={28} 
+                        height={28} 
                         className="object-contain"
                       />
                     </div>
