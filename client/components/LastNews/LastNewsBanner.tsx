@@ -100,29 +100,31 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         </div>
         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto mt-1 sm:mt-2 rounded-full"></div>
       </div>
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm" style={{height: '600px', minHeight: '600px', maxHeight: '600px'}}>
-        <div className="h-full overflow-y-auto p-3 sm:p-4">
-          <div className="space-y-4">
-            {displayedNews.map((news, index) => (
-              <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
-                <h3 className={`font-semibold text-base sm:text-lg leading-relaxed ${news.isBreaking ? 'text-red-600' : 'text-gray-800'} mb-2 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.4'}}>
-                  {news.title_ar || news.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-500 mb-3">{timeAgo(news.created_at)}</p>
-                {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-4"></div>}
-              </div>
-            ))}
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm" style={{height: '500px', minHeight: '500px', maxHeight: '500px'}}>
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-3">
+              {displayedNews.map((news, index) => (
+                <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
+                  <h3 className={`font-semibold text-sm sm:text-base leading-snug ${news.isBreaking ? 'text-red-600' : 'text-gray-800'} mb-1 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
+                    {news.title_ar || news.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 mb-2">{timeAgo(news.created_at)}</p>
+                  {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-2"></div>}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-        
-        {/* Show More Button */}
-        <div className="text-center mt-4 mb-2">
-          <Link
-            href="/last-news"
-            className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm"
-          >
-            عرض المزيد
-          </Link>
+          
+          {/* Show More Button - Inside the box */}
+          <div className="border-t border-gray-200 p-3 text-center bg-gray-50 rounded-b-lg">
+            <Link
+              href="/last-news"
+              className="text-blue-600 hover:text-blue-800 transition-colors font-medium text-sm underline decoration-2 underline-offset-2"
+            >
+              عرض المزيد
+            </Link>
+          </div>
         </div>
       </div>
     </div>
