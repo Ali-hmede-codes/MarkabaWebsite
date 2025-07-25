@@ -37,21 +37,64 @@ const SinglePostPage: React.FC = () => {
 
     return (
       <Layout title={post.title_ar} description={post.excerpt_ar}>
-        <article className="max-w-4xl mx-auto px-4 py-8 bg-white text-blue-900">
-          <h1 className="text-3xl font-bold mb-4 text-blue-800">{post.title_ar}</h1>
-          <div className="flex items-center mb-6 text-blue-600">
-            <span className="mr-4">{post.author_name}</span>
-            <span className="mr-4">{new Date(post.created_at).toLocaleDateString('ar-EG')}</span>
+        {/* Header Section with Logo and مركبا */}
+        <div className="bg-white border-b border-gray-200 py-4">
+          <div className="max-w-4xl mx-auto px-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3 rtl:space-x-reverse">
+              <div className="w-10 h-10 rounded-lg overflow-hidden">
+                <Image 
+                  src="/images/logo.png" 
+                  alt="مركبا" 
+                  width={40} 
+                  height={40} 
+                  className="object-contain"
+                />
+              </div>
+              <h1 className="text-2xl font-bold text-gray-800">مركبا</h1>
+            </div>
+            <div className="text-sm text-gray-500">
+              {new Date(post.created_at).toLocaleDateString('ar-EG')}
+            </div>
           </div>
-          {post.featured_image && (
-            <div className="relative w-full aspect-video md:h-96 md:aspect-auto mb-8">
-              <Image src={getImageUrl(post.featured_image)} alt={post.title_ar} fill className="object-cover rounded-lg" />
+        </div>
+
+        <article className="max-w-4xl mx-auto px-4 py-8 bg-white">
+          {/* Category Display */}
+          <div className="mb-4">
+            <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+              {post.category_name_ar}
+            </span>
+          </div>
+
+          {/* Post Title */}
+          <h1 className="text-3xl font-bold mb-4 text-gray-900 leading-tight">{post.title_ar}</h1>
+          
+          {/* Post Summary/Excerpt */}
+          {post.excerpt_ar && (
+            <div className="mb-6 p-4 bg-gray-50 border-r-4 border-blue-500 rounded-lg">
+              <p className="text-gray-700 text-lg leading-relaxed font-medium">{post.excerpt_ar}</p>
             </div>
           )}
-          <div className="prose max-w-none mb-8 text-gray-800" dangerouslySetInnerHTML={{ __html: post.content_ar }} />
-          <div className="border-t pt-4 border-blue-200">
-            <span className="text-blue-500">التصنيف: {post.category_name_ar}</span>
+
+          {/* Author and Date Info */}
+          <div className="flex items-center mb-6 text-gray-600 border-b border-gray-200 pb-4">
+            <FiUser className="ml-2" />
+            <span className="mr-4">{post.author_name}</span>
+            <FiCalendar className="ml-2" />
+            <span className="mr-4">{new Date(post.created_at).toLocaleDateString('ar-EG')}</span>
+            <FiEye className="ml-2" />
+            <span>{post.views} مشاهدة</span>
           </div>
+
+          {/* Featured Image */}
+          {post.featured_image && (
+            <div className="relative w-full aspect-video md:h-96 md:aspect-auto mb-8">
+              <Image src={getImageUrl(post.featured_image)} alt={post.title_ar} fill className="object-cover rounded-lg shadow-lg" />
+            </div>
+          )}
+
+          {/* Post Content */}
+          <div className="prose max-w-none mb-8 text-gray-800 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content_ar }} />
         </article>
       </Layout>
     );
