@@ -69,23 +69,6 @@ const SinglePostPage: React.FC = () => {
           
           {/* Summary Box */}
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8 overflow-hidden">
-            {/* Header section with site name and date */}
-            <div className="bg-red-600 text-white px-6 py-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-bold">مركبا</h2>
-                  <div className="text-sm opacity-90">
-                    {new Date(post.created_at).toLocaleDateString('ar-EG', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
             {/* Content section */}
             <div className="p-6">
               {/* Post Summary/Excerpt with Logo */}
@@ -109,9 +92,27 @@ const SinglePostPage: React.FC = () => {
               {/* Social sharing and info */}
               <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-500">
-                  <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                    <FiUser size={16} />
-                    <span>{post.author_name}</span>
+                  <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <Image 
+                        src="/images/logo.png" 
+                        alt="مركبا" 
+                        width={24} 
+                        height={24} 
+                        className="object-contain"
+                      />
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-800">مركبا</div>
+                      <div className="text-xs text-gray-500">
+                        {new Date(post.created_at).toLocaleDateString('ar-EG', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2 rtl:space-x-reverse">
