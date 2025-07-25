@@ -91,8 +91,8 @@ const SinglePostPage: React.FC = () => {
                       <Image 
                         src="/images/logo.png" 
                         alt="مركبا" 
-                        width={36} 
-                        height={36} 
+                        width={40} 
+                        height={40} 
                         className="object-cover"
                       />
                     </div>
