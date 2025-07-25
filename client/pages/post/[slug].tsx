@@ -63,56 +63,46 @@ const SinglePostPage: React.FC = () => {
 
     return (
       <Layout title={post.title_ar} description={post.excerpt_ar}>
-        <article className="max-w-4xl mx-auto px-4 py-8 bg-white">
-          {/* Header Box with Logo, Title and Summary - matching the photo style */}
+        <article className="max-w-4xl mx-auto px-4 py-8">
+          {/* Post Title - Outside the box */}
+          <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">{post.title_ar}</h1>
+          
+          {/* Summary Box */}
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8 overflow-hidden">
-            {/* Header section with logo, site name and date */}
+            {/* Header section with site name and date */}
             <div className="bg-red-600 text-white px-6 py-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden">
-                    <Image 
-                      src="/images/logo.png" 
-                      alt="مركبا" 
-                      width={28} 
-                      height={28} 
-                      className="object-contain"
-                    />
+                <div>
+                  <h2 className="text-lg font-bold">مركبا</h2>
+                  <div className="text-sm opacity-90">
+                    {new Date(post.created_at).toLocaleDateString('ar-EG', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
                   </div>
-                  <div>
-                    <h2 className="text-lg font-bold">مركبا</h2>
-                    <div className="text-sm opacity-90">
-                      {new Date(post.created_at).toLocaleDateString('ar-EG', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm opacity-90">الأخبار</div>
                 </div>
               </div>
             </div>
             
             {/* Content section */}
             <div className="p-6">
-              {/* Category Display */}
-              <div className="mb-4">
-                <span className="inline-block bg-green-600 text-white px-3 py-1 rounded text-sm font-medium">
-                  {post.category_name_ar}
-                </span>
-              </div>
-
-              {/* Post Title */}
-              <h1 className="text-2xl font-bold mb-4 text-gray-900 leading-tight">{post.title_ar}</h1>
-              
-              {/* Post Summary/Excerpt */}
+              {/* Post Summary/Excerpt with Logo */}
               {post.excerpt_ar && (
-                <div className="mb-4">
-                  <p className="text-gray-700 text-base leading-relaxed">{post.excerpt_ar}</p>
+                <div className="mb-4 flex items-start space-x-4 rtl:space-x-reverse">
+                  <div className="flex-1">
+                    <p className="text-gray-700 text-base leading-relaxed">{post.excerpt_ar}</p>
+                  </div>
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <Image 
+                      src="/images/logo.png" 
+                      alt="مركبا" 
+                      width={40} 
+                      height={40} 
+                      className="object-contain"
+                    />
+                  </div>
                 </div>
               )}
               
