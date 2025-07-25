@@ -46,7 +46,7 @@ const SinglePostPage: React.FC = () => {
   };
 
   const InnerPost = ({ slug }: { slug: string }) => {
-    const [fontSize, setFontSize] = useState(16); // Default font size in px
+    const [fontSize, setFontSize] = useState(20); // Default font size in px
     const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', {
       immediate: true,
       params: { slug, limit: 1, page: 1 }
