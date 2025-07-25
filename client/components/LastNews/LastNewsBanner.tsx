@@ -100,15 +100,19 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         </div>
         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto mt-1 sm:mt-2 rounded-full"></div>
       </div>
-      <div className="rounded-lg h-[600px] overflow-y-auto p-2 sm:p-4">
-        <div className="space-y-4">
-          {displayedNews.map((news, index) => (
-            <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
-              <h3 className={`font-semibold text-lg sm:text-xl ${news.isBreaking ? 'text-red-600' : 'text-black'} mb-1 hover:text-blue-600 transition-colors`}>{news.title_ar || news.title}</h3>
-              <p className="text-sm text-gray-500 mb-2">{timeAgo(news.created_at)}</p>
-              {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-300 mx-auto my-3"></div>}
-            </div>
-          ))}
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm" style={{height: '600px', minHeight: '600px', maxHeight: '600px'}}>
+        <div className="h-full overflow-y-auto p-3 sm:p-4">
+          <div className="space-y-4">
+            {displayedNews.map((news, index) => (
+              <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
+                <h3 className={`font-semibold text-base sm:text-lg leading-relaxed ${news.isBreaking ? 'text-red-600' : 'text-gray-800'} mb-2 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.4'}}>
+                  {news.title_ar || news.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-500 mb-3">{timeAgo(news.created_at)}</p>
+                {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-4"></div>}
+              </div>
+            ))}
+          </div>
         </div>
         
         {/* Show More Button */}

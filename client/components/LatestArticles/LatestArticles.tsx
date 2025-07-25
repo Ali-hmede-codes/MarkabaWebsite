@@ -73,8 +73,8 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
         </div>
         <div className="text-center mt-auto mb-2 sm:mb-4">
           <Link 
-            href="/last-news"
-            className="text-blue-600 hover:text-blue-800 underline font-semibold text-sm sm:text-base transition-colors duration-300"
+            href="#articles-section"
+            className="inline-block bg-gradient-to-r from-purple-500 to-purple-600 text-white py-2 px-4 rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-300 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm"
           >
             عرض المزيد
           </Link>
