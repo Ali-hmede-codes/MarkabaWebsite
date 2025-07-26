@@ -4,6 +4,8 @@ import { Toaster } from 'react-hot-toast';
 import Header from './Header';
 import Footer from './Footer';
 import { useContent } from '../../hooks/useContent';
+import { useMeta } from '../../hooks/useMeta';
+import metaConfig from '../../config/meta.config';
 
 interface SEOData {
   title?: string;
@@ -23,6 +25,8 @@ interface LayoutProps {
   title?: string;
   description?: string;
   seo?: SEOData;
+  pageType?: 'home' | 'category' | 'post' | 'search' | 'about' | 'contact' | 'custom';
+  pageData?: Record<string, any>;
   showHeader?: boolean;
   showFooter?: boolean;
   className?: string;
@@ -34,6 +38,8 @@ const Layout: React.FC<LayoutProps> = ({
   title,
   description,
   seo,
+  pageType = 'custom',
+  pageData = {},
   showHeader = true,
   showFooter = true,
   className = '',
@@ -41,17 +47,19 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   const { content } = useContent();
 
-  // Default SEO data
-  const defaultSEO: SEOData = {
-    title: title || (content?.site.name + ' - ' + content?.site.tagline) || 'أخبار مركبة - آخر الأخبار والتحديثات',
-    description: description || content?.site.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من أخبار مركبة.',
-    keywords: ['أخبار', 'أخبار عاجلة', 'تحديثات', 'صحافة', 'أحداث جارية'],
-    image: '/images/og-image.jpg',
-    url: typeof window !== 'undefined' ? window.location.href : '',
-    type: 'website',
-  };
+  // Use the meta hook for comprehensive SEO management
+  const { meta, structuredData, openGraph, twitterCard, robots, googleBot } = useMeta({
+    pageType,
+    data: pageData,
+    customMeta: {
+      title: title || seo?.title,
+      description: description || seo?.description,
+      ...seo
+    }
+  });
 
-  const seoData = { ...defaultSEO, ...seo };
+  // Fallback to legacy seo prop if provided
+  const seoData = seo ? { ...meta, ...seo } : meta;
 
   return (
     <>
@@ -60,41 +68,60 @@ const Layout: React.FC<LayoutProps> = ({
         <title>{seoData.title}</title>
         <meta name="description" content={seoData.description} />
         {seoData.keywords && (
-          <meta name="keywords" content={seoData.keywords.join(', ')} />
+          <meta name="keywords" content={Array.isArray(seoData.keywords) ? seoData.keywords.join(', ') : seoData.keywords} />
         )}
-        <meta name="author" content="NewsMarkaba" />
+        <meta name="author" content={metaConfig.site.nameEn} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content={robots} />
+        <meta name="googlebot" content={googleBot} />
+        <meta name="bingbot" content="index, follow" />
         <link rel="canonical" href={seoData.url} />
+        
+        {/* Google Search Console Verification */}
+        {metaConfig.analytics.googleSearchConsole && (
+          <meta name="google-site-verification" content={metaConfig.analytics.googleSearchConsole} />
+        )}
+        
+        {/* Additional SEO Meta Tags */}
+        <meta name="language" content="Arabic" />
+        <meta name="geo.region" content={metaConfig.site.country} />
+        <meta name="geo.country" content={metaConfig.site.region} />
+        <meta name="distribution" content={metaConfig.additional.distribution} />
+        <meta name="rating" content={metaConfig.additional.rating} />
+        <meta name="application-name" content={metaConfig.additional.applicationName} />
+        <meta name="msapplication-tooltip" content={metaConfig.additional.msApplicationTooltip} />
 
         {/* Open Graph Meta Tags */}
-        <meta property="og:title" content={seoData.title} />
-        <meta property="og:description" content={seoData.description} />
-        <meta property="og:type" content={seoData.type} />
-        <meta property="og:url" content={seoData.url} />
-        {seoData.image && <meta property="og:image" content={seoData.image} />}
-        <meta property="og:site_name" content={content?.site.name || 'أخبار مركبة'} />
-        <meta property="og:locale" content="ar_SA" />
-        {seoData.publishedTime && (
-          <meta property="article:published_time" content={seoData.publishedTime} />
+        <meta property="og:title" content={openGraph.title} />
+        <meta property="og:description" content={openGraph.description} />
+        <meta property="og:type" content={openGraph.type} />
+        <meta property="og:url" content={openGraph.url} />
+        {openGraph.image && <meta property="og:image" content={openGraph.image} />}
+        <meta property="og:site_name" content={openGraph.siteName} />
+        <meta property="og:locale" content={openGraph.locale} />
+        {metaConfig.social.facebook.appId && (
+          <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
         )}
-        {seoData.modifiedTime && (
-          <meta property="article:modified_time" content={seoData.modifiedTime} />
+        {openGraph.publishedTime && (
+          <meta property="article:published_time" content={openGraph.publishedTime} />
         )}
-        {seoData.author && (
-          <meta property="article:author" content={seoData.author} />
+        {openGraph.modifiedTime && (
+          <meta property="article:modified_time" content={openGraph.modifiedTime} />
         )}
-        {seoData.section && (
-          <meta property="article:section" content={seoData.section} />
+        {openGraph.author && (
+          <meta property="article:author" content={openGraph.author} />
+        )}
+        {openGraph.section && (
+          <meta property="article:section" content={openGraph.section} />
         )}
 
         {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={seoData.title} />
-        <meta name="twitter:description" content={seoData.description} />
-        {seoData.image && <meta name="twitter:image" content={seoData.image} />}
-        <meta name="twitter:site" content="@NewsMarkaba" />
-        <meta name="twitter:creator" content="@NewsMarkaba" />
+        <meta name="twitter:card" content={twitterCard.card} />
+        <meta name="twitter:title" content={twitterCard.title} />
+        <meta name="twitter:description" content={twitterCard.description} />
+        {twitterCard.image && <meta name="twitter:image" content={twitterCard.image} />}
+        <meta name="twitter:site" content={twitterCard.site} />
+        <meta name="twitter:creator" content={twitterCard.creator} />
 
         {/* Favicon and App Icons */}
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -103,9 +130,12 @@ const Layout: React.FC<LayoutProps> = ({
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
 
-        {/* Theme Color */}
-        <meta name="theme-color" content="#ffffff" />
-        <meta name="msapplication-TileColor" content="#ffffff" />
+        {/* Theme Color and Mobile App */}
+        <meta name="theme-color" content={metaConfig.additional.themeColor} />
+        <meta name="msapplication-TileColor" content={metaConfig.additional.msApplicationTileColor} />
+        <meta name="apple-mobile-web-app-capable" content={metaConfig.additional.appleMobileWebAppCapable} />
+        <meta name="apple-mobile-web-app-status-bar-style" content={metaConfig.additional.appleMobileWebAppStatusBarStyle} />
+        <meta name="apple-mobile-web-app-title" content={metaConfig.additional.appleMobileWebAppTitle} />
 
         {/* Language and Direction */}
         <html lang="ar" dir="rtl" />
@@ -118,29 +148,32 @@ const Layout: React.FC<LayoutProps> = ({
         <link 
           rel="alternate" 
           type="application/rss+xml" 
-          title={`${content?.site.name || 'أخبار مركبة'} RSS Feed`}
+          title={`${metaConfig.site.name} RSS Feed`}
           href="/api/rss" 
         />
+        
+        {/* Analytics */}
+        {metaConfig.analytics.googleAnalytics && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${metaConfig.analytics.googleAnalytics}`}></script>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${metaConfig.analytics.googleAnalytics}');
+                `,
+              }}
+            />
+          </>
+        )}
 
         {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'NewsMediaOrganization',
-              name: content?.site.name || 'أخبار مركبة',
-              url: seoData.url,
-              logo: {
-                '@type': 'ImageObject',
-                url: '/images/logo.png',
-              },
-              sameAs: [
-                'https://twitter.com/NewsMarkaba',
-                'https://facebook.com/NewsMarkaba',
-                'https://instagram.com/NewsMarkaba',
-              ],
-            }),
+            __html: JSON.stringify(structuredData),
           }}
         />
       </Head>

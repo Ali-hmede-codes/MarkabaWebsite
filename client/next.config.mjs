@@ -59,16 +59,69 @@ const nextConfig = {
     localeDetection: false,
   },
   
-  // Redirects
+  // Redirects for SEO
   async redirects() {
     return [
-      // Remove the redirect since /admin/administratorpage/index.tsx already handles the admin dashboard
+      {
+        source: '/sitemap.xml',
+        destination: '/api/sitemap-index.xml',
+        permanent: true,
+      },
+      {
+        source: '/robots.txt',
+        destination: '/api/robots.txt',
+        permanent: true,
+      },
     ];
   },
   
-  // Headers for security
+  // Rewrites for clean URLs
+  async rewrites() {
+    return [
+      {
+        source: '/sitemap-index.xml',
+        destination: '/api/sitemap-index.xml',
+      },
+      {
+        source: '/sitemap-posts.xml',
+        destination: '/api/sitemap-posts.xml',
+      },
+      {
+        source: '/sitemap-categories.xml',
+        destination: '/api/sitemap-categories.xml',
+      },
+    ];
+  },
+  
+  // Headers for SEO and security
   async headers() {
     return [
+      {
+        source: '/api/sitemap:path*.xml',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/xml',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=3600',
+          },
+        ],
+      },
+      {
+        source: '/api/robots.txt',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/plain',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, s-maxage=86400',
+          },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [
@@ -95,15 +148,23 @@ const nextConfig = {
     return config;
   },
   
-  // Experimental features
+  // Experimental features for better performance
   experimental: {
-    // Remove deprecated options
+    optimizeCss: true,
     scrollRestoration: true,
   },
   
-  // Output configuration for static export if needed
-  // trailingSlash: true,
-  // output: 'export',
+  // Compression
+  compress: true,
+  
+  // PoweredByHeader
+  poweredByHeader: false,
+  
+  // Generate ETags
+  generateEtags: true,
+  
+  // Trailing slash
+  trailingSlash: false,
 };
 
 export default nextConfig;

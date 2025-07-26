@@ -29,10 +29,12 @@ Allow: /sitemap
 Allow: /privacy
 Allow: /terms
 
-# Specify the location of the sitemap
-Sitemap: https://newsmarkaba.com/sitemap.xml
-Sitemap: https://newsmarkaba.com/sitemap-posts.xml
-Sitemap: https://newsmarkaba.com/sitemap-categories.xml
+# Sitemap locations
+Sitemap: https://newsmarkaba.com/api/sitemap-index.xml
+Sitemap: https://newsmarkaba.com/api/sitemap.xml
+Sitemap: https://newsmarkaba.com/api/sitemap-posts.xml
+Sitemap: https://newsmarkaba.com/api/sitemap-categories.xml
+Sitemap: https://newsmarkaba.com/sitemap-main.xml
 
 # Crawl delay (optional - be respectful to server resources)
 Crawl-delay: 1

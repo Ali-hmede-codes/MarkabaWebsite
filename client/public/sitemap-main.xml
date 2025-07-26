@@ -4,110 +4,110 @@
   
   <!-- Homepage -->
   <url>
-    <loc>https://newsmarkaba.com/</loc>
+    <loc>https://markaba.news/</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/" />
   </url>
   
   <!-- About Page -->
   <url>
-    <loc>https://newsmarkaba.com/about</loc>
+    <loc>https://markaba.news/about</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/about" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/about" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/about" />
   </url>
   
   <!-- Contact Page -->
   <url>
-    <loc>https://newsmarkaba.com/contact</loc>
+    <loc>https://markaba.news/contact</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/contact" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/contact" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/contact" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/contact" />
   </url>
   
   <!-- Categories Index Page -->
   <url>
-    <loc>https://newsmarkaba.com/categories</loc>
+    <loc>https://markaba.news/categories</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/categories" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/categories" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/categories" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/categories" />
   </url>
   
   <!-- Search Page -->
   <url>
-    <loc>https://newsmarkaba.com/search</loc>
+    <loc>https://markaba.news/search</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/search" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/search" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/search" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/search" />
   </url>
   
   <!-- Sitemap Page -->
   <url>
-    <loc>https://newsmarkaba.com/sitemap</loc>
+    <loc>https://markaba.news/sitemap</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/sitemap" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/sitemap" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/sitemap" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/sitemap" />
   </url>
   
   <!-- Privacy Policy -->
   <url>
-    <loc>https://newsmarkaba.com/privacy</loc>
+    <loc>https://markaba.news/privacy</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/privacy" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/privacy" />
   </url>
   
   <!-- Terms of Service -->
   <url>
-    <loc>https://newsmarkaba.com/terms</loc>
+    <loc>https://markaba.news/terms</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/terms" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/terms" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/terms" />
   </url>
   
   <!-- Authentication Pages (lower priority) -->
   <url>
-    <loc>https://newsmarkaba.com/auth/login</loc>
+    <loc>https://markaba.news/auth/login</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/auth/login" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/auth/login" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/auth/login" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/auth/login" />
   </url>
   
   <url>
-    <loc>https://newsmarkaba.com/auth/register</loc>
+    <loc>https://markaba.news/auth/register</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/auth/register" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/auth/register" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/auth/register" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/auth/register" />
   </url>
   
   <url>
-    <loc>https://newsmarkaba.com/auth/forgot-password</loc>
+    <loc>https://markaba.news/auth/forgot-password</loc>
     <lastmod>2024-01-01T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.2</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://newsmarkaba.com/auth/forgot-password" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://newsmarkaba.com/auth/forgot-password" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://markaba.news/auth/forgot-password" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://markaba.news/auth/forgot-password" />
   </url>
   
 </urlset>
