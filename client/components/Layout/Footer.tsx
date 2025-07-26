@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   FiMail,
   FiPhone,
@@ -18,15 +19,13 @@ import {
   SiTiktok
 } from 'react-icons/si';
 import { useContent } from '../../hooks/useContent';
-import { useCategories, useSocialMedia } from '../API/hooks';
-import type { Category, SocialMedia } from '../API/types';
+import { useSocialMedia } from '../API/hooks';
+import type { SocialMedia } from '../API/types';
 
 const Footer: React.FC = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const { content } = useContent();
-  const { data: categoriesResponse } = useCategories();
   const { data: socialMediaData, loading: socialMediaLoading } = useSocialMedia();
-  const categories = categoriesResponse?.categories || [];
   const socialMediaLinks: SocialMedia[] = (socialMediaData && Array.isArray(socialMediaData)) ? socialMediaData : [];
   const whatsappLink = socialMediaLinks.find(link => link.platform.toLowerCase() === 'whatsapp');
   
@@ -128,161 +127,112 @@ const Footer: React.FC = () => {
 
   return (
     <>
-      <footer className="bg-gradient-to-b from-gray-900 to-gray-800 text-gray-300 shadow-lg" dir="rtl">
-        <div className="container mx-auto responsive-padding py-8 sm:py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* About Section */}
-            <div className="footer-section">
-
-              <p className="text-gray-400 leading-relaxed responsive-text">
-                {content.site.description}
-              </p>
-              
-              {/* Contact Info */}
-              <div className="space-y-2">
-                <div className="responsive-flex space-x-2 rtl:space-x-reverse responsive-text">
-                  <FiMail className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
-                  <span className="break-all">{content.site.email}</span>
-                </div>
-                <div className="responsive-flex space-x-2 rtl:space-x-reverse responsive-text">
-                  <FiPhone className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
-                  <span>{content.site.phone}</span>
-                </div>
-                <div className="responsive-flex space-x-2 rtl:space-x-reverse responsive-text">
-                  <FiMapPin className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
-                  <span>{content.site.address}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Categories */}
-            <div className="footer-section">
-              <h3 className="footer-title">
-                {content.navigation.categories}
-              </h3>
-              <ul className="space-y-2">
-                {categories?.slice(0, 8).map((category: Category) => (
-                  <li key={category.id}>
-                    <Link
-                      href={`/category/${category.slug}`}
-                      className="footer-link"
-                    >
-                      {(content.categories as Record<string, string>)[category.slug] || category.name_ar}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Quick Links */}
-            <div className="footer-section">
-              <h3 className="footer-title">
-                {content.footer.quick_links_title}
-              </h3>
-              <ul className="space-y-2">
-                {quickLinks.map((link, index) => (
-                  <li key={index}>
-                    <Link
-                      href={link.href}
-                      className="footer-link"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Newsletter & Social */}
-            <div className="footer-section">
-              <h3 className="footer-title">
-                {content.footer.stay_connected}
-              </h3>
-              
-              {/* WhatsApp Channel Subscription */}
-              <div className="space-y-4 bg-gray-800 p-4 sm:p-6 rounded-lg shadow-md">
-                <p className="text-gray-200 text-base sm:text-lg font-semibold">
-                  اشترك في قناتنا على الواتساب للحصول على آخر الأخبار
-                </p>
-                {whatsappLink ? (
-                  <a
-                    href={whatsappLink?.url || '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-md hover:shadow-xl text-base sm:text-lg font-bold transform hover:scale-105"
-                  >
-                    <FiMessageCircle className="w-6 h-6 ml-3 rtl:ml-0 rtl:mr-3" />
-                    انضم الآن
-                  </a>
-                ) : (
-                  <p className="text-gray-400 text-base">قناة الواتساب غير متوفرة حالياً</p>
-                )}
-              </div>
-
-              {/* Social Media Links */}
-              <div className="space-y-3">
-                <h4 className="responsive-text font-medium text-white">
-                  {content.footer.follow_us}
-                </h4>
-                <div className="responsive-flex space-x-3 rtl:space-x-reverse">
-                  {socialMediaLinks
-                    ?.filter((link: SocialMedia) => Boolean(link.is_active))
-                    ?.sort((a: SocialMedia, b: SocialMedia) => a.sort_order - b.sort_order)
-                    ?.map((link: SocialMedia) => {
-                      const IconComponent = getSocialIcon(link.platform);
-                      const hoverColor = getSocialHoverColor(link.platform);
-                      return (
-                        <a
-                          key={link.id}
-                          href={link?.url?.trim()?.replace(/`/g, '') || '#'}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`text-gray-400 ${hoverColor} transition-colors duration-200 touch-target p-1`}
-                          aria-label={link.name_ar}
-                          title={link.name_ar}
-                        >
-                          <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </a>
-                      );
-                    })
-                  }
-                  {socialMediaLoading && (
-                    <div className="text-gray-400 text-xs">جاري التحميل...</div>
-                  )}
-                </div>
-              </div>
+      {/* Mobile-responsive footer with rounded top edges */}
+      <footer className="bg-gray-100 text-gray-800 relative rounded-t-3xl mx-2 sm:mx-4 lg:mx-12" dir="rtl">
+        {/* Main Footer Content */}
+        <div className="max-w-2xl sm:max-w-3xl lg:max-w-3xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-8">
+          {/* Logo Section */}
+          <div className="text-center mb-4 sm:mb-6">
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <Image
+                src="/images/logo_new.png"
+                alt="Logo"
+                width={160}
+                height={85}
+                className="object-contain sm:w-[110px] sm:h-[110px] lg:w-[160px] lg:h-[80px]"
+              />
             </div>
           </div>
 
+          {/* Social Media Section - Directly under logo */}
+          <div className="text-center mb-4 sm:mb-6 lg:mb-8">
+            <div className="flex justify-center space-x-2 sm:space-x-3 rtl:space-x-reverse">
+              {socialMediaLinks
+                ?.filter((link: SocialMedia) => Boolean(link.is_active))
+                ?.sort((a: SocialMedia, b: SocialMedia) => a.sort_order - b.sort_order)
+                ?.map((link: SocialMedia) => {
+                  const IconComponent = getSocialIcon(link.platform);
+                  return (
+                    <a
+                      key={link.id}
+                      href={link?.url?.trim()?.replace(/`/g, '') || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors duration-200"
+                      aria-label={link.name_ar}
+                      title={link.name_ar}
+                    >
+                      <IconComponent className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                    </a>
+                  );
+                })
+              }
+              {socialMediaLoading && (
+                <div className="text-gray-600 text-sm">جاري التحميل...</div>
+              )}
+            </div>
+          </div>
+
+          {/* Horizontal Navigation Categories with Blue Background */}
+           <div className="text-center mb-4 sm:mb-6 lg:mb-8">
+             <div className="inline-flex bg-blue-600 rounded-full px-1 sm:px-2 py-0.5 sm:py-1 shadow-lg justify-center">
+               <Link href="/" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
+                 الرئيسية
+               </Link>
+               <Link href="/" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
+                 للإعلان معنا
+               </Link>
+               <Link href="/contact" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
+                 اتصل بنا
+               </Link>
+               <Link href="/" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
+                 وظائف شاغرة
+               </Link>
+               <Link href="/about" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
+                 من نحن
+               </Link>
+             </div>
+           </div>
+
+          {/* WhatsApp Subscription - Centered */}
+           <div className="text-center mb-4 sm:mb-6 lg:mb-8">
+             {whatsappLink && (
+               <div className="inline-block bg-white rounded-lg p-3 sm:p-4 lg:p-6 shadow-md border border-gray-200 w-full max-w-xs sm:max-w-sm lg:max-w-md">
+                 <div className="flex items-center justify-center mb-2 sm:mb-3 lg:mb-4">
+                   <div className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-blue-600 rounded-full flex items-center justify-center ml-4 rtl:ml-0 rtl:mr-4">
+                     <SiWhatsapp className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-white" />
+                   </div>
+                   <div className="text-right rtl:text-right">
+                     <h4 className="text-gray-800 font-semibold text-sm sm:text-base mb-1">
+                       قناة الواتساب
+                     </h4>
+                     <p className="text-gray-600 text-xs sm:text-sm">
+                       احصل على آخر الأخبار
+                     </p>
+                   </div>
+                 </div>
+                 <a
+                   href={whatsappLink.url}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="inline-flex items-center bg-blue-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 text-sm"
+                 >
+                   <SiWhatsapp className="w-3 h-3 sm:w-4 sm:h-4 ml-1.5 sm:ml-2 rtl:ml-0 rtl:mr-1.5 sm:rtl:mr-2" />
+                   اشترك الآن
+                 </a>
+               </div>
+             )}
+           </div>
+
           {/* Bottom Bar */}
-          <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-800">
-            <div className="footer-bottom">
-              <div className="responsive-text text-gray-400 text-center md:text-right">
-                <p>
-                  © {currentYear} {content.site.name}. {content.footer.rights_reserved}
-                </p>
-              </div>
-              
-              <div className="footer-bottom-links">
-                <Link 
-                  href="/privacy" 
-                  className="footer-link"
-                >
-                  {content.footer.privacy}
-                </Link>
-                <Link 
-                  href="/terms" 
-                  className="footer-link"
-                >
-                  {content.footer.terms}
-                </Link>
-                <Link 
-                  href="/sitemap" 
-                  className="footer-link"
-                >
-                  {content.footer.sitemap}
-                </Link>
-              </div>
+          <div className="border-t border-gray-300 pt-3 sm:pt-4 lg:pt-6 mt-4 sm:mt-6 lg:mt-8">
+            <div className="text-center">
+              <p className="text-gray-800 text-xs sm:text-sm font-bold leading-relaxed">
+                محتوى موقع «مـركـبـا - الـمـنـصـة الاخـبـاريـة» متوفر تحت رخصة المشاع الإبداعي  2025©
+              </p>
+              <p className="text-gray-800 text-xs sm:text-sm font-bold mt-2 leading-relaxed">
+                يتوجب نسب المقال إلى «مـركـبـا - الـمـنـصـة الاخـبـاريـة» - يحظر استخدام العمل لأغراض تجارية - يُحظر أي تعديل في النص، ما لم يرد تصريح غير ذلك
+              </p>
             </div>
           </div>
         </div>
@@ -292,10 +242,10 @@ const Footer: React.FC = () => {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="scroll-to-top"
+          className="fixed bottom-4 sm:bottom-6 lg:bottom-8 left-4 sm:left-6 lg:left-8 rtl:left-auto rtl:right-4 sm:rtl:right-6 lg:rtl:right-8 z-50 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
           aria-label="العودة إلى الأعلى"
         >
-          <FiArrowUp className="w-4 h-4 sm:w-5 sm:h-5" />
+          <FiArrowUp className="w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-5 lg:h-5" />
         </button>
       )}
     </>

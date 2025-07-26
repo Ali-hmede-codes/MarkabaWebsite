@@ -33,24 +33,22 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
 
   return (
     <div className={` ${className}`} dir="rtl">
-      <div className="mb-8 sm:mb-12 text-center">
-        <div className="responsive-flex justify-center mb-4 sm:mb-6">
-          <FiBook className="text-purple-500 text-xl sm:text-3xl ml-1 sm:ml-3" />
-          <h2 className="section-title font-bold text-gray-800 text-lg sm:text-xl">اخر المقالات</h2>
-        </div>
-        <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-purple-500 to-purple-600 mx-auto mt-1 sm:mt-2 rounded-full"></div>
-      </div>
+
       <div className="flex flex-col rounded-lg p-1 sm:p-4 h-[600px]">
         <div className="flex flex-col gap-2 sm:gap-4 mb-1 sm:mb-2">
           {/* Big post */}
-          <Link href={`/post/${latestPosts[0].slug}`} className="block rounded-lg overflow-hidden transition-shadow duration-300 hover:shadow-lg cursor-pointer">
-            <div className="aspect-video w-full"><img src={getImageUrl(latestPosts[0].featured_image)} alt={latestPosts[0].title_ar} className="w-full h-full object-cover" /></div>
-            <div className="p-1 sm:p-3">
-              <h3 className="font-bold text-base sm:text-xl mb-1 sm:mb-3 text-blue-800 hover:text-blue-600 transition-colors">{latestPosts[0].title_ar}</h3>
-              <p className="text-gray-700 text-xs sm:text-base mb-3 line-clamp-3">{latestPosts[0].content_ar || latestPosts[0].content}</p>
-              <div className="flex justify-between text-xs text-gray-600">
-                <span><FiCalendar className="inline ml-1" /> {formatDate(latestPosts[0].created_at)}</span>
-                <span><FiEye className="inline ml-1" /> {formatViews(latestPosts[0].views || 0)}</span>
+          <Link href={`/post/${latestPosts[0].slug}`} className="block rounded-lg overflow-hidden transition-shadow duration-300 hover:shadow-lg cursor-pointer relative">
+            <div className="aspect-video w-full relative">
+              <img src={getImageUrl(latestPosts[0].featured_image)} alt={latestPosts[0].title_ar} className="w-full h-full object-cover" />
+              {/* Overlay with fade background */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+              {/* Title overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
+                <h3 className="font-bold text-base sm:text-xl text-white mb-2 leading-tight">{latestPosts[0].title_ar}</h3>
+                <div className="flex justify-between text-xs text-white/80">
+                  <span><FiCalendar className="inline ml-1" /> {formatDate(latestPosts[0].created_at)}</span>
+                  <span><FiEye className="inline ml-1" /> {formatViews(latestPosts[0].views || 0)}</span>
+                </div>
               </div>
             </div>
           </Link>

@@ -164,7 +164,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                       {/* First copy of all breaking news */}
                       {breakingNews.map((news, index) => (
                         <span key={`first-${news.id}`} className="inline-flex items-center">
-                          <span className="mr-2 sm:mr-4">
+                          <span className="mr-0 sm:mr-2">
                             {news.link ? (
                               <Link
                                 href={news.link}
@@ -180,15 +180,15 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                               </span>
                             )}
                           </span>
-                          <span className="inline-flex items-center mx-2 sm:mx-4 bg-blue-100/0 rounded-lg px-6 py-2 border border-blue-300/0 min-w-[80px]">
+                          <span className="inline-flex items-center mr-1 bg-blue-0/0 rounded-lg px-1 py-1 min-w-[20px]">
                             <img 
-                              src="/images/logo_new.png" 
+                              src="/images/breaking-news.png" 
                               alt="Markaba News" 
-                              className="h-6 sm:h-8 w-auto block"
+                              className="h-4 sm:h-5 w-auto block"
                               style={{minWidth: '24px', minHeight: '24px'}}
                               onError={(e) => {
                                 console.error('Logo_new.png failed, trying logo.png');
-                                if (e.currentTarget.src.includes('logo_new.png')) {
+                                if (e.currentTarget.src.includes('breaking-news.png')) {
                                   e.currentTarget.src = '/images/logo.png';
                                 } else if (e.currentTarget.src.includes('logo.png')) {
                                   e.currentTarget.src = '/images/logo.svg';
@@ -221,15 +221,15 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                               </span>
                             )}
                           </span>
-                          <span className="inline-flex items-center mx-2 sm:mx-4 bg-blue-100/0 rounded-lg px-6 py-2 border border-blue-300/0 min-w-[80px]">
+                          <span className="inline-flex items-center mr-1 bg-blue-0/0 rounded-lg px-1 py-1 min-w-[20px]">
                             <img 
-                              src="/images/logo_new.png" 
+                              src="/images/breaking-news.png" 
                               alt="Markaba News" 
-                              className="h-6 sm:h-8 w-auto block"
+                              className="h-4 sm:h-5 w-auto block"
                               style={{minWidth: '24px', minHeight: '24px'}}
                               onError={(e) => {
                                 console.error('Logo_new.png failed, trying logo.png');
-                                if (e.currentTarget.src.includes('logo_new.png')) {
+                                if (e.currentTarget.src.includes('breaking-news.png')) {
                                   e.currentTarget.src = '/images/logo.png';
                                 } else if (e.currentTarget.src.includes('logo.png')) {
                                   e.currentTarget.src = '/images/logo.svg';
