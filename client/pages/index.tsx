@@ -16,6 +16,7 @@ import {
 import { getImageUrl } from '../utils/imageUtils';
 import LastNewsBanner from '../components/LastNews/LastNewsBanner';
 import LatestArticles from '../components/LatestArticles/LatestArticles';
+import BreakingNewsBanner from '../components/BreakingNews/BreakingNewsBanner';
 
 const HomePage: React.FC = () => {
   const { content } = useContent();
@@ -23,7 +24,6 @@ const HomePage: React.FC = () => {
   const { data: categoriesResponse } = useCategories();
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);
   const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
-  const [breakingNews, setBreakingNews] = useState<any[]>([]);
 
   const posts = postsResponse?.posts || [];
   const categories = categoriesResponse?.categories || [];
@@ -56,21 +56,7 @@ const HomePage: React.FC = () => {
     }
   }, [posts]);
 
-  useEffect(() => {
-    const fetchBreakingNews = async () => {
-      try {
-        const response = await fetch('/api/breaking-news?active=true');
-        if (response.ok) {
-          const data = await response.json();
-          setBreakingNews(data.data || []);
-        }
-      } catch (error) {
-        console.error('Error fetching breaking news:', error);
-      }
-    };
 
-    fetchBreakingNews();
-  }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -114,28 +100,8 @@ const HomePage: React.FC = () => {
       description={content?.site?.description || 'Latest News and Updates'}
     >
       <div className="bg-white min-h-screen" dir="rtl">
-        {/* Breaking News Ticker */}
-        <section className="bg-red-600 text-white py-2 overflow-hidden relative">
-          <div className="flex items-center">
-            <div className="bg-red-700 px-4 py-1 text-sm font-bold whitespace-nowrap">
-              أخبار عاجلة
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <div className="animate-scroll-rtl flex items-center whitespace-nowrap">
-                {breakingNews && breakingNews.length > 0 ? (
-                  breakingNews.slice(0, 5).map((news: any, index: number) => (
-                    <span key={news.id} className="inline-flex items-center">
-                      <span className="mx-4 text-sm">{news.title}</span>
-                      {index < 4 && <span className="font-bold text-yellow-300 mx-2">عاجل</span>}
-                    </span>
-                  ))
-                ) : (
-                  <span className="mx-4 text-sm">لا توجد أخبار عاجلة حالياً</span>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Breaking News Banner */}
+        <BreakingNewsBanner />
 
         <div className="container mx-auto responsive-padding">
           {/* Latest Articles and Last News Section */}

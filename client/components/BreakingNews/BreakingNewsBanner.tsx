@@ -96,98 +96,186 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   };
 
   return (
-    <div className={`relative breaking-news-banner text-white ${className}`}>
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-red-800 via-red-700 to-red-800 animate-pulse opacity-20" />
+    <div className={`relative ${className}`}>
+      {/* Top spacing */}
+      <div className="h-4"></div>
       
-      <div className="relative px-4 py-2">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Breaking News Label with Logo */}
-          <div className="flex items-center space-x-2 flex-shrink-0">
-            <div className="flex items-center bg-white rounded-lg px-4 py-2 shadow-md border border-gray-100">
-              <img 
-                src="/images/logo_new.png" 
-                alt="Markaba News" 
-                className="h-7 w-auto filter drop-shadow-sm"
-              />
-            </div>
-          </div>
-          
-          {/* News Content */}
-          <div className="flex-1 mx-4 min-w-0 overflow-hidden">
-            <div className="flex items-center space-x-4 h-8">
-              {/* News Text */}
-              <div className="flex-1 min-w-0 breaking-news-container overflow-hidden">
-                <div className="relative h-8 flex items-center">
-                  <div className={`animate-scroll-endless whitespace-nowrap text-lg font-semibold ${animationReady ? 'animation-ready' : ''}`}>
-                    {breakingNews.length > 0 ? (
-                      <>
-                        {/* First copy of all breaking news */}
-                        {breakingNews.map((news, index) => (
-                          <span key={`first-${news.id}`} className="inline-block">
-                            {news.link ? (
-                              <Link
-                                href={news.link}
-                                className="text-white hover:text-yellow-200 transition-colors duration-200 leading-tight font-bold text-shadow-sm"
-                                target={news.link.startsWith('http') ? '_blank' : '_self'}
-                                rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                              >
-                                {news.title}
-                              </Link>
-                            ) : (
-                              <span className="text-white leading-tight font-bold text-shadow-sm">
-                                {news.title}
-                              </span>
-                            )}
-                            <span className="text-yellow-200 mx-8 font-bold">•</span>
-                          </span>
-                        ))}
-                        {/* Second copy for seamless infinite loop */}
-                        {breakingNews.map((news, index) => (
-                          <span key={`second-${news.id}`} className="inline-block">
-                            {news.link ? (
-                              <Link
-                                href={news.link}
-                                className="text-white hover:text-yellow-200 transition-colors duration-200 leading-tight font-bold text-shadow-sm"
-                                target={news.link.startsWith('http') ? '_blank' : '_self'}
-                                rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                              >
-                                {news.title}
-                              </Link>
-                            ) : (
-                              <span className="text-white leading-tight font-bold text-shadow-sm">
-                                {news.title}
-                              </span>
-                            )}
-                            <span className="text-yellow-200 mx-8 font-bold">•</span>
-                          </span>
-                        ))}
-                      </>
-                    ) : (
-                      <span className="text-white leading-tight font-bold text-shadow-sm">
-                        لا توجد أخبار عاجلة حالياً
-                      </span>
-                    )}
+      {/* Breaking News Banner */}
+      <div className="container mx-auto px-4">
+        {/* PC Version - Match LatestArticles width */}
+        <div className="hidden lg:block">
+          <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-7">
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <div className="flex items-center h-12">
+                  {/* أخبار عاجلة Label with Logo */}
+                  <div className="flex items-center bg-red-600 text-white px-4 py-3 rounded-r-lg">
+                    <img 
+                      src="/images/logo_new.png" 
+                      alt="Markaba News" 
+                      className="h-6 w-auto ml-2"
+                    />
+                    <span className="font-bold text-sm">أخبار عاجلة</span>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          
-          {/* Close Button */}
-          {showCloseButton && (
-            <button
-              onClick={handleClose}
-              className="flex-shrink-0 p-1 hover:bg-white/20 rounded transition-colors"
-              aria-label="Close breaking news banner"
-            >
-              <XMarkIcon className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+                  
+                  {/* News Content with fade effect */}
+                  <div className="flex-1 relative overflow-hidden">
+                    <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10"></div>
+                    <div className="px-4 py-3">
+                      <div className={`animate-scroll-endless whitespace-nowrap text-black font-medium ${animationReady ? 'animation-ready' : ''}`}>
+                        {breakingNews.length > 0 ? (
+                          <>
+                            {/* First copy of all breaking news */}
+                            {breakingNews.map((news, index) => (
+                              <span key={`first-${news.id}`} className="inline-block">
+                                {news.link ? (
+                                  <Link
+                                    href={news.link}
+                                    className="text-black hover:text-red-600 transition-colors duration-200 leading-tight"
+                                    target={news.link.startsWith('http') ? '_blank' : '_self'}
+                                    rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                  >
+                                    {news.title}
+                                  </Link>
+                                ) : (
+                                  <span className="text-black leading-tight">
+                                    {news.title}
+                                  </span>
+                                )}
+                                <span className="text-red-600 mx-6">•</span>
+                              </span>
+                            ))}
+                            {/* Second copy for seamless infinite loop */}
+                            {breakingNews.map((news, index) => (
+                              <span key={`second-${news.id}`} className="inline-block">
+                                {news.link ? (
+                                  <Link
+                                    href={news.link}
+                                    className="text-black hover:text-red-600 transition-colors duration-200 leading-tight"
+                                    target={news.link.startsWith('http') ? '_blank' : '_self'}
+                                    rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                  >
+                                    {news.title}
+                                  </Link>
+                                ) : (
+                                  <span className="text-black leading-tight">
+                                    {news.title}
+                                  </span>
+                                )}
+                                <span className="text-red-600 mx-6">•</span>
+                              </span>
+                            ))}
+                          </>
+                        ) : (
+                          <span className="text-black leading-tight">
+                            لا توجد أخبار عاجلة حالياً
+                          </span>
+                        )}
+                     </div>
+                   </div>
+                   
+                   {/* Close Button */}
+                   {showCloseButton && (
+                     <button
+                       onClick={handleClose}
+                       className="flex-shrink-0 p-2 hover:bg-gray-100 rounded transition-colors mr-2"
+                       aria-label="Close breaking news banner"
+                     >
+                       <XMarkIcon className="w-4 h-4 text-gray-600" />
+                     </button>
+                   )}
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
+         
+         {/* Mobile Version - Match LatestArticles width */}
+         <div className="lg:hidden">
+           <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+             <div className="flex items-center h-12">
+               {/* أخبار عاجلة Label with Logo */}
+               <div className="flex items-center bg-red-600 text-white px-3 py-2 rounded-r-lg">
+                 <img 
+                   src="/images/logo_new.png" 
+                   alt="Markaba News" 
+                   className="h-5 w-auto ml-1"
+                 />
+                 <span className="font-bold text-xs">أخبار عاجلة</span>
+               </div>
+               
+               {/* News Content with fade effect */}
+               <div className="flex-1 relative overflow-hidden">
+                 <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white to-transparent z-10"></div>
+                 <div className="px-3 py-2">
+                   <div className={`animate-scroll-endless whitespace-nowrap text-black font-medium text-sm ${animationReady ? 'animation-ready' : ''}`}>
+                     {breakingNews.length > 0 ? (
+                       <>
+                         {/* First copy of all breaking news */}
+                         {breakingNews.map((news, index) => (
+                           <span key={`mobile-first-${news.id}`} className="inline-block">
+                             {news.link ? (
+                               <Link
+                                 href={news.link}
+                                 className="text-black hover:text-red-600 transition-colors duration-200 leading-tight"
+                                 target={news.link.startsWith('http') ? '_blank' : '_self'}
+                                 rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                               >
+                                 {news.title}
+                               </Link>
+                             ) : (
+                               <span className="text-black leading-tight">
+                                 {news.title}
+                               </span>
+                             )}
+                             <span className="text-red-600 mx-4">•</span>
+                           </span>
+                         ))}
+                         {/* Second copy for seamless infinite loop */}
+                         {breakingNews.map((news, index) => (
+                           <span key={`mobile-second-${news.id}`} className="inline-block">
+                             {news.link ? (
+                               <Link
+                                 href={news.link}
+                                 className="text-black hover:text-red-600 transition-colors duration-200 leading-tight"
+                                 target={news.link.startsWith('http') ? '_blank' : '_self'}
+                                 rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                               >
+                                 {news.title}
+                               </Link>
+                             ) : (
+                               <span className="text-black leading-tight">
+                                 {news.title}
+                               </span>
+                             )}
+                             <span className="text-red-600 mx-4">•</span>
+                           </span>
+                         ))}
+                       </>
+                     ) : (
+                       <span className="text-black leading-tight">
+                         لا توجد أخبار عاجلة حالياً
+                       </span>
+                     )}
+                   </div>
+                 </div>
+               </div>
+               
+               {/* Close Button */}
+               {showCloseButton && (
+                 <button
+                   onClick={handleClose}
+                   className="flex-shrink-0 p-2 hover:bg-gray-100 rounded transition-colors mr-1"
+                   aria-label="Close breaking news banner"
+                 >
+                   <XMarkIcon className="w-3 h-3 text-gray-600" />
+                 </button>
+               )}
+             </div>
+           </div>
+         </div>
+       </div>
       </div>
-
     </div>
   );
 };
