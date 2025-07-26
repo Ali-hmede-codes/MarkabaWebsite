@@ -2,24 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { XMarkIcon, SpeakerWaveIcon } from '@heroicons/react/24/outline';
 import { BreakingNews } from '../API/types';
 
 interface BreakingNewsBannerProps {
   className?: string;
   autoHide?: boolean;
   autoHideDelay?: number;
-  showCloseButton?: boolean;
 }
 
 const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   className = '',
   autoHide = false,
-  autoHideDelay = 10000,
-  showCloseButton = true
+  autoHideDelay = 10000
 }) => {
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
-  const [isVisible, setIsVisible] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [animationReady, setAnimationReady] = useState(false);
@@ -63,25 +59,18 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   //   return () => clearInterval(interval);
   // }, [breakingNews.length]);
 
-  // Auto-hide banner
+  // Initialize animation after component mounts
   useEffect(() => {
-    if (!autoHide) return;
-
     const timer = setTimeout(() => {
-      setIsVisible(false);
-    }, autoHideDelay);
-
+      setAnimationReady(true);
+    }, 100);
     return () => clearTimeout(timer);
-  }, [autoHide, autoHideDelay]);
+  }, []);
 
-  // Don't render if not visible, loading, error, or no breaking news
-  if (!isVisible || loading || error || breakingNews.length === 0) {
+  // Don't render if loading, error, or no breaking news
+  if (loading || error || breakingNews.length === 0) {
     return null;
   }
-
-  const handleClose = () => {
-    setIsVisible(false);
-  };
 
   const formatDate = (dateString: string) => {
     try {
@@ -102,27 +91,22 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
       
       {/* Breaking News Banner */}
       <div className="container mx-auto px-4">
-        {/* PC Version - Match LatestArticles width */}
+        {/* PC Version - Match LatestArticles + LastNews width */}
         <div className="hidden lg:block">
           <div className="grid grid-cols-12 gap-6">
-            <div className="col-span-7">
-              <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                <div className="flex items-center h-12">
-                  {/* أخبار عاجلة Label with Logo */}
-                  <div className="flex items-center bg-red-600 text-white px-4 py-3 rounded-r-lg">
-                    <img 
-                      src="/images/logo_new.png" 
-                      alt="Markaba News" 
-                      className="h-6 w-auto ml-2"
-                    />
-                    <span className="font-bold text-sm">أخبار عاجلة</span>
+            <div className="col-span-12">
+              <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg shadow-lg overflow-hidden">
+                <div className="flex items-center h-14">
+                  {/* أخبار عاجلة Label */}
+                  <div className="flex items-center bg-red-800 text-white px-6 py-4 rounded-r-lg">
+                    <span className="font-bold text-base">أخبار عاجلة</span>
                   </div>
                   
                   {/* News Content with fade effect */}
-                  <div className="flex-1 relative overflow-hidden">
+                  <div className="flex-1 relative overflow-hidden bg-white">
                     <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10"></div>
-                    <div className="px-4 py-3">
-                      <div className={`animate-scroll-endless whitespace-nowrap text-black font-medium ${animationReady ? 'animation-ready' : ''}`}>
+                    <div className="px-6 py-4">
+                      <div className={`animate-scroll-endless whitespace-nowrap text-gray-800 font-medium text-base ${animationReady ? 'animation-ready' : ''}`}>
                         {breakingNews.length > 0 ? (
                           <>
                             {/* First copy of all breaking news */}
@@ -131,18 +115,24 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                                 {news.link ? (
                                   <Link
                                     href={news.link}
-                                    className="text-black hover:text-red-600 transition-colors duration-200 leading-tight"
+                                    className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
                                     target={news.link.startsWith('http') ? '_blank' : '_self'}
                                     rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                                   >
                                     {news.title}
                                   </Link>
                                 ) : (
-                                  <span className="text-black leading-tight">
+                                  <span className="text-gray-800 leading-tight">
                                     {news.title}
                                   </span>
                                 )}
-                                <span className="text-red-600 mx-6">•</span>
+                                <span className="inline-flex items-center mx-6">
+                                  <img 
+                                    src="/images/logo_new.png" 
+                                    alt="Markaba News" 
+                                    className="h-4 w-auto"
+                                  />
+                                </span>
                               </span>
                             ))}
                             {/* Second copy for seamless infinite loop */}
@@ -151,64 +141,54 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                                 {news.link ? (
                                   <Link
                                     href={news.link}
-                                    className="text-black hover:text-red-600 transition-colors duration-200 leading-tight"
+                                    className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
                                     target={news.link.startsWith('http') ? '_blank' : '_self'}
                                     rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                                   >
                                     {news.title}
                                   </Link>
                                 ) : (
-                                  <span className="text-black leading-tight">
+                                  <span className="text-gray-800 leading-tight">
                                     {news.title}
                                   </span>
                                 )}
-                                <span className="text-red-600 mx-6">•</span>
+                                <span className="inline-flex items-center mx-6">
+                                  <img 
+                                    src="/images/logo_new.png" 
+                                    alt="Markaba News" 
+                                    className="h-4 w-auto"
+                                  />
+                                </span>
                               </span>
                             ))}
                           </>
                         ) : (
-                          <span className="text-black leading-tight">
+                          <span className="text-gray-800 leading-tight">
                             لا توجد أخبار عاجلة حالياً
                           </span>
                         )}
                      </div>
                    </div>
-                   
-                   {/* Close Button */}
-                   {showCloseButton && (
-                     <button
-                       onClick={handleClose}
-                       className="flex-shrink-0 p-2 hover:bg-gray-100 rounded transition-colors mr-2"
-                       aria-label="Close breaking news banner"
-                     >
-                       <XMarkIcon className="w-4 h-4 text-gray-600" />
-                     </button>
-                   )}
                  </div>
                </div>
              </div>
            </div>
          </div>
          
-         {/* Mobile Version - Match LatestArticles width */}
-         <div className="lg:hidden">
-           <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+         {/* Mobile Version - Full width */}
+         <div className="block lg:hidden">
+           <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg shadow-lg overflow-hidden">
              <div className="flex items-center h-12">
-               {/* أخبار عاجلة Label with Logo */}
-               <div className="flex items-center bg-red-600 text-white px-3 py-2 rounded-r-lg">
-                 <img 
-                   src="/images/logo_new.png" 
-                   alt="Markaba News" 
-                   className="h-5 w-auto ml-1"
-                 />
-                 <span className="font-bold text-xs">أخبار عاجلة</span>
+               {/* أخبار عاجلة Label */}
+               <div className="flex items-center bg-red-800 text-white px-4 py-3 rounded-r-lg">
+                 <span className="font-bold text-sm">أخبار عاجلة</span>
                </div>
                
                {/* News Content with fade effect */}
-               <div className="flex-1 relative overflow-hidden">
+               <div className="flex-1 relative overflow-hidden bg-white">
                  <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white to-transparent z-10"></div>
-                 <div className="px-3 py-2">
-                   <div className={`animate-scroll-endless whitespace-nowrap text-black font-medium text-sm ${animationReady ? 'animation-ready' : ''}`}>
+                 <div className="px-4 py-3">
+                   <div className={`animate-scroll-endless whitespace-nowrap text-gray-800 font-medium text-sm ${animationReady ? 'animation-ready' : ''}`}>
                      {breakingNews.length > 0 ? (
                        <>
                          {/* First copy of all breaking news */}
@@ -217,18 +197,24 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                              {news.link ? (
                                <Link
                                  href={news.link}
-                                 className="text-black hover:text-red-600 transition-colors duration-200 leading-tight"
+                                 className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
                                  target={news.link.startsWith('http') ? '_blank' : '_self'}
                                  rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                                >
                                  {news.title}
                                </Link>
                              ) : (
-                               <span className="text-black leading-tight">
+                               <span className="text-gray-800 leading-tight">
                                  {news.title}
                                </span>
                              )}
-                             <span className="text-red-600 mx-4">•</span>
+                             <span className="inline-flex items-center mx-4">
+                               <img 
+                                 src="/images/logo_new.png" 
+                                 alt="Markaba News" 
+                                 className="h-3 w-auto"
+                               />
+                             </span>
                            </span>
                          ))}
                          {/* Second copy for seamless infinite loop */}
@@ -237,40 +223,35 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                              {news.link ? (
                                <Link
                                  href={news.link}
-                                 className="text-black hover:text-red-600 transition-colors duration-200 leading-tight"
+                                 className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
                                  target={news.link.startsWith('http') ? '_blank' : '_self'}
                                  rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                                >
                                  {news.title}
                                </Link>
                              ) : (
-                               <span className="text-black leading-tight">
+                               <span className="text-gray-800 leading-tight">
                                  {news.title}
                                </span>
                              )}
-                             <span className="text-red-600 mx-4">•</span>
+                             <span className="inline-flex items-center mx-4">
+                               <img 
+                                 src="/images/logo_new.png" 
+                                 alt="Markaba News" 
+                                 className="h-3 w-auto"
+                               />
+                             </span>
                            </span>
                          ))}
                        </>
                      ) : (
-                       <span className="text-black leading-tight">
+                       <span className="text-gray-800 leading-tight">
                          لا توجد أخبار عاجلة حالياً
                        </span>
                      )}
                    </div>
                  </div>
                </div>
-               
-               {/* Close Button */}
-               {showCloseButton && (
-                 <button
-                   onClick={handleClose}
-                   className="flex-shrink-0 p-2 hover:bg-gray-100 rounded transition-colors mr-1"
-                   aria-label="Close breaking news banner"
-                 >
-                   <XMarkIcon className="w-3 h-3 text-gray-600" />
-                 </button>
-               )}
              </div>
            </div>
          </div>
