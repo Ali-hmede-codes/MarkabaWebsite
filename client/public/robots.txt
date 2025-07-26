@@ -30,11 +30,11 @@ Allow: /privacy
 Allow: /terms
 
 # Sitemap locations
-Sitemap: https://newsmarkaba.com/api/sitemap-index.xml
-Sitemap: https://newsmarkaba.com/api/sitemap.xml
-Sitemap: https://newsmarkaba.com/api/sitemap-posts.xml
-Sitemap: https://newsmarkaba.com/api/sitemap-categories.xml
-Sitemap: https://newsmarkaba.com/sitemap-main.xml
+Sitemap: https://markaba.news/api/sitemap-index.xml
+Sitemap: https://markaba.news/api/sitemap.xml
+Sitemap: https://markaba.news/api/sitemap-posts.xml
+Sitemap: https://markaba.news/api/sitemap-categories.xml
+Sitemap: https://markaba.news/sitemap-main.xml
 
 # Crawl delay (optional - be respectful to server resources)
 Crawl-delay: 1
@@ -99,4 +99,4 @@ User-agent: SemrushBot
 Disallow: /
 
 # Host directive (if needed)
-# Host: newsmarkaba.com
+# Host: markaba.news

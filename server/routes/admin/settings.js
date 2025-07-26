@@ -493,8 +493,8 @@ router.post('/initialize', authenticateToken, requireRole(['admin']), async (req
       // General settings
       { key: 'general_site_name', value: 'نيوز مركبة', type: 'string' },
       { key: 'general_site_description', value: 'موقع إخباري شامل', type: 'string' },
-      { key: 'general_site_url', value: 'https://newsmarkaba.com', type: 'string' },
-      { key: 'general_admin_email', value: 'admin@newsmarkaba.com', type: 'string' },
+      { key: 'general_site_url', value: 'https://markaba.news', type: 'string' },
+      { key: 'general_admin_email', value: 'admin@markaba.news', type: 'string' },
       { key: 'general_timezone', value: 'Asia/Riyadh', type: 'string' },
       { key: 'general_language', value: 'ar', type: 'string' },
       { key: 'general_posts_per_page', value: '10', type: 'number' },

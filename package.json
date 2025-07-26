@@ -29,7 +29,7 @@
     "db:setup": "node setup-database.js",
     "db:reset": "dropdb newsmarkaba && createdb newsmarkaba && npm run db:setup",
     "update-domain": "node scripts/update-domain.js",
-    "deploy:help": "echo \"Usage: npm run update-domain <domain> [server_port] [client_port] [protocol]\" && echo \"Example: npm run update-domain newsmarkaba.com 5001 443 https\""
+    "deploy:help": "echo \"Usage: npm run update-domain <domain> [server_port] [client_port] [protocol]\" && echo \"Example: npm run update-domain markaba.news 5001 443 https\""
   },
   "keywords": [
     "news",

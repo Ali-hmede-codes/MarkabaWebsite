@@ -17,7 +17,7 @@ This guide will help you optimize your NewsMarkaba website for search engines, p
 ### Step 1: Add Your Property
 1. Go to [Google Search Console](https://search.google.com/search-console/)
 2. Click "Add Property"
-3. Choose "URL prefix" and enter your domain (e.g., `https://newsmarkaba.com`)
+3. Choose "URL prefix" and enter your domain (e.g., `https://markaba.news`)
 
 ### Step 2: Verify Ownership
 1. Select "HTML tag" verification method

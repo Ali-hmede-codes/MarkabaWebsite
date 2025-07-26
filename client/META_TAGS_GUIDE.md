@@ -30,7 +30,7 @@ const metaConfig = {
   site: {
     name: 'أخبار مركبة',
     nameEn: 'NewsMarkaba',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://newsmarkaba.com',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news',
     // ... other settings
   },
   analytics: {
@@ -183,7 +183,7 @@ Set these in your `.env.local` file:
 
 ```env
 # Required
-NEXT_PUBLIC_SITE_URL=https://newsmarkaba.com
+NEXT_PUBLIC_SITE_URL=https://markaba.news
 NEXT_PUBLIC_SITE_NAME=أخبار مركبة
 NEXT_PUBLIC_SITE_DESCRIPTION=موقع إخباري شامل
 

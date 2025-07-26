@@ -2,7 +2,7 @@
 /**
  * Quick Domain Update Script
  * Usage: node scripts/update-domain.js <domain> [server_port] [client_port] [protocol]
- * Example: node scripts/update-domain.js newsmarkaba.com 5001 443 https
+ * Example: node scripts/update-domain.js markaba.news 5001 443 https
  */
 
 const fs = require('fs');
@@ -16,8 +16,8 @@ if (args.length < 1) {
   console.log('=====================================\n');
   console.log('Usage: node scripts/update-domain.js <domain> [server_port] [client_port] [protocol]\n');
   console.log('Examples:');
-  console.log('  node scripts/update-domain.js newsmarkaba.com');
-  console.log('  node scripts/update-domain.js newsmarkaba.com 5001 443 https');
+  console.log('  node scripts/update-domain.js markaba.news');
+  console.log('  node scripts/update-domain.js markaba.news 5001 443 https');
   console.log('  node scripts/update-domain.js localhost 5001 3001 http\n');
   process.exit(1);
 }

@@ -7,7 +7,7 @@ async function createAdminUser() {
     
     const adminData = {
       username: 'admin',
-      email: 'admin@newsmarkaba.com',
+      email: 'admin@markaba.news',
       password: 'AdminPass123!',
       display_name: 'Administrator',
       role: 'admin',

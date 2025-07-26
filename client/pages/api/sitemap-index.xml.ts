@@ -8,7 +8,7 @@ export default function handler(
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://newsmarkaba.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
   const currentDate = new Date().toISOString();
 
   // Generate sitemap index XML

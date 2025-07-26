@@ -54,7 +54,7 @@ export default async function handler(
     const posts: Post[] = postsData.posts || [];
     const categories: Category[] = categoriesData.categories || [];
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://newsmarkaba.com';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
     const currentDate = new Date().toISOString();
 
     // Generate sitemap XML

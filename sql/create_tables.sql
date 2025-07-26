@@ -120,7 +120,7 @@ CREATE TABLE media (
 
 -- Default data
 INSERT INTO users (username, email, password, role) VALUES 
-('admin', 'admin@newsmarkaba.com', '$2a$12$1IugvgKB8jfwxISuBIn5MOcjPrAr7/8g6ZQMnc0wKWODLg3tVP6J.', 'admin');
+('admin', 'admin@markaba.news', '$2a$12$1IugvgKB8jfwxISuBIn5MOcjPrAr7/8g6ZQMnc0wKWODLg3tVP6J.', 'admin');
 
 INSERT INTO categories (name_ar, slug, description_ar) VALUES 
 ('سياسة', 'politics', 'أخبار سياسية محلية وعالمية'),

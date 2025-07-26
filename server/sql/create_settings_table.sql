@@ -20,8 +20,8 @@ INSERT IGNORE INTO `settings` (`setting_key`, `setting_value`, `setting_type`, `
 -- General settings
 ('general_site_name', 'نيوز مركبة', 'string', 'اسم الموقع', 'general', 1),
 ('general_site_description', 'موقع إخباري شامل', 'string', 'وصف الموقع', 'general', 1),
-('general_site_url', 'https://newsmarkaba.com', 'string', 'رابط الموقع', 'general', 1),
-('general_admin_email', 'admin@newsmarkaba.com', 'string', 'بريد المدير الإلكتروني', 'general', 0),
+('general_site_url', 'https://markaba.news', 'string', 'رابط الموقع', 'general', 1),
+('general_admin_email', 'admin@markaba.news', 'string', 'بريد المدير الإلكتروني', 'general', 0),
 ('general_timezone', 'Asia/Riyadh', 'string', 'المنطقة الزمنية', 'general', 0),
 ('general_language', 'ar', 'string', 'لغة الموقع الافتراضية', 'general', 1),
 ('general_posts_per_page', '10', 'number', 'عدد المقالات في الصفحة', 'general', 1),

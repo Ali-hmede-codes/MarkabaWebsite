@@ -665,7 +665,7 @@ router.post('/reset', auth, requireAdmin, async (req, res) => {
       },
       {
         key: 'contact_email',
-        value: 'contact@newsmarkaba.com',
+        value: 'contact@markaba.news',
         type: 'string',
         category: 'contact',
         description: 'Contact email address',

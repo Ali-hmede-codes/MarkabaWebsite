@@ -414,7 +414,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation**: Check this README and code comments
 - **Issues**: Create a GitHub issue for bugs or feature requests
 - **Discussions**: Use GitHub Discussions for questions
-- **Email**: contact@newsmarkaba.com
+- **Email**: contact@markaba.news
 
 ### Common Issues
 
@@ -468,4 +468,4 @@ npm install
 
 **Built with ❤️ by the NewsMarkaba Team**
 
-For more information, visit our [website](https://newsmarkaba.com) or follow us on [Twitter](https://twitter.com/newsmarkaba).
+For more information, visit our [website](https://markaba.news) or follow us on [Twitter](https://twitter.com/newsmarkaba).
