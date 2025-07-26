@@ -76,7 +76,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
           <div className="hidden lg:block">
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12">
-                <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+                <div className="bg-white rounded-lg overflow-hidden">
                   <div className="flex items-center h-12">
                     <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-r-lg">
                       <span className="font-bold text-sm">أخبار عاجلة</span>
@@ -90,7 +90,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
             </div>
           </div>
           <div className="lg:hidden">
-            <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+             <div className="bg-white rounded-lg overflow-hidden">
               <div className="flex items-center h-10">
                 <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-r-lg">
                   <span className="font-bold text-xs">أخبار عاجلة</span>
@@ -114,7 +114,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
           <div className="hidden lg:block">
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12">
-                <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+                <div className="bg-white rounded-lg overflow-hidden">
                   <div className="flex items-center h-12">
                     <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-r-lg">
                       <span className="font-bold text-sm">أخبار عاجلة</span>
@@ -128,7 +128,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
             </div>
           </div>
           <div className="lg:hidden">
-            <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+            <div className="bg-white rounded-lg overflow-hidden">
               <div className="flex items-center h-10">
                 <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-r-lg">
                   <span className="font-bold text-xs">أخبار عاجلة</span>
@@ -152,7 +152,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
           <div className="hidden lg:block">
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12">
-                <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+                <div className="bg-white rounded-lg overflow-hidden">
                   <div className="flex items-center h-12">
                     <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-r-lg">
                       <span className="font-bold text-sm">أخبار عاجلة</span>
@@ -166,7 +166,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
             </div>
           </div>
           <div className="lg:hidden">
-            <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+            <div className="bg-white rounded-lg overflow-hidden">
               <div className="flex items-center h-10">
                 <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-r-lg">
                   <span className="font-bold text-xs">أخبار عاجلة</span>
@@ -205,7 +205,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
         <div className="hidden lg:block">
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12">
-              <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+              <div className="bg-white rounded-lg overflow-hidden">
                 <div className="flex items-center h-12">
                   {/* أخبار عاجلة Label */}
                   <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-r-lg">
@@ -287,7 +287,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
          
          {/* Mobile Version - Full width */}
           <div className="lg:hidden">
-            <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+            <div className="bg-white rounded-lg overflow-hidden">
               <div className="flex items-center h-10">
                 {/* أخبار عاجلة Label */}
                 <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-r-lg">
