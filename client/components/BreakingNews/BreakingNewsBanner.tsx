@@ -86,6 +86,9 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
 
   return (
     <div className={`relative ${className}`}>
+      {/* Top spacing */}
+      <div className="h-6"></div>
+      
       {/* Breaking News Banner */}
       <div className="container mx-auto px-4 mb-6">
         {/* PC Version - Match LatestArticles + LastNews width */}
@@ -100,8 +103,8 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                   </div>
                   
                   {/* News Content with fade effect */}
-                  <div className="flex-1 relative overflow-hidden bg-gradient-to-l from-white via-white/95 to-white/90">
-                    <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white/90 to-transparent z-10"></div>
+                  <div className="flex-1 relative overflow-hidden bg-gradient-to-r from-white to-transparent">
+                    <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white to-transparent z-10"></div>
                     <div className="px-4 py-3">
                       <div className={`animate-scroll-endless whitespace-nowrap text-gray-800 font-medium text-sm ${animationReady ? 'animation-ready' : ''}`}>
                         {breakingNews.length > 0 ? (
@@ -182,8 +185,8 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                 </div>
                 
                 {/* News Content with fade effect */}
-                <div className="flex-1 relative overflow-hidden bg-gradient-to-l from-white via-white/95 to-white/90">
-                  <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white/90 to-transparent z-10"></div>
+                <div className="flex-1 relative overflow-hidden bg-gradient-to-r from-white to-transparent">
+                  <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white to-transparent z-10"></div>
                   <div className="px-3 py-2">
                     <div className={`animate-scroll-endless whitespace-nowrap text-gray-800 font-medium text-xs ${animationReady ? 'animation-ready' : ''}`}>
                       {breakingNews.length > 0 ? (
