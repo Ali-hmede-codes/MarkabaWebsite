@@ -67,9 +67,119 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
     return () => clearTimeout(timer);
   }, []);
 
-  // Don't render if loading, error, or no breaking news
-  if (loading || error || breakingNews.length === 0) {
-    return null;
+  // Don't render if loading or error, but show placeholder if no breaking news for debugging
+  if (loading) {
+    return (
+      <div className={`relative ${className}`}>
+        <div className="h-6"></div>
+        <div className="container mx-auto px-4 mb-6">
+          <div className="hidden lg:block">
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-12">
+                <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+                  <div className="flex items-center h-12">
+                    <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-r-lg">
+                      <span className="font-bold text-sm">أخبار عاجلة</span>
+                    </div>
+                    <div className="flex-1 px-4 py-3">
+                      <div className="text-gray-500 text-sm">جاري التحميل...</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="lg:hidden">
+            <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+              <div className="flex items-center h-10">
+                <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-r-lg">
+                  <span className="font-bold text-xs">أخبار عاجلة</span>
+                </div>
+                <div className="flex-1 px-3 py-2">
+                  <div className="text-gray-500 text-xs">جاري التحميل...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className={`relative ${className}`}>
+        <div className="h-6"></div>
+        <div className="container mx-auto px-4 mb-6">
+          <div className="hidden lg:block">
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-12">
+                <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+                  <div className="flex items-center h-12">
+                    <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-r-lg">
+                      <span className="font-bold text-sm">أخبار عاجلة</span>
+                    </div>
+                    <div className="flex-1 px-4 py-3">
+                      <div className="text-red-500 text-sm">خطأ في تحميل الأخبار</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="lg:hidden">
+            <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+              <div className="flex items-center h-10">
+                <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-r-lg">
+                  <span className="font-bold text-xs">أخبار عاجلة</span>
+                </div>
+                <div className="flex-1 px-3 py-2">
+                  <div className="text-red-500 text-xs">خطأ في تحميل الأخبار</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (breakingNews.length === 0) {
+    return (
+      <div className={`relative ${className}`}>
+        <div className="h-6"></div>
+        <div className="container mx-auto px-4 mb-6">
+          <div className="hidden lg:block">
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-12">
+                <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+                  <div className="flex items-center h-12">
+                    <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-r-lg">
+                      <span className="font-bold text-sm">أخبار عاجلة</span>
+                    </div>
+                    <div className="flex-1 px-4 py-3">
+                      <div className="text-gray-500 text-sm">لا توجد أخبار عاجلة حالياً</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="lg:hidden">
+            <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+              <div className="flex items-center h-10">
+                <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-r-lg">
+                  <span className="font-bold text-xs">أخبار عاجلة</span>
+                </div>
+                <div className="flex-1 px-3 py-2">
+                  <div className="text-gray-500 text-xs">لا توجد أخبار عاجلة حالياً</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const formatDate = (dateString: string) => {
