@@ -1,6 +1,6 @@
 {
-  "name": "NewsMarkaba",
-  "short_name": "NewsMarkaba",
+  "name": "Markaba News",
+  "short_name": "Markaba News",
   "description": "Your trusted news source",
   "start_url": "/",
   "display": "standalone",

@@ -85,7 +85,7 @@ export const useMeta = (options: UseMetaOptions = {}) => {
         dateModified: data.post.updated_at,
         author: {
           '@type': 'Person',
-          name: data.post.author || 'NewsMarkaba'
+          name: data.post.author || 'Markaba News'
         },
         publisher: baseSchema,
         mainEntityOfPage: {

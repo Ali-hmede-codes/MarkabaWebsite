@@ -61,17 +61,17 @@ const metaConfig = {
   // Social Media Information
   social: {
     twitter: {
-      handle: '@NewsMarkaba',
-      site: '@NewsMarkaba',
-      creator: '@NewsMarkaba'
+      handle: '@markaba_news',
+      site: '@markaba_news',
+      creator: '@markaba_news'
     },
     facebook: {
       appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '',
-      page: 'https://facebook.com/NewsMarkaba'
+      page: 'https://facebook.com/markaba.news'
     },
-    instagram: 'https://instagram.com/NewsMarkaba',
-    youtube: 'https://youtube.com/@NewsMarkaba',
-    linkedin: 'https://linkedin.com/company/newsmarkaba'
+    instagram: 'https://instagram.com/markaba.news',
+    youtube: 'https://youtube.com/@markaba.news',
+    linkedin: 'https://linkedin.com/company/markaba-news'
   },
 
   // Contact Information
@@ -110,10 +110,10 @@ const metaConfig = {
       email: 'info@markaba.news'
     },
     sameAs: [
-      'https://twitter.com/NewsMarkaba',
-      'https://facebook.com/NewsMarkaba', 
-      'https://instagram.com/NewsMarkaba',
-      'https://youtube.com/@NewsMarkaba'
+      'https://twitter.com/markaba_news',
+      'https://facebook.com/markaba.news', 
+      'https://instagram.com/markaba.news',
+      'https://youtube.com/@markaba.news'
     ]
   },
 

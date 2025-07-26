@@ -96,27 +96,30 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   };
 
   return (
-    <div className={`relative bg-red-600 text-white ${className}`}>
+    <div className={`relative breaking-news-banner text-white ${className}`}>
       {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-l from-red-600 via-red-500 to-red-600 animate-pulse opacity-20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-red-800 via-red-700 to-red-800 animate-pulse opacity-20" />
       
       <div className="relative px-4 py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Breaking News Label */}
+          {/* Breaking News Label with Logo */}
           <div className="flex items-center space-x-2 flex-shrink-0">
-            <SpeakerWaveIcon className="w-5 h-5 animate-pulse" />
-            <span className="font-bold text-sm uppercase tracking-wide">
-              Breaking News
-            </span>
+            <div className="flex items-center bg-white rounded-lg px-4 py-2 shadow-md border border-gray-100">
+              <img 
+                src="/images/logo_new.png" 
+                alt="Markaba News" 
+                className="h-7 w-auto filter drop-shadow-sm"
+              />
+            </div>
           </div>
           
           {/* News Content */}
           <div className="flex-1 mx-4 min-w-0 overflow-hidden">
-            <div className="flex items-center space-x-4 h-6">
+            <div className="flex items-center space-x-4 h-8">
               {/* News Text */}
               <div className="flex-1 min-w-0 breaking-news-container overflow-hidden">
-                <div className="relative h-6 flex items-center">
-                  <div className={`animate-scroll-endless whitespace-nowrap ${animationReady ? 'animation-ready' : ''}`}>
+                <div className="relative h-8 flex items-center">
+                  <div className={`animate-scroll-endless whitespace-nowrap text-lg font-semibold ${animationReady ? 'animation-ready' : ''}`}>
                     {breakingNews.length > 0 ? (
                       <>
                         {/* First copy of all breaking news */}
@@ -125,18 +128,18 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                             {news.link ? (
                               <Link
                                 href={news.link}
-                                className="text-white hover:text-yellow-300 transition-colors duration-200 leading-tight font-medium"
+                                className="text-white hover:text-yellow-200 transition-colors duration-200 leading-tight font-bold text-shadow-sm"
                                 target={news.link.startsWith('http') ? '_blank' : '_self'}
                                 rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                               >
                                 {news.title}
                               </Link>
                             ) : (
-                              <span className="text-white leading-tight font-medium">
+                              <span className="text-white leading-tight font-bold text-shadow-sm">
                                 {news.title}
                               </span>
                             )}
-                            <span className="text-white mx-8">•</span>
+                            <span className="text-yellow-200 mx-8 font-bold">•</span>
                           </span>
                         ))}
                         {/* Second copy for seamless infinite loop */}
@@ -145,23 +148,23 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                             {news.link ? (
                               <Link
                                 href={news.link}
-                                className="text-white hover:text-yellow-300 transition-colors duration-200 leading-tight font-medium"
+                                className="text-white hover:text-yellow-200 transition-colors duration-200 leading-tight font-bold text-shadow-sm"
                                 target={news.link.startsWith('http') ? '_blank' : '_self'}
                                 rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                               >
                                 {news.title}
                               </Link>
                             ) : (
-                              <span className="text-white leading-tight font-medium">
+                              <span className="text-white leading-tight font-bold text-shadow-sm">
                                 {news.title}
                               </span>
                             )}
-                            <span className="text-white mx-8">•</span>
+                            <span className="text-yellow-200 mx-8 font-bold">•</span>
                           </span>
                         ))}
                       </>
                     ) : (
-                      <span className="text-white leading-tight font-medium">
+                      <span className="text-white leading-tight font-bold text-shadow-sm">
                         لا توجد أخبار عاجلة حالياً
                       </span>
                     )}

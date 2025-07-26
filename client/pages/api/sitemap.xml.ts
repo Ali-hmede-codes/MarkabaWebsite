@@ -161,7 +161,7 @@ ${posts.map(post => {
     <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/posts/${post.slug}" />
     ${isRecent ? `<news:news>
       <news:publication>
-        <news:name>NewsMarkaba</news:name>
+        <news:name>Markaba News</news:name>
         <news:language>ar</news:language>
       </news:publication>
       <news:publication_date>${lastmod}</news:publication_date>

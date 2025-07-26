@@ -10,7 +10,7 @@ export default function handler(
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
   
-  const robotsTxt = `# Robots.txt for NewsMarkaba
+  const robotsTxt = `# Robots.txt for Markaba News
 # Generated dynamically
 
 # Allow all crawlers

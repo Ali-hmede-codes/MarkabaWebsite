@@ -1,6 +1,6 @@
 {
-  "name": "NewsMarkaba - موقع الأخبار",
-  "short_name": "NewsMarkaba",
+  "name": "Markaba News - موقع الأخبار",
+  "short_name": "Markaba News",
   "description": "Your trusted source for the latest news and updates in Arabic and English",
   "start_url": "/",
   "display": "standalone",
