@@ -137,9 +137,9 @@ const Footer: React.FC = () => {
               <Image
                 src="/images/logo_new.png"
                 alt="Logo"
-                width={160}
-                height={85}
-                className="object-contain sm:w-[110px] sm:h-[110px] lg:w-[160px] lg:h-[80px]"
+                width={95}
+                height={70}
+                className="object-contain sm:w-[80px] sm:h-[40px] lg:w-[160px] lg:h-[80px]"
               />
             </div>
           </div>
