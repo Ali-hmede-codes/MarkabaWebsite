@@ -215,7 +215,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                   {/* News Content with fade effect */}
                   <div className="flex-1 relative overflow-hidden bg-white">
                     <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white to-transparent z-10"></div>
-                    <div className="px-4 py-3">
+                    <div className="px-4 py-2 flex items-center h-full">
                       <div className={`animate-scroll-endless whitespace-nowrap text-gray-800 font-medium text-sm ${animationReady ? 'animation-ready' : ''}`}>
                         {breakingNews.length > 0 ? (
                           <>
@@ -236,7 +236,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                                     {news.title}
                                   </span>
                                 )}
-                                <span className="inline-flex items-center mx-3">
+                                <span className="inline-flex items-center mx-2">
                                   <img 
                                     src="/images/logo_new.png" 
                                     alt="Markaba News" 
@@ -262,7 +262,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                                     {news.title}
                                   </span>
                                 )}
-                                <span className="inline-flex items-center mx-4">
+                                <span className="inline-flex items-center mx-2">
                                   <img 
                                     src="/images/logo_new.png" 
                                     alt="Markaba News" 
@@ -297,7 +297,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                 {/* News Content with fade effect */}
                 <div className="flex-1 relative overflow-hidden bg-white">
                   <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white to-transparent z-10"></div>
-                  <div className="px-3 py-2">
+                  <div className="px-3 py-1 flex items-center h-full">
                     <div className={`animate-scroll-endless whitespace-nowrap text-gray-800 font-medium text-xs ${animationReady ? 'animation-ready' : ''}`}>
                       {breakingNews.length > 0 ? (
                         <>
@@ -318,7 +318,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                                   {news.title}
                                 </span>
                               )}
-                              <span className="inline-flex items-center mx-2">
+                              <span className="inline-flex items-center mx-1">
                                 <img 
                                   src="/images/logo_new.png" 
                                   alt="Markaba News" 
@@ -344,7 +344,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                                   {news.title}
                                 </span>
                               )}
-                              <span className="inline-flex items-center mx-3">
+                              <span className="inline-flex items-center mx-1">
                                 <img 
                                   src="/images/logo_new.png" 
                                   alt="Markaba News" 
