@@ -85,12 +85,9 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   };
 
   return (
-    <div className={`relative ${className}`} style={{position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50}}>
-      {/* Top spacing */}
-      <div className="h-2"></div>
-      
+    <div className={`relative ${className}`}>
       {/* Breaking News Banner */}
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 mb-6">
         {/* PC Version - Match LatestArticles + LastNews width */}
         <div className="hidden lg:block">
           <div className="grid grid-cols-12 gap-6">
