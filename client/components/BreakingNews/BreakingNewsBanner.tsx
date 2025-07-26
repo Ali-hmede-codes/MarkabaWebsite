@@ -95,15 +95,15 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
         <div className="hidden lg:block">
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12">
-              <div className="bg-gradient-to-r from-red-500 via-red-600 to-red-700 rounded-lg shadow-lg overflow-hidden">
+              <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
                 <div className="flex items-center h-12">
                   {/* أخبار عاجلة Label */}
-                  <div className="flex items-center bg-red-800 text-white px-4 py-3 rounded-r-lg">
+                  <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-r-lg">
                     <span className="font-bold text-sm">أخبار عاجلة</span>
                   </div>
                   
                   {/* News Content with fade effect */}
-                  <div className="flex-1 relative overflow-hidden bg-gradient-to-r from-white to-transparent">
+                  <div className="flex-1 relative overflow-hidden bg-white">
                     <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white to-transparent z-10"></div>
                     <div className="px-4 py-3">
                       <div className={`animate-scroll-endless whitespace-nowrap text-gray-800 font-medium text-sm ${animationReady ? 'animation-ready' : ''}`}>
@@ -126,11 +126,11 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                                     {news.title}
                                   </span>
                                 )}
-                                <span className="inline-flex items-center mx-4">
+                                <span className="inline-flex items-center mx-3">
                                   <img 
                                     src="/images/logo_new.png" 
                                     alt="Markaba News" 
-                                    className="h-6 w-auto"
+                                    className="h-5 w-auto"
                                   />
                                 </span>
                               </span>
@@ -177,15 +177,15 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
          
          {/* Mobile Version - Full width */}
           <div className="lg:hidden">
-            <div className="bg-gradient-to-r from-red-500 via-red-600 to-red-700 rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
               <div className="flex items-center h-10">
                 {/* أخبار عاجلة Label */}
-                <div className="flex items-center bg-red-800 text-white px-3 py-2 rounded-r-lg">
+                <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-r-lg">
                   <span className="font-bold text-xs">أخبار عاجلة</span>
                 </div>
                 
                 {/* News Content with fade effect */}
-                <div className="flex-1 relative overflow-hidden bg-gradient-to-r from-white to-transparent">
+                <div className="flex-1 relative overflow-hidden bg-white">
                   <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white to-transparent z-10"></div>
                   <div className="px-3 py-2">
                     <div className={`animate-scroll-endless whitespace-nowrap text-gray-800 font-medium text-xs ${animationReady ? 'animation-ready' : ''}`}>
@@ -208,11 +208,11 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                                   {news.title}
                                 </span>
                               )}
-                              <span className="inline-flex items-center mx-3">
+                              <span className="inline-flex items-center mx-2">
                                 <img 
                                   src="/images/logo_new.png" 
                                   alt="Markaba News" 
-                                  className="h-4 w-auto"
+                                  className="h-3 w-auto"
                                 />
                               </span>
                             </span>
