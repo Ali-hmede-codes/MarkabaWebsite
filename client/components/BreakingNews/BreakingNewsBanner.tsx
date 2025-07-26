@@ -221,7 +221,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                               </span>
                             )}
                           </span>
-                          <span className="inline-flex items-center mx-2 sm:mx-4 bg-blue-100/30 rounded-lg px-6 py-2 border border-blue-300/50 min-w-[80px]">
+                          <span className="inline-flex items-center mx-2 sm:mx-4 bg-blue-100/0 rounded-lg px-6 py-2 border border-blue-300/0 min-w-[80px]">
                             <img 
                               src="/images/logo_new.png" 
                               alt="Markaba News" 
