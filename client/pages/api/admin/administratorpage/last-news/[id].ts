@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     switch (method) {
       case 'PUT':
         // Update last news
-        const putResponse = await fetch(`${API_BASE_URL}/api/admin/last-news/${id}`, {
+        const putResponse = await fetch(`${API_BASE_URL}/api/admin/administratorpage/last-news/${id}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -40,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       case 'DELETE':
         // Delete last news
-        const deleteResponse = await fetch(`${API_BASE_URL}/api/admin/last-news/${id}`, {
+        const deleteResponse = await fetch(`${API_BASE_URL}/api/admin/administratorpage/last-news/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -52,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       case 'GET':
         // Get single last news
-        const getResponse = await fetch(`${API_BASE_URL}/api/admin/last-news/${id}`, {
+        const getResponse = await fetch(`${API_BASE_URL}/api/admin/administratorpage/last-news/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     switch (method) {
       case 'GET':
         // Get all last news
-        const getResponse = await fetch(`${API_BASE_URL}/api/admin/last-news`, {
+        const getResponse = await fetch(`${API_BASE_URL}/api/admin/administratorpage/last-news`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       case 'POST':
         // Create new last news
-        const postResponse = await fetch(`${API_BASE_URL}/api/admin/last-news`, {
+        const postResponse = await fetch(`${API_BASE_URL}/api/admin/administratorpage/last-news`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
