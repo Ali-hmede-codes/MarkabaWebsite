@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import jwt from 'jsonwebtoken';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -9,13 +8,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (!token) {
     return res.status(401).json({ success: false, message: 'Token required' });
-  }
-
-  try {
-    // Verify JWT token
-    jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-  } catch (error) {
-    return res.status(401).json({ success: false, message: 'Invalid token' });
   }
 
   try {
