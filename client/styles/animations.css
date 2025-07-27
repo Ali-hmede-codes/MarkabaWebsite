@@ -145,16 +145,16 @@
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
 }
 
-/* Mobile-specific faster breaking news animation */
+/* Mobile-specific slower breaking news animation */
 @media (max-width: 768px) {
   .animate-scroll-rtl {
-    animation: scroll-endless 30s linear infinite;
+    animation: scroll-endless 90s linear infinite;
     animation-fill-mode: none;
     animation-play-state: running;
   }
   
   .animate-scroll-endless {
-    animation: scroll-endless 30s linear infinite;
+    animation: scroll-endless 90s linear infinite;
   }
 }
   

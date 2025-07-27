@@ -67,66 +67,116 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
     return () => clearTimeout(timer);
   }, []);
 
-  // Don't render if loading or error, but show placeholder if no breaking news for debugging
-  if (loading) {
-    return (
-      <div className={`relative ${className}`}>
-        <div className="h-6"></div>
-        <div className="container mx-auto px-4 mb-6">
-          <div className="bg-white rounded-lg overflow-hidden">
-            <div className="flex items-center h-10 sm:h-12">
-              <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-r-lg">
-                <span className="font-bold text-xs sm:text-sm">أخبار عاجلة</span>
-              </div>
-              <div className="flex-1 px-3 sm:px-4 py-2 sm:py-3">
-                <div className="text-gray-500 text-xs sm:text-sm">جاري التحميل...</div>
-              </div>
-            </div>
-          </div>
+  // Determine what content to show
+  const getDisplayContent = () => {
+    if (loading) {
+      return (
+        <div className="animate-pulse">
+          <span className="text-gray-500 text-xs sm:text-sm">جاري تحميل الأخبار العاجلة...</span>
         </div>
+      );
+    }
+    
+    if (error) {
+      return (
+        <div className="text-red-500 text-xs sm:text-sm">خطأ في تحميل الأخبار</div>
+      );
+    }
+    
+    if (breakingNews.length === 0) {
+      return (
+        <div className="text-gray-500 text-xs sm:text-sm">لا توجد أخبار عاجلة حالياً</div>
+      );
+    }
+    
+    // Show actual breaking news content
+    return (
+      <div className={`animate-scroll-endless whitespace-nowrap text-gray-800 font-medium text-xs sm:text-sm ${animationReady ? 'animation-ready' : ''}`}>
+        {/* First copy of all breaking news */}
+        {breakingNews.map((news, index) => (
+          <span key={`first-${news.id}`} className="inline-flex items-center">
+            <span className="mr-2 sm:mr-3">
+              {news.link ? (
+                <Link
+                  href={news.link}
+                  className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
+                  target={news.link.startsWith('http') ? '_blank' : '_self'}
+                  rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                >
+                  {news.title}
+                </Link>
+              ) : (
+                <span className="text-gray-800 leading-tight">
+                  {news.title}
+                </span>
+              )}
+            </span>
+            <span className="inline-flex items-center mx-2 sm:mx-3 bg-transparent rounded-lg px-1 py-0.5 min-w-[32px] sm:min-w-[40px]">
+              <img 
+                src="/images/breaking-news.png" 
+                alt="Markaba News" 
+                className="h-6 w-6 sm:h-8 sm:w-8 object-contain block"
+                style={{minWidth: '24px', minHeight: '24px', maxWidth: '32px', maxHeight: '32px'}}
+                onError={(e) => {
+                  console.error('breaking-news.png failed, trying logo.png');
+                  if (e.currentTarget.src.includes('breaking-news.png')) {
+                    e.currentTarget.src = '/images/logo.png';
+                  } else if (e.currentTarget.src.includes('logo.png')) {
+                    e.currentTarget.src = '/images/logo.svg';
+                  } else {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement!.innerHTML = '<span class="text-blue-600 font-bold text-sm">📰</span>';
+                  }
+                }}
+                onLoad={(e) => console.log('Logo loaded successfully:', e.currentTarget.src)}
+              />
+            </span>
+          </span>
+        ))}
+        {/* Second copy for seamless infinite loop */}
+        {breakingNews.map((news, index) => (
+          <span key={`second-${news.id}`} className="inline-flex items-center">
+            <span className="mr-2 sm:mr-4">
+              {news.link ? (
+                <Link
+                  href={news.link}
+                  className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
+                  target={news.link.startsWith('http') ? '_blank' : '_self'}
+                  rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                >
+                  {news.title}
+                </Link>
+              ) : (
+                <span className="text-gray-800 leading-tight">
+                  {news.title}
+                </span>
+              )}
+            </span>
+            <span className="inline-flex items-center mx-2 sm:mx-3 bg-transparent rounded-lg px-1 py-0.5 min-w-[32px] sm:min-w-[40px]">
+              <img 
+                src="/images/breaking-news.png" 
+                alt="Markaba News" 
+                className="h-6 w-6 sm:h-8 sm:w-8 object-contain block"
+                style={{minWidth: '24px', minHeight: '24px', maxWidth: '32px', maxHeight: '32px'}}
+                onError={(e) => {
+                  console.error('breaking-news.png failed, trying logo.png');
+                  if (e.currentTarget.src.includes('breaking-news.png')) {
+                    e.currentTarget.src = '/images/logo.png';
+                  } else if (e.currentTarget.src.includes('logo.png')) {
+                    e.currentTarget.src = '/images/logo.svg';
+                  } else {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement!.innerHTML = '<span class="text-blue-600 font-bold text-sm">📰</span>';
+                  }
+                }}
+                onLoad={(e) => console.log('Logo loaded successfully:', e.currentTarget.src)}
+              />
+            </span>
+          </span>
+        ))}
       </div>
     );
-  }
-  
-  if (error) {
-    return (
-      <div className={`relative ${className}`}>
-        <div className="h-6"></div>
-        <div className="container mx-auto px-4 mb-6">
-          <div className="bg-white rounded-lg overflow-hidden">
-            <div className="flex items-center h-10 sm:h-12">
-              <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-r-lg">
-                <span className="font-bold text-xs sm:text-sm">أخبار عاجلة</span>
-              </div>
-              <div className="flex-1 px-3 sm:px-4 py-2 sm:py-3">
-                <div className="text-red-500 text-xs sm:text-sm">خطأ في تحميل الأخبار</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  
-  if (breakingNews.length === 0) {
-    return (
-      <div className={`relative ${className}`}>
-        <div className="h-6"></div>
-        <div className="container mx-auto px-4 mb-6">
-          <div className="bg-white rounded-lg overflow-hidden">
-            <div className="flex items-center h-10 sm:h-12">
-              <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-r-lg">
-                <span className="font-bold text-xs sm:text-sm">أخبار عاجلة</span>
-              </div>
-              <div className="flex-1 px-3 sm:px-4 py-2 sm:py-3">
-                <div className="text-gray-500 text-xs sm:text-sm">لا توجد أخبار عاجلة حالياً</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  };
 
   const formatDate = (dateString: string) => {
     try {
@@ -147,8 +197,8 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
       
       {/* Breaking News Banner */}
       <div className="container mx-auto px-4 mb-6">
-        <div className="bg-white rounded-lg overflow-hidden">
-          <div className="flex items-center h-10 sm:h-12">
+        <div className="bg-white rounded-lg overflow-hidden shadow-sm">
+          <div className="flex items-center h-12 sm:h-14">
             {/* أخبار عاجلة Label */}
             <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-r-lg">
               <span className="font-bold text-xs sm:text-sm">أخبار عاجلة</span>
@@ -156,106 +206,21 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
             
             {/* News Content with fade effect */}
             <div className="flex-1 relative overflow-hidden bg-white">
-              <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-r from-white to-transparent z-10"></div>
-              <div className="px-3 sm:px-4 py-1 sm:py-2 flex items-center h-full">
-                <div className={`animate-scroll-endless whitespace-nowrap text-gray-800 font-medium text-xs sm:text-sm ${animationReady ? 'animation-ready' : ''}`}>
-                  {breakingNews.length > 0 ? (
-                    <>
-                      {/* First copy of all breaking news */}
-                      {breakingNews.map((news, index) => (
-                        <span key={`first-${news.id}`} className="inline-flex items-center">
-                          <span className="mr-0 sm:mr-2">
-                            {news.link ? (
-                              <Link
-                                href={news.link}
-                                className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
-                                target={news.link.startsWith('http') ? '_blank' : '_self'}
-                                rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                              >
-                                {news.title}
-                              </Link>
-                            ) : (
-                              <span className="text-gray-800 leading-tight">
-                                {news.title}
-                              </span>
-                            )}
-                          </span>
-                          <span className="inline-flex items-center mr-1 bg-blue-0/0 rounded-lg px-1 py-1 min-w-[20px]">
-                            <img 
-                              src="/images/breaking-news.png" 
-                              alt="Markaba News" 
-                              className="h-4 sm:h-5 w-auto block"
-                              style={{minWidth: '24px', minHeight: '24px'}}
-                              onError={(e) => {
-                                console.error('Logo_new.png failed, trying logo.png');
-                                if (e.currentTarget.src.includes('breaking-news.png')) {
-                                  e.currentTarget.src = '/images/logo.png';
-                                } else if (e.currentTarget.src.includes('logo.png')) {
-                                  e.currentTarget.src = '/images/logo.svg';
-                                } else {
-                                  e.currentTarget.style.display = 'none';
-                                  e.currentTarget.parentElement!.innerHTML = '<span class="text-blue-600 font-bold text-sm">📰</span>';
-                                }
-                              }}
-                              onLoad={(e) => console.log('Logo loaded successfully:', e.currentTarget.src)}
-                            />
-                          </span>
-                        </span>
-                      ))}
-                      {/* Second copy for seamless infinite loop */}
-                      {breakingNews.map((news, index) => (
-                        <span key={`second-${news.id}`} className="inline-flex items-center">
-                          <span className="mr-2 sm:mr-4">
-                            {news.link ? (
-                              <Link
-                                href={news.link}
-                                className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
-                                target={news.link.startsWith('http') ? '_blank' : '_self'}
-                                rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                              >
-                                {news.title}
-                              </Link>
-                            ) : (
-                              <span className="text-gray-800 leading-tight">
-                                {news.title}
-                              </span>
-                            )}
-                          </span>
-                          <span className="inline-flex items-center mr-1 bg-blue-0/0 rounded-lg px-1 py-1 min-w-[20px]">
-                            <img 
-                              src="/images/breaking-news.png" 
-                              alt="Markaba News" 
-                              className="h-4 sm:h-5 w-auto block"
-                              style={{minWidth: '24px', minHeight: '24px'}}
-                              onError={(e) => {
-                                console.error('Logo_new.png failed, trying logo.png');
-                                if (e.currentTarget.src.includes('breaking-news.png')) {
-                                  e.currentTarget.src = '/images/logo.png';
-                                } else if (e.currentTarget.src.includes('logo.png')) {
-                                  e.currentTarget.src = '/images/logo.svg';
-                                } else {
-                                  e.currentTarget.style.display = 'none';
-                                  e.currentTarget.parentElement!.innerHTML = '<span class="text-blue-600 font-bold text-sm">📰</span>';
-                                }
-                              }}
-                              onLoad={(e) => console.log('Logo loaded successfully:', e.currentTarget.src)}
-                            />
-                          </span>
-                        </span>
-                      ))}
-                    </>
-                  ) : (
-                    <span className="text-gray-800 leading-tight">
-                      لا توجد أخبار عاجلة حالياً
-                    </span>
-                  )}
-                </div>
+              <div className="px-4 sm:px-6 py-2 sm:py-3 flex items-center h-full">
+                {getDisplayContent()}
               </div>
+              {/* Fade effect - only show when we have actual breaking news */}
+              {!loading && !error && breakingNews.length > 0 && (
+                <>
+                  <div className="absolute left-0 top-0 bottom-0 w-6 sm:w-8 bg-gradient-to-r from-white to-transparent z-10"></div>
+                  <div className="absolute right-0 top-0 bottom-0 w-6 sm:w-8 bg-gradient-to-l from-white to-transparent z-10"></div>
+                </>
+              )}
             </div>
           </div>
         </div>
-       </div>
       </div>
+    </div>
   );
 };
 

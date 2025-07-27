@@ -98,7 +98,7 @@ const Header: React.FC = () => {
             {/* Logo and Site Info */}
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <div className="relative group">
-                <div className="h-12 w-16 lg:h-16 lg:w-20 flex items-center justify-center relative">
+                <div className="h-16 w-20 lg:h-20 lg:w-24 flex items-center justify-center relative">
                   {logoUrl ? (
                     <Image
                           src={logoUrl}
@@ -106,21 +106,14 @@ const Header: React.FC = () => {
                           fill
                           className="object-contain transition-transform duration-300 group-hover:scale-110"
                           priority
+                          quality={100}
+                          sizes="(max-width: 768px) 80px, 96px"
                         />
                   ) : (
-                    <span className="text-blue-600 font-bold text-2xl lg:text-3xl">م</span>
+                    <span className="text-blue-600 font-bold text-3xl lg:text-4xl">م</span>
                   )}
                 </div>
                 <div className="absolute -inset-1 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10"></div>
-              </div>
-              {/* Show title only on mobile */}
-              <div className="flex flex-col md:hidden">
-                <h1 className="text-base font-bold text-gray-700 hover:text-blue-600 transition-colors duration-100">
-                  {content.site.name}
-                </h1>
-                <p className="text-xs text-gray-500 font-medium">
-                  {content.site.tagline}
-                </p>
               </div>
             </div>
 
