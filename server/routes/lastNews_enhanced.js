@@ -1,7 +1,7 @@
 const express = require('express');
 const { query, queryOne } = require('../db');
 const { validate, breakingNewsSchema } = require('../middlewares/validation'); // Reuse or adapt schema
-const { auth, requireAdmin, requireAdminOrEditor } = require('../middlewares/auth');
+const { auth, optionalAuth, requireAdmin, requireAdminOrEditor } = require('../middlewares/auth');
 
 const router = express.Router();
 
@@ -45,13 +45,63 @@ router.get('/active', async (req, res) => {
   }
 });
 
-// GET all last news with filters (admin)
-router.get('/', auth, requireAdminOrEditor, async (req, res) => {
+// GET all last news with filters (public if ?active=true, admin otherwise)
+router.get('/', optionalAuth, async (req, res) => {
   try {
-    const { active, priority, limit = 10, offset = 0 } = req.query;
+    const { active, priority, limit = 10, offset = 0, language, include_content = 'false' } = req.query;
+    
+    // Public endpoint for active last news
+    if (active === 'true') {
+      const limitNum = Math.min(parseInt(limit, 10) || 5, 10);
+      let queryStr = `
+        SELECT id, title_ar as title, ${include_content === 'true' ? 'content_ar as content,' : ''}
+               slug, priority, views, created_at, updated_at
+        FROM last_news 
+        WHERE is_active = 1
+      `;
+      
+      const params = [];
+      
+      // Language filtering (Arabic only)
+      if (language) {
+        if (language === 'ar') {
+          queryStr += ' AND (title_ar IS NOT NULL AND title_ar != "")';
+        }
+      }
+      
+      queryStr += ' ORDER BY priority DESC, created_at DESC LIMIT ?';
+      params.push(limitNum.toString());
+      
+      const lastNews = await query(queryStr, prepareParams(params));
+      
+      const processedNews = lastNews.map(news => ({
+        ...news,
+        is_active: true,
+        url: `/last-news/${news.id}/${news.slug}`
+      }));
+      
+      return res.json({
+        success: true,
+        data: processedNews,
+        meta: {
+          total: processedNews.length,
+          limit: limitNum,
+          language: language || 'all'
+        }
+      });
+    }
+    
+    // Admin endpoint - requires authentication
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Access denied. No token provided.' });
+    }
+    if (req.user.role !== 'admin' && req.user.role !== 'editor') {
+      return res.status(403).json({ success: false, message: 'Access denied. Insufficient privileges.' });
+    }
+    
     let queryStr = 'SELECT * FROM last_news';
     const params = [];
-    if (active !== undefined) {
+    if (active !== undefined && active !== 'true') {
       queryStr += ' WHERE is_active = ?';
       params.push(active);
     }
