@@ -103,11 +103,11 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                   target={news.link.startsWith('http') ? '_blank' : '_self'}
                   rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                 >
-                  {news.title}
+                  {news.title_ar || news.title}
                 </Link>
               ) : (
                 <span className="text-gray-800 leading-tight">
-                  {news.title}
+                  {news.title_ar || news.title}
                 </span>
               )}
             </span>

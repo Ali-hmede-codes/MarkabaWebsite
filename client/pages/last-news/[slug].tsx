@@ -7,8 +7,10 @@ import Link from 'next/link';
 
 interface LastNews {
   id: number;
-  title_ar: string;
-  content_ar: string;
+  title: string;
+  title_ar?: string;
+  content: string;
+  content_ar?: string;
   slug: string;
   priority: number;
   is_active: boolean;
@@ -19,8 +21,10 @@ interface LastNews {
 
 interface BreakingNews {
   id: number;
-  title_ar: string;
-  content_ar: string;
+  title: string;
+  title_ar?: string;
+  content: string;
+  content_ar?: string;
   slug: string;
   priority: number;
   is_active: boolean;
@@ -185,7 +189,7 @@ const SingleLastNewsPage: React.FC = () => {
             {/* Main Content */}
             <article className="lg:col-span-3">
               {/* Last News Title */}
-              <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">{lastNews.title_ar}</h1>
+              <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">{lastNews.title || lastNews.title_ar}</h1>
               
               {/* Image after title */}
               <div className="mb-6">
@@ -230,7 +234,7 @@ const SingleLastNewsPage: React.FC = () => {
               <div 
                 className="prose max-w-none mb-8 text-gray-800 leading-relaxed" 
                 style={{ fontSize: `${fontSize}px` }}
-                dangerouslySetInnerHTML={{ __html: lastNews.content_ar }} 
+                dangerouslySetInnerHTML={{ __html: lastNews.content || lastNews.content_ar || '' }} 
               />
 
               {/* Back to Home Button */}
@@ -259,7 +263,7 @@ const SingleLastNewsPage: React.FC = () => {
                       <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg">
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-medium text-gray-900 mb-1">
-                            {latestItem.title_ar}
+                            {latestItem.title || latestItem.title_ar}
                           </h4>
                           <div className="text-xs text-gray-500">
                             <FiCalendar className="inline ml-1" size={10} />
@@ -279,19 +283,17 @@ const SingleLastNewsPage: React.FC = () => {
                 </h3>
                 <div className="space-y-4">
                   {breakingNews.map((breakingItem) => (
-                    <Link key={breakingItem.id} href={`/post/${breakingItem.slug}`}>
-                      <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 mb-1">
-                            {breakingItem.title_ar}
-                          </h4>
-                          <div className="text-xs text-gray-500">
-                            <FiCalendar className="inline ml-1" size={10} />
-                            {getRelativeTime(breakingItem.created_at)}
-                          </div>
+                    <div key={breakingItem.id} className="flex gap-3 p-3 rounded-lg">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-medium text-gray-900 mb-1">
+                          {breakingItem.title || breakingItem.title_ar}
+                        </h4>
+                        <div className="text-xs text-gray-500">
+                          <FiCalendar className="inline ml-1" size={10} />
+                          {getRelativeTime(breakingItem.created_at)}
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               </div>
