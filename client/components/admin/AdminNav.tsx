@@ -42,7 +42,7 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
     {
       href: '/admin/administratorpage/last-news',
       label: 'آخر الأخبار',
-      icon: FiClock, // Add appropriate icon
+      icon: FiClock,
       active: router.pathname === '/admin/administratorpage/last-news'
     },
     {

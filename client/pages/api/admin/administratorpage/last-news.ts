@@ -1,50 +1,42 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import jwt from 'jsonwebtoken';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-  const token = req.headers.authorization?.replace('Bearer ', '');
-
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'Token required' });
-  }
-
   try {
-    switch (method) {
-      case 'GET':
-        // Get all last news
-        const getResponse = await fetch(`${API_BASE_URL}/api/admin/administratorpage/last-news`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        const getData = await getResponse.json();
-        return res.status(getResponse.status).json(getData);
-
-      case 'POST':
-        // Create new last news
-        const postResponse = await fetch(`${API_BASE_URL}/api/admin/administratorpage/last-news`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(req.body)
-        });
-        const postData = await postResponse.json();
-        return res.status(postResponse.status).json(postData);
-
-      default:
-        res.setHeader('Allow', ['GET', 'POST']);
-        return res.status(405).json({ success: false, message: `Method ${method} Not Allowed` });
+    // Check authentication
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ error: 'غير مصرح' });
     }
+
+    try {
+      jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    } catch (error) {
+      return res.status(401).json({ error: 'رمز غير صالح' });
+    }
+
+    // Forward request to backend
+    const backendResponse = await fetch(`${BACKEND_URL}/api/admin/administratorpage/last-news`, {
+      method: req.method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined,
+    });
+
+    const data = await backendResponse.json();
+    
+    // Return the response from backend
+    return res.status(backendResponse.status).json(data);
+    
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('Error in last news API:', error);
     return res.status(500).json({ 
       success: false, 
-      message: 'Internal server error' 
+      message: 'خطأ في الخادم' 
     });
   }
 }

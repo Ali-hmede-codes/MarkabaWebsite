@@ -1,12 +1,15 @@
 const express = require('express');
-const { body, validationResult, param } = require('express-validator');
+
+const router = express.Router();
 const db = require('../../config/database');
 const { auth: authenticateToken, requireRole } = require('../../middlewares/auth');
 
-const router = express.Router();
+// Apply authentication middleware to all routes
+router.use(authenticateToken);
+router.use(requireRole(['admin', 'editor']));
 
 // Slug generation function (adapted for Arabic)
-const generateLastNewsSlug = (title_ar) => {
+const generateSlug = (title_ar) => {
   const arabicMap = {
     'ا': 'a', 'أ': 'a', 'إ': 'i', 'آ': 'aa',
     'ب': 'b', 'ت': 't', 'ث': 'th', 'ج': 'j', 'ح': 'h', 'خ': 'kh',
@@ -27,160 +30,222 @@ const generateLastNewsSlug = (title_ar) => {
   return slug || 'last-news';
 };
 
-// Get all last news with pagination and filtering
-router.get('/', authenticateToken, requireRole(['admin', 'editor']), async (req, res) => {
+// GET /api/admin/administratorpage/last-news - Get all last news
+router.get('/', async (req, res) => {
   try {
-    const {
-      page = 1,
-      limit = 10,
-      search = '',
-      active = '',
-      priority = '',
-      sortBy = 'created_at',
-      sortOrder = 'DESC'
-    } = req.query;
-
-    const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
-    
-    // Build WHERE clause
-    const whereConditions = [];
-    const queryParams = [];
-    
-    if (search) {
-      whereConditions.push('(title_ar LIKE ? OR content_ar LIKE ?)');
-      const searchTerm = `%${search}%`;
-      queryParams.push(searchTerm, searchTerm);
-    }
-    
-    if (active !== '') {
-      whereConditions.push('is_active = ?');
-      queryParams.push(active);
-    }
-    
-    if (priority !== '') {
-      whereConditions.push('priority = ?');
-      queryParams.push(priority);
-    }
-    
-    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
-    
-    // Validate sort parameters
-    const allowedSortFields = ['title_ar', 'priority', 'is_active', 'created_at', 'updated_at'];
-    const validSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'created_at';
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'DESC';
-    
-    const queryStr = `
-      SELECT *
-      FROM last_news
-      ${whereClause}
-      ORDER BY ${validSortBy} ${validSortOrder}
-      LIMIT ? OFFSET ?
+    const query = `
+      SELECT id, title_ar, content_ar, slug, priority, is_active, views, created_at, updated_at
+      FROM last_news 
+      ORDER BY priority DESC, created_at DESC
     `;
-    queryParams.push(parseInt(limit, 10), offset);
     
-    const [news] = await db.execute(queryStr, queryParams);
-    
-    const [countResult] = await db.execute(
-      `SELECT COUNT(*) as total FROM last_news ${whereClause}`,
-      queryParams.slice(0, -2)
-    );
-    
-    const total = countResult[0].total;
-    const totalPages = Math.ceil(total / parseInt(limit, 10));
+    const [rows] = await db.execute(query);
     
     res.json({
       success: true,
-      data: news,
-      pagination: {
-        currentPage: parseInt(page, 10),
-        totalPages,
-        totalItems: total,
-        itemsPerPage: parseInt(limit, 10)
-      }
+      data: rows,
+      total: rows.length
     });
   } catch (error) {
     console.error('Error fetching last news:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في جلب آخر الأخبار'
+    });
   }
 });
 
-// Get single last news
-router.get('/:id', authenticateToken, requireRole(['admin', 'editor']), param('id').isInt(), async (req, res) => {
+// POST /api/admin/administratorpage/last-news - Create new last news
+router.post('/', async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
+    const { title_ar, content_ar, priority, is_active } = req.body;
     
-    const [news] = await db.execute('SELECT * FROM last_news WHERE id = ?', [req.params.id]);
-    if (news.length === 0) return res.status(404).json({ success: false, message: 'Not found' });
-    res.json({ success: true, data: news[0] });
-  } catch (error) {
-    console.error('Error fetching last news:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// Create last news
-router.post('/', authenticateToken, requireRole(['admin', 'editor']), [
-  body('title_ar').trim().notEmpty(),
-  body('content_ar').trim().notEmpty(),
-  body('priority').optional().isInt(),
-  body('is_active').optional().isBoolean()
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
+    // Validation
+    if (!title_ar || title_ar.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: 'عنوان الخبر مطلوب'
+      });
+    }
     
-    const { title_ar, content_ar, priority = 0, is_active = 1 } = req.body;
-    const slug = generateLastNewsSlug(title_ar);
+    // Generate slug from title
+    const slug = generateSlug(title_ar);
     
-    const [result] = await db.execute(
-      'INSERT INTO last_news (title_ar, content_ar, slug, priority, is_active) VALUES (?, ?, ?, ?, ?)',
-      [title_ar, content_ar, slug, priority, is_active]
+    const query = `
+      INSERT INTO last_news (title_ar, content_ar, slug, priority, is_active)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    
+    const [result] = await db.execute(query, [
+      title_ar.trim(),
+      content_ar ? content_ar.trim() : '',
+      slug,
+      priority || 1,
+      is_active !== undefined ? is_active : true
+    ]);
+    
+    // Get the created item
+    const [newItem] = await db.execute(
+      'SELECT * FROM last_news WHERE id = ?',
+      [result.insertId]
     );
-    res.status(201).json({ success: true, data: { id: result.insertId } });
+    
+    res.status(201).json({
+      success: true,
+      message: 'تم إضافة الخبر بنجاح',
+      data: newItem[0]
+    });
   } catch (error) {
     console.error('Error creating last news:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في إضافة الخبر'
+    });
   }
 });
 
-// Update last news
-router.put('/:id', authenticateToken, requireRole(['admin', 'editor']), [
-  param('id').isInt(),
-  body('title_ar').optional().trim(),
-  body('content_ar').optional().trim(),
-  body('priority').optional().isInt(),
-  body('is_active').optional().isBoolean()
-], async (req, res) => {
+// PUT /api/admin/administratorpage/last-news/:id - Update last news
+router.put('/:id', async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
-    
+    const { id } = req.params;
     const { title_ar, content_ar, priority, is_active } = req.body;
-    const slug = title_ar ? generateLastNewsSlug(title_ar) : undefined;
     
-    await db.execute(
-      'UPDATE last_news SET title_ar = COALESCE(?, title_ar), content_ar = COALESCE(?, content_ar), slug = COALESCE(?, slug), priority = COALESCE(?, priority), is_active = COALESCE(?, is_active), updated_at = NOW() WHERE id = ?',
-      [title_ar, content_ar, slug, priority, is_active, req.params.id]
+    // Check if last news exists
+    const [existing] = await db.execute(
+      'SELECT id FROM last_news WHERE id = ?',
+      [id]
     );
-    res.json({ success: true });
+    
+    if (existing.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'الخبر غير موجود'
+      });
+    }
+    
+    // Build update query dynamically
+    const updates = [];
+    const values = [];
+    
+    if (title_ar !== undefined) {
+      updates.push('title_ar = ?');
+      values.push(title_ar.trim());
+      
+      // Update slug when title changes
+      updates.push('slug = ?');
+      values.push(generateSlug(title_ar));
+    }
+    
+    if (content_ar !== undefined) {
+      updates.push('content_ar = ?');
+      values.push(content_ar.trim());
+    }
+    
+    if (priority !== undefined) {
+      updates.push('priority = ?');
+      values.push(priority);
+    }
+    
+    if (is_active !== undefined) {
+      updates.push('is_active = ?');
+      values.push(is_active);
+    }
+    
+    if (updates.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'لا توجد بيانات للتحديث'
+      });
+    }
+    
+    updates.push('updated_at = NOW()');
+    values.push(id);
+    
+    const query = `UPDATE last_news SET ${updates.join(', ')} WHERE id = ?`;
+    
+    await db.execute(query, values);
+    
+    // Get updated item
+    const [updatedItem] = await db.execute(
+      'SELECT * FROM last_news WHERE id = ?',
+      [id]
+    );
+    
+    res.json({
+      success: true,
+      message: 'تم تحديث الخبر بنجاح',
+      data: updatedItem[0]
+    });
   } catch (error) {
     console.error('Error updating last news:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في تحديث الخبر'
+    });
   }
 });
 
-// Delete last news
-router.delete('/:id', authenticateToken, requireRole(['admin']), param('id').isInt(), async (req, res) => {
+// DELETE /api/admin/administratorpage/last-news/:id - Delete last news
+router.delete('/:id', async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
+    const { id } = req.params;
     
-    await db.execute('DELETE FROM last_news WHERE id = ?', [req.params.id]);
-    res.json({ success: true });
+    // Check if last news exists
+    const [existing] = await db.execute(
+      'SELECT id, title_ar FROM last_news WHERE id = ?',
+      [id]
+    );
+    
+    if (existing.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'الخبر غير موجود'
+      });
+    }
+    
+    // Delete the last news
+    await db.execute('DELETE FROM last_news WHERE id = ?', [id]);
+    
+    res.json({
+      success: true,
+      message: 'تم حذف الخبر بنجاح'
+    });
   } catch (error) {
     console.error('Error deleting last news:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في حذف الخبر'
+    });
+  }
+});
+
+// GET /api/admin/administratorpage/last-news/:id - Get single last news
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const [rows] = await db.execute(
+      'SELECT * FROM last_news WHERE id = ?',
+      [id]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'الخبر غير موجود'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: rows[0]
+    });
+  } catch (error) {
+    console.error('Error fetching last news:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في جلب الخبر'
+    });
   }
 });
 
