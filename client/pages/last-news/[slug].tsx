@@ -17,6 +17,18 @@ interface LastNews {
   updated_at: string;
 }
 
+interface BreakingNews {
+  id: number;
+  title_ar: string;
+  content_ar: string;
+  slug: string;
+  priority: number;
+  is_active: boolean;
+  views: number;
+  created_at: string;
+  updated_at: string;
+}
+
 const SingleLastNewsPage: React.FC = () => {
   const router = useRouter();
   const { slug: slugParam } = router.query;
@@ -57,6 +69,7 @@ const SingleLastNewsPage: React.FC = () => {
     const [fontSize, setFontSize] = useState(20);
     const [lastNews, setLastNews] = useState<LastNews | null>(null);
     const [latestLastNews, setLatestLastNews] = useState<LastNews[]>([]);
+    const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -64,6 +77,7 @@ const SingleLastNewsPage: React.FC = () => {
     useEffect(() => {
       setLastNews(null);
       setLatestLastNews([]);
+      setBreakingNews([]);
       setFontSize(20);
       setError(null);
     }, [slug]);
@@ -114,6 +128,26 @@ const SingleLastNewsPage: React.FC = () => {
       if (lastNews) {
         fetchLatestLastNews();
       }
+    }, [lastNews]);
+
+    // Fetch breaking news for sidebar
+    useEffect(() => {
+      const fetchBreakingNews = async () => {
+        try {
+          const response = await fetch('/api/breaking-news?active=true&limit=4&include_content=false');
+          const data = await response.json();
+          
+          if (data.success && data.data) {
+            // Filter out current news item if it exists in breaking news
+            const filtered = data.data.filter((item: BreakingNews) => item.id !== lastNews?.id);
+            setBreakingNews(filtered.slice(0, 4));
+          }
+        } catch (err) {
+          console.error('Error fetching breaking news:', err);
+        }
+      };
+
+      fetchBreakingNews();
     }, [lastNews]);
 
     if (loading) return <div className="text-center py-10">جاري التحميل...</div>;
@@ -230,6 +264,30 @@ const SingleLastNewsPage: React.FC = () => {
                           <div className="text-xs text-gray-500">
                             <FiCalendar className="inline ml-1" size={10} />
                             {getRelativeTime(latestItem.created_at)}
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Breaking News Section */}
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
+                  آخر الأخبار العاجلة
+                </h3>
+                <div className="space-y-4">
+                  {breakingNews.map((breakingItem) => (
+                    <Link key={breakingItem.id} href={`/post/${breakingItem.slug}`}>
+                      <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                            {breakingItem.title_ar}
+                          </h4>
+                          <div className="text-xs text-gray-500">
+                            <FiCalendar className="inline ml-1" size={10} />
+                            {getRelativeTime(breakingItem.created_at)}
                           </div>
                         </div>
                       </div>

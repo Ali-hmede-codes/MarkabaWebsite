@@ -225,7 +225,7 @@ const SinglePostPage: React.FC = () => {
               {/* Latest Posts Section */}
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
-                  آخر الأخبار
+                  آخر المقالات
                 </h3>
                 <div className="space-y-4">
                   {latestPosts.map((latestPost) => (
