@@ -136,7 +136,7 @@ const SingleLastNewsPage: React.FC = () => {
               {/* Standard Image */}
               <div className="mb-6">
                 <Image 
-                  src="/images/logo.png" 
+                  src="/images/background_image.jpg" 
                   alt="مركبا" 
                   width={800} 
                   height={400} 
