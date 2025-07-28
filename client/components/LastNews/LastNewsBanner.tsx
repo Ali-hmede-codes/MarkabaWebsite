@@ -14,6 +14,7 @@ type NewsItem = {
   title?: string;
   content_ar?: string;
   content?: string;
+  slug?: string;
   created_at: string;
   updated_at?: string;
   link?: string;
@@ -106,9 +107,17 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
             <div className="space-y-3">
               {displayedNews.map((news, index) => (
                 <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
-                  <h3 className={`font-semibold text-sm sm:text-base leading-snug ${news.isBreaking ? 'text-red-600' : 'text-gray-800'} mb-1 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
-                    {news.title_ar || news.title}
-                  </h3>
+                  {news.isBreaking ? (
+                    <h3 className={`font-semibold text-sm sm:text-base leading-snug text-red-600 mb-1 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
+                      {news.title_ar || news.title}
+                    </h3>
+                  ) : (
+                    <Link href={`/last-news/${news.slug || news.id}`}>
+                      <h3 className={`font-semibold text-sm sm:text-base leading-snug text-gray-800 mb-1 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
+                        {news.title_ar || news.title}
+                      </h3>
+                    </Link>
+                  )}
                   <p className="text-xs text-gray-500 mb-2">{timeAgo(news.created_at)}</p>
                   {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-2"></div>}
                 </div>

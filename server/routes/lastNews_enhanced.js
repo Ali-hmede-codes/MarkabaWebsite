@@ -121,6 +121,21 @@ router.get('/', optionalAuth, async (req, res) => {
 
 
 
+// GET single last news by slug (public)
+router.get('/slug/:slug', async (req, res) => {
+  try {
+    const news = await queryOne('SELECT * FROM last_news WHERE slug = ? AND is_active = 1', prepareParams([req.params.slug]));
+    if (!news) return res.status(404).json({ success: false, error: 'Not found' });
+    
+    // Increment views
+    await query('UPDATE last_news SET views = views + 1 WHERE id = ?', prepareParams([news.id]));
+    
+    res.json({ success: true, data: news });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // GET single last news (public)
 router.get('/:id', async (req, res) => {
   try {

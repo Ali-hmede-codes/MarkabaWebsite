@@ -57,6 +57,13 @@ const SinglePostPage: React.FC = () => {
     const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
     const post = response?.posts?.[0];
 
+    // Reset state when slug changes
+    useEffect(() => {
+      setLatestPosts([]);
+      setBreakingNews([]);
+      setFontSize(20);
+    }, [slug]);
+
     useEffect(() => {
       if (postsResponse?.posts) {
         const filtered = postsResponse.posts.filter((p) => p.id !== post?.id);
@@ -189,6 +196,18 @@ const SinglePostPage: React.FC = () => {
              style={{ fontSize: `${fontSize}px` }}
              dangerouslySetInnerHTML={{ __html: post.content_ar || post.content }} 
            />
+
+           {/* Back to Home Button */}
+           <div className="flex justify-center mt-8 mb-6">
+             <Link href="/">
+               <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center gap-2">
+                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                 </svg>
+                 العودة للرئيسية
+               </button>
+             </Link>
+           </div>
             </article>
 
             {/* Sidebar */}
@@ -255,7 +274,7 @@ const SinglePostPage: React.FC = () => {
 
   if (!slug) return <div className="text-center py-10">جاري التحميل...</div>;
 
-  return router.isReady ? <InnerPost slug={slug} key={slug} /> : <div className="text-center py-10">جاري التحميل...</div>;
+  return router.isReady ? <InnerPost slug={slug} key={`post-${slug}`} /> : <div className="text-center py-10">جاري التحميل...</div>;
 };
 
 export default SinglePostPage;
