@@ -49,7 +49,12 @@ const LastNewsAdmin: React.FC = () => {
   const fetchLastNews = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/administratorpage/last-news');
+      const response = await fetch('/api/admin/administratorpage/last-news', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await response.json();
       
       if (data.success) {
@@ -90,6 +95,7 @@ const LastNewsAdmin: React.FC = () => {
       const response = await fetch(url, {
         method,
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
@@ -121,6 +127,10 @@ const LastNewsAdmin: React.FC = () => {
     try {
       const response = await fetch(`/api/admin/administratorpage/last-news/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       const data = await response.json();
