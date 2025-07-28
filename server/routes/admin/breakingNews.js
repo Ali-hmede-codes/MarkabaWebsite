@@ -6,7 +6,7 @@ const { auth: authenticateToken, requireRole } = require('../../middlewares/auth
 
 // Apply authentication middleware to all routes
 router.use(authenticateToken);
-router.use(requireRole(['admin']));
+router.use(requireRole(['admin', 'editor', 'author']));
 
 // Helper function to generate Arabic slug
 function generateSlug(title) {
