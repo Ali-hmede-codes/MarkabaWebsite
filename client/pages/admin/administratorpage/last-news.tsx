@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { toast } from 'react-hot-toast';
 import { FiPlus, FiEdit, FiTrash2, FiSearch, FiFilter, FiEye, FiEyeOff, FiClock, FiSave, FiX } from 'react-icons/fi';
@@ -27,6 +28,15 @@ type LastNewsFormData = {
 
 const LastNewsManagement: React.FC = () => {
   const { token } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!token) {
+      router.push('/admin/administratorpage/login');
+      return;
+    }
+  }, [token, router]);
+
   const [newsItems, setNewsItems] = useState<LastNews[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
