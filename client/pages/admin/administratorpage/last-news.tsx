@@ -84,8 +84,8 @@ const LastNewsManagement: React.FC = () => {
 
     try {
       const url = editingItem 
-        ? `/api/admin/administratorpage/last-news/${editingItem.id}`
-        : '/api/admin/administratorpage/last-news';
+        ? `/admin/administratorpage/last-news/${editingItem.id}`
+        : '/admin/administratorpage/last-news';
       
       const method = editingItem ? 'PUT' : 'POST';
       
@@ -129,7 +129,7 @@ const LastNewsManagement: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`/api/admin/administratorpage/last-news/${id}`, {
+      const response = await fetch(`/admin/administratorpage/last-news/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -147,7 +147,7 @@ const LastNewsManagement: React.FC = () => {
 
   const toggleStatus = async (id: number, currentStatus: boolean) => {
     try {
-      const response = await fetch(`/api/admin/administratorpage/last-news/${id}`, {
+      const response = await fetch(`/admin/administratorpage/last-news/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
