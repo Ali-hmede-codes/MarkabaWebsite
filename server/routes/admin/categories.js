@@ -163,7 +163,7 @@ router.post('/',
   authenticateToken,
   requireRole(['admin', 'editor']),
   [
-    body('name')
+    body('name_ar')
       .trim()
       .isLength({ min: 2, max: 100 })
       .withMessage('اسم التصنيف يجب أن يكون بين 2 و 100 حرف'),
@@ -174,7 +174,7 @@ router.post('/',
       .withMessage('الرابط المختصر يجب أن يكون بين 2 و 100 حرف')
       .matches(/^[a-z0-9-]+$/)
       .withMessage('الرابط المختصر يجب أن يحتوي على أحرف صغيرة وأرقام و - فقط'),
-    body('description')
+    body('description_ar')
       .optional()
       .trim()
       .isLength({ max: 500 })
@@ -199,11 +199,11 @@ router.post('/',
         });
       }
 
-      let { name, slug, description, sort_order, is_active } = req.body;
+      let { name_ar, slug, description_ar, sort_order, is_active } = req.body;
       
       // Generate slug if not provided - Improved security and validation
       if (!slug) {
-        slug = name
+        slug = name_ar
           .toLowerCase()
           .trim()
           .replace(/[^a-z0-9\s-]/g, '')
@@ -222,12 +222,12 @@ router.post('/',
       }
       
       // Set default values and sanitize inputs
-      description = description ? description.trim() : '';
+      description_ar = description_ar ? description_ar.trim() : '';
       sort_order = sort_order || 0;
       is_active = is_active !== undefined ? is_active : true;
       
       // Additional security: Ensure name is properly sanitized
-      name = name.trim();
+      name_ar = name_ar.trim();
       slug = slug.trim();
       
       // Check if slug already exists
@@ -245,14 +245,14 @@ router.post('/',
       
       // Insert new category
       const [result] = await db.execute(
-        `INSERT INTO categories (name, slug, description, sort_order, is_active, created_at, updated_at)
+        `INSERT INTO categories (name_ar, slug, description_ar, sort_order, is_active, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
-        [name, slug, description, sort_order, is_active]
+        [name_ar, slug, description_ar, sort_order, is_active]
       );
       
       // Get the created category
       const [newCategory] = await db.execute(
-        `SELECT id, name, slug, description, sort_order, is_active, created_at, updated_at
+        `SELECT id, name_ar, slug, description_ar, sort_order, is_active, created_at, updated_at
          FROM categories WHERE id = ?`,
         [result.insertId]
       );
@@ -278,7 +278,7 @@ router.put('/:id',
   requireRole(['admin', 'editor']),
   [
     param('id').isInt().withMessage('معرف التصنيف يجب أن يكون رقماً'),
-    body('name')
+    body('name_ar')
       .optional()
       .trim()
       .isLength({ min: 2, max: 100 })
@@ -290,7 +290,7 @@ router.put('/:id',
       .withMessage('الرابط المختصر يجب أن يكون بين 2 و 100 حرف')
       .matches(/^[a-z0-9-]+$/)
       .withMessage('الرابط المختصر يجب أن يحتوي على أحرف صغيرة وأرقام و - فقط'),
-    body('description')
+    body('description_ar')
       .optional()
       .trim()
       .isLength({ max: 500 })
@@ -347,7 +347,7 @@ router.put('/:id',
       }
       
       // Prepare update fields - Fixed SQL injection vulnerability
-      const allowedUpdateFields = ['name', 'slug', 'description', 'sort_order', 'is_active'];
+      const allowedUpdateFields = ['name_ar', 'slug', 'description_ar', 'sort_order', 'is_active'];
       const updateFields = [];
       const updateValues = [];
       
