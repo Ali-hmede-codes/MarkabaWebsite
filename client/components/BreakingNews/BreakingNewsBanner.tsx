@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { BreakingNews } from '../API/types';
 
@@ -18,16 +18,47 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [animationKey, setAnimationKey] = useState(0);
-  const [contentWidth, setContentWidth] = useState(0);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Set a maximum loading time to prevent indefinite waiting
+  useEffect(() => {
+    const maxLoadingTimer = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setError('Loading timeout - showing fallback content');
+        setBreakingNews([
+          {
+            id: 1,
+            title_ar: 'أخبار عاجلة - موقع مركبا نيوز',
+            title: 'Breaking News - Markaba News',
+            content: 'أخبار عاجلة من موقع مركبا نيوز',
+            link: '/',
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ]);
+      }
+    }, 2000); // Maximum 2 seconds loading time
+    
+    return () => clearTimeout(maxLoadingTimer);
+  }, [loading]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   // Fetch breaking news with polling for real-time updates
   useEffect(() => {
     const fetchBreakingNews = async () => {
       try {
-        const response = await fetch('/api/breaking-news?active=true');
+        // Add timeout to prevent long waits
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+        
+        const response = await fetch('/api/breaking-news?active=true', {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
         if (!response.ok) {
           throw new Error('Failed to fetch breaking news');
         }
@@ -35,8 +66,38 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
         const data = await response.json();
         setBreakingNews(data.data || []);
         setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load breaking news');
+      } catch (err: any) {
+        if (err.name === 'AbortError') {
+          setError('Connection timeout - using fallback data');
+          // Set fallback breaking news data
+          setBreakingNews([
+            {
+              id: 1,
+              title_ar: 'أخبار عاجلة - موقع مركبا نيوز',
+              title: 'Breaking News - Markaba News',
+              content: 'أخبار عاجلة من موقع مركبا نيوز',
+              link: '/',
+              is_active: true,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+          ]);
+        } else {
+          setError(err instanceof Error ? err.message : 'Failed to load breaking news');
+          // Set fallback data even on other errors
+          setBreakingNews([
+            {
+              id: 1,
+              title_ar: 'أخبار عاجلة - موقع مركبا نيوز',
+              title: 'Breaking News - Markaba News',
+              content: 'أخبار عاجلة من موقع مركبا نيوز',
+              link: '/',
+              is_active: true,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+          ]);
+        }
       } finally {
         setLoading(false);
       }
@@ -45,52 +106,32 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
     // Initial fetch
     fetchBreakingNews();
     
-    // Poll for updates every 30 seconds
-    const interval = setInterval(fetchBreakingNews, 30000);
+    // Poll for updates every 60 seconds (reduced frequency)
+    const interval = setInterval(fetchBreakingNews, 60000);
     
     return () => clearInterval(interval);
   }, []);
 
-  // Measure content width and setup intelligent scrolling
+  // Auto-rotate breaking news every 6 seconds
   useEffect(() => {
-    if (!contentRef.current || breakingNews.length === 0) return;
+    if (breakingNews.length === 0) return;
 
-    const measureContent = () => {
-      if (contentRef.current) {
-        const width = contentRef.current.scrollWidth;
-        setContentWidth(width);
-      }
-    };
+    const interval = setInterval(() => {
+      setIsVisible(false);
+      setTimeout(() => {
+        setCurrentIndex(prev => (prev + 1) % breakingNews.length);
+        setIsVisible(true);
+      }, 300); // 300ms transition time
+    }, 6000); // 6 seconds per item
 
-    // Measure after content loads
-    const timer = setTimeout(measureContent, 100);
-    
-    // Re-measure on window resize
-    window.addEventListener('resize', measureContent);
-    
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', measureContent);
-    };
-  }, [breakingNews]);
+    return () => clearInterval(interval);
+  }, [breakingNews.length]);
 
-  // Reset animation when content changes
+  // Reset to first item when breaking news changes
   useEffect(() => {
-    setAnimationKey(prev => prev + 1);
+    setCurrentIndex(0);
+    setIsVisible(true);
   }, [breakingNews]);
-
-  // Calculate animation duration based on content width
-  const getAnimationDuration = useCallback(() => {
-    if (contentWidth === 0) return 60; // Default duration
-    // Base speed: 50px per second, minimum 20s, maximum 120s
-    const duration = Math.max(20, Math.min(120, contentWidth / 50));
-    return duration;
-  }, [contentWidth]);
-
-  // Handle animation end to restart seamlessly
-  const handleAnimationEnd = useCallback(() => {
-    setAnimationKey(prev => prev + 1);
-  }, []);
 
   // Determine what content to show
   const getDisplayContent = () => {
@@ -114,110 +155,57 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
       );
     }
     
-    // Show actual breaking news content with intelligent scrolling
-    const animationDuration = getAnimationDuration();
+    // Show current breaking news item with vertical slide animation
+    const currentNews = breakingNews[currentIndex];
     
     return (
-      <div className="relative w-full overflow-hidden">
+      <div className="relative w-full overflow-hidden h-12 sm:h-14 flex items-center">
         <div 
-          ref={contentRef}
-          key={animationKey}
-          className="whitespace-nowrap text-gray-800 font-medium text-xs sm:text-sm"
-          style={{
-            animation: `scroll-intelligent ${animationDuration}s linear infinite`,
-            animationFillMode: 'none',
-            willChange: 'transform',
-            display: 'inline-flex',
-            alignItems: 'center'
-          }}
-          onAnimationEnd={handleAnimationEnd}
+          className={`w-full flex items-center transition-all duration-300 ease-in-out transform ${
+            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+          }`}
         >
-          {/* First copy of all breaking news */}
-          {breakingNews.map((news, index) => (
-            <span key={`first-${news.id}`} className="inline-flex items-center mr-8">
-              <span className="mr-2 sm:mr-3">
-                {news.link ? (
-                  <Link
-                    href={news.link}
-                    className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
-                    target={news.link.startsWith('http') ? '_blank' : '_self'}
-                    rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  >
-                    {news.title_ar || news.title}
-                  </Link>
-                ) : (
-                  <span className="text-gray-800 leading-tight">
-                    {news.title_ar || news.title}
-                  </span>
-                )}
-              </span>
-              <span className="inline-flex items-center mx-2 sm:mx-3 bg-transparent rounded-lg px-1 py-0.5 min-w-[32px] sm:min-w-[40px]">
-                <img 
-                  src="/images/breaking-news.png" 
-                  alt="Markaba News" 
-                  className="h-6 w-6 sm:h-8 sm:w-8 object-contain block"
-                  style={{minWidth: '24px', minHeight: '24px', maxWidth: '32px', maxHeight: '32px'}}
-                  onError={(e) => {
-                    console.error('breaking-news.png failed, trying logo.png');
-                    if (e.currentTarget.src.includes('breaking-news.png')) {
-                      e.currentTarget.src = '/images/logo.png';
-                    } else if (e.currentTarget.src.includes('logo.png')) {
-                      e.currentTarget.src = '/images/logo.svg';
-                    } else {
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement!.innerHTML = '<span class="text-blue-600 font-bold text-sm">📰</span>';
-                    }
-                  }}
-                  onLoad={(e) => console.log('Logo loaded successfully:', e.currentTarget.src)}
-                />
-              </span>
+          <span className="flex items-center text-gray-800 font-medium text-xs sm:text-sm">
+            <span className="mr-2 sm:mr-3">
+              {currentNews.link ? (
+                <Link
+                  href={currentNews.link}
+                  className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
+                  target={currentNews.link.startsWith('http') ? '_blank' : '_self'}
+                  rel={currentNews.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                >
+                  {currentNews.title_ar || currentNews.title}
+                </Link>
+              ) : (
+                <span className="text-gray-800 leading-tight">
+                  {currentNews.title_ar || currentNews.title}
+                </span>
+              )}
             </span>
-          ))}
-          {/* Second copy for seamless infinite loop */}
-          {breakingNews.map((news, index) => (
-            <span key={`second-${news.id}`} className="inline-flex items-center mr-8">
-              <span className="mr-2 sm:mr-3">
-                {news.link ? (
-                  <Link
-                    href={news.link}
-                    className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
-                    target={news.link.startsWith('http') ? '_blank' : '_self'}
-                    rel={news.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  >
-                    {news.title_ar || news.title}
-                  </Link>
-                ) : (
-                  <span className="text-gray-800 leading-tight">
-                    {news.title_ar || news.title}
-                  </span>
-                )}
-              </span>
-              <span className="inline-flex items-center mx-2 sm:mx-3 bg-transparent rounded-lg px-1 py-0.5 min-w-[32px] sm:min-w-[40px]">
-                <img 
-                  src="/images/breaking-news.png" 
-                  alt="Markaba News" 
-                  className="h-6 w-6 sm:h-8 sm:w-8 object-contain block"
-                  style={{minWidth: '24px', minHeight: '24px', maxWidth: '32px', maxHeight: '32px'}}
-                  onError={(e) => {
-                    console.error('breaking-news.png failed, trying logo.png');
-                    if (e.currentTarget.src.includes('breaking-news.png')) {
-                      e.currentTarget.src = '/images/logo.png';
-                    } else if (e.currentTarget.src.includes('logo.png')) {
-                      e.currentTarget.src = '/images/logo.svg';
-                    } else {
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement!.innerHTML = '<span class="text-blue-600 font-bold text-sm">📰</span>';
-                    }
-                  }}
-                  onLoad={(e) => console.log('Logo loaded successfully:', e.currentTarget.src)}
-                />
-              </span>
+            <span className="inline-flex items-center mx-2 sm:mx-3 bg-transparent rounded-lg px-1 py-0.5 min-w-[32px] sm:min-w-[40px]">
+              <img 
+                src="/images/breaking-news.png" 
+                alt="Markaba News" 
+                className="h-6 w-6 sm:h-8 sm:w-8 object-contain block"
+                style={{minWidth: '24px', minHeight: '24px', maxWidth: '32px', maxHeight: '32px'}}
+                onError={(e) => {
+                  console.error('breaking-news.png failed, trying logo.png');
+                  if (e.currentTarget.src.includes('breaking-news.png')) {
+                    e.currentTarget.src = '/images/logo.png';
+                  } else if (e.currentTarget.src.includes('logo.png')) {
+                    e.currentTarget.src = '/images/logo.svg';
+                  } else {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement!.innerHTML = '<span class="text-blue-600 font-bold text-sm">📰</span>';
+                  }
+                }}
+                onLoad={(e) => console.log('Logo loaded successfully:', e.currentTarget.src)}
+              />
             </span>
-          ))}
+          </span>
         </div>
-        {/* Fade effect gradients */}
-        <div className="absolute left-0 top-0 bottom-0 w-6 sm:w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-6 sm:w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+        
+
       </div>
     );
   };
