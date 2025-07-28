@@ -1,65 +1,50 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method, query } = req;
-  const { id } = query;
-  const token = req.headers.authorization?.replace('Bearer ', '');
-
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'Token required' });
-  }
-
+  const { id } = req.query;
+  
   if (!id) {
-    return res.status(400).json({ success: false, message: 'ID is required' });
+    return res.status(400).json({ message: 'ID parameter is required' });
   }
 
   try {
-    switch (method) {
-      case 'PUT':
-        // Update last news
-        const putResponse = await fetch(`${API_BASE_URL}/api/admin/administratorpage/last-news/${id}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(req.body)
-        });
-        const putData = await putResponse.json();
-        return res.status(putResponse.status).json(putData);
-
-      case 'DELETE':
-        // Delete last news
-        const deleteResponse = await fetch(`${API_BASE_URL}/api/admin/administratorpage/last-news/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        const deleteData = await deleteResponse.json();
-        return res.status(deleteResponse.status).json(deleteData);
-
-      case 'GET':
-        // Get single last news
-        const getResponse = await fetch(`${API_BASE_URL}/api/admin/administratorpage/last-news/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        const getData = await getResponse.json();
-        return res.status(getResponse.status).json(getData);
-
-      default:
-        res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
-        return res.status(405).json({ success: false, message: `Method ${method} Not Allowed` });
+    // Get auth token from request headers
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: 'Authorization header required' });
     }
+
+    let url = `${API_BASE_URL}/admin/administratorpage/last-news/${id}`;
+    let method = req.method;
+    let body = undefined;
+
+    // Handle different HTTP methods
+    if (method === 'PUT') {
+      body = JSON.stringify(req.body);
+    }
+
+    // Forward request to backend
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/json',
+      },
+      body,
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      return res.status(response.status).json(data);
+    }
+
+    res.status(200).json(data);
   } catch (error) {
-    console.error('API Error:', error);
-    return res.status(500).json({ 
+    console.error('Last News API error:', error);
+    res.status(500).json({ 
       success: false, 
       message: 'Internal server error' 
     });
