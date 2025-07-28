@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { toast } from 'react-hot-toast';
@@ -46,7 +46,7 @@ const LastNewsAdmin: React.FC = () => {
   }, [isAuthenticated, router]);
 
   // Fetch last news
-  const fetchLastNews = async () => {
+  const fetchLastNews = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/admin/administratorpage/last-news', {
@@ -62,19 +62,18 @@ const LastNewsAdmin: React.FC = () => {
       } else {
         toast.error(data.message || 'خطأ في جلب البيانات');
       }
-    } catch (error) {
-      console.error('Error fetching last news:', error);
+    } catch {
       toast.error('خطأ في الاتصال بالخادم');
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchLastNews();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchLastNews]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,8 +111,7 @@ const LastNewsAdmin: React.FC = () => {
       } else {
         toast.error(data.message || 'حدث خطأ');
       }
-    } catch (error) {
-      console.error('Error saving last news:', error);
+    } catch {
       toast.error('خطأ في الاتصال بالخادم');
     }
   };
@@ -141,8 +139,7 @@ const LastNewsAdmin: React.FC = () => {
       } else {
         toast.error(data.message || 'حدث خطأ في الحذف');
       }
-    } catch (error) {
-      console.error('Error deleting last news:', error);
+    } catch {
       toast.error('خطأ في الاتصال بالخادم');
     }
   };

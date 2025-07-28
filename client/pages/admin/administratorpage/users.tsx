@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { FiPlus, FiEdit, FiTrash2, FiSearch, FiSave, FiX, FiEye, FiEyeOff, FiKey } from 'react-icons/fi';
@@ -37,6 +37,7 @@ interface PasswordChangeForm {
 }
 
 const AdminUsers: React.FC = () => {
+  const { user: currentUser, loading: authLoading, token } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,36 +62,55 @@ const AdminUsers: React.FC = () => {
   });
   const [formErrors, setFormErrors] = useState<Partial<UserForm & PasswordChangeForm>>({});
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/users', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setUsers(data.data || []);
+      } else {
+        toast.error('فشل في تحميل المستخدمين');
+      }
+    } catch {
+      toast.error('حدث خطأ في تحميل المستخدمين');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
-  // Inside AdminUsers component
-    const { token } = useAuth();
-  
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/users', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-  
-        if (data.success) {
-          setUsers(data.data || []);
-        } else {
-          toast.error('فشل في تحميل المستخدمين');
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-        toast.error('حدث خطأ في تحميل المستخدمين');
-      } finally {
-        setLoading(false);
-      }
-    };
-  
+  // Permission check - only admin can access users management
+  if (authLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-lg">جاري التحميل...</div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (!currentUser || currentUser.role !== 'admin') {
+    return (
+      <AdminLayout>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">ليس لديك صلاحية للوصول إلى هذه الصفحة</h1>
+            <p className="text-gray-600">هذه الصفحة مخصصة للمديرين فقط</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
 
   const validateForm = (): boolean => {
@@ -173,8 +193,7 @@ const AdminUsers: React.FC = () => {
       } else {
         toast.error(data.message || 'فشل في حفظ المستخدم');
       }
-    } catch (error) {
-      console.error('Error saving user:', error);
+    } catch {
       toast.error('حدث خطأ في حفظ المستخدم');
     }
   };
@@ -206,8 +225,7 @@ const AdminUsers: React.FC = () => {
       } else {
         toast.error(data.message || 'فشل في تغيير كلمة المرور');
       }
-    } catch (error) {
-      console.error('Error changing password:', error);
+    } catch {
       toast.error('حدث خطأ في تغيير كلمة المرور');
     }
   };
@@ -256,8 +274,7 @@ const AdminUsers: React.FC = () => {
       } else {
         toast.error('فشل في تحديث حالة المستخدم');
       }
-    } catch (error) {
-      console.error('Error toggling user status:', error);
+    } catch {
       toast.error('حدث خطأ في تحديث حالة المستخدم');
     }
   };
@@ -281,8 +298,7 @@ const AdminUsers: React.FC = () => {
       } else {
         toast.error(data.message || 'فشل في حذف المستخدم');
       }
-    } catch (error) {
-      console.error('Error deleting user:', error);
+    } catch {
       toast.error('حدث خطأ في حذف المستخدم');
     }
   };

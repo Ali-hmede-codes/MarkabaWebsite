@@ -56,8 +56,9 @@ export function middleware(request: NextRequest) {
       // Parse user data to check role
       const userData = JSON.parse(user);
       
-      // Only allow admin users
-      if (userData.role !== 'admin') {
+      // Allow admin, editor, and author users to access admin panel
+      // Individual pages will handle their own permission checks
+      if (!['admin', 'editor', 'author'].includes(userData.role)) {
         return NextResponse.redirect(new URL('/auth/login', request.url));
       }
     } catch (error) {

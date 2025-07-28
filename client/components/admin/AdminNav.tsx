@@ -12,52 +12,65 @@ interface AdminNavProps {
 
 const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   
-  const navItems = [
+  // Define all navigation items with role requirements
+  const allNavItems = [
     {
       href: '/admin/administratorpage',
       label: 'لوحة التحكم',
       icon: FiHome,
-      active: router.pathname === '/admin/administratorpage'
+      active: router.pathname === '/admin/administratorpage',
+      roles: ['admin', 'editor', 'author'] // Available to all roles
     },
     {
       href: '/admin/administratorpage/posts',
       label: 'المقالات',
       icon: FiFileText,
-      active: router.pathname === '/admin/administratorpage/posts'
+      active: router.pathname === '/admin/administratorpage/posts',
+      roles: ['admin', 'editor', 'author'] // Available to all roles
     },
     {
       href: '/admin/administratorpage/categories',
       label: 'التصنيفات',
       icon: FiFolder,
-      active: router.pathname === '/admin/administratorpage/categories'
+      active: router.pathname === '/admin/administratorpage/categories',
+      roles: ['admin'] // Only admin can manage categories
     },
     {
       href: '/admin/administratorpage/breaking-news',
       label: 'الأخبار العاجلة',
-      icon: FiAlertTriangle, // Add appropriate icon
-      active: router.pathname === '/admin/administratorpage/breaking-news'
+      icon: FiAlertTriangle,
+      active: router.pathname === '/admin/administratorpage/breaking-news',
+      roles: ['admin', 'editor', 'author'] // Available to all roles
     },
     {
       href: '/admin/administratorpage/last-news',
       label: 'آخر الأخبار',
       icon: FiClock,
-      active: router.pathname === '/admin/administratorpage/last-news'
+      active: router.pathname === '/admin/administratorpage/last-news',
+      roles: ['admin', 'editor', 'author'] // Available to all roles
     },
     {
       href: '/admin/administratorpage/users',
       label: 'المستخدمون',
       icon: FiUsers,
-      active: router.pathname === '/admin/administratorpage/users'
+      active: router.pathname === '/admin/administratorpage/users',
+      roles: ['admin'] // Only admin can manage users
     },
     {
       href: '/admin/administratorpage/settings',
       label: 'الإعدادات',
       icon: FiSettings,
-      active: router.pathname === '/admin/administratorpage/settings'
+      active: router.pathname === '/admin/administratorpage/settings',
+      roles: ['admin'] // Only admin can access settings
     }
   ];
+
+  // Filter navigation items based on user role
+  const navItems = allNavItems.filter(item => 
+    user && item.roles.includes(user.role)
+  );
 
   return (
     <nav className={`bg-white shadow-sm border-b ${className}`}>

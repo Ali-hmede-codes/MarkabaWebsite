@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { FiPlus, FiEdit, FiTrash2, FiSearch, FiSave, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../../context/AuthContext';
 
 interface Category {
   id: number;
@@ -33,6 +34,7 @@ interface CategoryFormErrors {
 }
 
 const AdminCategories: React.FC = () => {
+  const { user, loading: authLoading } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,11 +49,7 @@ const AdminCategories: React.FC = () => {
   });
   const [formErrors, setFormErrors] = useState<CategoryFormErrors>({});
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/admin/categories');
@@ -62,12 +60,40 @@ const AdminCategories: React.FC = () => {
       } else {
         toast.error('فشل في تحميل التصنيفات');
       }
-    } catch (error) {
+    } catch {
       toast.error('حدث خطأ في تحميل التصنيفات');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  // Permission check - only admin can access categories
+  if (authLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-lg">جاري التحميل...</div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (!user || user.role !== 'admin') {
+    return (
+      <AdminLayout>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">ليس لديك صلاحية للوصول إلى هذه الصفحة</h1>
+            <p className="text-gray-600">هذه الصفحة مخصصة للمديرين فقط</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   const validateForm = (): boolean => {
     const errors: CategoryFormErrors = {};
@@ -112,7 +138,7 @@ const AdminCategories: React.FC = () => {
       } else {
         toast.error(data.message || 'فشل في حفظ التصنيف');
       }
-    } catch (error) {
+    } catch {
       toast.error('حدث خطأ في حفظ التصنيف');
     }
   };
@@ -143,7 +169,7 @@ const AdminCategories: React.FC = () => {
       } else {
         toast.error(data.message || 'فشل في حذف التصنيف');
       }
-    } catch (error) {
+    } catch {
       toast.error('حدث خطأ في حذف التصنيف');
     }
   };
