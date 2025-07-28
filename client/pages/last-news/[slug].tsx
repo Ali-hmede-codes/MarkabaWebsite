@@ -133,70 +133,76 @@ const SingleLastNewsPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Main Content */}
             <article className="lg:col-span-3">
+              {/* Standard Image */}
+              <div className="mb-6">
+                <Image 
+                  src="/images/logo.png" 
+                  alt="مركبا" 
+                  width={800} 
+                  height={400} 
+                  className="w-full h-64 object-cover rounded-lg"
+                />
+              </div>
+
               {/* Last News Title */}
               <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">{lastNews.title_ar}</h1>
               
-              {/* Summary Box */}
-              <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8 overflow-hidden">
-                <div className="p-6">
-                  {/* Social sharing and info */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-500">
-                      <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                        <div className="w-10 h-10 bg-white-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
-                          <Image 
-                            src="/images/logo.png" 
-                            alt="مركبا" 
-                            width={40} 
-                            height={40} 
-                            className="object-cover"
-                          />
-                        </div>
-                        <div>
-                          <div className="font-medium text-gray-800">مركبا</div>
-                          <div className="text-xs text-gray-500 flex items-center gap-2">
-                            <span>
-                              {new Date(lastNews.created_at).toLocaleDateString('ar-EG', {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                              })}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <FiEye size={12} />
-                              {lastNews.views}
-                            </span>
-                          </div>
-                        </div>
+              {/* Meta Information */}
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+                <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-500">
+                  <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                    <div className="w-10 h-10 bg-white-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <Image 
+                        src="/images/logo.png" 
+                        alt="مركبا" 
+                        width={40} 
+                        height={40} 
+                        className="object-cover"
+                      />
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-800">مركبا</div>
+                      <div className="text-xs text-gray-500 flex items-center gap-2">
+                        <span>
+                          {new Date(lastNews.created_at).toLocaleDateString('ar-EG', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <FiEye size={12} />
+                          {lastNews.views}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2 rtl:space-x-reverse relative">
-                      {copyMessage && (
-                        <div className="absolute -top-8 right-0 bg-green-500 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-                          {copyMessage}
-                        </div>
-                      )}
-                      <button 
-                        onClick={() => handleCopyText(lastNews.content_ar || '')}
-                        className={`p-2 transition-colors ${
-                          copySuccess 
-                            ? 'text-green-600 hover:text-green-700' 
-                            : 'text-gray-400 hover:text-gray-600'
-                        }`}
-                        title="نسخ النص"
-                      >
-                        <FiCopy size={16} />
-                      </button>
-                      <button 
-                        onClick={handleShare}
-                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                        title="مشاركة"
-                      >
-                        <FiShare2 size={16} />
-                      </button>
-                    </div>
                   </div>
+                </div>
+                <div className="flex items-center space-x-2 rtl:space-x-reverse relative">
+                  {copyMessage && (
+                    <div className="absolute -top-8 right-0 bg-green-500 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
+                      {copyMessage}
+                    </div>
+                  )}
+                  <button 
+                    onClick={() => handleCopyText(lastNews.content_ar || '')}
+                    className={`p-2 transition-colors ${
+                      copySuccess 
+                        ? 'text-green-600 hover:text-green-700' 
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                    title="نسخ النص"
+                  >
+                    <FiCopy size={16} />
+                  </button>
+                  <button 
+                    onClick={handleShare}
+                    className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                    title="مشاركة"
+                  >
+                    <FiShare2 size={16} />
+                  </button>
                 </div>
               </div>
 
@@ -244,7 +250,7 @@ const SingleLastNewsPage: React.FC = () => {
               {/* Latest Last News Section */}
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
-                  آخر الأخبار العاجلة
+                  آخر الأخبار
                 </h3>
                 <div className="space-y-4">
                   {latestLastNews.map((latestItem) => (

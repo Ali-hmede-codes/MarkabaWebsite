@@ -54,7 +54,7 @@ const AdminCategories: React.FC = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/categories');
+      const response = await fetch('/api/admin/categories');
       const data = await response.json();
 
       if (data.success) {
@@ -92,7 +92,7 @@ const AdminCategories: React.FC = () => {
     }
 
     try {
-      const url = editingCategory ? `/api/categories/${editingCategory.id}` : '/api/categories';
+      const url = editingCategory ? `/api/admin/categories/${editingCategory.id}` : '/api/admin/categories';
       const method = editingCategory ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -130,7 +130,7 @@ const AdminCategories: React.FC = () => {
 
   const handleDelete = async (categoryId: number) => {
     try {
-      const response = await fetch(`/api/categories/${categoryId}`, {
+      const response = await fetch(`/api/admin/categories/${categoryId}`, {
         method: 'DELETE',
       });
 
