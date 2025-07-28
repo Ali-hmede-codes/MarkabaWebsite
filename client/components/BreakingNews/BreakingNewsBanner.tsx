@@ -44,6 +44,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   }, [loading]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const [isExpanding, setIsExpanding] = useState(false);
 
   // Fetch breaking news with polling for real-time updates
   useEffect(() => {
@@ -112,16 +113,25 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-rotate breaking news every 6 seconds
+  // Auto-rotate breaking news every 6 seconds with expansion animation
   useEffect(() => {
     if (breakingNews.length === 0) return;
 
     const interval = setInterval(() => {
-      setIsVisible(false);
+      // Start expansion animation
+      setIsExpanding(true);
+      
       setTimeout(() => {
-        setCurrentIndex(prev => (prev + 1) % breakingNews.length);
-        setIsVisible(true);
-      }, 300); // 300ms transition time
+        // After 1 second, start content transition
+        setIsVisible(false);
+        
+        setTimeout(() => {
+          // Change content and end expansion
+          setCurrentIndex(prev => (prev + 1) % breakingNews.length);
+          setIsExpanding(false);
+          setIsVisible(true);
+        }, 300); // 300ms transition time
+      }, 1000); // 1 second expansion time
     }, 6000); // 6 seconds per item
 
     return () => clearInterval(interval);
@@ -131,6 +141,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   useEffect(() => {
     setCurrentIndex(0);
     setIsVisible(true);
+    setIsExpanding(false);
   }, [breakingNews]);
 
   // Determine what content to show
@@ -182,12 +193,12 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                 </span>
               )}
             </span>
-            <span className="inline-flex items-center mx-2 sm:mx-3 bg-transparent rounded-lg px-1 py-0.5 min-w-[32px] sm:min-w-[40px]">
+            <span className="inline-flex items-center mx-2 sm:mx-3 bg-transparent rounded-lg px-1 py-0.5 min-w-[48px] sm:min-w-[56px]">
               <img 
                 src="/images/breaking-news.png" 
                 alt="Markaba News" 
-                className="h-6 w-6 sm:h-8 sm:w-8 object-contain block"
-                style={{minWidth: '24px', minHeight: '24px', maxWidth: '32px', maxHeight: '32px'}}
+                className="h-10 w-10 sm:h-12 sm:w-12 object-contain block"
+                style={{minWidth: '40px', minHeight: '40px', maxWidth: '48px', maxHeight: '48px'}}
                 onError={(e) => {
                   console.error('breaking-news.png failed, trying logo.png');
                   if (e.currentTarget.src.includes('breaking-news.png')) {
@@ -230,14 +241,18 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
       {/* Breaking News Banner */}
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-white rounded-lg overflow-hidden shadow-sm">
-          <div className="flex items-center h-12 sm:h-14">
+          <div className="flex items-stretch h-16 sm:h-20 relative overflow-hidden">
             {/* أخبار عاجلة Label */}
-            <div className="flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-r-lg">
+            <div className={`flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-r-lg transition-all duration-1000 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] z-10 ${
+                isExpanding ? 'absolute inset-0 rounded-lg transform scale-100 shadow-lg' : 'relative transform scale-100 shadow-sm'
+              }`}>
               <span className="font-bold text-xs sm:text-sm">أخبار عاجلة</span>
             </div>
             
             {/* News Content */}
-            <div className="flex-1 bg-white">
+            <div className={`flex-1 bg-white transition-opacity duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+               isExpanding ? 'opacity-0' : 'opacity-100'
+             }`}>
               <div className="px-4 sm:px-6 py-2 sm:py-3 flex items-center h-full">
                 {getDisplayContent()}
               </div>
