@@ -15,6 +15,44 @@ const SinglePostPage: React.FC = () => {
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
+  const [fontSize, setFontSize] = useState(20);
+  const [latestPosts, setLatestPosts] = useState<Post[]>([]);
+  const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
+
+  // All hooks must be called before any conditional returns
+  const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', {
+    immediate: !!slug,
+    params: slug ? { slug, limit: 1, page: 1 } : {}
+  });
+  
+  const { data: postsResponse } = usePosts({ limit: 4 });
+  const breakingNewsResponse = useBreakingNews();
+  const post = response?.posts?.[0];
+
+  // Reset state when slug changes
+  useEffect(() => {
+    if (slug) {
+      setLatestPosts([]);
+      setBreakingNews([]);
+      setFontSize(20);
+      setCopySuccess(false);
+      setCopyMessage('');
+    }
+  }, [slug]);
+
+  useEffect(() => {
+    if (postsResponse?.posts && post) {
+      const filtered = postsResponse.posts.filter((p) => p.id !== post.id);
+      setLatestPosts(filtered.slice(0, 4));
+    }
+  }, [postsResponse, post]);
+
+  useEffect(() => {
+    if (breakingNewsResponse?.data && Array.isArray(breakingNewsResponse.data) && post) {
+      const filtered = breakingNewsResponse.data.filter((p: BreakingNews) => p.id !== post.id);
+      setBreakingNews(filtered.slice(0, 4));
+    }
+  }, [breakingNewsResponse, post]);
 
   const handleCopyText = async (text: string) => {
     try {
@@ -45,51 +83,23 @@ const SinglePostPage: React.FC = () => {
     }
   };
 
-  const InnerPost = ({ slug }: { slug: string }) => {
-    const [fontSize, setFontSize] = useState(20); // Default font size in px
-    const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', {
-      immediate: true,
-      params: { slug, limit: 1, page: 1 }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('ar-EG', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
-    const { data: postsResponse } = usePosts({ limit: 4 });
-    const breakingNewsResponse = useBreakingNews();
-    const [latestPosts, setLatestPosts] = useState<Post[]>([]);
-    const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
-    const post = response?.posts?.[0];
+  };
 
-    // Reset state when slug changes
-    useEffect(() => {
-      setLatestPosts([]);
-      setBreakingNews([]);
-      setFontSize(20);
-    }, [slug]);
+  // Show loading while router is not ready or slug is not available
+  if (!router.isReady || !slug) {
+    return <div className="text-center py-10">جاري التحميل...</div>;
+  }
 
-    useEffect(() => {
-      if (postsResponse?.posts) {
-        const filtered = postsResponse.posts.filter((p) => p.id !== post?.id);
-        setLatestPosts(filtered.slice(0, 4));
-      }
-    }, [postsResponse, post]);
+  if (loading) return <div className="text-center py-10">جاري التحميل...</div>;
+  if (error || !post) return <div className="text-center py-10 text-red-500">المنشور غير موجود</div>;
 
-    useEffect(() => {
-      if (breakingNewsResponse?.data && Array.isArray(breakingNewsResponse.data)) {
-        const filtered = breakingNewsResponse.data.filter((p: BreakingNews) => p.id !== post?.id);
-        setBreakingNews(filtered.slice(0, 4));
-      }
-    }, [breakingNewsResponse, post]);
-
-    if (loading) return <div className="text-center py-10">جاري التحميل...</div>;
-    if (error || !post) return <div className="text-center py-10 text-red-500">المنشور غير موجود</div>;
-
-    const formatDate = (dateString: string) => {
-      return new Date(dateString).toLocaleDateString('ar-EG', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    };
-
-    return (
+  return (
       <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -270,11 +280,6 @@ const SinglePostPage: React.FC = () => {
         </div>
       </Layout>
     );
-  };
-
-  if (!slug) return <div className="text-center py-10">جاري التحميل...</div>;
-
-  return router.isReady ? <InnerPost slug={slug} key={`post-${slug}`} /> : <div className="text-center py-10">جاري التحميل...</div>;
 };
 
 export default SinglePostPage;
