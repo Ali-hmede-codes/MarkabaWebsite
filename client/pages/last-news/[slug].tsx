@@ -258,7 +258,7 @@ const SingleLastNewsPage: React.FC = () => {
                     <Link key={latestItem.id} href={`/last-news/${latestItem.slug}`}>
                       <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg">
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                          <h4 className="text-sm font-medium text-gray-900 mb-1">
                             {latestItem.title_ar}
                           </h4>
                           <div className="text-xs text-gray-500">
@@ -282,7 +282,7 @@ const SingleLastNewsPage: React.FC = () => {
                     <Link key={breakingItem.id} href={`/post/${breakingItem.slug}`}>
                       <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg">
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                          <h4 className="text-sm font-medium text-gray-900 mb-1">
                             {breakingItem.title_ar}
                           </h4>
                           <div className="text-xs text-gray-500">
