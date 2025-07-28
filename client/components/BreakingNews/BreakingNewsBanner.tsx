@@ -113,7 +113,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-rotate breaking news every 6 seconds with expansion animation
+  // Auto-rotate breaking news every 8 seconds with smooth expansion animation
   useEffect(() => {
     if (breakingNews.length === 0) return;
 
@@ -122,7 +122,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
       setIsExpanding(true);
       
       setTimeout(() => {
-        // After 1 second, start content transition
+        // After 0.5 seconds (25% of cycle), start content transition
         setIsVisible(false);
         
         setTimeout(() => {
@@ -130,9 +130,9 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
           setCurrentIndex(prev => (prev + 1) % breakingNews.length);
           setIsExpanding(false);
           setIsVisible(true);
-        }, 300); // 300ms transition time
-      }, 1000); // 1 second expansion time
-    }, 6000); // 6 seconds per item
+        }, 200); // 200ms transition time for quick content change
+      }, 500); // 0.5 seconds expansion time (25% of 2 seconds)
+    }, 8000); // 8 seconds per item for better readability
 
     return () => clearInterval(interval);
   }, [breakingNews.length]);
@@ -170,34 +170,36 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
     const currentNews = breakingNews[currentIndex];
     
     return (
-      <div className="relative w-full overflow-hidden h-12 sm:h-14 flex items-center">
+      <div className="relative w-full overflow-hidden h-auto min-h-[48px] sm:min-h-[56px] flex items-center py-1">
         <div 
-          className={`w-full flex items-center transition-all duration-300 ease-in-out transform ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+          className={`w-full flex items-center transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] transform ${
+            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
           }`}
         >
-          <span className="flex items-center text-gray-800 font-medium text-xs sm:text-sm">
-            <span className="mr-2 sm:mr-3">
+          <div className="flex items-center text-gray-800 font-medium text-xs sm:text-sm w-full">
+            <div className="flex-1 mr-2 sm:mr-3 min-w-0">
               {currentNews.link ? (
                 <Link
                   href={currentNews.link}
-                  className="text-gray-800 hover:text-red-600 transition-colors duration-200 leading-tight"
+                  className="text-gray-800 hover:text-red-600 transition-colors duration-300 leading-relaxed block"
                   target={currentNews.link.startsWith('http') ? '_blank' : '_self'}
                   rel={currentNews.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                 >
-                  {currentNews.title_ar || currentNews.title}
+                  <span className="block break-words hyphens-auto" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                    {currentNews.title_ar || currentNews.title}
+                  </span>
                 </Link>
               ) : (
-                <span className="text-gray-800 leading-tight">
+                <span className="text-gray-800 leading-relaxed block break-words hyphens-auto" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
                   {currentNews.title_ar || currentNews.title}
                 </span>
               )}
-            </span>
-            <span className="inline-flex items-center mx-2 sm:mx-3 bg-transparent rounded-lg px-1 py-0.5 min-w-[48px] sm:min-w-[56px]">
+            </div>
+            <div className="flex-shrink-0 inline-flex items-center bg-transparent rounded-lg px-1 py-0.5 min-w-[48px] sm:min-w-[56px]">
               <img 
                 src="/images/breaking-news.png" 
                 alt="Markaba News" 
-                className="h-10 w-10 sm:h-12 sm:w-12 object-contain block"
+                className="h-10 w-10 sm:h-12 sm:w-12 object-contain block flex-shrink-0"
                 style={{minWidth: '40px', minHeight: '40px', maxWidth: '48px', maxHeight: '48px'}}
                 onError={(e) => {
                   console.error('breaking-news.png failed, trying logo.png');
@@ -212,11 +214,9 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                 }}
                 onLoad={(e) => console.log('Logo loaded successfully:', e.currentTarget.src)}
               />
-            </span>
-          </span>
+            </div>
+          </div>
         </div>
-        
-
       </div>
     );
   };
@@ -241,18 +241,37 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
       {/* Breaking News Banner */}
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-white rounded-lg overflow-hidden shadow-sm">
-          <div className="flex items-stretch h-16 sm:h-20 relative overflow-hidden">
+          <div className="flex items-stretch min-h-[64px] sm:min-h-[80px] h-auto relative overflow-hidden">
             {/* أخبار عاجلة Label */}
-            <div className={`flex items-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-r-lg transition-all duration-1000 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] z-10 ${
-                isExpanding ? 'absolute inset-0 rounded-lg transform scale-100 shadow-lg' : 'relative transform scale-100 shadow-sm'
+            <div className={`flex items-center justify-center bg-gradient-to-r from-red-600 to-red-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-r-lg transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] z-10 relative ${
+                 isExpanding ? 'absolute inset-0 rounded-lg transform scale-100 shadow-2xl' : 'relative transform scale-100 shadow-md'
+               }`}>
+              {/* Breaking News Logo - appears during expansion */}
+              <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out ${
+                isExpanding ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
               }`}>
-              <span className="font-bold text-xs sm:text-sm">أخبار عاجلة</span>
+                <img 
+                  src="/images/breaking-news-out.png" 
+                  alt="Breaking News" 
+                  className="h-12 w-12 sm:h-16 sm:w-16 object-contain filter brightness-0 invert"
+                  style={{maxWidth: '64px', maxHeight: '64px'}}
+                  onError={(e) => {
+                    console.error('breaking-news-out.png failed to load');
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+              
+              {/* Text label - fades during expansion */}
+              <span className={`font-bold text-xs sm:text-sm whitespace-nowrap transition-opacity duration-300 ease-in-out ${
+                isExpanding ? 'opacity-0' : 'opacity-100'
+              }`}>أخبار عاجلة</span>
             </div>
             
             {/* News Content */}
-            <div className={`flex-1 bg-white transition-opacity duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-               isExpanding ? 'opacity-0' : 'opacity-100'
-             }`}>
+            <div className={`flex-1 bg-white transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+                isExpanding ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'
+              }`}>
               <div className="px-4 sm:px-6 py-2 sm:py-3 flex items-center h-full">
                 {getDisplayContent()}
               </div>
