@@ -139,7 +139,7 @@ const SingleLastNewsPage: React.FC = () => {
                   src="/images/background_image.jpg" 
                   alt="مركبا" 
                   width={800} 
-                  height={400} 
+                  height={600} 
                   className="w-full h-64 object-cover rounded-lg"
                 />
               </div>
