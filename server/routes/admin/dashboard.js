@@ -1,11 +1,11 @@
 const express = require('express');
 const { query } = require('../../db');
-const { auth, requireAdmin } = require('../../middlewares/auth');
+const { auth, requireRole } = require('../../middlewares/auth');
 
 const router = express.Router();
 
 // Get dashboard stats
-router.get('/stats', auth, requireAdmin, async (req, res) => {
+router.get('/stats', auth, requireRole(['admin', 'editor', 'author']), async (req, res) => {
   try {
     const [posts] = await query('SELECT COUNT(*) as count FROM posts');
     const [categories] = await query('SELECT COUNT(*) as count FROM categories');

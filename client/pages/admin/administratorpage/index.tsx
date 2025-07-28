@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { toast } from 'react-hot-toast';
 import AdminLayout from '../../../components/Layout/AdminLayout';
-import { FiFileText, FiFolder, FiUsers, FiEye, FiTrendingUp, FiImage } from 'react-icons/fi';
+import { FiFileText, FiFolder, FiUsers, FiEye, FiTrendingUp } from 'react-icons/fi';
 import { useAuth, withAuth } from '../../../context/AuthContext';
 
 interface DashboardStats {
@@ -45,11 +45,11 @@ const AdminDashboard: React.FC = () => {
   });
   const [recentPosts, setRecentPosts] = useState<RecentPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [token, router]);
 
   const fetchStats = async () => {
     try {
@@ -89,89 +89,116 @@ const AdminDashboard: React.FC = () => {
         router.push('/auth/login');
       }
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      // Error fetching stats
       toast.error('خطأ في جلب الإحصائيات');
     } finally {
       setLoading(false);
     }
   };
 
-  const statCards = [
+  const allStatCards = [
     {
       title: 'إجمالي المقالات',
       value: stats.totalPosts,
       icon: FiFileText,
       color: 'bg-blue-500',
-      link: '/admin/administratorpage/posts'
+      link: '/admin/administratorpage/posts',
+      roles: ['admin', 'editor', 'author']
     },
     {
       title: 'المقالات المنشورة',
       value: stats.publishedPosts,
       icon: FiEye,
       color: 'bg-green-500',
-      link: '/admin/administratorpage/posts?status=published'
+      link: '/admin/administratorpage/posts?status=published',
+      roles: ['admin', 'editor', 'author']
     },
     {
       title: 'المسودات',
       value: stats.draftPosts,
       icon: FiFileText,
       color: 'bg-yellow-500',
-      link: '/admin/administratorpage/posts?status=draft'
+      link: '/admin/administratorpage/posts?status=draft',
+      roles: ['admin', 'editor', 'author']
     },
     {
       title: 'المقالات المميزة',
       value: stats.featuredPosts,
       icon: FiTrendingUp,
       color: 'bg-purple-500',
-      link: '/admin/administratorpage/posts?featured=true'
+      link: '/admin/administratorpage/posts?featured=true',
+      roles: ['admin', 'editor', 'author']
     },
     {
       title: 'التصنيفات',
       value: stats.totalCategories,
       icon: FiFolder,
       color: 'bg-indigo-500',
-      link: '/admin/administratorpage/categories'
+      link: '/admin/administratorpage/categories',
+      roles: ['admin']
     },
     {
       title: 'إجمالي المشاهدات',
       value: stats.totalViews.toLocaleString('ar-SA'),
       icon: FiEye,
       color: 'bg-red-500',
-      link: '/admin/administratorpage/posts'
+      link: '/admin/administratorpage/posts',
+      roles: ['admin', 'editor', 'author']
     },
     {
       title: 'المستخدمين',
       value: stats.totalUsers,
       icon: FiUsers,
       color: 'bg-pink-500',
-      link: '/admin/administratorpage/users'
+      link: '/admin/administratorpage/users',
+      roles: ['admin']
     },
     {
       title: 'مقالات حديثة',
       value: stats.recentPosts,
       icon: FiTrendingUp,
       color: 'bg-orange-500',
-      link: '/admin/administratorpage/posts'
+      link: '/admin/administratorpage/posts',
+      roles: ['admin', 'editor', 'author']
     }
   ];
 
-  const quickActions = [
+  // Filter stat cards based on user role
+  const statCards = allStatCards.filter(card => 
+    user && card.roles.includes(user.role)
+  );
+
+  const allQuickActions = [
     {
       title: 'إنشاء مقال جديد',
       description: 'أضف مقالاً جديداً إلى الموقع',
       icon: FiFileText,
       link: '/admin/administratorpage/posts',
-      color: 'bg-blue-600'
+      color: 'bg-blue-600',
+      roles: ['admin', 'editor', 'author']
     },
     {
       title: 'إدارة التصنيفات',
       description: 'إضافة وتعديل تصنيفات المقالات',
       icon: FiFolder,
       link: '/admin/administratorpage/categories',
-      color: 'bg-green-600'
+      color: 'bg-green-600',
+      roles: ['admin']
     },
-    
+    {
+      title: 'آخر الأخبار',
+      description: 'إدارة آخر الأخبار',
+      icon: FiTrendingUp,
+      link: '/admin/administratorpage/last-news',
+      color: 'bg-purple-600',
+      roles: ['admin', 'editor', 'author']
+    }
   ];
+
+  // Filter quick actions based on user role
+  const quickActions = allQuickActions.filter(action => 
+    user && action.roles.includes(user.role)
+  );
 
   return (
     <AdminLayout title="لوحة التحكم" description="لوحة تحكم إدارة الموقع">
@@ -290,4 +317,4 @@ const AdminDashboard: React.FC = () => {
   );
 };
 
-export default withAuth(AdminDashboard, 'admin');
+export default withAuth(AdminDashboard);
