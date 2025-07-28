@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
-import { FiCalendar, FiCopy, FiShare2, FiEye } from 'react-icons/fi';
+import { FiCalendar } from 'react-icons/fi';
 import Image from 'next/image';
 import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
@@ -119,12 +119,29 @@ const SingleLastNewsPage: React.FC = () => {
     if (loading) return <div className="text-center py-10">جاري التحميل...</div>;
     if (error || !lastNews) return <div className="text-center py-10 text-red-500">{error || 'الخبر غير موجود'}</div>;
 
-    const formatDate = (dateString: string) => {
-      return new Date(dateString).toLocaleDateString('ar-EG', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+
+
+    const getRelativeTime = (dateString: string) => {
+      const now = new Date();
+      const date = new Date(dateString);
+      const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+      
+      if (diffInMinutes < 1) {
+        return 'الآن';
+      } else if (diffInMinutes < 60) {
+        return `منذ ${diffInMinutes} دقيقة${diffInMinutes > 1 ? '' : ''}`;
+      } else if (diffInMinutes < 1440) { // Less than 24 hours
+        const hours = Math.floor(diffInMinutes / 60);
+        const remainingMinutes = diffInMinutes % 60;
+        if (remainingMinutes === 0) {
+          return `منذ ${hours} ساعة${hours > 1 ? '' : ''}`;
+        } else {
+          return `منذ ${hours} ساعة و ${remainingMinutes} دقيقة`;
+        }
+      } else {
+        const days = Math.floor(diffInMinutes / 1440);
+        return `منذ ${days} يوم${days > 1 ? '' : ''}`;
+      }
     };
 
     return (
@@ -133,76 +150,26 @@ const SingleLastNewsPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Main Content */}
             <article className="lg:col-span-3">
-              {/* Standard Image */}
+              {/* Last News Title */}
+              <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">{lastNews.title_ar}</h1>
+              
+              {/* Image after title */}
               <div className="mb-6">
                 <Image 
                   src="/images/background_image.jpg" 
                   alt="مركبا" 
-                  width={800} 
-                  height={600} 
-                  className="w-full h-64 object-cover rounded-lg"
+                  width={1920} 
+                  height={1080} 
+                  className="w-full h-auto object-cover rounded-lg"
+                  style={{ aspectRatio: '16/9' }}
                 />
               </div>
-
-              {/* Last News Title */}
-              <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">{lastNews.title_ar}</h1>
               
-              {/* Meta Information */}
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
-                <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-500">
-                  <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                    <div className="w-10 h-10 bg-white-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
-                      <Image 
-                        src="/images/logo.png" 
-                        alt="مركبا" 
-                        width={40} 
-                        height={40} 
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-800">مركبا</div>
-                      <div className="text-xs text-gray-500 flex items-center gap-2">
-                        <span>
-                          {new Date(lastNews.created_at).toLocaleDateString('ar-EG', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <FiEye size={12} />
-                          {lastNews.views}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2 rtl:space-x-reverse relative">
-                  {copyMessage && (
-                    <div className="absolute -top-8 right-0 bg-green-500 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-                      {copyMessage}
-                    </div>
-                  )}
-                  <button 
-                    onClick={() => handleCopyText(lastNews.content_ar || '')}
-                    className={`p-2 transition-colors ${
-                      copySuccess 
-                        ? 'text-green-600 hover:text-green-700' 
-                        : 'text-gray-400 hover:text-gray-600'
-                    }`}
-                    title="نسخ النص"
-                  >
-                    <FiCopy size={16} />
-                  </button>
-                  <button 
-                    onClick={handleShare}
-                    className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                    title="مشاركة"
-                  >
-                    <FiShare2 size={16} />
-                  </button>
+              {/* Meta Information - Simplified */}
+              <div className="flex items-center mb-6 pb-4 border-b border-gray-200">
+                <div className="text-sm text-gray-500">
+                  <FiCalendar className="inline ml-1" size={14} />
+                  {getRelativeTime(lastNews.created_at)}
                 </div>
               </div>
 
@@ -260,12 +227,9 @@ const SingleLastNewsPage: React.FC = () => {
                           <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
                             {latestItem.title_ar}
                           </h4>
-                          <div className="text-xs text-gray-500 flex items-center gap-2">
-                            <span>{formatDate(latestItem.created_at)}</span>
-                            <span className="flex items-center gap-1">
-                              <FiEye size={10} />
-                              {latestItem.views}
-                            </span>
+                          <div className="text-xs text-gray-500">
+                            <FiCalendar className="inline ml-1" size={10} />
+                            {getRelativeTime(latestItem.created_at)}
                           </div>
                         </div>
                       </div>
