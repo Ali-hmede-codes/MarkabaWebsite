@@ -11,7 +11,7 @@ export default async function handler(
   
   try {
     // Build the backend URL for admin categories
-    let backendUrl = `${API_BASE_URL}/admin/categories`;
+    let backendUrl = `${API_BASE_URL}/admin/administratorpage/categories`;
     
     // Handle specific category ID
     if (id) {

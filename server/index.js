@@ -406,7 +406,6 @@ app.use('/api/settings', settingsEnhancedRoutes);
 app.use('/api/weather', weatherEnhancedRoutes);
 app.use('/api/prayer', prayerEnhancedRoutes);
 app.use('/api/social-media', socialMediaEnhancedRoutes);
-app.use('/api/admin', adminRoutes);
 app.use('/api/admin/administratorpage', adminRoutes);
 
 // Error handling middleware
