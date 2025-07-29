@@ -272,17 +272,16 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
               {post.title_ar || post.title}
             </h1>
             
-            {/* Category Box */}
-            {post.category?.name_ar && (
-              <div className="mb-4">
-                <span className="inline-block bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-                  {typeof post.category === 'string' ? post.category : post.category?.name_ar}
-                </span>
-              </div>
-            )}
-            
             {/* Summary Box */}
-            <div className="bg-gray-100 border border-gray-300 rounded-lg shadow-sm mb-8 overflow-hidden">
+            <div className="bg-gray-100 border border-gray-300 rounded-lg shadow-sm mb-8 overflow-hidden relative">
+              {/* Category Badge - Top Right */}
+              {post.category?.name_ar && (
+                <div className="absolute top-3 right-3 z-10">
+                  <span className="inline-block bg-blue-500 text-white px-3 py-1 rounded-lg text-xs font-medium shadow-sm">
+                    {typeof post.category === 'string' ? post.category : post.category?.name_ar}
+                  </span>
+                </div>
+              )}
               <div className="p-6">
                 {/* Post Summary/Excerpt */}
                 {(post.excerpt_ar || post.excerpt) && (
