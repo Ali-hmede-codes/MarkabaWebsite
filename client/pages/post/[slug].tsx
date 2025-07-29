@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
+import { useAPI, usePosts, useBreakingNews } from '../../components/API/hooks';
 import { Post, BreakingNews } from '../../components/API/types';
-import {  FiCopy, FiShare2 } from 'react-icons/fi';
+import { FiCalendar, FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
@@ -13,123 +14,127 @@ const SinglePostPage: React.FC = () => {
   const { slug: slugParam } = router.query;
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
 
-  if (!slug) return <div className="text-center py-10">جاري التحميل...</div>;
+  // Handle route changes to ensure proper navigation
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      // Force scroll to top on route change
+      window.scrollTo(0, 0);
+    };
 
-  return router.isReady ? <InnerPost slug={slug} key={`post-${slug}`} /> : <div className="text-center py-10">جاري التحميل...</div>;
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
+
+  // Don't render anything until router is ready and slug is available
+  if (!router.isReady || !slug) {
+    return (
+      <Layout title="جاري التحميل..." description="">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center py-10 text-gray-600">جاري التحميل...</div>
+        </div>
+      </Layout>
+    );
+  }
+
+  return <PostContent slug={slug} key={`post-content-${slug}`} />;
 };
 
-const InnerPost: React.FC<{ slug: string }> = ({ slug }) => {
+const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   const router = useRouter();
-  const [post, setPost] = useState<Post | null>(null);
+  const [fontSize, setFontSize] = useState(20);
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [fontSize, setFontSize] = useState(20);
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
 
-  // Reset state when slug changes
-   useEffect(() => {
-     setPost(null);
-     setLatestPosts([]);
-     setBreakingNews([]);
-     setFontSize(20);
-     setError(null);
-   }, [slug]);
+  // Fetch post data with proper dependency handling
+  const { data: response, loading, error, refetch } = useAPI<{ posts: Post[]; total: number }>('/posts', {
+    immediate: true,
+    params: { slug, limit: 1, page: 1 }
+  });
 
-   // Fetch post data
-   useEffect(() => {
-     if (!slug) return;
+  // Force refetch when slug changes
+  useEffect(() => {
+    if (slug) {
+      refetch(undefined, { slug, limit: 1, page: 1 });
+    }
+  }, [slug, refetch]);
+  
+  const { data: postsResponse } = usePosts({ limit: 6 });
+  const breakingNewsResponse = useBreakingNews();
+  const post = response?.posts?.[0];
 
-     const fetchData = async () => {
-       try {
-         setLoading(true);
-         
-         // Fetch main post
-         const postResponse = await fetch(`/api/posts?slug=${slug}&limit=1&page=1`);
-         if (!postResponse.ok) {
-           throw new Error('Failed to fetch post');
-         }
-         const postData = await postResponse.json();
-         
-         if (!postData.posts || postData.posts.length === 0) {
-           throw new Error('Post not found');
-         }
-         
-         const currentPost = postData.posts[0];
-         setPost(currentPost);
-         
-         // Fetch latest posts
-         const latestResponse = await fetch('/api/posts?limit=6&page=1');
-         if (latestResponse.ok) {
-           const latestData = await latestResponse.json();
-           if (latestData.posts) {
-             const filtered = latestData.posts.filter((p: Post) => p.id !== currentPost.id);
-             setLatestPosts(filtered.slice(0, 5));
-           }
-         }
-         
-         // Fetch breaking news
-         const breakingResponse = await fetch('/api/breaking-news');
-         if (breakingResponse.ok) {
-           const breakingData = await breakingResponse.json();
-           if (Array.isArray(breakingData)) {
-             const filtered = breakingData.filter((b: BreakingNews) => b.id !== currentPost.id);
-             setBreakingNews(filtered.slice(0, 4));
-           }
-         }
-         
-       } catch (err) {
-         console.error('Error fetching data:', err);
-         setError(err instanceof Error ? err.message : 'An error occurred');
-       } finally {
-         setLoading(false);
-       }
-     };
+  // Reset state when component mounts or slug changes
+  useEffect(() => {
+    setLatestPosts([]);
+    setBreakingNews([]);
+    setFontSize(20);
+    setCopySuccess(false);
+    setCopyMessage('');
+  }, [slug]);
 
-     fetchData();
-   }, [slug]);
+  // Update latest posts when data is available
+  useEffect(() => {
+    if (postsResponse?.posts && post) {
+      const filtered = postsResponse.posts.filter((p) => p.id !== post.id);
+      setLatestPosts(filtered.slice(0, 5));
+    }
+  }, [postsResponse, post]);
+
+  // Update breaking news when data is available
+  useEffect(() => {
+    if (breakingNewsResponse?.data && Array.isArray(breakingNewsResponse.data) && post) {
+      const filtered = breakingNewsResponse.data.filter((b) => b.id !== post.id);
+      setBreakingNews(filtered.slice(0, 4));
+    }
+  }, [breakingNewsResponse, post]);
 
   const handleCopyText = async (text: string) => {
-     try {
-       await navigator.clipboard.writeText(text);
-       setCopySuccess(true);
-       setCopyMessage('تم النسخ');
-       setTimeout(() => {
-         setCopySuccess(false);
-         setCopyMessage('');
-       }, 2000);
-     } catch (err) {
-       console.error('Failed to copy text:', err);
-     }
-   };
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(true);
+      setCopyMessage('تم النسخ');
+      setTimeout(() => {
+        setCopySuccess(false);
+        setCopyMessage('');
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+    }
+  };
 
-   const handleShare = async () => {
-     if (navigator.share && post) {
-       try {
-         await navigator.share({
-           title: post.title_ar || post.title || '',
-           url: window.location.href
-         });
-       } catch (err) {
-         console.error('Error sharing:', err);
-       }
-     } else {
-       handleCopyText(window.location.href);
-     }
-   };
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: post?.title_ar || post?.title || '',
+          url: window.location.href
+        });
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      handleCopyText(window.location.href);
+    }
+  };
 
-   const formatDate = (dateString: string) => {
-     const date = new Date(dateString);
-     return date.toLocaleDateString('ar-EG', {
-       year: 'numeric',
-       month: 'long',
-       day: 'numeric',
-       hour: '2-digit',
-       minute: '2-digit'
-     });
-   };
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('ar-EG', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const handleNavigation = (href: string) => {
+    // Use replace to ensure proper navigation between posts
+    router.push(href).then(() => {
+      // Force scroll to top after navigation
+      window.scrollTo(0, 0);
+    });
+  };
 
   if (loading) {
     return (
@@ -148,7 +153,7 @@ const InnerPost: React.FC<{ slug: string }> = ({ slug }) => {
           <div className="text-center py-10">
             <div className="text-red-500 mb-4">المنشور غير موجود</div>
             <button 
-              onClick={() => router.push('/')}
+              onClick={() => handleNavigation('/')}
               className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
             >
               العودة للرئيسية
@@ -159,7 +164,7 @@ const InnerPost: React.FC<{ slug: string }> = ({ slug }) => {
     );
   }
 
-return (
+  return (
     <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
       <MetaTags
         pageType="post"
@@ -299,7 +304,7 @@ return (
             {/* Back to Home Button */}
             <div className="flex justify-center mt-8 mb-6">
               <button 
-                onClick={() => router.push('/')}
+                onClick={() => handleNavigation('/')}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -319,8 +324,8 @@ return (
               </h3>
               <div className="space-y-4">
                 {latestPosts.map((latestPost) => (
-                  <Link key={latestPost.id} href={`/post/${latestPost.slug}`}>
-                    <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg">
+                  <div key={latestPost.id} className="cursor-pointer" onClick={() => handleNavigation(`/post/${latestPost.slug}`)}>
+                    <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors rounded-lg">
                       {(latestPost.featured_image || latestPost.image) && (
                         <div className="relative w-16 h-16 flex-shrink-0">
                           <Image 
@@ -340,7 +345,7 @@ return (
                         </p>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>
