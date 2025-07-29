@@ -201,9 +201,26 @@ router.post('/',
 
       let { name_ar, slug, description_ar, sort_order, is_active } = req.body;
       
-      // Generate slug if not provided - Improved security and validation
+      // Transliteration map for Arabic to Latin
+      const transliterateArabic = (text) => {
+        const map = {
+          'ا': 'a', 'أ': 'a', 'إ': 'e', 'آ': 'a',
+          'ب': 'b', 'ت': 't', 'ث': 'th', 'ج': 'j',
+          'ح': 'h', 'خ': 'kh', 'د': 'd', 'ذ': 'dh',
+          'ر': 'r', 'ز': 'z', 'س': 's', 'ش': 'sh',
+          'ص': 's', 'ض': 'd', 'ط': 't', 'ظ': 'z',
+          'ع': '3', 'غ': 'gh', 'ف': 'f', 'ق': 'q',
+          'ك': 'k', 'ل': 'l', 'م': 'm', 'ن': 'n',
+          'ه': 'h', 'و': 'w', 'ي': 'y', 'ى': 'a',
+          'ة': 'h', 'ئ': 'e', 'ؤ': 'o', 'ء': ''
+        };
+        return text.split('').map(char => map[char] || char).join('');
+      };
+
+      // Generate slug if not provided - Improved security and validation with transliteration
       if (!slug) {
-        slug = name_ar
+        const transliterated = transliterateArabic(name_ar);
+        slug = transliterated
           .toLowerCase()
           .trim()
           .replace(/[^a-z0-9\s-]/g, '')
