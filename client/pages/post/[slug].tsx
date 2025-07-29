@@ -307,7 +307,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
                         />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-800">مركبا</div>
+                        <div className="font-medium text-gray-800">مـركـبـا - الـمـنـصـة الاخـبـاريـة</div>
                         <div className="text-xs text-gray-500">
                           {formatDate(post.created_at)}
                         </div>
