@@ -1,8 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
-import { useAPI, usePosts, useBreakingNews } from '../../components/API/hooks';
 import { Post, BreakingNews } from '../../components/API/types';
-import { FiCalendar, FiCopy, FiShare2 } from 'react-icons/fi';
+import { FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
@@ -44,54 +43,94 @@ const SinglePostPage: React.FC = () => {
 const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   const router = useRouter();
   const [fontSize, setFontSize] = useState(20);
+  const [post, setPost] = useState<Post | null>(null);
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch post data with proper dependency handling
-  const { data: response, loading, error, refetch } = useAPI<{ posts: Post[]; total: number }>('/posts', {
-    immediate: true,
-    params: { slug, limit: 1, page: 1 }
-  });
-
-  // Force refetch when slug changes
+  // Reset state when slug changes
   useEffect(() => {
-    if (slug) {
-      refetch(undefined, { slug, limit: 1, page: 1 });
-    }
-  }, [slug, refetch]);
-  
-  const { data: postsResponse } = usePosts({ limit: 6 });
-  const breakingNewsResponse = useBreakingNews();
-  const post = response?.posts?.[0];
-
-  // Reset state when component mounts or slug changes
-  useEffect(() => {
+    setPost(null);
     setLatestPosts([]);
     setBreakingNews([]);
     setFontSize(20);
     setCopySuccess(false);
     setCopyMessage('');
+    setError(null);
     // Force scroll to top when slug changes
     window.scrollTo(0, 0);
   }, [slug]);
 
-  // Update latest posts when data is available
+  // Fetch single post by slug
   useEffect(() => {
-    if (postsResponse?.posts && post) {
-      const filtered = postsResponse.posts.filter((p) => p.id !== post.id);
-      setLatestPosts(filtered.slice(0, 5));
-    }
-  }, [postsResponse, post]);
+    const fetchPost = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/posts?slug=${slug}&limit=1&page=1`);
+        const data = await response.json();
+        
+        if (data.success && data.posts && data.posts.length > 0) {
+          setPost(data.posts[0]);
+        } else {
+          setError('المنشور غير موجود');
+        }
+      } catch (err) {
+        console.error('Error fetching post:', err);
+        setError('خطأ في تحميل المنشور');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Update breaking news when data is available
-  useEffect(() => {
-    if (breakingNewsResponse?.data && Array.isArray(breakingNewsResponse.data) && post) {
-      const filtered = breakingNewsResponse.data.filter((b) => b.id !== post.id);
-      setBreakingNews(filtered.slice(0, 4));
+    if (slug) {
+      fetchPost();
     }
-  }, [breakingNewsResponse, post]);
+  }, [slug]);
+
+  // Fetch latest posts for sidebar
+  useEffect(() => {
+    const fetchLatestPosts = async () => {
+      try {
+        const response = await fetch('/api/posts?active=true&limit=6&include_content=false');
+        const data = await response.json();
+        
+        if (data.success && data.posts) {
+          // Filter out current post
+          const filtered = data.posts.filter((p: Post) => p.id !== post?.id);
+          setLatestPosts(filtered.slice(0, 5));
+        }
+      } catch (err) {
+        console.error('Error fetching latest posts:', err);
+      }
+    };
+
+    if (post) {
+      fetchLatestPosts();
+    }
+  }, [post]);
+
+  // Fetch breaking news for sidebar
+  useEffect(() => {
+    const fetchBreakingNews = async () => {
+      try {
+        const response = await fetch('/api/breaking-news?active=true&limit=4&include_content=false');
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+          // Filter out current post if it exists in breaking news
+          const filtered = data.data.filter((item: BreakingNews) => item.id !== post?.id);
+          setBreakingNews(filtered.slice(0, 4));
+        }
+      } catch (err) {
+        console.error('Error fetching breaking news:', err);
+      }
+    };
+
+    fetchBreakingNews();
+  }, [post]);
 
   const handleCopyText = async (text: string) => {
     try {
