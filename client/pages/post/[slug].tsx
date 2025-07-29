@@ -149,7 +149,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
           title: post.title_ar || post.title,
           description: post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160),
           image: post.featured_image ? getImageUrl(post.featured_image) : undefined,
-          url: typeof window !== 'undefined' ? window.location.href : undefined,
+          url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`,
           type: 'article',
           publishedTime: post.created_at,
           modifiedTime: post.updated_at,
@@ -170,15 +170,15 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
             
             {/* Category Box */}
             {post.category?.name_ar && (
-              <div className="bg-blue-500 text-white px-4 py-2 rounded-t-lg mb-0">
-                <span className="text-sm font-medium">
+              <div className="mb-4">
+                <span className="inline-block bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium">
                   {typeof post.category === 'string' ? post.category : post.category?.name_ar}
                 </span>
               </div>
             )}
             
             {/* Summary Box */}
-            <div className={`bg-gray-100 border border-gray-300 ${post.category?.name_ar ? 'rounded-b-lg rounded-t-none' : 'rounded-lg'} shadow-sm mb-8 overflow-hidden`}>
+            <div className="bg-gray-100 border border-gray-300 rounded-lg shadow-sm mb-8 overflow-hidden">
               <div className="p-6">
                 {/* Post Summary/Excerpt */}
                 {(post.excerpt_ar || post.excerpt) && (
