@@ -16,23 +16,13 @@ const SinglePostPage: React.FC = () => {
 
   // Handle route changes to ensure proper navigation
   useEffect(() => {
-    const handleRouteChangeStart = () => {
-      // Clear any cached data when starting route change
-    };
-
     const handleRouteChange = (url: string) => {
       // Force scroll to top on route change
       window.scrollTo(0, 0);
-      // Force a small delay to ensure component re-renders
-      setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-      }, 100);
     };
 
-    router.events.on('routeChangeStart', handleRouteChangeStart);
     router.events.on('routeChangeComplete', handleRouteChange);
     return () => {
-      router.events.off('routeChangeStart', handleRouteChangeStart);
       router.events.off('routeChangeComplete', handleRouteChange);
     };
   }, [router.events]);
@@ -48,7 +38,7 @@ const SinglePostPage: React.FC = () => {
     );
   }
 
-  return <PostContent slug={slug} key={`post-${slug}-${router.asPath}`} />;
+  return <PostContent slug={slug} key={`post-content-${slug}`} />;
 };
 
 const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
@@ -58,50 +48,17 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
-  const [currentSlug, setCurrentSlug] = useState(slug);
-
-  // Transliteration function to match backend slug generation
-  const transliterateAndSlugify = (text: string): string => {
-    const arabicMap: { [key: string]: string } = {
-      'ا': 'a', 'أ': 'a', 'إ': 'i', 'آ': 'aa',
-      'ب': 'b', 'ت': 't', 'ث': 'th', 'ج': 'j', 'ح': 'h', 'خ': 'kh',
-      'د': 'd', 'ذ': 'dh', 'ر': 'r', 'ز': 'z', 'س': 's', 'ش': 'sh',
-      'ص': 's', 'ض': 'd', 'ط': 't', 'ظ': 'z', 'ع': 'a', 'غ': 'gh',
-      'ف': 'f', 'ق': 'q', 'ك': 'k', 'ل': 'l', 'م': 'm', 'ن': 'n',
-      'ه': 'h', 'و': 'w', 'ي': 'y', 'ى': 'a', 'ة': 'h',
-      'ء': '', 'ئ': 'y', 'ؤ': 'w', 'لا': 'la'
-    };
-    const transliterated = text.split('').map(char => arabicMap[char] || char).join('');
-    return transliterated.toLowerCase()
-      .replace(/[^a-z0-9 -]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  };
-
-  // Process slug for API request
-  const processedSlug = transliterateAndSlugify(slug);
 
   // Fetch post data with proper dependency handling
   const { data: response, loading, error, refetch } = useAPI<{ posts: Post[]; total: number }>('/posts', {
-    immediate: false,
-    params: { slug: processedSlug, limit: 1, page: 1 }
+    immediate: true,
+    params: { slug, limit: 1, page: 1 }
   });
 
-  // Reset and refetch when slug changes
+  // Force refetch when slug changes
   useEffect(() => {
     if (slug) {
-      // Always reset state when slug changes
-      setLatestPosts([]);
-      setBreakingNews([]);
-      setFontSize(20);
-      setCopySuccess(false);
-      setCopyMessage('');
-      setCurrentSlug(slug);
-      
-      const newProcessedSlug = transliterateAndSlugify(slug);
-      // Force refetch with new slug
-      refetch(undefined, { slug: newProcessedSlug, limit: 1, page: 1 });
+      refetch(undefined, { slug, limit: 1, page: 1 });
     }
   }, [slug, refetch]);
   
@@ -109,7 +66,14 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   const breakingNewsResponse = useBreakingNews();
   const post = response?.posts?.[0];
 
-
+  // Reset state when component mounts or slug changes
+  useEffect(() => {
+    setLatestPosts([]);
+    setBreakingNews([]);
+    setFontSize(20);
+    setCopySuccess(false);
+    setCopyMessage('');
+  }, [slug]);
 
   // Update latest posts when data is available
   useEffect(() => {
