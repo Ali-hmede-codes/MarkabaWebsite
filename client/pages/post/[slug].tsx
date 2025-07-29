@@ -274,10 +274,10 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
             
             {/* Summary Box */}
             <div className="bg-gray-100 border border-gray-300 rounded-lg shadow-sm mb-8 overflow-hidden relative">
-              {/* Category Badge - Outer Left Top */}
+              {/* Category Badge - Outer Right Top */}
               {post.category?.name_ar && (
-                <div className="absolute -top-0 -left-0 z-10">
-                  <span className="inline-block bg-blue-500 text-white px-3 py-1 text-xs font-medium shadow-sm" style={{borderTopLeftRadius: '8px', borderTopRightRadius: '0', borderBottomLeftRadius: '0', borderBottomRightRadius: '0'}}>
+                <div className="absolute -top-0 -right-0 z-10">
+                  <span className="inline-block bg-blue-500 text-white px-3 py-1 text-xs font-medium shadow-sm" style={{borderTopLeftRadius: '0', borderTopRightRadius: '8px', borderBottomLeftRadius: '0', borderBottomRightRadius: '0'}}>
                     {typeof post.category === 'string' ? post.category : post.category?.name_ar}
                   </span>
                 </div>
