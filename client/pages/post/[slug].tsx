@@ -15,44 +15,6 @@ const SinglePostPage: React.FC = () => {
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
-  const [fontSize, setFontSize] = useState(20);
-  const [latestPosts, setLatestPosts] = useState<Post[]>([]);
-  const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
-
-  // All hooks must be called before any conditional returns
-  const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', {
-    immediate: !!slug,
-    params: slug ? { slug, limit: 1, page: 1 } : {}
-  });
-  
-  const { data: postsResponse } = usePosts({ limit: 4 });
-  const breakingNewsResponse = useBreakingNews();
-  const post = response?.posts?.[0];
-
-  // Reset state when slug changes
-  useEffect(() => {
-    if (slug) {
-      setLatestPosts([]);
-      setBreakingNews([]);
-      setFontSize(20);
-      setCopySuccess(false);
-      setCopyMessage('');
-    }
-  }, [slug]);
-
-  useEffect(() => {
-    if (postsResponse?.posts && post) {
-      const filtered = postsResponse.posts.filter((p) => p.id !== post.id);
-      setLatestPosts(filtered.slice(0, 4));
-    }
-  }, [postsResponse, post]);
-
-  useEffect(() => {
-    if (breakingNewsResponse?.data && Array.isArray(breakingNewsResponse.data) && post) {
-      const filtered = breakingNewsResponse.data.filter((p: BreakingNews) => p.id !== post.id);
-      setBreakingNews(filtered.slice(0, 4));
-    }
-  }, [breakingNewsResponse, post]);
 
   const handleCopyText = async (text: string) => {
     try {
@@ -83,24 +45,84 @@ const SinglePostPage: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-EG', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+  const InnerPostPage = ({ slug }: { slug: string }) => {
+    const [fontSize, setFontSize] = useState(20);
+    const [latestPosts, setLatestPosts] = useState<Post[]>([]);
+    const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
+
+    // All hooks must be called before any conditional returns
+    const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', {
+      immediate: !!slug,
+      params: slug ? { slug, limit: 1, page: 1 } : {}
     });
-  };
+    
+    const { data: postsResponse } = usePosts({ limit: 4 });
+    const breakingNewsResponse = useBreakingNews();
+    const post = response?.posts?.[0];
 
-  // Show loading while router is not ready or slug is not available
-  if (!router.isReady || !slug) {
-    return <div className="text-center py-10">جاري التحميل...</div>;
-  }
+    // Reset state when slug changes
+    useEffect(() => {
+      setLatestPosts([]);
+      setBreakingNews([]);
+      setFontSize(20);
+    }, [slug]);
 
-  if (loading) return <div className="text-center py-10">جاري التحميل...</div>;
-  if (error || !post) return <div className="text-center py-10 text-red-500">المنشور غير موجود</div>;
+    useEffect(() => {
+      if (postsResponse?.posts && post) {
+        const filtered = postsResponse.posts.filter((p) => p.id !== post.id);
+        setLatestPosts(filtered.slice(0, 4));
+      }
+    }, [postsResponse, post]);
 
-  return (
-      <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
+    useEffect(() => {
+      if (breakingNewsResponse?.data && Array.isArray(breakingNewsResponse.data) && post) {
+        const filtered = breakingNewsResponse.data.filter((b) => b.id !== post.id);
+        setBreakingNews(filtered.slice(0, 4));
+      }
+    }, [breakingNewsResponse, post]);
+
+    const handleCopyText = async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        setCopySuccess(true);
+        setCopyMessage('تم النسخ');
+        setTimeout(() => {
+          setCopySuccess(false);
+          setCopyMessage('');
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy text:', err);
+      }
+    };
+
+    const handleShare = async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: document.title,
+            url: window.location.href
+          });
+        } catch (err) {
+          console.error('Error sharing:', err);
+        }
+      } else {
+        handleCopyText(window.location.href);
+      }
+    };
+
+    const formatDate = (dateString: string) => {
+      return new Date(dateString).toLocaleDateString('ar-EG', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    };
+
+    if (loading) return <div className="text-center py-10">جاري التحميل...</div>;
+     if (error || !post) return <div className="text-center py-10 text-red-500">المنشور غير موجود</div>;
+
+    return (
+        <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Main Content */}
@@ -225,7 +247,7 @@ const SinglePostPage: React.FC = () => {
               {/* Latest Posts Section */}
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
-                  آخر المقالات
+                  آخر الأخبار
                 </h3>
                 <div className="space-y-4">
                   {latestPosts.map((latestPost) => (
@@ -280,6 +302,11 @@ const SinglePostPage: React.FC = () => {
         </div>
       </Layout>
     );
+  };
+
+  if (!slug) return <div className="text-center py-10">جاري التحميل...</div>;
+
+  return router.isReady ? <InnerPostPage slug={slug} key={`post-${slug}`} /> : <div className="text-center py-10">جاري التحميل...</div>;
 };
 
 export default SinglePostPage;
