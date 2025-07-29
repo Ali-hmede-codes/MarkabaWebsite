@@ -87,26 +87,33 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   // Fetch post data with proper dependency handling
   const { data: response, loading, error, refetch } = useAPI<{ posts: Post[]; total: number }>('/posts', {
     immediate: false,
-    params: { slug: processedSlug, limit: 1, page: 1, _refresh: forceRefresh }
+    params: { slug: processedSlug, limit: 1, page: 1 }
   });
 
   // Reset and refetch when slug changes
   useEffect(() => {
-    // Always reset state and fetch when slug changes
-    setLatestPosts([]);
-    setBreakingNews([]);
-    setFontSize(20);
-    setCopySuccess(false);
-    setCopyMessage('');
-    setCurrentSlug(slug);
-    
-    // Force a complete refresh by changing the refresh key
-    setForceRefresh(prev => prev + 1);
-    
-    const newProcessedSlug = transliterateAndSlugify(slug);
-    // Force refetch with new slug
-    refetch(undefined, { slug: newProcessedSlug, limit: 1, page: 1, _refresh: Date.now() });
-  }, [slug, refetch]);
+    if (slug && slug !== currentSlug) {
+      // Reset state when slug changes
+      setLatestPosts([]);
+      setBreakingNews([]);
+      setFontSize(20);
+      setCopySuccess(false);
+      setCopyMessage('');
+      setCurrentSlug(slug);
+      
+      const newProcessedSlug = transliterateAndSlugify(slug);
+      // Force refetch with new slug
+      refetch(undefined, { slug: newProcessedSlug, limit: 1, page: 1 });
+    }
+  }, [slug, currentSlug, refetch]);
+
+  // Initial fetch when component mounts
+  useEffect(() => {
+    if (slug) {
+      const initialProcessedSlug = transliterateAndSlugify(slug);
+      refetch(undefined, { slug: initialProcessedSlug, limit: 1, page: 1 });
+    }
+  }, []);
   
   const { data: postsResponse } = usePosts({ limit: 6 });
   const breakingNewsResponse = useBreakingNews();
