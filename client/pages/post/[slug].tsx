@@ -16,23 +16,13 @@ const SinglePostPage: React.FC = () => {
 
   // Handle route changes to ensure proper navigation
   useEffect(() => {
-    const handleRouteChangeStart = () => {
-      // Clear any cached data when starting route change
-    };
-
     const handleRouteChange = (url: string) => {
       // Force scroll to top on route change
       window.scrollTo(0, 0);
-      // Force a small delay to ensure component re-renders
-      setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-      }, 100);
     };
 
-    router.events.on('routeChangeStart', handleRouteChangeStart);
     router.events.on('routeChangeComplete', handleRouteChange);
     return () => {
-      router.events.off('routeChangeStart', handleRouteChangeStart);
       router.events.off('routeChangeComplete', handleRouteChange);
     };
   }, [router.events]);
@@ -48,7 +38,6 @@ const SinglePostPage: React.FC = () => {
     );
   }
 
-  // Force complete remount when slug changes
   return <PostContent slug={slug} key={`post-content-${slug}`} />;
 };
 
@@ -59,67 +48,34 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
-  const [currentSlug, setCurrentSlug] = useState(slug);
-  const [forceRefresh, setForceRefresh] = useState(0);
-
-  // Transliteration function to match backend slug generation
-  const transliterateAndSlugify = (text: string): string => {
-    const arabicMap: { [key: string]: string } = {
-      'ا': 'a', 'أ': 'a', 'إ': 'i', 'آ': 'aa',
-      'ب': 'b', 'ت': 't', 'ث': 'th', 'ج': 'j', 'ح': 'h', 'خ': 'kh',
-      'د': 'd', 'ذ': 'dh', 'ر': 'r', 'ز': 'z', 'س': 's', 'ش': 'sh',
-      'ص': 's', 'ض': 'd', 'ط': 't', 'ظ': 'z', 'ع': 'a', 'غ': 'gh',
-      'ف': 'f', 'ق': 'q', 'ك': 'k', 'ل': 'l', 'م': 'm', 'ن': 'n',
-      'ه': 'h', 'و': 'w', 'ي': 'y', 'ى': 'a', 'ة': 'h',
-      'ء': '', 'ئ': 'y', 'ؤ': 'w', 'لا': 'la'
-    };
-    const transliterated = text.split('').map(char => arabicMap[char] || char).join('');
-    return transliterated.toLowerCase()
-      .replace(/[^a-z0-9 -]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  };
-
-  // Process slug for API request
-  const processedSlug = transliterateAndSlugify(slug);
 
   // Fetch post data with proper dependency handling
   const { data: response, loading, error, refetch } = useAPI<{ posts: Post[]; total: number }>('/posts', {
-    immediate: false,
-    params: { slug: processedSlug, limit: 1, page: 1 }
+    immediate: true,
+    params: { slug, limit: 1, page: 1 }
   });
 
-  // Reset and refetch when slug changes
-  useEffect(() => {
-    if (slug && slug !== currentSlug) {
-      // Reset state when slug changes
-      setLatestPosts([]);
-      setBreakingNews([]);
-      setFontSize(20);
-      setCopySuccess(false);
-      setCopyMessage('');
-      setCurrentSlug(slug);
-      
-      const newProcessedSlug = transliterateAndSlugify(slug);
-      // Force refetch with new slug
-      refetch(undefined, { slug: newProcessedSlug, limit: 1, page: 1 });
-    }
-  }, [slug, currentSlug, refetch]);
-
-  // Initial fetch when component mounts
+  // Force refetch when slug changes
   useEffect(() => {
     if (slug) {
-      const initialProcessedSlug = transliterateAndSlugify(slug);
-      refetch(undefined, { slug: initialProcessedSlug, limit: 1, page: 1 });
+      refetch(undefined, { slug, limit: 1, page: 1 });
     }
-  }, []);
+  }, [slug, refetch]);
   
   const { data: postsResponse } = usePosts({ limit: 6 });
   const breakingNewsResponse = useBreakingNews();
   const post = response?.posts?.[0];
 
-
+  // Reset state when component mounts or slug changes
+  useEffect(() => {
+    setLatestPosts([]);
+    setBreakingNews([]);
+    setFontSize(20);
+    setCopySuccess(false);
+    setCopyMessage('');
+    // Force scroll to top when slug changes
+    window.scrollTo(0, 0);
+  }, [slug]);
 
   // Update latest posts when data is available
   useEffect(() => {
@@ -175,11 +131,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   };
 
   const handleNavigation = (href: string) => {
-    // Use replace to ensure proper navigation between posts
-    router.push(href).then(() => {
-      // Force scroll to top after navigation
-      window.scrollTo(0, 0);
-    });
+    router.push(href);
   };
 
   if (loading) {
@@ -349,15 +301,14 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
 
             {/* Back to Home Button */}
             <div className="flex justify-center mt-8 mb-6">
-              <button 
-                onClick={() => handleNavigation('/')}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                العودة للرئيسية
-              </button>
+              <Link href="/">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  العودة للرئيسية
+                </button>
+              </Link>
             </div>
           </article>
 
@@ -370,8 +321,8 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
               </h3>
               <div className="space-y-4">
                 {latestPosts.map((latestPost) => (
-                  <div key={latestPost.id} className="cursor-pointer" onClick={() => handleNavigation(`/post/${latestPost.slug}`)}>
-                    <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors rounded-lg">
+                  <Link key={latestPost.id} href={`/post/${latestPost.slug}`}>
+                    <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors rounded-lg cursor-pointer">
                       {(latestPost.featured_image || latestPost.image) && (
                         <div className="relative w-16 h-16 flex-shrink-0">
                           <Image 
@@ -391,7 +342,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
