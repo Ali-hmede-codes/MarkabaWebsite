@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Layout from '../../components/Layout/Layout';
 import { useContent } from '../../hooks/useContent';
-import { usePosts, useCategories } from '../../components/API/hooks';
+import { usePosts, useCategories, useAPI } from '../../components/API/hooks';
 import { Post, Category } from '../../components/API/types';
 import { FiCalendar, FiUser, FiEye, FiArrowRight } from 'react-icons/fi';
 import { getImageUrl } from '../../utils/imageUtils';
@@ -13,11 +13,17 @@ const CategoryPage: React.FC = () => {
   const { slug } = router.query;
   const { content } = useContent();
   const { data: categories } = useCategories();
-  const { data: posts, loading, error } = usePosts({ category: slug });
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const postsPerPage = 12;
+
+  // Custom API call for posts with proper slug handling
+  const { execute: fetchPosts } = useAPI<import('../../components/API/types').PostsResponse>('/posts', {
+    immediate: false,
+  });
 
   // Find current category and filter posts
   useEffect(() => {
@@ -28,12 +34,28 @@ const CategoryPage: React.FC = () => {
     }
   }, [categories, slug]);
 
+  // Fetch posts when slug is available
   useEffect(() => {
-    if (posts) {
-      const postsArray = posts?.posts || [];
-      setFilteredPosts(postsArray);
+    if (slug && typeof slug === 'string') {
+      setLoading(true);
+      setError(null);
+      fetchPosts(undefined, { category: slug })
+        .then((response) => {
+          if (response?.success && response.data) {
+            const postsArray = response.data?.posts || [];
+            setFilteredPosts(postsArray);
+          } else {
+            setError(response?.error || 'Failed to fetch posts');
+          }
+        })
+        .catch((err) => {
+          setError(err.message || 'Failed to fetch posts');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
-  }, [posts]);
+  }, [slug, fetchPosts]);
 
   // Pagination
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
