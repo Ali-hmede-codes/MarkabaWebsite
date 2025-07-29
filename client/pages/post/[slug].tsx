@@ -272,16 +272,18 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
               {post.title_ar || post.title}
             </h1>
             
-            {/* Summary Box */}
-            <div className="bg-gray-100 border border-gray-300 rounded-lg shadow-sm mb-8 overflow-hidden relative">
-              {/* Category Badge - Outer Right Top */}
+            {/* Summary Box Container with Category Badge */}
+            <div className="relative mb-8">
+              {/* Category Badge - Outside Right Top */}
               {post.category?.name_ar && (
-                <div className="absolute -top-0 right-0 z-10 transform translate-x-full">
+                <div className="absolute -top-0 -right-0 z-10">
                   <span className="inline-block bg-blue-500 text-white px-3 py-1 text-xs font-medium shadow-sm" style={{borderTopLeftRadius: '0', borderTopRightRadius: '8px', borderBottomLeftRadius: '0', borderBottomRightRadius: '0'}}>
                     {typeof post.category === 'string' ? post.category : post.category?.name_ar}
                   </span>
                 </div>
               )}
+              {/* Summary Box */}
+              <div className="bg-gray-100 border border-gray-300 rounded-lg shadow-sm overflow-hidden">
               <div className="p-6">
                 {/* Post Summary/Excerpt */}
                 {(post.excerpt_ar || post.excerpt) && (
@@ -340,6 +342,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
                   </div>
                 </div>
               </div>
+            </div>
             </div>
 
             {/* Featured Image */}
