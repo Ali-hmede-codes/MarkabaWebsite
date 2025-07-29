@@ -48,7 +48,8 @@ const SinglePostPage: React.FC = () => {
     );
   }
 
-  return <PostContent slug={slug} key={`post-${slug}-${router.asPath}`} />;
+  // Force complete remount when slug changes
+  return <PostContent slug={slug} key={`post-content-${slug}`} />;
 };
 
 const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
@@ -59,6 +60,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
   const [currentSlug, setCurrentSlug] = useState(slug);
+  const [forceRefresh, setForceRefresh] = useState(0);
 
   // Transliteration function to match backend slug generation
   const transliterateAndSlugify = (text: string): string => {
@@ -85,24 +87,25 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   // Fetch post data with proper dependency handling
   const { data: response, loading, error, refetch } = useAPI<{ posts: Post[]; total: number }>('/posts', {
     immediate: false,
-    params: { slug: processedSlug, limit: 1, page: 1 }
+    params: { slug: processedSlug, limit: 1, page: 1, _refresh: forceRefresh }
   });
 
   // Reset and refetch when slug changes
   useEffect(() => {
-    if (slug) {
-      // Always reset state when slug changes
-      setLatestPosts([]);
-      setBreakingNews([]);
-      setFontSize(20);
-      setCopySuccess(false);
-      setCopyMessage('');
-      setCurrentSlug(slug);
-      
-      const newProcessedSlug = transliterateAndSlugify(slug);
-      // Force refetch with new slug
-      refetch(undefined, { slug: newProcessedSlug, limit: 1, page: 1 });
-    }
+    // Always reset state and fetch when slug changes
+    setLatestPosts([]);
+    setBreakingNews([]);
+    setFontSize(20);
+    setCopySuccess(false);
+    setCopyMessage('');
+    setCurrentSlug(slug);
+    
+    // Force a complete refresh by changing the refresh key
+    setForceRefresh(prev => prev + 1);
+    
+    const newProcessedSlug = transliterateAndSlugify(slug);
+    // Force refetch with new slug
+    refetch(undefined, { slug: newProcessedSlug, limit: 1, page: 1, _refresh: Date.now() });
   }, [slug, refetch]);
   
   const { data: postsResponse } = usePosts({ limit: 6 });
