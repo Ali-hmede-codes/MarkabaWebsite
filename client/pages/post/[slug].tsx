@@ -7,6 +7,7 @@ import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
 import MetaTags from '../../components/SEO/MetaTags';
+import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
 const SinglePostPage: React.FC = () => {
   const router = useRouter();
@@ -67,9 +68,21 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   // Fetch single post by slug
   useEffect(() => {
     const fetchPost = async () => {
+      const { controller, timeoutId, cleanup } = createTimeoutController();
       try {
         setLoading(true);
-        const response = await fetch(`/api/posts?slug=${slug}&limit=1&page=1`);
+        const response = await fetch(`/api/posts?slug=${slug}&limit=1&page=1`, {
+          method: 'GET',
+          headers: API_HEADERS,
+          signal: controller.signal
+        });
+        
+        cleanup();
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.success && data.posts && data.posts.length > 0) {
@@ -78,8 +91,10 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
           setError('المنشور غير موجود');
         }
       } catch (err) {
+        cleanup();
+        const apiError = handleApiError(err, '/api/posts');
         console.error('Error fetching post:', err);
-        setError('خطأ في تحميل المنشور');
+        setError(apiError.message || 'خطأ في تحميل المنشور');
       } finally {
         setLoading(false);
       }
@@ -93,8 +108,20 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   // Fetch latest posts for sidebar
   useEffect(() => {
     const fetchLatestPosts = async () => {
+      const { controller, timeoutId, cleanup } = createTimeoutController();
       try {
-        const response = await fetch('/api/posts?active=true&limit=6&include_content=false');
+        const response = await fetch('/api/posts?active=true&limit=6&include_content=false', {
+          method: 'GET',
+          headers: API_HEADERS,
+          signal: controller.signal
+        });
+        
+        cleanup();
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.success && data.posts) {
@@ -103,7 +130,9 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
           setLatestPosts(filtered.slice(0, 5));
         }
       } catch (err) {
-        console.error('Error fetching latest posts:', err);
+        cleanup();
+        const apiError = handleApiError(err, '/api/posts');
+        console.error('Error fetching latest posts:', apiError.message);
       }
     };
 
@@ -115,8 +144,20 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   // Fetch breaking news for sidebar
   useEffect(() => {
     const fetchBreakingNews = async () => {
+      const { controller, timeoutId, cleanup } = createTimeoutController();
       try {
-        const response = await fetch('/api/breaking-news?active=true&limit=4&include_content=false');
+        const response = await fetch('/api/breaking-news?active=true&limit=4&include_content=false', {
+          method: 'GET',
+          headers: API_HEADERS,
+          signal: controller.signal
+        });
+        
+        cleanup();
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.success && data.data) {
@@ -125,7 +166,9 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
           setBreakingNews(filtered.slice(0, 4));
         }
       } catch (err) {
-        console.error('Error fetching breaking news:', err);
+        cleanup();
+        const apiError = handleApiError(err, '/api/breaking-news');
+        console.error('Error fetching breaking news:', apiError.message);
       }
     };
 
