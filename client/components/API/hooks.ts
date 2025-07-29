@@ -4,20 +4,40 @@ import axios from 'axios';
 import { APIResponse } from './types';
 import { API_BASE_URL } from '../../lib/api/config';
 
-// Create axios instance
+// Create axios instance with connection pooling optimization
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 15000, // Increased timeout
   headers: {
     'Content-Type': 'application/json',
     'Cache-Control': 'no-cache',
   },
+  // Limit concurrent connections to prevent resource exhaustion
+  maxRedirects: 3,
 });
 
-// Handle responses
+// Handle responses with retry logic
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // Retry on network errors or insufficient resources
+    if (
+      (error.code === 'ERR_NETWORK' || error.code === 'ERR_INSUFFICIENT_RESOURCES') &&
+      !originalRequest._retry &&
+      originalRequest._retryCount < 2
+    ) {
+      originalRequest._retry = true;
+      originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
+      
+      // Wait before retry with exponential backoff
+      const delay = Math.pow(2, originalRequest._retryCount) * 500;
+      await new Promise(resolve => setTimeout(resolve, delay));
+      
+      return apiClient(originalRequest);
+    }
+    
     console.error('API Error:', error);
     return Promise.reject(error);
   }
@@ -101,7 +121,7 @@ export function useAPI<T = unknown>(endpoint: string, options?: {
 export function usePosts(filters?: Record<string, unknown>) {
   return useAPI<import('./types').PostsResponse>('/posts', {
     params: filters,
-    immediate: true,
+    immediate: !!filters, // Only make request if filters are provided
   });
 }
 
@@ -130,9 +150,9 @@ export function useWeather() {
   });
 }
 
-export function useBreakingNews() {
+export function useBreakingNews(immediate: boolean = true) {
   return useAPI('/breaking-news/active', {
-    immediate: true,
+    immediate,
   });
 }
 

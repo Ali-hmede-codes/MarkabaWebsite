@@ -55,9 +55,37 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
     params: { slug, limit: 1, page: 1 }
   });
   
-  const { data: postsResponse } = usePosts({ limit: 6 });
-  const breakingNewsResponse = useBreakingNews();
   const post = response?.posts?.[0];
+  
+  // Delay secondary requests to avoid overwhelming the connection pool
+  const [shouldLoadSecondary, setShouldLoadSecondary] = useState(false);
+  
+  useEffect(() => {
+    if (post) {
+      // Delay secondary requests by 100ms to prevent ERR_INSUFFICIENT_RESOURCES
+      const timer = setTimeout(() => {
+        setShouldLoadSecondary(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [post]);
+  
+  const { data: postsResponse } = usePosts(shouldLoadSecondary ? { limit: 6 } : undefined);
+  
+  // Only load breaking news after main post is loaded and not in loading state
+  const [shouldLoadBreakingNews, setShouldLoadBreakingNews] = useState(false);
+  
+  useEffect(() => {
+    if (post && !loading) {
+      // Additional delay for breaking news to further reduce concurrent requests
+      const timer = setTimeout(() => {
+        setShouldLoadBreakingNews(true);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [post, loading]);
+  
+  const breakingNewsResponse = useBreakingNews(shouldLoadBreakingNews);
 
   // Reset state when component mounts or slug changes
   useEffect(() => {
@@ -66,6 +94,8 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
     setFontSize(20);
     setCopySuccess(false);
     setCopyMessage('');
+    setShouldLoadSecondary(false); // Reset secondary loading state
+    setShouldLoadBreakingNews(false); // Reset breaking news loading state
     // Scroll to top when slug changes
     window.scrollTo(0, 0);
   }, [slug]);
