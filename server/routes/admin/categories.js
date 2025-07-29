@@ -377,7 +377,7 @@ router.put('/:id',
       
       // Get updated category
       const [updatedCategory] = await db.execute(
-        `SELECT id, name, slug, description, sort_order, is_active, created_at, updated_at
+        `SELECT id, name_ar, slug, description_ar, sort_order, is_active, created_at, updated_at
          FROM categories WHERE id = ?`,
         [id]
       );
