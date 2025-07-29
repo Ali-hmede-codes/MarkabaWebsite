@@ -71,6 +71,30 @@ const CategoryPage: React.FC = () => {
     });
   };
 
+  const getTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const postDate = new Date(dateString);
+    const diffInMinutes = Math.floor((now.getTime() - postDate.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'الآن';
+    if (diffInMinutes < 60) return `منذ ${diffInMinutes} دقيقة`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `منذ ${diffInHours} ساعة`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `منذ ${diffInDays} يوم`;
+    
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    if (diffInWeeks < 4) return `منذ ${diffInWeeks} أسبوع`;
+    
+    const diffInMonths = Math.floor(diffInDays / 30);
+    if (diffInMonths < 12) return `منذ ${diffInMonths} شهر`;
+    
+    const diffInYears = Math.floor(diffInDays / 365);
+    return `منذ ${diffInYears} سنة`;
+  };
+
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     return text.substr(0, maxLength) + '...';
@@ -178,77 +202,57 @@ const CategoryPage: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="featured-grid">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {currentPosts.map((post) => (
-                  <article key={post.id} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                    {/* Post Image */}
-                    {post.featured_image && (
-                      <div className="w-full aspect-[16/9] relative">
-                        <img
-                          src={getImageUrl(post.featured_image)}
-                          alt={post.title_ar || post.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-
-                    {/* Post Content */}
-                    <div className="news-card-content">
-                      {/* Category Badge */}
-                      <div className="mb-2">
-                        <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
-                          {categoryName}
-                        </span>
-                      </div>
-
-                      {/* Post Title */}
-                      <h2 className="text-xl font-bold text-gray-900 mb-2">
-                        <Link href={`/post/${post.slug}`} className="hover:text-blue-700 transition-colors">
-                          {post.title_ar || post.title}
-                        </Link>
-                      </h2>
-
-                      {/* Post Excerpt */}
-                      {post.excerpt && (
-                        <p className="news-card-excerpt">
-                          {truncateText(post.excerpt, 120)}
-                        </p>
-                      )}
-
-                      {/* Post Meta */}
-                      <div className="responsive-flex items-center justify-between responsive-text text-gray-500">
-                        <div className="responsive-flex items-center space-x-4 rtl:space-x-reverse">
-                          <div className="responsive-flex items-center">
-                            <FiCalendar size={12} className="ml-1 rtl:ml-0 rtl:mr-1 flex-shrink-0" />
-                            {formatDate(post.created_at)}
-                          </div>
-                          {(post.author_display_name || post.author_name || post.author?.display_name) && (
-                            <div className="responsive-flex items-center">
-                              <FiUser size={12} className="ml-1 rtl:ml-0 rtl:mr-1 flex-shrink-0" />
-                              {post.author_display_name || post.author_name || post.author?.display_name}
-                            </div>
-                          )}
+                  <Link key={post.id} href={`/post/${post.slug}`}>
+                    <article className="group cursor-pointer">
+                      <div className="relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        {/* Background Image */}
+                        <div className="absolute inset-0">
+                          <img
+                            src={getImageUrl(post.featured_image || '/images/placeholder.jpg')}
+                            alt={post.title_ar || post.title}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        {post.views && (
-                          <div className="responsive-flex items-center">
-                            <FiEye size={12} className="ml-1 rtl:ml-0 rtl:mr-1 flex-shrink-0" />
-                            {post.views}
+                        
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        
+                        {/* Content Overlay */}
+                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                          {/* Category Badge */}
+                          <div className="mb-3">
+                            <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-600 text-white rounded-full">
+                              {categoryName}
+                            </span>
                           </div>
-                        )}
+                          
+                          {/* Post Title */}
+                          <h2 className="text-white font-bold text-lg leading-tight mb-2 group-hover:text-blue-200 transition-colors duration-300">
+                            {truncateText(post.title_ar || post.title, 80)}
+                          </h2>
+                          
+                          {/* Time and Meta */}
+                          <div className="flex items-center justify-between text-white/80 text-sm">
+                            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                              <FiCalendar size={14} className="flex-shrink-0" />
+                              <span>{getTimeAgo(post.created_at)}</span>
+                            </div>
+                            {post.views && (
+                              <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                                <FiEye size={14} className="flex-shrink-0" />
+                                <span>{post.views}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Hover Effect */}
+                        <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       </div>
-
-                      {/* Read More Link */}
-                      <div className="mt-3 pt-3 border-t border-gray-100">
-                        <Link
-                          href={`/post/${post.slug}`}
-                          className="text-blue-600 hover:text-blue-800 responsive-text font-medium responsive-flex items-center touch-target"
-                        >
-                          {content.homepage.read_more}
-                          <FiArrowRight size={14} className="mr-1 rtl:mr-0 rtl:ml-1" />
-                        </Link>
-                      </div>
-                    </div>
-                  </article>
+                    </article>
+                  </Link>
                 ))}
               </div>
 
