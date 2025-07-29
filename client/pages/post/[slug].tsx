@@ -47,7 +47,7 @@ const InnerPost: React.FC<{ slug: string }> = ({ slug }) => {
          setLoading(true);
          
          // Fetch main post
-         const postResponse = await fetch(`/api/posts?slug=${slug}&limit=1&page=1`);
+         const postResponse = await fetch(`/api/posts?slug=${encodeURIComponent(slug)}&limit=1&page=1`);
          if (!postResponse.ok) {
            throw new Error('Failed to fetch post');
          }
