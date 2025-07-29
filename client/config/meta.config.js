@@ -52,7 +52,7 @@ const metaConfig = {
       'sports',
       'technology'
     ],
-    image: '/images/og-image.jpg',
+    image: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/og-image.jpg`,
     type: 'website',
     locale: 'ar_SA',
     localeEn: 'en_US'

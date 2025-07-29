@@ -252,7 +252,7 @@ const LastNewsPage: React.FC = () => {
                       </div>
                       
                       {/* Title */}
-                      <h2 className={`text-lg font-bold mb-3 line-clamp-2 transition-colors ${
+                      <h2 className={`text-lg font-bold mb-3 transition-colors ${
                         news.type === 'breaking_news'
                           ? 'text-red-600 hover:text-red-700'
                           : 'text-gray-900 hover:text-blue-600'

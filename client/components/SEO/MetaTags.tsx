@@ -69,7 +69,15 @@ const MetaTags: React.FC<MetaTagsProps> = ({
       <meta property="og:description" content={openGraph.description} />
       <meta property="og:type" content={openGraph.type} />
       <meta property="og:url" content={openGraph.url} />
-      {openGraph.image && <meta property="og:image" content={openGraph.image} />}
+      {openGraph.image && (
+        <>
+          <meta property="og:image" content={openGraph.image} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="og:image:alt" content={openGraph.title} />
+          <meta property="og:image:type" content="image/jpeg" />
+        </>
+      )}
       <meta property="og:site_name" content={openGraph.siteName} />
       <meta property="og:locale" content={openGraph.locale} />
       {metaConfig.social.facebook.appId && (
@@ -95,7 +103,12 @@ const MetaTags: React.FC<MetaTagsProps> = ({
       <meta name="twitter:card" content={twitterCard.card} />
       <meta name="twitter:title" content={twitterCard.title} />
       <meta name="twitter:description" content={twitterCard.description} />
-      {twitterCard.image && <meta name="twitter:image" content={twitterCard.image} />}
+      {twitterCard.image && (
+        <>
+          <meta name="twitter:image" content={twitterCard.image} />
+          <meta name="twitter:image:alt" content={twitterCard.title} />
+        </>
+      )}
       <meta name="twitter:site" content={twitterCard.site} />
       <meta name="twitter:creator" content={twitterCard.creator} />
       

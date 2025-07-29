@@ -51,7 +51,25 @@ export const useMeta = (options: UseMetaOptions = {}) => {
     const finalMeta = {
       ...baseMeta,
       ...customMeta,
-      url: customMeta.url || (typeof window !== 'undefined' ? window.location.href : metaConfig.site.url)
+      url: customMeta.url || (typeof window !== 'undefined' ? window.location.href : metaConfig.site.url),
+      // Ensure image URLs are absolute - prioritize post featured image for posts
+      image: (() => {
+        let imageUrl;
+        
+        // For posts, prioritize the post's featured image
+        if (pageType === 'post' && data.post?.featured_image) {
+          imageUrl = data.post.featured_image;
+        } else if (pageType === 'post' && data.post?.image) {
+          imageUrl = data.post.image;
+        } else if (customMeta.image) {
+          imageUrl = customMeta.image;
+        } else {
+          imageUrl = baseMeta.image;
+        }
+        
+        // Make URL absolute if it's not already
+        return imageUrl?.startsWith('http') ? imageUrl : `${metaConfig.site.url}${imageUrl}`;
+      })()
     };
 
     return finalMeta;
