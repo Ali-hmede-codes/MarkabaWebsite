@@ -14,6 +14,19 @@ const SinglePostPage: React.FC = () => {
   const { slug: slugParam } = router.query;
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
 
+  // Handle route changes to ensure proper navigation
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      // Force scroll to top on route change
+      window.scrollTo(0, 0);
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
+
   // Don't render anything until router is ready and slug is available
   if (!router.isReady || !slug) {
     return (
@@ -25,7 +38,7 @@ const SinglePostPage: React.FC = () => {
     );
   }
 
-  return <PostContent slug={slug} key={`post-${slug}`} />;
+  return <PostContent slug={slug} key={`post-content-${slug}`} />;
 };
 
 const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
@@ -36,11 +49,18 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
 
-  // Fetch post data
-  const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', {
+  // Fetch post data with proper dependency handling
+  const { data: response, loading, error, refetch } = useAPI<{ posts: Post[]; total: number }>('/posts', {
     immediate: true,
     params: { slug, limit: 1, page: 1 }
   });
+
+  // Force refetch when slug changes
+  useEffect(() => {
+    if (slug) {
+      refetch(undefined, { slug, limit: 1, page: 1 });
+    }
+  }, [slug, refetch]);
   
   const { data: postsResponse } = usePosts({ limit: 6 });
   const breakingNewsResponse = useBreakingNews();
@@ -109,7 +129,11 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   };
 
   const handleNavigation = (href: string) => {
-    router.push(href);
+    // Use replace to ensure proper navigation between posts
+    router.push(href).then(() => {
+      // Force scroll to top after navigation
+      window.scrollTo(0, 0);
+    });
   };
 
   if (loading) {

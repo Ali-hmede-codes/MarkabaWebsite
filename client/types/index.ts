@@ -530,3 +530,15 @@ export interface AppConfig {
     analytics: boolean;
   };
 }
+
+// Social Media types
+export interface SocialMedia {
+  id: number;
+  platform: string;
+  name_ar: string;
+  url: string;
+  icon?: string;
+  color?: string;
+  sort_order?: number;
+  is_active: number;
+}

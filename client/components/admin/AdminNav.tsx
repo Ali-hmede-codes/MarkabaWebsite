@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FiHome, FiFileText, FiFolder, FiUsers, FiSettings, FiImage, FiAlertTriangle, FiClock } from 'react-icons/fi';
+import { FiHome, FiFileText, FiFolder, FiUsers, FiSettings, FiShare2, FiAlertTriangle, FiClock } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 
 interface AdminNavProps {
@@ -64,6 +64,13 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
       icon: FiSettings,
       active: router.pathname === '/admin/administratorpage/settings',
       roles: ['admin'] // Only admin can access settings
+    },
+    {
+      href: '/admin/administratorpage/social-media',
+      label: 'وسائل التواصل الاجتماعي',
+      icon: FiShare2,
+      active: router.pathname === '/admin/administratorpage/social-media',
+      roles: ['admin']
     }
   ];
 
