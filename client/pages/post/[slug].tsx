@@ -276,7 +276,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
             <div className="relative mb-8">
               {/* Category Badge - Outside Right Top */}
               {post.category?.name_ar && (
-                <div className="absolute top-0 z-10" style={{top: '-10px'}}>
+                <div className="absolute top-0 z-10" style={{top: '-50px'}}>
                   <span className="inline-block bg-blue-500 text-white px-3 py-1 text-xs font-medium shadow-sm" style={{borderTopLeftRadius: '0', borderTopRightRadius: '8px', borderBottomLeftRadius: '0', borderBottomRightRadius: '0'}}>
                     {typeof post.category === 'string' ? post.category : post.category?.name_ar}
                   </span>
