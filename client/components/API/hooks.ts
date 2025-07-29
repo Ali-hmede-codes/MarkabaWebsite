@@ -4,40 +4,20 @@ import axios from 'axios';
 import { APIResponse } from './types';
 import { API_BASE_URL } from '../../lib/api/config';
 
-// Create axios instance with connection pooling optimization
+// Create axios instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000, // Increased timeout
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
     'Cache-Control': 'no-cache',
   },
-  // Limit concurrent connections to prevent resource exhaustion
-  maxRedirects: 3,
 });
 
-// Handle responses with retry logic
+// Handle responses
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    
-    // Retry on network errors or insufficient resources
-    if (
-      (error.code === 'ERR_NETWORK' || error.code === 'ERR_INSUFFICIENT_RESOURCES') &&
-      !originalRequest._retry &&
-      originalRequest._retryCount < 2
-    ) {
-      originalRequest._retry = true;
-      originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
-      
-      // Wait before retry with exponential backoff
-      const delay = Math.pow(2, originalRequest._retryCount) * 500;
-      await new Promise(resolve => setTimeout(resolve, delay));
-      
-      return apiClient(originalRequest);
-    }
-    
+  (error) => {
     console.error('API Error:', error);
     return Promise.reject(error);
   }
@@ -64,14 +44,7 @@ export function useAPI<T = unknown>(endpoint: string, options?: {
   const [error, setError] = useState<string | null>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Create a stable key that includes endpoint and all option values
-  const optionsKey = JSON.stringify({
-    endpoint,
-    method: options?.method,
-    immediate: options?.immediate,
-    data: options?.data,
-    params: options?.params
-  });
+  const optionsKey = JSON.stringify(options);
 
   const execute = useCallback(async (customData?: Record<string, unknown>, customParams?: Record<string, unknown>) => {
     setLoading(true);
@@ -100,13 +73,13 @@ export function useAPI<T = unknown>(endpoint: string, options?: {
     } finally {
       setLoading(false);
     }
-  }, [endpoint, options?.method, options?.data, options?.params]);
+  }, [endpoint, optionsKey]);
 
   useEffect(() => {
     if (options?.immediate !== false && options?.method !== 'POST') {
       execute();
     }
-  }, [execute]);
+  }, [execute, optionsKey]);
 
   return {
     data,
@@ -121,7 +94,7 @@ export function useAPI<T = unknown>(endpoint: string, options?: {
 export function usePosts(filters?: Record<string, unknown>) {
   return useAPI<import('./types').PostsResponse>('/posts', {
     params: filters,
-    immediate: !!filters, // Only make request if filters are provided
+    immediate: true,
   });
 }
 
@@ -150,9 +123,9 @@ export function useWeather() {
   });
 }
 
-export function useBreakingNews(immediate: boolean = true) {
+export function useBreakingNews() {
   return useAPI('/breaking-news/active', {
-    immediate,
+    immediate: true,
   });
 }
 

@@ -50,42 +50,21 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   const [copyMessage, setCopyMessage] = useState('');
 
   // Fetch post data with proper dependency handling
-  const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', {
+  const { data: response, loading, error, refetch } = useAPI<{ posts: Post[]; total: number }>('/posts', {
     immediate: true,
     params: { slug, limit: 1, page: 1 }
   });
+
+  // Force refetch when slug changes
+  useEffect(() => {
+    if (slug) {
+      refetch(undefined, { slug, limit: 1, page: 1 });
+    }
+  }, [slug, refetch]);
   
+  const { data: postsResponse } = usePosts({ limit: 6 });
+  const breakingNewsResponse = useBreakingNews();
   const post = response?.posts?.[0];
-  
-  // Delay secondary requests to avoid overwhelming the connection pool
-  const [shouldLoadSecondary, setShouldLoadSecondary] = useState(false);
-  
-  useEffect(() => {
-    if (post) {
-      // Delay secondary requests by 100ms to prevent ERR_INSUFFICIENT_RESOURCES
-      const timer = setTimeout(() => {
-        setShouldLoadSecondary(true);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [post]);
-  
-  const { data: postsResponse } = usePosts(shouldLoadSecondary ? { limit: 6 } : undefined);
-  
-  // Only load breaking news after main post is loaded and not in loading state
-  const [shouldLoadBreakingNews, setShouldLoadBreakingNews] = useState(false);
-  
-  useEffect(() => {
-    if (post && !loading) {
-      // Additional delay for breaking news to further reduce concurrent requests
-      const timer = setTimeout(() => {
-        setShouldLoadBreakingNews(true);
-      }, 200);
-      return () => clearTimeout(timer);
-    }
-  }, [post, loading]);
-  
-  const breakingNewsResponse = useBreakingNews(shouldLoadBreakingNews);
 
   // Reset state when component mounts or slug changes
   useEffect(() => {
@@ -94,10 +73,6 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
     setFontSize(20);
     setCopySuccess(false);
     setCopyMessage('');
-    setShouldLoadSecondary(false); // Reset secondary loading state
-    setShouldLoadBreakingNews(false); // Reset breaking news loading state
-    // Scroll to top when slug changes
-    window.scrollTo(0, 0);
   }, [slug]);
 
   // Update latest posts when data is available
@@ -153,7 +128,13 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
     });
   };
 
-
+  const handleNavigation = (href: string) => {
+    // Use replace to ensure proper navigation between posts
+    router.push(href).then(() => {
+      // Force scroll to top after navigation
+      window.scrollTo(0, 0);
+    });
+  };
 
   if (loading) {
     return (
@@ -171,12 +152,12 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center py-10">
             <div className="text-red-500 mb-4">المنشور غير موجود</div>
-            <Link 
-              href="/"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors inline-block"
+            <button 
+              onClick={() => handleNavigation('/')}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
             >
               العودة للرئيسية
-            </Link>
+            </button>
           </div>
         </div>
       </Layout>
@@ -322,15 +303,15 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
 
             {/* Back to Home Button */}
             <div className="flex justify-center mt-8 mb-6">
-              <Link 
-                href="/"
+              <button 
+                onClick={() => handleNavigation('/')}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
                 العودة للرئيسية
-              </Link>
+              </button>
             </div>
           </article>
 
@@ -343,8 +324,8 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
               </h3>
               <div className="space-y-4">
                 {latestPosts.map((latestPost) => (
-                  <Link key={latestPost.id} href={`/post/${latestPost.slug}`} className="block">
-                    <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors rounded-lg cursor-pointer">
+                  <div key={latestPost.id} className="cursor-pointer" onClick={() => handleNavigation(`/post/${latestPost.slug}`)}>
+                    <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors rounded-lg">
                       {(latestPost.featured_image || latestPost.image) && (
                         <div className="relative w-16 h-16 flex-shrink-0">
                           <Image 
@@ -364,7 +345,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
                         </p>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>
