@@ -85,8 +85,8 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
         
         const data = await response.json();
         
-        if (data.success && data.posts && data.posts.length > 0) {
-          setPost(data.posts[0]);
+        if (data.success && data.data && data.data.posts && data.data.posts.length > 0) {
+          setPost(data.data.posts[0]);
         } else {
           setError('المنشور غير موجود');
         }
@@ -124,9 +124,9 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
         
         const data = await response.json();
         
-        if (data.success && data.posts) {
+        if (data.success && data.data && data.data.posts) {
           // Filter out current post
-          const filtered = data.posts.filter((p: Post) => p.id !== post?.id);
+          const filtered = data.data.posts.filter((p: Post) => p.id !== post?.id);
           setLatestPosts(filtered.slice(0, 5));
         }
       } catch (err) {
