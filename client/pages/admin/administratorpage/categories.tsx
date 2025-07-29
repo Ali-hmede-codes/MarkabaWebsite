@@ -24,7 +24,6 @@ interface CategoryForm {
   description_ar: string;
   is_active: boolean;
   sort_order: number;
-  slug?: string;
 }
 
 interface CategoryFormErrors {
@@ -46,8 +45,7 @@ const AdminCategories: React.FC = () => {
     name_ar: '',
     description_ar: '',
     is_active: true,
-    sort_order: 0,
-    slug: ''
+    sort_order: 0
   });
   const [formErrors, setFormErrors] = useState<CategoryFormErrors>({});
 
@@ -97,18 +95,6 @@ const AdminCategories: React.FC = () => {
     );
   }
 
-  // Generate slug from Arabic name
-  const generateSlug = (name: string): string => {
-    return name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .substring(0, 100) || 'category';
-  };
-
   const validateForm = (): boolean => {
     const errors: CategoryFormErrors = {};
 
@@ -135,18 +121,12 @@ const AdminCategories: React.FC = () => {
       const url = editingCategory ? `/api/admin/categories/${editingCategory.id}` : '/api/admin/categories';
       const method = editingCategory ? 'PUT' : 'POST';
 
-      // Prepare form data with generated slug
-      const submitData = {
-        ...formData,
-        slug: formData.slug || generateSlug(formData.name_ar)
-      };
-
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submitData),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -156,19 +136,10 @@ const AdminCategories: React.FC = () => {
         fetchCategories();
         resetForm();
       } else {
-        // Show detailed validation errors if available
-        if (data.errors && Array.isArray(data.errors)) {
-          data.errors.forEach((error: any) => {
-            toast.error(error.msg || error.message || 'خطأ في التحقق من البيانات');
-          });
-        } else {
-          toast.error(data.message || 'فشل في حفظ التصنيف');
-        }
-        console.error('Category submission error:', data);
+        toast.error(data.message || 'فشل في حفظ التصنيف');
       }
-    } catch (error) {
-      console.error('Network error:', error);
-      toast.error('حدث خطأ في الاتصال بالخادم');
+    } catch {
+      toast.error('حدث خطأ في حفظ التصنيف');
     }
   };
 
@@ -178,8 +149,7 @@ const AdminCategories: React.FC = () => {
       name_ar: category.name_ar,
       description_ar: category.description_ar || '',
       is_active: category.is_active,
-      sort_order: category.sort_order,
-      slug: category.slug
+      sort_order: category.sort_order
     });
     setShowForm(true);
   };
@@ -209,8 +179,7 @@ const AdminCategories: React.FC = () => {
       name_ar: '',
       description_ar: '',
       is_active: true,
-      sort_order: 0,
-      slug: ''
+      sort_order: 0
     });
     setFormErrors({});
     setEditingCategory(null);

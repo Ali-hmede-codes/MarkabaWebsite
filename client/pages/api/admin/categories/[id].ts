@@ -11,7 +11,7 @@ export default async function handler(
   
   try {
     // Build the backend URL for specific admin category
-    let backendUrl = `${API_BASE_URL}/admin/categories/${id}`;
+    let backendUrl = `${API_BASE_URL}/admin/administratorpage/categories/${id}`;
     
     // Add query parameters
     const searchParams = new URLSearchParams();
