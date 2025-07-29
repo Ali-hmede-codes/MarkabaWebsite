@@ -219,12 +219,12 @@ const LastNewsPage: React.FC = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {getCurrentPageItems().map((news) => (
-                <Link key={`${news.type}-${news.id}`} href={getNewsUrl(news)}>
-                  <article className={`bg-white border rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer h-full ${
+              {getCurrentPageItems().map((news) => {
+                const articleContent = (
+                  <article className={`bg-white border rounded-lg shadow-sm transition-all duration-200 h-full ${
                     news.type === 'breaking_news' 
-                      ? 'border-red-200 hover:border-red-300 bg-gradient-to-br from-red-50 to-white' 
-                      : 'border-gray-200 hover:border-blue-300'
+                      ? 'border-red-200 bg-gradient-to-br from-red-50 to-white' 
+                      : 'border-gray-200 hover:border-blue-300 hover:shadow-md cursor-pointer'
                   }`}>
                     <div className="p-6 h-full flex flex-col">
                       {/* News Type Badge */}
@@ -273,8 +273,20 @@ const LastNewsPage: React.FC = () => {
                       </div>
                     </div>
                   </article>
-                </Link>
-              ))}
+                );
+                
+                return (
+                  <div key={`${news.type}-${news.id}`}>
+                    {news.type === 'breaking_news' ? (
+                      articleContent
+                    ) : (
+                      <Link href={getNewsUrl(news)}>
+                        {articleContent}
+                      </Link>
+                    )}
+                  </div>
+                );
+              })}
             </div>
             
             {/* Pagination */}
