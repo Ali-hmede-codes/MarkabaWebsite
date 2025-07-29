@@ -5,8 +5,10 @@ import Layout from '../../components/Layout/Layout';
 
 interface LastNews {
   id: number;
-  title_ar: string;
-  content_ar: string;
+  title_ar?: string;
+  title?: string;
+  content_ar?: string;
+  content?: string;
   slug: string;
   priority: number;
   is_active: boolean;
@@ -23,7 +25,7 @@ const LastNewsPage: React.FC = () => {
   useEffect(() => {
     const fetchLastNews = async () => {
       try {
-        const response = await fetch('/api/last-news?active=true&limit=20&include_content=true');
+        const response = await fetch('/api/last-news?active=true&limit=20');
         if (!response.ok) {
           throw new Error('Failed to fetch last news');
         }
@@ -52,10 +54,7 @@ const LastNewsPage: React.FC = () => {
     });
   };
 
-  const truncateContent = (content: string, maxLength: number = 150) => {
-    if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength) + '...';
-  };
+
 
   if (loading) {
     return (
@@ -119,15 +118,10 @@ const LastNewsPage: React.FC = () => {
                   <div className="p-6 h-full flex flex-col">
                     {/* Title */}
                     <h2 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 hover:text-blue-600 transition-colors">
-                      {news.title_ar}
+                      {news.title_ar || news.title}
                     </h2>
                     
-                    {/* Content Preview */}
-                    {news.content_ar && (
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-grow">
-                        {truncateContent(news.content_ar.replace(/<[^>]*>/g, ''))}
-                      </p>
-                    )}
+                    {/* No content preview - titles only */}
                     
                     {/* Footer */}
                     <div className="flex items-center justify-between text-xs text-gray-500 mt-auto pt-4 border-t border-gray-100">
