@@ -334,8 +334,20 @@ router.get('/', async (req, res) => {
       tags: post.tags ? JSON.parse(post.tags) : [],
       is_featured: Boolean(post.is_featured),
       is_published: Boolean(post.is_published),
-      url: `/post/${post.id}/${post.slug}`
+      url: `/post/${post.id}/${post.slug}`,
+      // Structure category data as nested object
+      category: post.category_name ? {
+        id: post.category_id,
+        name_ar: post.category_name,
+        slug: post.category_slug
+      } : null
     }));
+
+    // Remove flat category fields from response
+    processedPosts.forEach(post => {
+      delete post.category_name;
+      delete post.category_slug;
+    });
     
     res.json({
       success: true,
