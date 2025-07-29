@@ -13,42 +13,13 @@ const SinglePostPage: React.FC = () => {
   const router = useRouter();
   const { slug: slugParam } = router.query;
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
-  const [copySuccess, setCopySuccess] = useState(false);
-  const [copyMessage, setCopyMessage] = useState('');
-
-  const handleCopyText = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopySuccess(true);
-      setCopyMessage('تم النسخ');
-      setTimeout(() => {
-        setCopySuccess(false);
-        setCopyMessage('');
-      }, 2000);
-    } catch (err) {
-      console.error('Failed to copy text:', err);
-    }
-  };
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: document.title,
-          url: window.location.href
-        });
-      } catch (err) {
-        console.error('Error sharing:', err);
-      }
-    } else {
-      handleCopyText(window.location.href);
-    }
-  };
 
   const InnerPostPage = ({ slug }: { slug: string }) => {
     const [fontSize, setFontSize] = useState(20);
     const [latestPosts, setLatestPosts] = useState<Post[]>([]);
     const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
+    const [copySuccess, setCopySuccess] = useState(false);
+    const [copyMessage, setCopyMessage] = useState('');
 
     // All hooks must be called before any conditional returns
     const { data: response, loading, error } = useAPI<{ posts: Post[]; total: number }>('/posts', {
@@ -81,6 +52,9 @@ const SinglePostPage: React.FC = () => {
       }
     }, [breakingNewsResponse, post]);
 
+    if (loading) return <div className="text-center py-10">جاري التحميل...</div>;
+    if (error || !post) return <div className="text-center py-10 text-red-500">المنشور غير موجود</div>;
+
     const handleCopyText = async (text: string) => {
       try {
         await navigator.clipboard.writeText(text);
@@ -99,7 +73,7 @@ const SinglePostPage: React.FC = () => {
       if (navigator.share) {
         try {
           await navigator.share({
-            title: document.title,
+            title: post.title_ar || post.title,
             url: window.location.href
           });
         } catch (err) {
@@ -117,9 +91,6 @@ const SinglePostPage: React.FC = () => {
         day: 'numeric'
       });
     };
-
-    if (loading) return <div className="text-center py-10">جاري التحميل...</div>;
-     if (error || !post) return <div className="text-center py-10 text-red-500">المنشور غير موجود</div>;
 
     return (
         <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
