@@ -168,8 +168,17 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
               {post.title_ar || post.title}
             </h1>
             
+            {/* Category Box */}
+            {post.category?.name_ar && (
+              <div className="bg-blue-500 text-white px-4 py-2 rounded-t-lg mb-0">
+                <span className="text-sm font-medium">
+                  {typeof post.category === 'string' ? post.category : post.category?.name_ar}
+                </span>
+              </div>
+            )}
+            
             {/* Summary Box */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8 overflow-hidden">
+            <div className={`bg-gray-100 border border-gray-300 ${post.category?.name_ar ? 'rounded-b-lg rounded-t-none' : 'rounded-lg'} shadow-sm mb-8 overflow-hidden`}>
               <div className="p-6">
                 {/* Post Summary/Excerpt */}
                 {(post.excerpt_ar || post.excerpt) && (
@@ -212,7 +221,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
                       className={`p-2 transition-colors ${
                         copySuccess 
                           ? 'text-green-600 hover:text-green-700' 
-                          : 'text-gray-400 hover:text-gray-600'
+                          : 'text-black hover:text-gray-800'
                       }`}
                       title="نسخ النص"
                     >
@@ -220,7 +229,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
                     </button>
                     <button 
                       onClick={handleShare}
-                      className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="p-2 text-black hover:text-gray-800 transition-colors"
                       title="مشاركة"
                     >
                       <FiShare2 size={16} />
