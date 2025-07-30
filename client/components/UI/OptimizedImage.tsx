@@ -81,7 +81,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
 
   const imageUrl = getImageUrl(src);
-  const shouldShowImage = isInView && !imageError;
+  const shouldShowImage = (priority || isInView) && !imageError;
   const finalImageUrl = imageError ? fallbackSrc : imageUrl;
 
   // Generate a simple blur placeholder
@@ -122,6 +122,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           onLoad={handleLoad}
           onError={handleError}
           loading={priority ? 'eager' : loading}
+          unoptimized={true}
         />
       )}
       
