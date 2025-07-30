@@ -8,7 +8,6 @@ import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
-import NextSEOWrapper from '../../components/SEO/NextSEOWrapper';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
 interface PostPageProps {
@@ -68,6 +67,14 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Extract meta data for cleaner rendering
+  const title = post.title_ar || post.title;
+  const description = post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160) || '';
+  const image = post.featured_image || post.image ? getImageUrl(post.featured_image || post.image || '') : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`;
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`;
+  const author = typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا';
+  const category = typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار';
 
   // Update related posts when prop changes
   useEffect(() => {
@@ -166,28 +173,26 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
     <>
       <Head>
         {/* Page Title */}
-        <title>{post.title_ar || post.title} - موقع مــركبــا الاخباري</title>
+        <title>{title}</title>
         
         {/* Basic Meta Tags */}
-        <meta name="description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
+        <meta name="description" content={description} />
         <meta name="keywords" content={post.tags?.join(', ') || ''} />
-        <meta name="author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
-        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
+        <meta name="author" content={author} />
+        <link rel="canonical" href={url} />
         
         {/* Open Graph Meta Tags */}
-        <meta property="og:title" content={post.title_ar || post.title} />
-        <meta property="og:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
+        <meta property="og:url" content={url} />
         <meta property="og:site_name" content="موقع مــركبــا الاخباري" />
         <meta property="og:locale" content="ar_AR" />
-        {(post.featured_image || post.image) && (
-          <meta property="og:image" content={getImageUrl(post.featured_image || post.image || '')} />
-        )}
+        <meta property="og:image" content={image} />
         <meta property="article:published_time" content={post.created_at} />
         <meta property="article:modified_time" content={post.updated_at} />
-        <meta property="article:author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
-        <meta property="article:section" content={typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار'} />
+        <meta property="article:author" content={author} />
+        <meta property="article:section" content={category} />
         {post.tags && post.tags.length > 0 && post.tags.map((tag, index) => (
           <meta key={index} property="article:tag" content={tag} />
         ))}
@@ -196,11 +201,9 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@markaba_news" />
         <meta name="twitter:creator" content="@markaba_news" />
-        <meta name="twitter:title" content={post.title_ar || post.title} />
-        <meta name="twitter:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
-        {(post.featured_image || post.image) && (
-          <meta name="twitter:image" content={getImageUrl(post.featured_image || post.image || '')} />
-        )}
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={image} />
       </Head>
       
       <Layout>
