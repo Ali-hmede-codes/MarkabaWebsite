@@ -33,9 +33,6 @@ export default function Document() {
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
         <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
         
-        {/* RSS Feed */}
-        <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/api/rss" />
-        
         {/* Sitemap */}
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
         
@@ -43,11 +40,23 @@ export default function Document() {
         <meta name="robots" content="index, follow" />
         
         {/* Author and publisher */}
-        <meta name="author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta name="author" content="موقع مــركبــا الاخباري" />
         <meta name="publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        
-        {/* Note: Open Graph and Twitter Card tags are handled by NextSEO component in individual pages */}
-        
+        <meta name="description" content="تابع آخر الأخبار والمستجدات من منصة مركبا الإخبارية - مصدر موثوق للأحداث في لبنان والعالم."/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta name="robots" content="index, follow"/>
+        <meta name="language" content="ar"/>
+        <meta name="theme-color" content="#1e1e1e"/>
+
+
+        <meta property="og:title" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta property="og:description" content="تابع آخر الأخبار والمستجدات من منصة مركبا الإخبارية - مصدر موثوق للأحداث في لبنان والعالم." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://markaba.news/" />
+        <meta property="og:image" content="https://markaba.news/assets/logo.png" />
+        <meta property="og:site_name" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta property="og:locale" content="ar_AR" />
+            
         {/* Preload critical resources - fonts loaded from Google Fonts */}
       </Head>
       <body className="antialiased">

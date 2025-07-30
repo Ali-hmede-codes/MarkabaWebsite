@@ -1,8 +1,9 @@
+import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Post, BreakingNews } from '../../components/API/types';
-import { FiCopy, FiShare2 } from 'react-icons/fi';
+import { FiCopy, FiShare2, FiTag } from 'react-icons/fi';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
@@ -10,10 +11,14 @@ import Link from 'next/link';
 import NextSEOWrapper from '../../components/SEO/NextSEOWrapper';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
-const SinglePostPage: React.FC = () => {
+interface PostPageProps {
+  post: Post | null;
+  relatedPosts: Post[];
+  error?: string;
+}
+
+const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) => {
   const router = useRouter();
-  const { slug: slugParam } = router.query;
-  const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
 
   // Handle route changes to ensure proper navigation
   useEffect(() => {
@@ -28,8 +33,8 @@ const SinglePostPage: React.FC = () => {
     };
   }, [router.events]);
 
-  // Don't render anything until router is ready and slug is available
-  if (!router.isReady || !slug) {
+  // Handle loading state during client-side navigation
+  if (router.isFallback) {
     return (
       <Layout title="جاري التحميل..." description="">
         <div className="min-h-screen flex items-center justify-center">
@@ -39,142 +44,54 @@ const SinglePostPage: React.FC = () => {
     );
   }
 
-  return <PostContent slug={slug} key={`post-content-${slug}`} />;
+  // Handle error state
+  if (error || !post) {
+    return (
+      <Layout title="المنشور غير موجود" description="">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center py-10 text-gray-600">
+            {error || 'المنشور غير موجود'}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  return <PostContent post={post} relatedPosts={relatedPosts} />;
 };
 
-const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
+const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, relatedPosts }) => {
   const router = useRouter();
   const [fontSize, setFontSize] = useState(20);
-  const [post, setPost] = useState<Post | null>(null);
-  const [latestPosts, setLatestPosts] = useState<Post[]>([]);
+  const [latestPosts, setLatestPosts] = useState<Post[]>(relatedPosts || []);
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // Reset state when slug changes
+  // Update related posts when prop changes
   useEffect(() => {
-    setPost(null);
-    setLatestPosts([]);
-    setBreakingNews([]);
-    setFontSize(20);
-    setCopySuccess(false);
-    setCopyMessage('');
-    setError(null);
-    // Force scroll to top when slug changes
-    window.scrollTo(0, 0);
-  }, [slug]);
+    setLatestPosts(relatedPosts || []);
+  }, [relatedPosts]);
 
-  // Fetch single post by slug
-  useEffect(() => {
-    const fetchPost = async () => {
-      const { controller, timeoutId, cleanup } = createTimeoutController();
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/posts?slug=${slug}&limit=1&page=1`, {
-          method: 'GET',
-          headers: API_HEADERS,
-          signal: controller.signal
-        });
-        
-        cleanup();
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.data && data.data.posts && data.data.posts.length > 0) {
-          setPost(data.data.posts[0]);
-        } else {
-          setError('المنشور غير موجود');
-        }
-      } catch (err) {
-        cleanup();
-        const apiError = handleApiError(err, '/api/posts');
-        console.error('Error fetching post:', err);
-        setError(apiError.message || 'خطأ في تحميل المنشور');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchPost();
-    }
-  }, [slug]);
-
-  // Fetch latest posts for sidebar
-  useEffect(() => {
-    const fetchLatestPosts = async () => {
-      const { controller, timeoutId, cleanup } = createTimeoutController();
-      try {
-        const response = await fetch('/api/posts?active=true&limit=6&include_content=false', {
-          method: 'GET',
-          headers: API_HEADERS,
-          signal: controller.signal
-        });
-        
-        cleanup();
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.data && data.data.posts) {
-          // Filter out current post
-          const filtered = data.data.posts.filter((p: Post) => p.id !== post?.id);
-          setLatestPosts(filtered.slice(0, 5));
-        }
-      } catch (err) {
-        cleanup();
-        const apiError = handleApiError(err, '/api/posts');
-        console.error('Error fetching latest posts:', apiError.message);
-      }
-    };
-
-    if (post) {
-      fetchLatestPosts();
-    }
-  }, [post]);
-
-  // Fetch breaking news for sidebar
+  // Fetch breaking news
   useEffect(() => {
     const fetchBreakingNews = async () => {
-      const { controller, timeoutId, cleanup } = createTimeoutController();
       try {
-        const response = await fetch('/api/breaking-news?active=true&limit=4&include_content=false', {
-          method: 'GET',
-          headers: API_HEADERS,
-          signal: controller.signal
-        });
-        
-        cleanup();
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.data) {
-          // Filter out current post if it exists in breaking news
-          const filtered = data.data.filter((item: BreakingNews) => item.id !== post?.id);
-          setBreakingNews(filtered.slice(0, 4));
+        const response = await fetch('/api/breaking-news?active=true&limit=5');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data) {
+            setBreakingNews(data.data);
+          }
         }
       } catch (err) {
-        cleanup();
-        const apiError = handleApiError(err, '/api/breaking-news');
-        console.error('Error fetching breaking news:', apiError.message);
+        console.error('Error fetching breaking news:', err);
       }
     };
 
     fetchBreakingNews();
-  }, [post]);
+  }, []);
 
   const handleCopyText = async (text: string) => {
     try {
@@ -227,7 +144,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
     );
   }
 
-  if (error || !post) {
+  if (!post) {
     return (
       <Layout title="المنشور غير موجود" description="">
         <div className="min-h-screen flex items-center justify-center">
@@ -410,6 +327,70 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
               dangerouslySetInnerHTML={{ __html: post.content_ar || post.content }} 
             />
 
+            {/* Tags Section */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center mb-3">
+                  <FiTag className="text-blue-500 ml-2" size={18} />
+                  <h3 className="text-lg font-semibold text-gray-800">الكلمات المفتاحية</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((tag, index) => (
+                    <Link 
+                      key={index} 
+                      href={`/posts?tags=${encodeURIComponent(tag)}`}
+                      className="inline-block bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200 cursor-pointer"
+                    >
+                      #{tag}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Related Posts Section */}
+            {latestPosts.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-2">
+                  مقالات ذات صلة
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {latestPosts.slice(0, 4).map((relatedPost) => (
+                    <Link 
+                      key={relatedPost.id} 
+                      href={`/post/${relatedPost.slug}`}
+                      className="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+                    >
+                      {(relatedPost.featured_image || relatedPost.image) && (
+                        <div className="relative w-full h-32">
+                          <Image 
+                            src={getImageUrl(relatedPost.featured_image || relatedPost.image || '')} 
+                            alt={relatedPost.title_ar || relatedPost.title} 
+                            fill 
+                            className="object-cover" 
+                          />
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <h4 className="font-semibold text-gray-800 text-sm line-clamp-2 mb-2">
+                          {relatedPost.title_ar || relatedPost.title}
+                        </h4>
+                        {(relatedPost.excerpt_ar || relatedPost.excerpt) && (
+                          <p className="text-gray-600 text-xs line-clamp-2">
+                            {relatedPost.excerpt_ar || relatedPost.excerpt}
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
+                          <span>{formatDate(relatedPost.created_at)}</span>
+                          <span>{relatedPost.views} مشاهدة</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Back to Home Button */}
             <div className="flex justify-center mt-8 mb-6">
               <Link href="/">
@@ -483,6 +464,105 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
       </div>
     </Layout>
   );
+};
+
+// Server-side rendering function
+export const getServerSideProps: GetServerSideProps<PostPageProps> = async (context) => {
+  const { slug } = context.params as { slug: string };
+  
+  if (!slug) {
+    return {
+      notFound: true,
+    };
+  }
+
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.markaba.news/api/v2';
+    
+    // First, get the post by slug to find its ID
+    const postsResponse = await fetch(`${API_URL}/posts?slug=${encodeURIComponent(slug)}&limit=1&page=1`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'NewsMarkaba-SSR/1.0',
+      },
+    });
+
+    if (!postsResponse.ok) {
+      console.error('Failed to fetch post by slug:', postsResponse.status, postsResponse.statusText);
+      return {
+        notFound: true,
+      };
+    }
+
+    const postsData = await postsResponse.json();
+    
+    if (!postsData.success || !postsData.data?.posts || postsData.data.posts.length === 0) {
+      return {
+        notFound: true,
+      };
+    }
+
+    const post = postsData.data.posts[0];
+    
+    // Now fetch the full post with related posts using the ID and slug
+    const fullPostResponse = await fetch(`${API_URL}/posts/${post.id}/${slug}?include_related=true&track_view=false`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'NewsMarkaba-SSR/1.0',
+      },
+    });
+
+    if (!fullPostResponse.ok) {
+      console.error('Failed to fetch full post:', fullPostResponse.status, fullPostResponse.statusText);
+      return {
+        props: {
+          post,
+          relatedPosts: [],
+        },
+      };
+    }
+
+    const fullPostData = await fullPostResponse.json();
+    
+    if (!fullPostData.success || !fullPostData.data) {
+      return {
+        props: {
+          post,
+          relatedPosts: [],
+        },
+      };
+    }
+
+    const fullPost = fullPostData.data.post || post;
+    const relatedPosts = fullPostData.data.related_posts || [];
+
+    // Ensure tags are properly parsed
+    if (fullPost.tags && typeof fullPost.tags === 'string') {
+      try {
+        fullPost.tags = JSON.parse(fullPost.tags);
+      } catch (e) {
+        fullPost.tags = [];
+      }
+    }
+
+    return {
+      props: {
+        post: fullPost,
+        relatedPosts,
+      },
+    };
+  } catch (error) {
+    console.error('Error in getServerSideProps:', error);
+    return {
+      props: {
+        post: null,
+        relatedPosts: [],
+        error: 'خطأ في تحميل المنشور',
+      },
+    };
+  }
 };
 
 export default SinglePostPage;
