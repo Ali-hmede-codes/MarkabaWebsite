@@ -31,6 +31,15 @@ const NextSEOWrapper: React.FC<NextSEOWrapperProps> = ({
 }) => {
   const { meta, openGraph, twitterCard } = useMeta({
     pageType: type === 'article' ? 'post' : 'custom',
+    data: type === 'article' ? {
+      post: {
+        title,
+        excerpt: description,
+        featured_image: imageUrl,
+        created_at: publishedTime,
+        updated_at: modifiedTime
+      }
+    } : {},
     customMeta: {
       title,
       description,
