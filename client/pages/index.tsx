@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Helmet } from 'react-helmet';
+import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import Layout from '../components/Layout/Layout';
 import NextSEOWrapper from '../components/SEO/NextSEOWrapper';
@@ -9,7 +9,6 @@ import { Post, Category } from '../components/API/types';
 import { 
   FiCalendar,  
   FiEye, 
-  FiClock,
   FiSun,
   FiCloudRain , FiMapPin,
   FiTrendingUp,
@@ -112,6 +111,29 @@ const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
 
   return (
     <>
+      <Head>
+        <meta name="description" content="ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta name="keywords" content="أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط, مركبا" />
+        <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'} />
+        
+        {/* Open Graph Tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta property="og:description" content="ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta property="og:image" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`} />
+        <meta property="og:url" content={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'} />
+        
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta name="twitter:description" content="ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta name="twitter:image" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`} />
+        
+        {/* Article Tags */}
+        <meta property="article:publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta property="article:author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+      </Head>
+      
       {/* NextSEO for enhanced Open Graph and SEO */}
       <NextSEOWrapper
         title={content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'}
