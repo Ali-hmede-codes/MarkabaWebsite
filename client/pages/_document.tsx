@@ -53,7 +53,7 @@ export default function Document() {
         <meta property="og:description" content="تابع آخر الأخبار والمستجدات من منصة مركبا الإخبارية - مصدر موثوق للأحداث في لبنان والعالم." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://markaba.news/" />
-        <meta property="og:image" content="https://markaba.news/assets/logo.png" />
+        <meta property="og:image" content="https://markaba.news/images/logo_new.png" />
         <meta property="og:site_name" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
         <meta property="og:locale" content="ar_AR" />
             
