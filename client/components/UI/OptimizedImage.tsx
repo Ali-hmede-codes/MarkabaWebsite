@@ -43,32 +43,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(priority);
-  const imgRef = useRef<HTMLDivElement>(null);
-
-  // Intersection Observer for lazy loading
-  useEffect(() => {
-    if (priority || isInView) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      {
-        rootMargin: '50px', // Start loading 50px before the image comes into view
-        threshold: 0.1
-      }
-    );
-
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [priority, isInView]);
 
   const handleLoad = () => {
     setIsLoaded(true);
@@ -81,7 +55,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
 
   const imageUrl = getImageUrl(src);
-  const shouldShowImage = (priority || isInView) && !imageError;
   const finalImageUrl = imageError ? fallbackSrc : imageUrl;
 
   // Generate a simple blur placeholder
@@ -91,17 +64,16 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   return (
     <div 
-      ref={imgRef}
       className={`relative overflow-hidden ${className}`}
       style={!fill && width && height ? { width, height } : undefined}
     >
       {/* Loading placeholder */}
-      {!isLoaded && shouldShowImage && (
+      {!isLoaded && !imageError && (
         <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
       )}
       
       {/* Main image */}
-      {shouldShowImage && (
+      {!imageError && (
         <Image
           src={finalImageUrl}
           alt={alt}
@@ -124,13 +96,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           loading={priority ? 'eager' : loading}
           unoptimized={true}
         />
-      )}
-      
-      {/* Fallback for when image is not in view yet */}
-      {!isInView && !priority && (
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-        </div>
       )}
       
       {/* Error state */}
