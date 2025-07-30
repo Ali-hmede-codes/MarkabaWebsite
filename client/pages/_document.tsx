@@ -46,13 +46,7 @@ export default function Document() {
         <meta name="author" content="News Website" />
         <meta name="publisher" content="News Website" />
         
-        {/* Open Graph default tags */}
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="News Website" />
-        
-        {/* Twitter Card default tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@newswebsite" />
+        {/* Note: Open Graph and Twitter Card tags are handled by NextSEO component in individual pages */}
         
         {/* Preload critical resources - fonts loaded from Google Fonts */}
       </Head>
