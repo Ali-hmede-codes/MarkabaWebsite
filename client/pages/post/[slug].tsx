@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
+import Head from 'next/head';
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
@@ -246,6 +247,36 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
 
   return (
     <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
+      <Head>
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content={post.title_ar || post.title} />
+        <meta property="og:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
+        {(post.featured_image || post.image) && (
+          <meta property="og:image" content={getImageUrl(post.featured_image || post.image || '')} />
+        )}
+        <meta property="og:site_name" content="مركبا - المنصة الاخبارية" />
+        <meta property="article:published_time" content={post.created_at} />
+        <meta property="article:modified_time" content={post.updated_at} />
+        <meta property="article:author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
+        <meta property="article:section" content={typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار'} />
+        
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title_ar || post.title} />
+        <meta name="twitter:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
+        {(post.featured_image || post.image) && (
+          <meta name="twitter:image" content={getImageUrl(post.featured_image || post.image || '')} />
+        )}
+        
+        {/* Additional SEO Meta Tags */}
+        <meta name="description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
+        <meta name="keywords" content={post.tags?.join(', ') || ''} />
+        <meta name="author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
+        <link rel="canonical" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
+      </Head>
+      
       {/* NextSEO for enhanced Open Graph and SEO */}
       <NextSEOWrapper
         title={post.title_ar || post.title}
