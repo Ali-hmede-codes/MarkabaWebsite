@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `settings` (
 -- Insert default settings
 INSERT IGNORE INTO `settings` (`setting_key`, `setting_value`, `setting_type`, `description`, `category`, `is_public`) VALUES
 -- General settings
-('general_site_name', 'نيوز مركبة', 'string', 'اسم الموقع', 'general', 1),
+('general_site_name', 'نيوز مركبا', 'string', 'اسم الموقع', 'general', 1),
 ('general_site_description', 'موقع إخباري شامل', 'string', 'وصف الموقع', 'general', 1),
 ('general_site_url', 'https://markaba.news', 'string', 'رابط الموقع', 'general', 1),
 ('general_admin_email', 'admin@markaba.news', 'string', 'بريد المدير الإلكتروني', 'general', 0),
@@ -30,9 +30,9 @@ INSERT IGNORE INTO `settings` (`setting_key`, `setting_value`, `setting_type`, `
 ('general_comments_enabled', 'true', 'boolean', 'السماح بالتعليقات', 'general', 1),
 
 -- SEO settings
-('seo_meta_title', 'نيوز مركبة - آخر الأخبار', 'string', 'عنوان الصفحة الرئيسية', 'seo', 1),
-('seo_meta_description', 'موقع نيوز مركبة للأخبار العاجلة والتقارير الشاملة', 'string', 'وصف الصفحة الرئيسية', 'seo', 1),
-('seo_meta_keywords', 'أخبار, عاجل, تقارير, نيوز مركبة', 'string', 'الكلمات المفتاحية', 'seo', 1),
+('seo_meta_title', 'نيوز مركبا - آخر الأخبار', 'string', 'عنوان الصفحة الرئيسية', 'seo', 1),
+('seo_meta_description', 'موقع نيوز مركبا للأخبار العاجلة والتقارير الشاملة', 'string', 'وصف الصفحة الرئيسية', 'seo', 1),
+('seo_meta_keywords', 'أخبار, عاجل, تقارير, نيوز مركبا', 'string', 'الكلمات المفتاحية', 'seo', 1),
 ('seo_google_analytics', '', 'string', 'معرف Google Analytics', 'seo', 0),
 ('seo_google_search_console', '', 'string', 'معرف Google Search Console', 'seo', 0),
 ('seo_facebook_pixel', '', 'string', 'معرف Facebook Pixel', 'seo', 0),
@@ -53,7 +53,7 @@ INSERT IGNORE INTO `settings` (`setting_key`, `setting_value`, `setting_type`, `
 ('email_secure', 'false', 'boolean', 'استخدام SSL/TLS', 'email', 0),
 ('email_username', '', 'string', 'اسم المستخدم للبريد', 'email', 0),
 ('email_password', '', 'string', 'كلمة مرور البريد', 'email', 0),
-('email_from_name', 'نيوز مركبة', 'string', 'اسم المرسل', 'email', 0),
+('email_from_name', 'نيوز مركبا', 'string', 'اسم المرسل', 'email', 0),
 ('email_from_email', '', 'string', 'بريد المرسل', 'email', 0),
 
 -- Content settings
@@ -69,7 +69,7 @@ INSERT IGNORE INTO `settings` (`setting_key`, `setting_value`, `setting_type`, `
 ('media_thumbnail_width', '300', 'number', 'عرض الصورة المصغرة', 'media', 0),
 ('media_thumbnail_height', '200', 'number', 'ارتفاع الصورة المصغرة', 'media', 0),
 ('media_watermark_enabled', 'false', 'boolean', 'تفعيل العلامة المائية', 'media', 0),
-('media_watermark_text', 'نيوز مركبة', 'string', 'نص العلامة المائية', 'media', 0),
+('media_watermark_text', 'نيوز مركبا', 'string', 'نص العلامة المائية', 'media', 0),
 
 -- Security settings
 ('security_max_login_attempts', '5', 'number', 'الحد الأقصى لمحاولات تسجيل الدخول', 'security', 0),

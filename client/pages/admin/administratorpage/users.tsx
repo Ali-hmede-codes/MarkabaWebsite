@@ -360,7 +360,7 @@ const AdminUsers: React.FC = () => {
   return (
     <AdminLayout title="إدارة المستخدمين" description="إدارة مستخدمي النظام">
       <Head>
-        <title>إدارة المستخدمين - نيوز مركبة</title>
+        <title>إدارة المستخدمين - نيوز مركبا</title>
       </Head>
 
       <div className="min-h-screen bg-gray-50 py-8">

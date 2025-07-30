@@ -28,7 +28,7 @@ First, configure your site settings in `config/meta.config.js`:
 // Update these values for your site
 const metaConfig = {
   site: {
-    name: 'أخبار مركبة',
+    name: 'أخبار مركبا',
     nameEn: 'NewsMarkaba',
     url: process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news',
     // ... other settings
@@ -184,7 +184,7 @@ Set these in your `.env.local` file:
 ```env
 # Required
 NEXT_PUBLIC_SITE_URL=https://markaba.news
-NEXT_PUBLIC_SITE_NAME=أخبار مركبة
+NEXT_PUBLIC_SITE_NAME=أخبار مركبا
 NEXT_PUBLIC_SITE_DESCRIPTION=موقع إخباري شامل
 
 # SEO

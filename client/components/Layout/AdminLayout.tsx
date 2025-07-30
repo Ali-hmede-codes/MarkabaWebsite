@@ -16,7 +16,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   description = 'لوحة تحكم إدارة الموقع',
   className = '',
 }) => {
-  const fullTitle = `${title} - نيوز مركبة`;
+  const fullTitle = `${title} - نيوز مركبا`;
 
   return (
     <>

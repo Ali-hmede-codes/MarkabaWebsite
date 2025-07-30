@@ -203,7 +203,7 @@ const AdminCategories: React.FC = () => {
   return (
     <AdminLayout title="إدارة التصنيفات" description="إدارة تصنيفات المقالات">
       <Head>
-        <title>إدارة التصنيفات - نيوز مركبة</title>
+        <title>إدارة التصنيفات - نيوز مركبا</title>
       </Head>
 
       <div className="min-h-screen bg-gray-50 py-8">

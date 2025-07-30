@@ -85,7 +85,7 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" className="text-xl font-bold text-blue-600 ml-8">
-              نيوز مركبة - الإدارة
+              نيوز مركبا - الإدارة
             </Link>
             
             <div className="hidden md:flex space-x-8 space-x-reverse">

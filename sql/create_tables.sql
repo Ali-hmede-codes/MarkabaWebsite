@@ -131,7 +131,7 @@ INSERT INTO categories (name_ar, slug, description_ar) VALUES
 ('ثقافة', 'culture', 'أخبار ثقافية وفنية');
 
 INSERT INTO site_settings (setting_key, setting_value_ar, setting_type, category) VALUES 
-('site_name', 'نيوز مركبة', 'text', 'general'),
+('site_name', 'نيوز مركبا', 'text', 'general'),
 ('site_tagline', 'مصدرك الموثوق للأخبار', 'text', 'general'),
 ('site_description', 'ابق على اطلاع بآخر الأخبار والتحديثات', 'textarea', 'general');
 

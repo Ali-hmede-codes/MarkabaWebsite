@@ -224,7 +224,7 @@ const SocialMediaManagement: React.FC = () => {
   return (
     <AdminLayout title="إدارة وسائل التواصل الاجتماعي" description="إدارة روابط وسائل التواصل الاجتماعي">
       <Head>
-        <title>إدارة وسائل التواصل الاجتماعي - نيوز مركبة</title>
+        <title>إدارة وسائل التواصل الاجتماعي - نيوز مركبا</title>
       </Head>
 
       <div className="min-h-screen bg-gray-50 py-8">

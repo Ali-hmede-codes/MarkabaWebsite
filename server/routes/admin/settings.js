@@ -323,7 +323,7 @@ router.post('/test-email',
         });
       }
 
-      const { to, subject = 'اختبار البريد الإلكتروني', message = 'هذه رسالة اختبار من نظام نيوز مركبة.' } = req.body;
+      const { to, subject = 'اختبار البريد الإلكتروني', message = 'هذه رسالة اختبار من نظام نيوز مركبا.' } = req.body;
       
       // Get email settings
       const [emailSettings] = await db.execute(
@@ -357,7 +357,7 @@ router.post('/test-email',
       
       // Send test email
       const info = await transporter.sendMail({
-        from: `"${settings.from_name || 'نيوز مركبة'}" <${settings.from_email || settings.username}>`,
+        from: `"${settings.from_name || 'نيوز مركبا'}" <${settings.from_email || settings.username}>`,
         to: to,
         subject: subject,
         text: message,
@@ -491,7 +491,7 @@ router.post('/initialize', authenticateToken, requireRole(['admin']), async (req
   try {
     const defaultSettings = [
       // General settings
-      { key: 'general_site_name', value: 'نيوز مركبة', type: 'string' },
+      { key: 'general_site_name', value: 'نيوز مركبا', type: 'string' },
       { key: 'general_site_description', value: 'موقع إخباري شامل', type: 'string' },
       { key: 'general_site_url', value: 'https://markaba.news', type: 'string' },
       { key: 'general_admin_email', value: 'admin@markaba.news', type: 'string' },
@@ -501,9 +501,9 @@ router.post('/initialize', authenticateToken, requireRole(['admin']), async (req
       { key: 'general_maintenance_mode', value: 'false', type: 'boolean' },
       
       // SEO settings
-      { key: 'seo_meta_title', value: 'نيوز مركبة - آخر الأخبار', type: 'string' },
-      { key: 'seo_meta_description', value: 'موقع نيوز مركبة للأخبار العاجلة والتقارير الشاملة', type: 'string' },
-      { key: 'seo_meta_keywords', value: 'أخبار, عاجل, تقارير, نيوز مركبة', type: 'string' },
+      { key: 'seo_meta_title', value: 'نيوز مركبا - آخر الأخبار', type: 'string' },
+      { key: 'seo_meta_description', value: 'موقع نيوز مركبا للأخبار العاجلة والتقارير الشاملة', type: 'string' },
+      { key: 'seo_meta_keywords', value: 'أخبار, عاجل, تقارير, نيوز مركبا', type: 'string' },
       { key: 'seo_google_analytics', value: '', type: 'string' },
       { key: 'seo_google_search_console', value: '', type: 'string' },
       
@@ -520,7 +520,7 @@ router.post('/initialize', authenticateToken, requireRole(['admin']), async (req
       { key: 'email_secure', value: 'false', type: 'boolean' },
       { key: 'email_username', value: '', type: 'string' },
       { key: 'email_password', value: '', type: 'string' },
-      { key: 'email_from_name', value: 'نيوز مركبة', type: 'string' },
+      { key: 'email_from_name', value: 'نيوز مركبا', type: 'string' },
       { key: 'email_from_email', value: '', type: 'string' },
       
       // Content settings

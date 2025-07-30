@@ -28,7 +28,7 @@ NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=your_google_verification_code
 
 # Optional but recommended
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_SITE_NAME="أخبار مركبة"
+NEXT_PUBLIC_SITE_NAME="أخبار مركبا"
 NEXT_PUBLIC_SITE_DESCRIPTION="ابق على اطلاع بآخر الأخبار"
 ```
 
@@ -104,9 +104,9 @@ import Layout from '../components/Layout/Layout';
 
 const CustomPage = () => {
   const seoData = {
-    title: "Custom Page Title - أخبار مركبة",
+    title: "Custom Page Title - أخبار مركبا",
     description: "Custom description for better search results",
-    keywords: ["أخبار", "مركبة", "لبنان"],
+    keywords: ["أخبار", "مركبا", "لبنان"],
     image: "/images/custom-og-image.jpg",
     type: "article"
   };
