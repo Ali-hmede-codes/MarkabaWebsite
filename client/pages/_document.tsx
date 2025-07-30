@@ -43,8 +43,8 @@ export default function Document() {
         <meta name="robots" content="index, follow" />
         
         {/* Author and publisher */}
-        <meta name="author" content="News Website" />
-        <meta name="publisher" content="News Website" />
+        <meta name="author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta name="publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
         
         {/* Note: Open Graph and Twitter Card tags are handled by NextSEO component in individual pages */}
         
