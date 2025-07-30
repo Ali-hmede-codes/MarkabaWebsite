@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
-import { BreakingNews } from '../../components/API/types';
+import { Helmet } from 'react-helmet';
+import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
@@ -9,16 +9,11 @@ import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
 import NextSEOWrapper from '../../components/SEO/NextSEOWrapper';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
-import { GetServerSideProps } from 'next';
-import { Post } from '../../types';
 
-interface PostPageProps {
-  post: Post | null;
-  slug: string;
-}
-
-const SinglePostPage: React.FC<PostPageProps> = ({ post: initialPost, slug }) => {
+const SinglePostPage: React.FC = () => {
   const router = useRouter();
+  const { slug: slugParam } = router.query;
+  const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
 
   // Handle route changes to ensure proper navigation
   useEffect(() => {
@@ -33,8 +28,8 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post: initialPost, slug }) =>
     };
   }, [router.events]);
 
-  // Show loading if no initial post data
-  if (!initialPost) {
+  // Don't render anything until router is ready and slug is available
+  if (!router.isReady || !slug) {
     return (
       <Layout title="جاري التحميل..." description="">
         <div className="min-h-screen flex items-center justify-center">
@@ -44,13 +39,13 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post: initialPost, slug }) =>
     );
   }
 
-  return <PostContent slug={slug} initialPost={initialPost} key={`post-content-${slug}`} />;
+  return <PostContent slug={slug} key={`post-content-${slug}`} />;
 };
 
-const PostContent: React.FC<{ slug: string; initialPost: Post }> = ({ slug, initialPost }) => {
+const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
   const router = useRouter();
   const [fontSize, setFontSize] = useState(20);
-  const [post, setPost] = useState<Post | null>(initialPost);
+  const [post, setPost] = useState<Post | null>(null);
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -71,16 +66,45 @@ const PostContent: React.FC<{ slug: string; initialPost: Post }> = ({ slug, init
     window.scrollTo(0, 0);
   }, [slug]);
 
-  // Set post from initial data and handle loading state
+  // Fetch single post by slug
   useEffect(() => {
-    if (initialPost) {
-      setPost(initialPost);
-      setLoading(false);
-    } else {
-      setError('المنشور غير موجود');
-      setLoading(false);
+    const fetchPost = async () => {
+      const { controller, timeoutId, cleanup } = createTimeoutController();
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/posts?slug=${slug}&limit=1&page=1`, {
+          method: 'GET',
+          headers: API_HEADERS,
+          signal: controller.signal
+        });
+        
+        cleanup();
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.data && data.data.posts && data.data.posts.length > 0) {
+          setPost(data.data.posts[0]);
+        } else {
+          setError('المنشور غير موجود');
+        }
+      } catch (err) {
+        cleanup();
+        const apiError = handleApiError(err, '/api/posts');
+        console.error('Error fetching post:', err);
+        setError(apiError.message || 'خطأ في تحميل المنشور');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) {
+      fetchPost();
     }
-  }, [initialPost, slug]);
+  }, [slug]);
 
   // Fetch latest posts for sidebar
   useEffect(() => {
@@ -223,14 +247,7 @@ const PostContent: React.FC<{ slug: string; initialPost: Post }> = ({ slug, init
 
   return (
     <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
-      <Head>
-        <title>{post.title_ar || post.title} - مركبا</title>
-        
-        {/* Basic Meta Tags */}
-        <meta name="description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
-        <meta name="keywords" content={post.tags?.join(', ') || ''} />
-        <meta name="author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
-        
+      <Helmet>
         {/* Open Graph Meta Tags */}
         <meta property="og:title" content={post.title_ar || post.title} />
         <meta property="og:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
@@ -240,7 +257,6 @@ const PostContent: React.FC<{ slug: string; initialPost: Post }> = ({ slug, init
           <meta property="og:image" content={getImageUrl(post.featured_image || post.image || '')} />
         )}
         <meta property="og:site_name" content="مركبا - المنصة الاخبارية" />
-        <meta property="og:locale" content="ar_AR" />
         <meta property="article:published_time" content={post.created_at} />
         <meta property="article:modified_time" content={post.updated_at} />
         <meta property="article:author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
@@ -254,9 +270,12 @@ const PostContent: React.FC<{ slug: string; initialPost: Post }> = ({ slug, init
           <meta name="twitter:image" content={getImageUrl(post.featured_image || post.image || '')} />
         )}
         
-        {/* Canonical URL */}
-        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
-      </Head>
+        {/* Additional SEO Meta Tags */}
+        <meta name="description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
+        <meta name="keywords" content={post.tags?.join(', ') || ''} />
+        <meta name="author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
+        <link rel="canonical" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
+      </Helmet>
       
       {/* NextSEO for enhanced Open Graph and SEO */}
       <NextSEOWrapper
@@ -464,43 +483,6 @@ const PostContent: React.FC<{ slug: string; initialPost: Post }> = ({ slug, init
       </div>
     </Layout>
   );
-};
-
-export const getServerSideProps: GetServerSideProps<PostPageProps> = async (context) => {
-  const { slug } = context.params!;
-  const slugString = Array.isArray(slug) ? slug[0] : slug;
-
-  // Ensure slug is defined
-  if (!slugString) {
-    return {
-      notFound: true,
-    };
-  }
-
-  try {
-    // Fetch post data server-side
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/posts/slug/${slugString}`);
-    
-    if (!response.ok) {
-      return {
-        notFound: true,
-      };
-    }
-
-    const post = await response.json();
-
-    return {
-      props: {
-        post,
-        slug: slugString,
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching post:', error);
-    return {
-      notFound: true,
-    };
-  }
 };
 
 export default SinglePostPage;
