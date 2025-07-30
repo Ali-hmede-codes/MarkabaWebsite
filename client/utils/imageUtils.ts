@@ -8,16 +8,16 @@ const imageUrlCache = new Map<string, boolean>();
 
 // Get the backend URL for serving images
 const getBackendUrl = (): string => {
-  // Use the configured server URL, preserving HTTPS in production
-  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://api.markaba.news';
+  // Use the configured backend URL from environment
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.markaba.news';
   
   // In development, use HTTP and port 5000
   if (process.env.NODE_ENV === 'development') {
-    return serverUrl.replace(':3443', ':5000').replace('https:', 'http:');
+    return 'http://localhost:5000';
   }
   
   // In production, keep HTTPS and use the configured domain
-  return serverUrl;
+  return backendUrl;
 };
 
 /**
