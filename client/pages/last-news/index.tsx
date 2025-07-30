@@ -189,7 +189,7 @@ const LastNewsPage: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-800">آخر الأخبار</h1>
           </div>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto rounded-full"></div>
-          <p className="text-center text-gray-600 mt-4">أخبار آخر 24 ساعة - الأخبار العاجلة والعادية مرتبة حسب الوقت</p>
+          <p className="text-center text-gray-600 mt-4">أخبار آخر 24 ساعة</p>
           {combinedNews.length > 0 && (
             <div className="text-center mt-2">
               <span className="text-sm text-gray-500">

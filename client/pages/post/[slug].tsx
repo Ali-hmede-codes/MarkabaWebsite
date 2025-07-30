@@ -2,10 +2,11 @@ import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
-import Image from 'next/image';
-import { getImageUrl } from '../../utils/imageUtils';
+import { generateSizes, getImageUrl } from '../../utils/imageUtils';
+import OptimizedImage from '../../components/UI/OptimizedImage';
 import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
+import Image from 'next/image';
 import MetaTags from '../../components/SEO/MetaTags';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
@@ -348,11 +349,15 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
             {/* Featured Image */}
             {(post.featured_image || post.image) && (
               <div className="relative w-full aspect-video md:h-96 md:aspect-auto mb-8">
-                <Image 
-                  src={getImageUrl(post.featured_image || post.image || '')} 
+                <OptimizedImage 
+                  src={post.featured_image || post.image || ''} 
                   alt={post.title_ar || post.title} 
                   fill 
-                  className="object-cover rounded-lg shadow-lg" 
+                  className="rounded-lg shadow-lg" 
+                  sizes={generateSizes({ mobile: '100vw', tablet: '100vw', desktop: '100vw' })}
+                  priority
+                  quality={85}
+                  objectFit="cover"
                 />
               </div>
             )}
@@ -409,11 +414,14 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
                     <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors rounded-lg cursor-pointer">
                       {(latestPost.featured_image || latestPost.image) && (
                         <div className="relative w-16 h-16 flex-shrink-0">
-                          <Image 
-                            src={getImageUrl(latestPost.featured_image || latestPost.image || '')} 
+                          <OptimizedImage 
+                            src={latestPost.featured_image || latestPost.image || ''} 
                             alt={latestPost.title_ar || latestPost.title} 
                             fill 
-                            className="object-cover rounded-md" 
+                            className="rounded-md" 
+                            sizes="64px"
+                            quality={75}
+                            objectFit="cover"
                           />
                         </div>
                       )}

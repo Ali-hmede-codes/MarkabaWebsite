@@ -2,10 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Post } from '../API/types';
 import { FiCalendar, FiEye, FiUser } from 'react-icons/fi';
-import { getImageUrl } from '../../utils/imageUtils';
+import OptimizedImage from '../UI/OptimizedImage';
+import { generateSizes } from '../../utils/imageUtils';
 
 interface PostCardProps {
   post: Post;
@@ -42,12 +42,15 @@ const PostCard: React.FC<PostCardProps> = ({
       {/* Featured Image */}
       {post.featured_image && (
         <div className="relative h-48 w-full">
-          <Image
-            src={getImageUrl(post.featured_image)}
+          <OptimizedImage
+            src={post.featured_image}
             alt={post.title_ar || post.title}
             fill
-            className="object-cover rounded-t-lg"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="rounded-t-lg"
+            sizes={generateSizes({ mobile: '100vw', tablet: '50vw', desktop: '33vw' })}
+            placeholder="blur"
+            quality={80}
+            objectFit="cover"
           />
         </div>
       )}
