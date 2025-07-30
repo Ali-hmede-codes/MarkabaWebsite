@@ -19,6 +19,19 @@ interface PostPageProps {
 const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) => {
   const router = useRouter();
 
+  // Extract meta data for SSR and fallback
+  const meta = {
+    title: post?.title_ar || post?.title || "أخبار مركبا",
+    description: post?.excerpt_ar || post?.excerpt || (post?.content_ar || post?.content)?.substring(0, 160) || "موقع أخبار مركبا",
+    image: (post?.featured_image || post?.image) ? getImageUrl(post.featured_image || post.image || "") : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post?.slug || ''}`,
+    author: typeof post?.author === 'string' ? post.author : post?.author?.username || 'أخبار مركبا',
+    category: typeof post?.category === 'string' ? post.category : post?.category?.name_ar || 'أخبار',
+    tags: post?.tags || [],
+    published: post?.created_at || '',
+    updated: post?.updated_at || ''
+  };
+
   // Handle route changes to ensure proper navigation
   useEffect(() => {
     const handleRouteChange = (url: string) => {
@@ -32,13 +45,7 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) 
     };
   }, [router.events]);
 
-  // Extract meta data for cleaner rendering
-  const title = post?.title_ar || post?.title || 'أخبار مركبا';
-  const description = post?.excerpt_ar || post?.excerpt || (post?.content_ar || post?.content)?.substring(0, 160) || 'موقع أخبار مركبا';
-  const image = (post?.featured_image || post?.image) ? getImageUrl(post.featured_image || post.image || '') : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`;
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post?.slug || ''}`;
-  const author = typeof post?.author === 'string' ? post.author : post?.author?.username || 'أخبار مركبا';
-  const category = typeof post?.category === 'string' ? post.category : post?.category?.name_ar || 'أخبار';
+ 
 
   // Handle loading state during client-side navigation
   if (router.isFallback) {
@@ -77,38 +84,31 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) 
   return (
     <>
       <Head>
-        {/* Page Title */}
-        <title>{title}</title>
-        
-        {/* Basic Meta Tags */}
-        <meta name="description" content={description} />
-        <meta name="keywords" content={post.tags?.join(', ') || ''} />
-        <meta name="author" content={author} />
-        <link rel="canonical" href={url} />
-        
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
+        <title>{meta.title}</title>
+        <meta name="description" content={meta.description} />
+        <meta name="keywords" content={meta.tags.join(', ')} />
+        <meta name="author" content={meta.author} />
+        <link rel="canonical" href={meta.url} />
+        <meta property="og:title" content={meta.title} />
+        <meta property="og:description" content={meta.description} />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content={url} />
+        <meta property="og:url" content={meta.url} />
         <meta property="og:site_name" content="موقع مــركبــا الاخباري" />
         <meta property="og:locale" content="ar_AR" />
-        <meta property="og:image" content={image} />
-        <meta property="article:published_time" content={post.created_at} />
-        <meta property="article:modified_time" content={post.updated_at} />
-        <meta property="article:author" content={author} />
-        <meta property="article:section" content={category} />
-        {post.tags && post.tags.length > 0 && post.tags.map((tag, index) => (
+        <meta property="og:image" content={meta.image} />
+        <meta property="article:published_time" content={meta.published} />
+        <meta property="article:modified_time" content={meta.updated} />
+        <meta property="article:author" content={meta.author} />
+        <meta property="article:section" content={meta.category} />
+        {meta.tags.map((tag, index) => (
           <meta key={index} property="article:tag" content={tag} />
         ))}
-        
-        {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@markaba_news" />
         <meta name="twitter:creator" content="@markaba_news" />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={image} />
+        <meta name="twitter:title" content={meta.title} />
+        <meta name="twitter:description" content={meta.description} />
+        <meta name="twitter:image" content={meta.image} />
       </Head>
       <PostContent post={post} relatedPosts={relatedPosts} />
     </>
