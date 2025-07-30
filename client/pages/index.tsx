@@ -96,8 +96,15 @@ const HomePage: React.FC = () => {
 
   return (
     <Layout
-      title={content?.site?.name || 'News Site'}
-      description={content?.site?.description || 'Latest News and Updates'}
+      pageType="home"
+      seo={{
+        title: content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+        description: content?.site?.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+        image: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/og-default.svg`,
+        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news',
+        type: 'website',
+        keywords: ['أخبار', 'أخبار عاجلة', 'تحديثات', 'صحافة', 'أحداث جارية', 'لبنان', 'الشرق الأوسط']
+      }}
     >
       <div className="bg-white min-h-screen" dir="rtl">
         {/* Breaking News Banner */}

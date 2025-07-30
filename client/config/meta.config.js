@@ -71,7 +71,20 @@ const metaConfig = {
     },
     instagram: 'https://instagram.com/markaba.news',
     youtube: 'https://youtube.com/@markaba.news',
-    linkedin: 'https://linkedin.com/company/markaba-news'
+    linkedin: 'https://linkedin.com/company/markaba-news',
+    whatsapp: {
+      number: '+961-XX-XXXXXX', // Replace with actual WhatsApp Business number
+      link: 'https://wa.me/961XXXXXXXX', // Replace with actual WhatsApp link
+      businessApi: 'https://api.whatsapp.com/send?phone=961XXXXXXXX&text=مرحبا%20بك%20في%20مركبا%20الإخبارية'
+    },
+    telegram: {
+      channel: 'https://t.me/markaba_news',
+      bot: '@markaba_news_bot'
+    },
+    tiktok: 'https://tiktok.com/@markaba.news',
+    snapchat: 'https://snapchat.com/add/markaba.news',
+    discord: 'https://discord.gg/markaba-news',
+    reddit: 'https://reddit.com/r/markaba_news'
   },
 
   // Contact Information
