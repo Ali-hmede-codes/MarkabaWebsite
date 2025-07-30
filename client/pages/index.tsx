@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Layout from '../components/Layout/Layout';
 import { useContent } from '../hooks/useContent';
 import { usePosts, useCategories } from '../components/API/hooks';
+import { Post } from '../components/API/types';
 import { 
   FiCalendar,  
   FiEye, 
@@ -17,23 +18,15 @@ import LastNewsBanner from '../components/LastNews/LastNewsBanner';
 import LatestArticles from '../components/LatestArticles/LatestArticles';
 import BreakingNewsBanner from '../components/BreakingNews/BreakingNewsBanner';
 
-import { GetServerSideProps } from 'next';
-import { api } from '../lib/api';
-
-import type { Post, Category } from '../types';
-
-interface HomePageProps {
-  initialPosts: Post[];
-  initialCategories: Category[];
-  content: any; // Adjust type as needed
-}
-
-const HomePage: React.FC<HomePageProps> = ({ initialPosts, initialCategories, content }) => {
-    const [latestPosts, setLatestPosts] = useState<Post[]>(initialPosts);
+const HomePage: React.FC = () => {
+  const { content } = useContent();
+  const { data: postsResponse, loading: postsLoading } = usePosts();
+  const { data: categoriesResponse } = useCategories();
+  const [latestPosts, setLatestPosts] = useState<Post[]>([]);
   const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
 
-  const posts = initialPosts;
-  const categories = initialCategories;
+  const posts = postsResponse?.posts || [];
+  const categories = categoriesResponse?.categories || [];
 
   useEffect(() => {
     if (posts.length > 0) {
@@ -98,6 +91,8 @@ const HomePage: React.FC<HomePageProps> = ({ initialPosts, initialCategories, co
     if (!category) return '';
     return category.name_ar || '';
   };
+
+  if (!content) return null;
 
   return (
     <Layout
@@ -348,33 +343,6 @@ const HomePage: React.FC<HomePageProps> = ({ initialPosts, initialCategories, co
       </div>
     </Layout>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  try {
-    const postsResponse = await api.getPosts();
-    const categoriesResponse = await api.getCategories();
-    // Fetch content if needed, assuming it's static or from another source
-    // For now, placeholder
-    const content = {}; // Implement proper content fetching if necessary
-
-    return {
-      props: {
-        initialPosts: postsResponse.posts || postsResponse.data || [],
-        initialCategories: categoriesResponse.categories || categoriesResponse.data || [],
-        content,
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return {
-      props: {
-        initialPosts: [],
-        initialCategories: [],
-        content: {},
-      },
-    };
-  }
 };
 
 export default HomePage;
