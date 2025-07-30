@@ -398,21 +398,24 @@ const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
 
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async () => {
   try {
-    // Use localhost for server-side rendering in development
+    // Use production API URL for www.markaba.news
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const baseUrl = isDevelopment ? 'http://localhost:5000' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
+    const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
     
     console.log('SSR: Fetching data from:', baseUrl);
     
     // Fetch posts and categories in parallel
+    const postsEndpoint = isDevelopment ? `${baseUrl}/api/posts` : `${baseUrl}/api/v2/posts`;
+    const categoriesEndpoint = isDevelopment ? `${baseUrl}/api/categories` : `${baseUrl}/api/v2/categories`;
+    
     const [postsResponse, categoriesResponse] = await Promise.all([
-      fetch(`${baseUrl}/api/posts`, {
+      fetch(postsEndpoint, {
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'NewsMarkaba-SSR/1.0'
         }
       }),
-      fetch(`${baseUrl}/api/categories`, {
+      fetch(categoriesEndpoint, {
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'NewsMarkaba-SSR/1.0'
