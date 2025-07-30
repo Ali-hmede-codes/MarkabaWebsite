@@ -398,7 +398,9 @@ const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
 
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async () => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    // Use localhost for server-side rendering in development
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const baseUrl = isDevelopment ? 'http://localhost:5000' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
     
     // Fetch posts and categories in parallel
     const [postsResponse, categoriesResponse] = await Promise.all([

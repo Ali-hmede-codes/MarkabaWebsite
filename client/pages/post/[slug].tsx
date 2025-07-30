@@ -477,7 +477,9 @@ export const getServerSideProps: GetServerSideProps<PostPageProps> = async (cont
   }
 
   try {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.markaba.news/api/v2';
+    // Use localhost for server-side rendering in development
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const API_URL = isDevelopment ? 'http://localhost:5000/api' : (process.env.NEXT_PUBLIC_API_URL || 'https://api.markaba.news/api/v2');
     
     // First, get the post by slug to find its ID
     const postsResponse = await fetch(`${API_URL}/posts?slug=${encodeURIComponent(slug)}&limit=1&page=1`, {
