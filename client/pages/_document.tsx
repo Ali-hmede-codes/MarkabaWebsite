@@ -42,20 +42,7 @@ export default function Document() {
         {/* Author and publisher */}
         <meta name="author" content="موقع مــركبــا الاخباري" />
         <meta name="publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta name="description" content="تابع آخر الأخبار والمستجدات من منصة مركبا الإخبارية - مصدر موثوق للأحداث في لبنان والعالم."/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <meta name="robots" content="index, follow"/>
-        <meta name="language" content="ar"/>
-        <meta name="theme-color" content="#1e1e1e"/>
-
-
-        <meta property="og:title" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta property="og:description" content="تابع آخر الأخبار والمستجدات من منصة مركبا الإخبارية - مصدر موثوق للأحداث في لبنان والعالم." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://markaba.news/" />
-        <meta property="og:image" content="https://markaba.news/images/logo_new.png" />
-        <meta property="og:site_name" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta property="og:locale" content="ar_AR" />
+        <meta name="language" content="ar" />
             
         {/* Preload critical resources - fonts loaded from Google Fonts */}
       </Head>

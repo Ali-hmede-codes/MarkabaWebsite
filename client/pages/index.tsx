@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Helmet } from 'react-helmet';
+import { GetServerSideProps } from 'next';
 import Layout from '../components/Layout/Layout';
 import { useContent } from '../hooks/useContent';
-import { usePosts, useCategories } from '../components/API/hooks';
-import { Post } from '../components/API/types';
+import { Post, Category } from '../components/API/types';
 import { 
   FiCalendar,  
   FiEye, 
@@ -19,15 +19,16 @@ import LastNewsBanner from '../components/LastNews/LastNewsBanner';
 import LatestArticles from '../components/LatestArticles/LatestArticles';
 import BreakingNewsBanner from '../components/BreakingNews/BreakingNewsBanner';
 
-const HomePage: React.FC = () => {
+interface HomePageProps {
+  posts: Post[];
+  categories: Category[];
+  error?: string;
+}
+
+const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
   const { content } = useContent();
-  const { data: postsResponse, loading: postsLoading } = usePosts();
-  const { data: categoriesResponse } = useCategories();
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);
   const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
-
-  const posts = postsResponse?.posts || [];
-  const categories = categoriesResponse?.categories || [];
 
   useEffect(() => {
     if (posts.length > 0) {
@@ -92,6 +93,19 @@ const HomePage: React.FC = () => {
     if (!category) return '';
     return category.name_ar || '';
   };
+
+  if (error) {
+    return (
+      <Layout pageType="home">
+        <div className="container mx-auto responsive-padding py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">خطأ في تحميل البيانات</h1>
+            <p className="text-gray-600">{error}</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   if (!content) return null;
 
@@ -380,6 +394,41 @@ const HomePage: React.FC = () => {
     </Layout>
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async () => {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    
+    // Fetch posts and categories in parallel
+    const [postsResponse, categoriesResponse] = await Promise.all([
+      fetch(`${baseUrl}/api/posts`),
+      fetch(`${baseUrl}/api/categories`)
+    ]);
+
+    if (!postsResponse.ok || !categoriesResponse.ok) {
+      throw new Error('فشل في جلب البيانات من الخادم');
+    }
+
+    const postsData = await postsResponse.json();
+    const categoriesData = await categoriesResponse.json();
+
+    return {
+      props: {
+        posts: postsData.posts || [],
+        categories: categoriesData.categories || []
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching homepage data:', error);
+    return {
+      props: {
+        posts: [],
+        categories: [],
+        error: 'حدث خطأ أثناء تحميل البيانات. يرجى المحاولة مرة أخرى لاحقاً.'
+      }
+    };
+  }
 };
 
 export default HomePage;
