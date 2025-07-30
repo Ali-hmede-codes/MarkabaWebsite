@@ -121,7 +121,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
              objectFit === 'none' ? 'object-none' : 'object-scale-down'}`}
           onLoad={handleLoad}
           onError={handleError}
-          loading={loading}
+          loading={priority ? 'eager' : loading}
         />
       )}
       
