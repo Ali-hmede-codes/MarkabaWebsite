@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { usePosts } from '../API/hooks';
 import { Post } from '../API/types';
 import { FiCalendar, FiBook } from 'react-icons/fi';
-import { getImageUrl } from '../../utils/imageUtils';
+import { getOptimizedImageProps, preloadImages } from '../../utils/imageUtils';
 import Link from 'next/link';
 
 type LatestArticlesProps = {
@@ -19,6 +19,12 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         .slice(0, 3);
       setLatestPosts(sorted);
+      
+      // Preload critical images for better performance
+      if (sorted.length > 0) {
+        const imagePaths = sorted.map(post => post.featured_image).filter((path): path is string => Boolean(path));
+        preloadImages(imagePaths, { quality: 80, format: 'auto' });
+      }
     }
   }, [postsResponse]);
 
@@ -38,7 +44,18 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
           {/* Big post */}
           <Link href={`/post/${latestPosts[0].slug}`} className="block rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer relative border border-gray-200 hover:border-gray-300">
             <div className="aspect-video w-full relative">
-              <img src={getImageUrl(latestPosts[0].featured_image)} alt={latestPosts[0].title_ar} className="w-full h-full object-cover" />
+              <img 
+                {...getOptimizedImageProps(latestPosts[0].featured_image, {
+                  width: 800,
+                  height: 450,
+                  quality: 85,
+                  format: 'auto',
+                  priority: true,
+                  lazy: false
+                })}
+                alt={latestPosts[0].title_ar} 
+                className="w-full h-full object-cover" 
+              />
               {/* Overlay with fade background */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
               {/* Title overlay */}
@@ -54,7 +71,18 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
           <div className="flex flex-col md:flex-row gap-3 md:gap-4">
             {latestPosts.slice(1, 3).map(post => (
               <Link key={post.id} href={`/post/${post.slug}`} className="flex flex-row items-start gap-3 sm:gap-4 rounded-xl transition-all duration-300 p-3 sm:p-4 flex-1 hover:shadow-lg cursor-pointer bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300">
-                <img src={getImageUrl(post.featured_image)} alt={post.title_ar} className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl flex-shrink-0" />
+                <img 
+                  {...getOptimizedImageProps(post.featured_image, {
+                    width: 80,
+                    height: 80,
+                    quality: 80,
+                    format: 'auto',
+                    lazy: true,
+                    priority: false
+                  })}
+                  alt={post.title_ar} 
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl flex-shrink-0" 
+                />
                 <div className="flex flex-col flex-1 min-w-0">
                    <h3 className="font-bold text-sm md:text-base lg:text-lg mb-2 md:mb-3 text-gray-800 hover:text-blue-600 transition-colors leading-tight line-clamp-2">{post.title_ar}</h3>
                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-xs text-gray-500 mt-auto">
