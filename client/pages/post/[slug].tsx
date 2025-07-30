@@ -1,7 +1,7 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2, FiTag } from 'react-icons/fi';
 import Image from 'next/image';
@@ -163,36 +163,47 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
   }
 
   return (
-    <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
-      <Helmet>
+    <>
+      <Head>
+        {/* Page Title */}
+        <title>{post.title_ar || post.title} - موقع مــركبــا الاخباري</title>
+        
+        {/* Basic Meta Tags */}
+        <meta name="description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
+        <meta name="keywords" content={post.tags?.join(', ') || ''} />
+        <meta name="author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
+        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
+        
         {/* Open Graph Meta Tags */}
         <meta property="og:title" content={post.title_ar || post.title} />
         <meta property="og:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
+        <meta property="og:site_name" content="موقع مــركبــا الاخباري" />
+        <meta property="og:locale" content="ar_AR" />
         {(post.featured_image || post.image) && (
           <meta property="og:image" content={getImageUrl(post.featured_image || post.image || '')} />
         )}
-        <meta property="og:site_name" content="مركبا - المنصة الاخبارية" />
         <meta property="article:published_time" content={post.created_at} />
         <meta property="article:modified_time" content={post.updated_at} />
         <meta property="article:author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
         <meta property="article:section" content={typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار'} />
+        {post.tags && post.tags.length > 0 && post.tags.map((tag, index) => (
+          <meta key={index} property="article:tag" content={tag} />
+        ))}
         
         {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@markaba_news" />
+        <meta name="twitter:creator" content="@markaba_news" />
         <meta name="twitter:title" content={post.title_ar || post.title} />
         <meta name="twitter:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
         {(post.featured_image || post.image) && (
           <meta name="twitter:image" content={getImageUrl(post.featured_image || post.image || '')} />
         )}
-        
-        {/* Additional SEO Meta Tags */}
-        <meta name="description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
-        <meta name="keywords" content={post.tags?.join(', ') || ''} />
-        <meta name="author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
-        <link rel="canonical" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
-      </Helmet>
+      </Head>
+      
+      <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
       
       {/* NextSEO for enhanced Open Graph and SEO */}
       <NextSEOWrapper
@@ -463,6 +474,7 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
         </div>
       </div>
     </Layout>
+    </>
   );
 };
 
