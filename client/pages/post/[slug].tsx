@@ -32,31 +32,87 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) 
     };
   }, [router.events]);
 
+  // Extract meta data for cleaner rendering
+  const title = post?.title_ar || post?.title || 'أخبار مركبا';
+  const description = post?.excerpt_ar || post?.excerpt || (post?.content_ar || post?.content)?.substring(0, 160) || 'موقع أخبار مركبا';
+  const image = (post?.featured_image || post?.image) ? getImageUrl(post.featured_image || post.image || '') : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`;
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post?.slug || ''}`;
+  const author = typeof post?.author === 'string' ? post.author : post?.author?.username || 'أخبار مركبا';
+  const category = typeof post?.category === 'string' ? post.category : post?.category?.name_ar || 'أخبار';
+
   // Handle loading state during client-side navigation
   if (router.isFallback) {
     return (
-      <Layout title="جاري التحميل..." description="">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center py-10 text-gray-600">جاري التحميل...</div>
-        </div>
-      </Layout>
+      <>
+        <Head>
+          <title>جاري التحميل... | أخبار مركبا</title>
+        </Head>
+        <Layout title="جاري التحميل..." description="">
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center py-10 text-gray-600">جاري التحميل...</div>
+          </div>
+        </Layout>
+      </>
     );
   }
 
   // Handle error state
   if (error || !post) {
     return (
-      <Layout title="المنشور غير موجود" description="">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center py-10 text-gray-600">
-            {error || 'المنشور غير موجود'}
+      <>
+        <Head>
+          <title>المنشور غير موجود | أخبار مركبا</title>
+        </Head>
+        <Layout title="المنشور غير موجود" description="">
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center py-10 text-gray-600">
+              {error || 'المنشور غير موجود'}
+            </div>
           </div>
-        </div>
-      </Layout>
+        </Layout>
+      </>
     );
   }
 
-  return <PostContent post={post} relatedPosts={relatedPosts} />;
+  return (
+    <>
+      <Head>
+        {/* Page Title */}
+        <title>{title}</title>
+        
+        {/* Basic Meta Tags */}
+        <meta name="description" content={description} />
+        <meta name="keywords" content={post.tags?.join(', ') || ''} />
+        <meta name="author" content={author} />
+        <link rel="canonical" href={url} />
+        
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={url} />
+        <meta property="og:site_name" content="موقع مــركبــا الاخباري" />
+        <meta property="og:locale" content="ar_AR" />
+        <meta property="og:image" content={image} />
+        <meta property="article:published_time" content={post.created_at} />
+        <meta property="article:modified_time" content={post.updated_at} />
+        <meta property="article:author" content={author} />
+        <meta property="article:section" content={category} />
+        {post.tags && post.tags.length > 0 && post.tags.map((tag, index) => (
+          <meta key={index} property="article:tag" content={tag} />
+        ))}
+        
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@markaba_news" />
+        <meta name="twitter:creator" content="@markaba_news" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={image} />
+      </Head>
+      <PostContent post={post} relatedPosts={relatedPosts} />
+    </>
+  );
 };
 
 const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, relatedPosts }) => {
@@ -68,15 +124,7 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
   const [copyMessage, setCopyMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Extract meta data for cleaner rendering
-  const title = post?.title_ar || post?.title || 'أخبار مركبا';
-  const description = post?.excerpt_ar || post?.excerpt || (post?.content_ar || post?.content)?.substring(0, 160) || 'موقع أخبار مركبا';
-  const image = (post?.featured_image || post?.image) ? getImageUrl(post.featured_image || post.image || '') : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`;
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post?.slug || ''}`;
-  const author = typeof post?.author === 'string' ? post.author : post?.author?.username || 'أخبار مركبا';
-  const category = typeof post?.category === 'string' ? post.category : post?.category?.name_ar || 'أخبار';
-  
-  console.log('Post data:', { title, description, image, url, author, category });
+
 
   // Update related posts when prop changes
   useEffect(() => {
@@ -172,43 +220,7 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
   }
 
   return (
-    <>
-      <Head>
-        {/* Page Title */}
-        <title>{title}</title>
-        
-        {/* Basic Meta Tags */}
-        <meta name="description" content={description} />
-        <meta name="keywords" content={post.tags?.join(', ') || ''} />
-        <meta name="author" content={author} />
-        <link rel="canonical" href={url} />
-        
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={url} />
-        <meta property="og:site_name" content="موقع مــركبــا الاخباري" />
-        <meta property="og:locale" content="ar_AR" />
-        <meta property="og:image" content={image} />
-        <meta property="article:published_time" content={post.created_at} />
-        <meta property="article:modified_time" content={post.updated_at} />
-        <meta property="article:author" content={author} />
-        <meta property="article:section" content={category} />
-        {post.tags && post.tags.length > 0 && post.tags.map((tag, index) => (
-          <meta key={index} property="article:tag" content={tag} />
-        ))}
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@markaba_news" />
-        <meta name="twitter:creator" content="@markaba_news" />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={image} />
-      </Head>
-      
-      <Layout>
+    <Layout>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
@@ -465,7 +477,6 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
         </div>
       </div>
     </Layout>
-    </>
   );
 };
 
