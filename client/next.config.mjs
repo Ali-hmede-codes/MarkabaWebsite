@@ -91,7 +91,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/sitemap*.xml',
+        source: '/sitemap:path*.xml',
         headers: [
           {
             key: 'Content-Type',
