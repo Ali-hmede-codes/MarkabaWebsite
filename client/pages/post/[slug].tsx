@@ -8,34 +8,97 @@ import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
-import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
+// Types
 interface PostPageProps {
   post: Post | null;
   relatedPosts: Post[];
   error?: string;
 }
 
+interface MetaData {
+  title: string;
+  description: string;
+  image: string;
+  url: string;
+  author: string;
+  category: string;
+  tags: string[];
+  published: string;
+  updated: string;
+  siteName: string;
+  locale: string;
+}
+
+// Main Component
 const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) => {
   const router = useRouter();
 
-  // Extract meta data for SSR and fallback
-  const meta = {
-    title: post?.title_ar || post?.title || "أخبار مركبا",
-    description: post?.excerpt_ar || post?.excerpt || (post?.content_ar || post?.content)?.substring(0, 160) || "موقع أخبار مركبا",
-    image: (post?.featured_image || post?.image) ? getImageUrl(post.featured_image || post.image || "") : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`,
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post?.slug || ''}`,
-    author: typeof post?.author === 'string' ? post.author : post?.author?.username || 'أخبار مركبا',
-    category: typeof post?.category === 'string' ? post.category : post?.category?.name_ar || 'أخبار',
-    tags: post?.tags || [],
-    published: post?.created_at || '',
-    updated: post?.updated_at || ''
+  // Generate meta data for SSR <mcreference link="https://nextjs.org/docs/pages/building-your-application/routing/dynamic-routes" index="2">2</mcreference>
+  const generateMetaData = (post: Post | null): MetaData => {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
+    const defaultImage = `${baseUrl}/images/logo_new.png`;
+    
+    if (!post) {
+      return {
+        title: 'المنشور غير موجود | أخبار مركبا',
+        description: 'موقع أخبار مركبا - آخر الأخبار والمستجدات',
+        image: defaultImage,
+        url: baseUrl,
+        author: 'أخبار مركبا',
+        category: 'أخبار',
+        tags: [],
+        published: new Date().toISOString(),
+        updated: new Date().toISOString(),
+        siteName: 'موقع مــركبــا الاخباري',
+        locale: 'ar_AR'
+      };
+    }
+
+    // Extract and clean description <mcreference link="https://www.davegray.codes/posts/nextjs-open-graph-social-media-cards" index="3">3</mcreference>
+    const description = (post.excerpt_ar || post.excerpt || 
+      (post.content_ar || post.content)?.replace(/<[^>]*>/g, '').substring(0, 160) || 
+      'موقع أخبار مركبا - آخر الأخبار والمستجدات'
+    ).trim();
+
+    // Handle tags properly
+    let tags: string[] = [];
+    if (post.tags) {
+      if (Array.isArray(post.tags)) {
+        tags = post.tags;
+      } else if (typeof post.tags === 'string') {
+        try {
+          tags = JSON.parse(post.tags);
+        } catch {
+          const tagsString = post.tags as string;
+          tags = tagsString.split(',').map((tag: string) => tag.trim());
+        }
+      }
+    }
+
+    return {
+      title: (post.title_ar || post.title || 'أخبار مركبا').trim(),
+      description,
+      image: (post.featured_image || post.image) ? 
+        getImageUrl(post.featured_image || post.image) : defaultImage,
+      url: `${baseUrl}/post/${post.slug}`,
+      author: typeof post.author === 'string' ? post.author : 
+        (post.author?.username || 'أخبار مركبا'),
+      category: typeof post.category === 'string' ? post.category : 
+        (post.category?.name_ar || 'أخبار'),
+      tags,
+      published: post.created_at || new Date().toISOString(),
+      updated: post.updated_at || post.created_at || new Date().toISOString(),
+      siteName: 'موقع مــركبــا الاخباري',
+      locale: 'ar_AR'
+    };
   };
 
-  // Handle route changes to ensure proper navigation
+  const meta = generateMetaData(post);
+
+  // Handle route changes
   useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      // Force scroll to top on route change
+    const handleRouteChange = () => {
       window.scrollTo(0, 0);
     };
 
@@ -45,14 +108,13 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) 
     };
   }, [router.events]);
 
- 
-
-  // Handle loading state during client-side navigation
+  // Loading state during client-side navigation
   if (router.isFallback) {
     return (
       <>
         <Head>
           <title>جاري التحميل... | أخبار مركبا</title>
+          <meta name="description" content="جاري تحميل المحتوى..." />
         </Head>
         <Layout title="جاري التحميل..." description="">
           <div className="min-h-screen flex items-center justify-center">
@@ -63,12 +125,23 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) 
     );
   }
 
-  // Handle error state
+  // Error state
   if (error || !post) {
     return (
       <>
         <Head>
-          <title>المنشور غير موجود | أخبار مركبا</title>
+          <title>{meta.title}</title>
+          <meta name="description" content={meta.description} />
+          <meta property="og:title" content={meta.title} />
+          <meta property="og:description" content={meta.description} />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={meta.url} />
+          <meta property="og:site_name" content={meta.siteName} />
+          <meta property="og:image" content={meta.image} />
+          <meta name="twitter:card" content="summary" />
+          <meta name="twitter:title" content={meta.title} />
+          <meta name="twitter:description" content={meta.description} />
+          <meta name="twitter:image" content={meta.image} />
         </Head>
         <Layout title="المنشور غير موجود" description="">
           <div className="min-h-screen flex items-center justify-center">
@@ -81,40 +154,55 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) 
     );
   }
 
+  // Main render with complete meta tags <mcreference link="https://developer.x.com/en/docs/x-for-websites/cards/guides/getting-started" index="4">4</mcreference>
   return (
     <>
       <Head>
+        {/* Basic Meta Tags */}
         <title>{meta.title}</title>
         <meta name="description" content={meta.description} />
         <meta name="keywords" content={meta.tags.join(', ')} />
         <meta name="author" content={meta.author} />
         <link rel="canonical" href={meta.url} />
+        
+        {/* Open Graph Meta Tags <mcreference link="https://www.davegray.codes/posts/nextjs-open-graph-social-media-cards" index="3">3</mcreference> */}
         <meta property="og:title" content={meta.title} />
         <meta property="og:description" content={meta.description} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={meta.url} />
-        <meta property="og:site_name" content="موقع مــركبــا الاخباري" />
-        <meta property="og:locale" content="ar_AR" />
+        <meta property="og:site_name" content={meta.siteName} />
+        <meta property="og:locale" content={meta.locale} />
         <meta property="og:image" content={meta.image} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta property="article:published_time" content={meta.published} />
         <meta property="article:modified_time" content={meta.updated} />
         <meta property="article:author" content={meta.author} />
         <meta property="article:section" content={meta.category} />
         {meta.tags.map((tag, index) => (
-          <meta key={index} property="article:tag" content={tag} />
+          <meta key={`og-tag-${index}`} property="article:tag" content={tag} />
         ))}
+        
+        {/* Twitter Card Meta Tags <mcreference link="https://developer.x.com/en/docs/x-for-websites/cards/guides/getting-started" index="4">4</mcreference> */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@markaba_news" />
         <meta name="twitter:creator" content="@markaba_news" />
         <meta name="twitter:title" content={meta.title} />
         <meta name="twitter:description" content={meta.description} />
         <meta name="twitter:image" content={meta.image} />
+        
+        {/* Additional SEO Meta Tags */}
+        <meta name="robots" content="index, follow" />
+        <meta name="language" content="Arabic" />
+        <meta httpEquiv="Content-Language" content="ar" />
       </Head>
+      
       <PostContent post={post} relatedPosts={relatedPosts} />
     </>
   );
 };
 
+// Post Content Component
 const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, relatedPosts }) => {
   const router = useRouter();
   const [fontSize, setFontSize] = useState(20);
@@ -122,9 +210,6 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-
-
 
   // Update related posts when prop changes
   useEffect(() => {
@@ -143,13 +228,14 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
           }
         }
       } catch (err) {
-        console.error('Error fetching breaking news:', err);
-      }
+          // Silently handle breaking news fetch errors
+        }
     };
 
     fetchBreakingNews();
   }, []);
 
+  // Utility functions
   const handleCopyText = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -160,7 +246,7 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
         setCopyMessage('');
       }, 2000);
     } catch (err) {
-      console.error('Failed to copy text:', err);
+      // Silently handle copy errors
     }
   };
 
@@ -172,7 +258,7 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
           url: window.location.href
         });
       } catch (err) {
-        console.error('Error sharing:', err);
+        // Silently handle sharing errors
       }
     } else {
       handleCopyText(window.location.href);
@@ -191,16 +277,9 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
     router.push(href);
   };
 
-  if (loading) {
-    return (
-      <Layout title="جاري التحميل..." description="">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center py-10 text-gray-600">جاري التحميل...</div>
-        </div>
-      </Layout>
-    );
-  }
 
+
+  // Post not found
   if (!post) {
     return (
       <Layout title="المنشور غير موجود" description="">
@@ -232,7 +311,7 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
             
             {/* Summary Box Container with Category Badge */}
             <div className="relative mb-8">
-              {/* Category Badge - Outside Right Top */}
+              {/* Category Badge */}
               {post.category?.name_ar && (
                 <div className="absolute top-0 z-10" style={{top: '-25px'}}>
                   <span className="inline-block bg-blue-500 text-white px-3 py-1 text-xs font-medium shadow-sm" style={{borderTopLeftRadius: '0', borderTopRightRadius: '8px', borderBottomLeftRadius: '0', borderBottomRightRadius: '0'}}>
@@ -240,67 +319,68 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
                   </span>
                 </div>
               )}
+              
               {/* Summary Box */}
               <div className="bg-gray-100 border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-              <div className="p-6">
-                {/* Post Summary/Excerpt */}
-                {(post.excerpt_ar || post.excerpt) && (
-                  <div className="mb-4">
-                    <p className="text-gray-700 text-base leading-relaxed">
-                      {post.excerpt_ar || post.excerpt}
-                    </p>
-                  </div>
-                )}
-                
-                {/* Social sharing and info */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-500">
-                    <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                      <div className="w-10 h-10 bg-white-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
-                        <Image 
-                          src="/images/logo.png" 
-                          alt="مركبا" 
-                          width={40} 
-                          height={40} 
-                          className="object-cover"
-                        />
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-800">مـركـبـا - الـمـنـصـة الاخـبـاريـة</div>
-                        <div className="text-xs text-gray-500">
-                          {formatDate(post.created_at)}
+                <div className="p-6">
+                  {/* Post Summary/Excerpt */}
+                  {(post.excerpt_ar || post.excerpt) && (
+                    <div className="mb-4">
+                      <p className="text-gray-700 text-base leading-relaxed">
+                        {post.excerpt_ar || post.excerpt}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Social sharing and info */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-500">
+                      <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                        <div className="w-10 h-10 bg-white-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+                          <Image 
+                            src="/images/logo.png" 
+                            alt="مركبا" 
+                            width={40} 
+                            height={40} 
+                            className="object-cover"
+                          />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-800">مـركـبـا - الـمـنـصـة الاخـبـاريـة</div>
+                          <div className="text-xs text-gray-500">
+                            {formatDate(post.created_at)}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-2 rtl:space-x-reverse relative">
-                    {copyMessage && (
-                      <div className="absolute -top-8 right-0 bg-green-500 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-                        {copyMessage}
-                      </div>
-                    )}
-                    <button 
-                      onClick={() => handleCopyText(post.excerpt_ar || post.excerpt || '')}
-                      className={`p-2 transition-colors ${
-                        copySuccess 
-                          ? 'text-green-600 hover:text-green-700' 
-                          : 'text-black hover:text-gray-800'
-                      }`}
-                      title="نسخ النص"
-                    >
-                      <FiCopy size={16} />
-                    </button>
-                    <button 
-                      onClick={handleShare}
-                      className="p-2 text-black hover:text-gray-800 transition-colors"
-                      title="مشاركة"
-                    >
-                      <FiShare2 size={16} />
-                    </button>
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse relative">
+                      {copyMessage && (
+                        <div className="absolute -top-8 right-0 bg-green-500 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
+                          {copyMessage}
+                        </div>
+                      )}
+                      <button 
+                        onClick={() => handleCopyText(post.excerpt_ar || post.excerpt || '')}
+                        className={`p-2 transition-colors ${
+                          copySuccess 
+                            ? 'text-green-600 hover:text-green-700' 
+                            : 'text-black hover:text-gray-800'
+                        }`}
+                        title="نسخ النص"
+                      >
+                        <FiCopy size={16} />
+                      </button>
+                      <button 
+                        onClick={handleShare}
+                        className="p-2 text-black hover:text-gray-800 transition-colors"
+                        title="مشاركة"
+                      >
+                        <FiShare2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
             </div>
 
             {/* Featured Image */}
@@ -349,7 +429,7 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
                   <h3 className="text-lg font-semibold text-gray-800">الكلمات المفتاحية</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tag, index) => (
+                  {(Array.isArray(post.tags) ? post.tags : []).map((tag, index) => (
                     <Link 
                       key={index} 
                       href={`/posts?tags=${encodeURIComponent(tag)}`}
@@ -480,7 +560,7 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
   );
 };
 
-// Server-side rendering function
+// Server-side rendering function <mcreference link="https://blog.logrocket.com/implementing-ssr-next-js-dynamic-routing-prefetching/" index="1">1</mcreference>
 export const getServerSideProps: GetServerSideProps<PostPageProps> = async (context) => {
   const { slug } = context.params as { slug: string };
   
@@ -491,18 +571,23 @@ export const getServerSideProps: GetServerSideProps<PostPageProps> = async (cont
   }
 
   try {
-    // Use production API URL for www.markaba.news
+    // API configuration
     const isDevelopment = process.env.NODE_ENV === 'development';
     const API_URL = isDevelopment ? 'http://localhost:5000/api' : 'https://api.markaba.news/api/v2';
     
+    const headers = {
+      'Content-Type': 'application/json',
+      'User-Agent': 'NewsMarkaba-SSR/1.0',
+    };
+
     // First, get the post by slug to find its ID
-    const postsResponse = await fetch(`${API_URL}/posts?slug=${encodeURIComponent(slug)}&limit=1&page=1`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'NewsMarkaba-SSR/1.0',
-      },
-    });
+    const postsResponse = await fetch(
+      `${API_URL}/posts?slug=${encodeURIComponent(slug)}&limit=1&page=1`, 
+      {
+        method: 'GET',
+        headers,
+      }
+    );
 
     if (!postsResponse.ok) {
       console.error('Failed to fetch post by slug:', postsResponse.status, postsResponse.statusText);
@@ -521,14 +606,14 @@ export const getServerSideProps: GetServerSideProps<PostPageProps> = async (cont
 
     const post = postsData.data.posts[0];
     
-    // Now fetch the full post with related posts using the ID and slug
-    const fullPostResponse = await fetch(`${API_URL}/posts/${post.id}/${slug}?include_related=true&track_view=false`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'NewsMarkaba-SSR/1.0',
-      },
-    });
+    // Fetch the full post with related posts using the ID and slug
+    const fullPostResponse = await fetch(
+      `${API_URL}/posts/${post.id}/${slug}?include_related=true&track_view=false`, 
+      {
+        method: 'GET',
+        headers,
+      }
+    );
 
     if (!fullPostResponse.ok) {
       console.error('Failed to fetch full post:', fullPostResponse.status, fullPostResponse.statusText);
@@ -563,6 +648,11 @@ export const getServerSideProps: GetServerSideProps<PostPageProps> = async (cont
       }
     }
 
+    // Ensure tags is always an array
+    if (!Array.isArray(fullPost.tags)) {
+      fullPost.tags = [];
+    }
+
     return {
       props: {
         post: fullPost,
@@ -570,15 +660,14 @@ export const getServerSideProps: GetServerSideProps<PostPageProps> = async (cont
       },
     };
   } catch (error) {
-    console.error('Error in getServerSideProps:', error);
-    return {
-      props: {
-        post: null,
-        relatedPosts: [],
-        error: 'خطأ في تحميل المنشور',
-      },
-    };
-  }
+      return {
+        props: {
+          post: null,
+          relatedPosts: [],
+          error: 'خطأ في تحميل المنشور',
+        },
+      };
+    }
 };
 
 export default SinglePostPage;
