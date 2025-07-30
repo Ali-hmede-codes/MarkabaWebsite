@@ -69,12 +69,14 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
   const [loading, setLoading] = useState(false);
 
   // Extract meta data for cleaner rendering
-  const title = post.title_ar || post.title;
-  const description = post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160) || '';
-  const image = post.featured_image || post.image ? getImageUrl(post.featured_image || post.image || '') : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`;
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`;
-  const author = typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا';
-  const category = typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار';
+  const title = post?.title_ar || post?.title || 'أخبار مركبا';
+  const description = post?.excerpt_ar || post?.excerpt || (post?.content_ar || post?.content)?.substring(0, 160) || 'موقع أخبار مركبا';
+  const image = (post?.featured_image || post?.image) ? getImageUrl(post.featured_image || post.image || '') : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`;
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post?.slug || ''}`;
+  const author = typeof post?.author === 'string' ? post.author : post?.author?.username || 'أخبار مركبا';
+  const category = typeof post?.category === 'string' ? post.category : post?.category?.name_ar || 'أخبار';
+  
+  console.log('Post data:', { title, description, image, url, author, category });
 
   // Update related posts when prop changes
   useEffect(() => {
