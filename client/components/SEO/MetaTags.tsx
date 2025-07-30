@@ -72,6 +72,7 @@ const MetaTags: React.FC<MetaTagsProps> = ({
       {openGraph.image && (
         <>
           <meta property="og:image" content={openGraph.image} />
+          <meta property="og:image:secure_url" content={openGraph.image} />
           <meta property="og:image:width" content="1200" />
           <meta property="og:image:height" content="630" />
           <meta property="og:image:alt" content={openGraph.title} />
@@ -100,17 +101,17 @@ const MetaTags: React.FC<MetaTagsProps> = ({
       ))}
       
       {/* Twitter Card Meta Tags */}
-      <meta name="twitter:card" content={twitterCard.card} />
-      <meta name="twitter:title" content={twitterCard.title} />
-      <meta name="twitter:description" content={twitterCard.description} />
-      {twitterCard.image && (
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content={metaConfig.social.twitter?.site || '@yoursite'} />
+      <meta name="twitter:creator" content={metaConfig.social.twitter?.creator || '@yourcreator'} />
+      <meta name="twitter:title" content={meta.title} />
+      <meta name="twitter:description" content={meta.description} />
+      {meta.image && (
         <>
-          <meta name="twitter:image" content={twitterCard.image} />
-          <meta name="twitter:image:alt" content={twitterCard.title} />
+          <meta name="twitter:image" content={meta.image} />
+          <meta name="twitter:image:alt" content={meta.title} />
         </>
       )}
-      <meta name="twitter:site" content={twitterCard.site} />
-      <meta name="twitter:creator" content={twitterCard.creator} />
       
       {/* Theme Color and Mobile App */}
       <meta name="theme-color" content={metaConfig.additional.themeColor} />

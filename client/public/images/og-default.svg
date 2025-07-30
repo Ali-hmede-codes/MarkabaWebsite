@@ -1,0 +1,45 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Logo/Brand Area -->
+  <rect x="50" y="50" width="1100" height="530" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" rx="20"/>
+  
+  <!-- Main Title -->
+  <text x="600" y="250" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="72" font-weight="bold">
+    مـركـبـا
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="320" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="Arial, sans-serif" font-size="36">
+    الـمـنـصـة الاخـبـاريـة
+  </text>
+  
+  <!-- English subtitle -->
+  <text x="600" y="380" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-family="Arial, sans-serif" font-size="24">
+    News Platform
+  </text>
+  
+  <!-- Tagline -->
+  <text x="600" y="450" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif" font-size="28">
+    آخر الأخبار والتحديثات
+  </text>
+  
+  <!-- Website URL -->
+  <text x="600" y="520" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="Arial, sans-serif" font-size="20">
+    markaba.news
+  </text>
+  
+  <!-- Decorative elements -->
+  <circle cx="150" cy="150" r="30" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="1050" cy="480" r="40" fill="rgba(255,255,255,0.1)"/>
+  <rect x="100" y="500" width="60" height="60" fill="rgba(255,255,255,0.1)" rx="10"/>
+  <rect x="1040" y="100" width="80" height="80" fill="rgba(255,255,255,0.1)" rx="15"/>
+</svg>

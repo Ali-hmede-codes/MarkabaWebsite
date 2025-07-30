@@ -67,8 +67,26 @@ export const useMeta = (options: UseMetaOptions = {}) => {
           imageUrl = baseMeta.image;
         }
         
-        // Make URL absolute if it's not already
-        return imageUrl?.startsWith('http') ? imageUrl : `${metaConfig.site.url}${imageUrl}`;
+        // Handle different URL formats
+        if (!imageUrl) {
+          return `${metaConfig.site.url}/images/og-default.svg`;
+        }
+        
+        // If already absolute URL, return as is
+        if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+          return imageUrl;
+        }
+        
+        // If it's a relative path starting with /uploads/, construct backend URL
+        if (imageUrl.startsWith('/uploads/') || imageUrl.startsWith('uploads/')) {
+          const cleanPath = imageUrl.replace(/^\/+/, ''); // Remove leading slashes
+          const backendUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://api.markaba.news';
+          return `${backendUrl}/${cleanPath}`;
+        }
+        
+        // For other relative paths, use site URL
+        const cleanPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+        return `${metaConfig.site.url}${cleanPath}`;
       })()
     };
 
