@@ -30,10 +30,7 @@ Allow: /privacy
 Allow: /terms
 
 # Sitemap locations
-Sitemap: https://markaba.news/api/sitemap-index.xml
-Sitemap: https://markaba.news/api/sitemap.xml
-Sitemap: https://markaba.news/api/sitemap-posts.xml
-Sitemap: https://markaba.news/api/sitemap-categories.xml
+Sitemap: https://markaba.news/sitemap.xml
 Sitemap: https://markaba.news/sitemap-main.xml
 
 # Crawl delay (optional - be respectful to server resources)

@@ -62,16 +62,8 @@ const nextConfig = {
   // Redirects for SEO
   async redirects() {
     return [
-      {
-        source: '/sitemap.xml',
-        destination: 'https://www.markaba.news/api/sitemap-index.xml',
-        permanent: true,
-      },
-      {
-        source: '/robots.txt',
-        destination: 'https://www.markaba.news/api/robots.txt',
-        permanent: true,
-      },
+      // Removed robots.txt and sitemap.xml redirects to fix Google Search Console indexing
+      // These files should be served directly from /public folder
     ];
   },
   
