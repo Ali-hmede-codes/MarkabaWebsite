@@ -303,8 +303,8 @@ export const getStaticProps: GetStaticProps = async () => {
       props: {
         popularPosts: postsData.posts || [],
         categories: categoriesData.categories || []
-      },
-      revalidate: 3600 // Revalidate every hour
+      }
+      // revalidate removed for static export compatibility
     };
   } catch (error) {
     console.error('Error fetching 404 page data:', error);
@@ -312,8 +312,8 @@ export const getStaticProps: GetStaticProps = async () => {
       props: {
         popularPosts: [],
         categories: []
-      },
-      revalidate: 3600
+      }
+      // revalidate removed for static export compatibility
     };
   }
 };
