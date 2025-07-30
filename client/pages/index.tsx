@@ -13,8 +13,7 @@ import {
   FiTrendingUp,
   FiBook
 } from 'react-icons/fi';
-import { generateSizes } from '../utils/imageUtils';
-import OptimizedImage from '../components/UI/OptimizedImage';
+import { getImageUrl } from '../utils/imageUtils';
 import LastNewsBanner from '../components/LastNews/LastNewsBanner';
 import LatestArticles from '../components/LatestArticles/LatestArticles';
 import BreakingNewsBanner from '../components/BreakingNews/BreakingNewsBanner';
@@ -135,16 +134,12 @@ const HomePage: React.FC = () => {
                 {posts.slice(0, 8).map((post, index) => (
                   <article key={post.id} className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 flex-shrink-0 w-64 sm:w-72" style={{scrollSnapAlign: 'start'}}>
                     <div className="relative h-40 sm:h-48 overflow-hidden">
-                       {post.featured_image ? (
-                         <OptimizedImage
-                           src={post.featured_image}
-                           alt={post.title_ar || post.title}
-                           fill
-                           className="transition-transform duration-300 hover:scale-110"
-                           sizes={generateSizes({ mobile: '256px', tablet: '288px', desktop: '288px' })}
-                           priority={index < 4}
-                           objectFit="cover"
-                         />
+                      {post.featured_image ? (
+                        <img
+                          src={getImageUrl(post.featured_image)}
+                          alt={post.title_ar || post.title}
+                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                        />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
                           <span className="text-white text-4xl font-bold">{index + 1}</span>
@@ -202,16 +197,12 @@ const HomePage: React.FC = () => {
                 {featuredPosts.slice(0, 4).map((post, index) => (
                   <article key={post.id} className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 aspect-square flex flex-col">
                     <div className="relative flex-1 overflow-hidden">
-                       {post.featured_image ? (
-                         <OptimizedImage
-                           src={post.featured_image}
-                           alt={post.title_ar || post.title}
-                           fill
-                           className="transition-transform duration-300 hover:scale-110"
-                           sizes={generateSizes({ mobile: '100vw', tablet: '50vw', desktop: '25vw' })}
-                           priority={index < 2}
-                           objectFit="cover"
-                         />
+                      {post.featured_image ? (
+                        <img
+                          src={getImageUrl(post.featured_image)}
+                          alt={post.title_ar || post.title}
+                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                        />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                           <span className="text-white text-4xl font-bold">{index + 1}</span>

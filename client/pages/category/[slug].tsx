@@ -6,8 +6,7 @@ import { useContent } from '../../hooks/useContent';
 import { usePosts, useCategories, useAPI } from '../../components/API/hooks';
 import { Post, Category } from '../../components/API/types';
 import { FiCalendar, FiUser, FiEye, FiArrowRight } from 'react-icons/fi';
-import { generateSizes } from '../../utils/imageUtils';
-import OptimizedImage from '../../components/UI/OptimizedImage';
+import { getImageUrl } from '../../utils/imageUtils';
 
 const CategoryPage: React.FC = () => {
   const router = useRouter();
@@ -209,16 +208,13 @@ const CategoryPage: React.FC = () => {
                     <article className="group cursor-pointer">
                       <div className="relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         {/* Background Image */}
-                        <OptimizedImage
-                          src={post.featured_image || '/images/placeholder.jpg'}
-                          alt={post.title_ar || post.title}
-                          fill
-                          className="rounded-xl"
-                          sizes={generateSizes({ mobile: '100vw', tablet: '50vw', desktop: '33vw' })}
-                          placeholder="blur"
-                          quality={80}
-                          objectFit="cover"
-                        />
+                        <div className="absolute inset-0">
+                          <img
+                            src={getImageUrl(post.featured_image || '/images/placeholder.jpg')}
+                            alt={post.title_ar || post.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         
                         {/* Gradient Overlay */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
