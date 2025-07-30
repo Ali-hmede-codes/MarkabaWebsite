@@ -43,6 +43,28 @@ export default function Document() {
         <meta name="author" content="موقع مــركبــا الاخباري" />
         <meta name="publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
         <meta name="language" content="ar" />
+        
+        {/* Default SEO Meta Tags for SSR */}
+        <meta name="description" content="موقع مركبا الإخباري - آخر الأخبار والتقارير الشاملة من المنطقة والعالم" />
+        <meta name="keywords" content="أخبار, عاجل, تقارير, مركبا, إخبارية, المنطقة, العالم" />
+        <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'} />
+        
+        {/* Open Graph Default Tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="موقع مــركبــا الاخباري" />
+        <meta property="og:locale" content="ar_AR" />
+        <meta property="og:title" content="موقع مــركبــا الاخباري - آخر الأخبار" />
+        <meta property="og:description" content="موقع مركبا الإخباري - آخر الأخبار والتقارير الشاملة من المنطقة والعالم" />
+        <meta property="og:image" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`} />
+        <meta property="og:url" content={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'} />
+        
+        {/* Twitter Card Default Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@markaba_news" />
+        <meta name="twitter:creator" content="@markaba_news" />
+        <meta name="twitter:title" content="موقع مــركبــا الاخباري - آخر الأخبار" />
+        <meta name="twitter:description" content="موقع مركبا الإخباري - آخر الأخبار والتقارير الشاملة من المنطقة والعالم" />
+        <meta name="twitter:image" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`} />
             
         {/* Preload critical resources - fonts loaded from Google Fonts */}
       </Head>
