@@ -4,9 +4,6 @@ export default function Document() {
   return (
     <Html lang="ar" dir="rtl">
       <Head>
-        {/* Default title for static HTML */}
-        <title>مـركـبـا - الـمـنـصـة الاخـبـاريـة</title>
-        
         {/* Preconnect to external domains for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -49,25 +46,13 @@ export default function Document() {
         <meta name="author" content="News Website" />
         <meta name="publisher" content="News Website" />
         
-        {/* Essential SEO Meta Tags */}
-        <meta name="description" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة - آخر الأخبار والتطورات من فلسطين والعالم العربي" />
-        <meta name="keywords" content="أخبار, فلسطين, العالم العربي, سياسة, اقتصاد, رياضة, تكنولوجيا" />
-        
         {/* Open Graph default tags */}
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta property="og:title" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة - آخر الأخبار" />
-        <meta property="og:description" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة - آخر الأخبار والتطورات من فلسطين والعالم العربي" />
-        <meta property="og:url" content="https://markaba.news" />
-        <meta property="og:image" content="https://markaba.news/images/og-default.svg" />
-        <meta property="og:locale" content="ar_AR" />
+        <meta property="og:site_name" content="News Website" />
         
         {/* Twitter Card default tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@markaba_news" />
-        <meta name="twitter:title" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة - آخر الأخبار" />
-        <meta name="twitter:description" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة - آخر الأخبار والتطورات من فلسطين والعالم العربي" />
-        <meta name="twitter:image" content="https://markaba.news/images/og-default.svg" />
+        <meta name="twitter:site" content="@newswebsite" />
         
         {/* Preload critical resources - fonts loaded from Google Fonts */}
       </Head>
