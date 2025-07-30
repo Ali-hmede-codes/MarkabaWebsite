@@ -75,10 +75,10 @@ User-agent: *
 Crawl-delay: 1
 
 # Sitemap locations
+Sitemap: ${baseUrl}/api/sitemap-index.xml
 Sitemap: ${baseUrl}/api/sitemap.xml
-Sitemap: ${baseUrl}/sitemap-main.xml
-Sitemap: ${baseUrl}/sitemap-posts.xml
-Sitemap: ${baseUrl}/sitemap-categories.xml
+Sitemap: ${baseUrl}/api/sitemap-posts.xml
+Sitemap: ${baseUrl}/api/sitemap-categories.xml
 
 # Host directive
 Host: ${baseUrl.replace('https://', '').replace('http://', '')}

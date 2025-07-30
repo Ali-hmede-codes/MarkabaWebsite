@@ -64,12 +64,12 @@ const nextConfig = {
     return [
       {
         source: '/sitemap.xml',
-        destination: '/api/sitemap-index.xml',
+        destination: 'https://www.markaba.news/api/sitemap-index.xml',
         permanent: true,
       },
       {
         source: '/robots.txt',
-        destination: '/api/robots.txt',
+        destination: 'https://www.markaba.news/api/robots.txt',
         permanent: true,
       },
     ];
