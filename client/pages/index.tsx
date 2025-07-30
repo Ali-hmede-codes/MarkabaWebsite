@@ -402,27 +402,49 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async () =>
     const isDevelopment = process.env.NODE_ENV === 'development';
     const baseUrl = isDevelopment ? 'http://localhost:5000' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
     
+    console.log('SSR: Fetching data from:', baseUrl);
+    
     // Fetch posts and categories in parallel
     const [postsResponse, categoriesResponse] = await Promise.all([
-      fetch(`${baseUrl}/api/posts`),
-      fetch(`${baseUrl}/api/categories`)
+      fetch(`${baseUrl}/api/posts`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'NewsMarkaba-SSR/1.0'
+        }
+      }),
+      fetch(`${baseUrl}/api/categories`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'NewsMarkaba-SSR/1.0'
+        }
+      })
     ]);
 
+    console.log('SSR: Posts response status:', postsResponse.status);
+    console.log('SSR: Categories response status:', categoriesResponse.status);
+
     if (!postsResponse.ok || !categoriesResponse.ok) {
-      throw new Error('فشل في جلب البيانات من الخادم');
+      throw new Error(`API Error: Posts ${postsResponse.status}, Categories ${categoriesResponse.status}`);
     }
 
     const postsData = await postsResponse.json();
     const categoriesData = await categoriesResponse.json();
+    
+    console.log('SSR: Posts data structure:', postsData.success ? 'success' : 'failed');
+    console.log('SSR: Categories data structure:', categoriesData.success ? 'success' : 'failed');
+
+    // Handle the API response structure correctly
+    const posts = postsData.success ? (postsData.data?.posts || []) : [];
+    const categories = categoriesData.success ? (categoriesData.data?.categories || []) : [];
 
     return {
       props: {
-        posts: postsData.posts || [],
-        categories: categoriesData.categories || []
+        posts,
+        categories
       }
     };
   } catch (error) {
-    console.error('Error fetching homepage data:', error);
+    console.error('SSR Error fetching homepage data:', error);
     return {
       props: {
         posts: [],
