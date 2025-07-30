@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
+import { Helmet } from 'react-helmet';
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
@@ -247,7 +247,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
 
   return (
     <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
-      <Head>
+      <Helmet>
         {/* Open Graph Meta Tags */}
         <meta property="og:title" content={post.title_ar || post.title} />
         <meta property="og:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
@@ -275,7 +275,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
         <meta name="keywords" content={post.tags?.join(', ') || ''} />
         <meta name="author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
         <link rel="canonical" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
-      </Head>
+      </Helmet>
       
       {/* NextSEO for enhanced Open Graph and SEO */}
       <NextSEOWrapper

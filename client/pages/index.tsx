@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Head from 'next/head';
+import { Helmet } from 'react-helmet';
 import Layout from '../components/Layout/Layout';
 import { useContent } from '../hooks/useContent';
 import { usePosts, useCategories } from '../components/API/hooks';
@@ -97,7 +97,7 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      <Head>
+      <Helmet>
         <title>{content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'}</title>
         <meta name="description" content={content?.site?.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة'} />
         <meta name="keywords" content="أخبار,أخبار عاجلة,تحديثات,صحافة,أحداث جارية,لبنان,الشرق الأوسط" />
@@ -129,7 +129,7 @@ const HomePage: React.FC = () => {
         <meta name="geo.region" content="LB" />
         <meta name="geo.country" content="Lebanon" />
         <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'} />
-      </Head>
+      </Helmet>
       
       <Layout
         pageType="home"
