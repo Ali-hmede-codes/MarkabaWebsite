@@ -203,21 +203,7 @@ const PostContent: React.FC<{ post: Post; relatedPosts: Post[] }> = ({ post, rel
         )}
       </Head>
       
-      <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
-      
-      {/* NextSEO for enhanced Open Graph and SEO */}
-      <NextSEOWrapper
-        title={post.title_ar || post.title}
-        description={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)}
-        imageUrl={post.featured_image ? getImageUrl(post.featured_image) : undefined}
-        url={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`}
-        type="article"
-        publishedTime={post.created_at}
-        modifiedTime={post.updated_at}
-        author={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'}
-        category={typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار'}
-        tags={post.tags || []}
-      />
+      <Layout>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}

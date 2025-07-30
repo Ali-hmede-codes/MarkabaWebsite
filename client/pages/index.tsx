@@ -3,7 +3,6 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import Layout from '../components/Layout/Layout';
-import NextSEOWrapper from '../components/SEO/NextSEOWrapper';
 import { useContent } from '../hooks/useContent';
 import { Post, Category } from '../components/API/types';
 import { 
@@ -134,15 +133,7 @@ const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
         <meta property="article:author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
       </Head>
       
-      {/* NextSEO for enhanced Open Graph and SEO */}
-      <NextSEOWrapper
-        title={content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'}
-        description={content?.site?.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة'}
-        imageUrl={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/og-default.svg`}
-        url={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}
-        type="website"
-        tags={['أخبار', 'أخبار عاجلة', 'تحديثات', 'صحافة', 'أحداث جارية', 'لبنان', 'الشرق الأوسط']}
-      />
+
       
       <Layout
         pageType="home"
