@@ -62,12 +62,12 @@ const nextConfig = {
     NEXT_PUBLIC_CLIENT_URL: process.env.NEXT_PUBLIC_CLIENT_URL,
   },
   
-  // Internationalization
-  i18n: {
-    locales: ['en', 'ar'],
-    defaultLocale: 'ar',
-    localeDetection: false,
-  },
+  // Internationalization disabled for static export
+  // i18n: {
+  //   locales: ['en', 'ar'],
+  //   defaultLocale: 'ar',
+  //   localeDetection: false,
+  // },
   
   // Redirects for SEO
   async redirects() {
@@ -153,9 +153,6 @@ const nextConfig = {
   
   // Generate ETags
   generateEtags: true,
-  
-  // Trailing slash
-  trailingSlash: false,
 };
 
 export default nextConfig;
