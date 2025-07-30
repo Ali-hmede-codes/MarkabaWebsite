@@ -45,19 +45,15 @@ export default async function handler(
     const currentDate = new Date().toISOString();
 
     // Generate posts sitemap XML
-    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-
-  <!-- Posts -->
-${posts.map(post => {
-  const lastmod = post.updated_at || post.created_at || currentDate;
-  const isRecent = new Date(lastmod) > new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours
-  const isBreaking = post.is_breaking;
-  
-  return `  <url>
+    let postsUrls = '';
+    
+    if (posts.length > 0) {
+      postsUrls = posts.map(post => {
+        const lastmod = post.updated_at || post.created_at || currentDate;
+        const isRecent = new Date(lastmod) > new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours
+        const isBreaking = post.is_breaking;
+        
+        return `  <url>
     <loc>${baseUrl}/posts/${post.slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${isRecent ? 'hourly' : isBreaking ? 'daily' : 'weekly'}</changefreq>
@@ -74,7 +70,27 @@ ${posts.map(post => {
       ${post.meta_description_ar ? `<news:keywords><![CDATA[${post.meta_description_ar.substring(0, 100)}]]></news:keywords>` : ''}
     </news:news>` : ''}
   </url>`;
-}).join('\n')}
+      }).join('\n');
+    } else {
+      // Fallback URL when no posts exist to ensure valid XML
+      postsUrls = `  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/" />
+  </url>`;
+    }
+    
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Posts -->
+${postsUrls}
 
 </urlset>`;
 
