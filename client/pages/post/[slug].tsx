@@ -10,10 +10,13 @@ import Link from 'next/link';
 import NextSEOWrapper from '../../components/SEO/NextSEOWrapper';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
-const SinglePostPage: React.FC = () => {
+interface SinglePostPageProps {
+  post?: any;
+  slug: string;
+}
+
+const SinglePostPage: React.FC<SinglePostPageProps> = ({ post: serverPost, slug }) => {
   const router = useRouter();
-  const { slug: slugParam } = router.query;
-  const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
 
   // Handle route changes to ensure proper navigation
   useEffect(() => {
@@ -28,8 +31,8 @@ const SinglePostPage: React.FC = () => {
     };
   }, [router.events]);
 
-  // Don't render anything until router is ready and slug is available
-  if (!router.isReady || !slug) {
+  // Don't render anything until router is ready
+  if (!router.isReady) {
     return (
       <Layout title="جاري التحميل..." description="">
         <div className="min-h-screen flex items-center justify-center">
@@ -39,10 +42,10 @@ const SinglePostPage: React.FC = () => {
     );
   }
 
-  return <PostContent slug={slug} key={`post-content-${slug}`} />;
+  return <PostContent slug={slug} serverPost={serverPost} key={`post-content-${slug}`} />;
 };
 
-const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
+const PostContent: React.FC<{ slug: string; serverPost?: any }> = ({ slug, serverPost }) => {
   const router = useRouter();
   const [fontSize, setFontSize] = useState(20);
   const [post, setPost] = useState<Post | null>(null);
@@ -66,8 +69,14 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
     window.scrollTo(0, 0);
   }, [slug]);
 
-  // Fetch single post by slug
+  // Initialize post from server-side props or fetch client-side
   useEffect(() => {
+    if (serverPost) {
+      setPost(serverPost);
+      setLoading(false);
+      return;
+    }
+
     const fetchPost = async () => {
       const { controller, timeoutId, cleanup } = createTimeoutController();
       try {
@@ -104,7 +113,7 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
     if (slug) {
       fetchPost();
     }
-  }, [slug]);
+  }, [slug, serverPost]);
 
   // Fetch latest posts for sidebar
   useEffect(() => {
@@ -245,37 +254,42 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
     );
   }
 
+  // Use server-side post data for immediate meta tags or fallback to client-side
+  const metaPost = serverPost || post;
+  
   return (
-    <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
-      <Helmet>
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content={post.title_ar || post.title} />
-        <meta property="og:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
-        {(post.featured_image || post.image) && (
-          <meta property="og:image" content={getImageUrl(post.featured_image || post.image || '')} />
-        )}
-        <meta property="og:site_name" content="مركبا - المنصة الاخبارية" />
-        <meta property="article:published_time" content={post.created_at} />
-        <meta property="article:modified_time" content={post.updated_at} />
-        <meta property="article:author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
-        <meta property="article:section" content={typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار'} />
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={post.title_ar || post.title} />
-        <meta name="twitter:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
-        {(post.featured_image || post.image) && (
-          <meta name="twitter:image" content={getImageUrl(post.featured_image || post.image || '')} />
-        )}
-        
-        {/* Additional SEO Meta Tags */}
-        <meta name="description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
-        <meta name="keywords" content={post.tags?.join(', ') || ''} />
-        <meta name="author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
-        <link rel="canonical" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
-      </Helmet>
+    <Layout title={metaPost?.title_ar || metaPost?.title || 'جاري التحميل...'} description={metaPost?.excerpt_ar || metaPost?.excerpt || 'جاري تحميل المقال...'}>
+      {metaPost && (
+        <Helmet>
+          {/* Open Graph Meta Tags */}
+          <meta property="og:title" content={metaPost.title_ar || metaPost.title} />
+          <meta property="og:description" content={metaPost.excerpt_ar || metaPost.excerpt || (metaPost.content_ar || metaPost.content)?.substring(0, 160)} />
+          <meta property="og:type" content="article" />
+          <meta property="og:url" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${metaPost.slug}`} />
+          {(metaPost.featured_image || metaPost.image) && (
+            <meta property="og:image" content={getImageUrl(metaPost.featured_image || metaPost.image || '')} />
+          )}
+          <meta property="og:site_name" content="مركبا - المنصة الاخبارية" />
+          <meta property="article:published_time" content={metaPost.created_at} />
+          <meta property="article:modified_time" content={metaPost.updated_at} />
+          <meta property="article:author" content={typeof metaPost.author === 'string' ? metaPost.author : metaPost.author?.username || 'أخبار مركبا'} />
+          <meta property="article:section" content={typeof metaPost.category === 'string' ? metaPost.category : metaPost.category?.name_ar || 'أخبار'} />
+          
+          {/* Twitter Card Meta Tags */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={metaPost.title_ar || metaPost.title} />
+          <meta name="twitter:description" content={metaPost.excerpt_ar || metaPost.excerpt || (metaPost.content_ar || metaPost.content)?.substring(0, 160)} />
+          {(metaPost.featured_image || metaPost.image) && (
+            <meta name="twitter:image" content={getImageUrl(metaPost.featured_image || metaPost.image || '')} />
+          )}
+          
+          {/* Additional SEO Meta Tags */}
+          <meta name="description" content={metaPost.excerpt_ar || metaPost.excerpt || (metaPost.content_ar || metaPost.content)?.substring(0, 160)} />
+          <meta name="keywords" content={metaPost.tags?.join(', ') || ''} />
+          <meta name="author" content={typeof metaPost.author === 'string' ? metaPost.author : metaPost.author?.username || 'أخبار مركبا'} />
+          <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${metaPost.slug}`} />
+        </Helmet>
+      )}
       
       {/* NextSEO for enhanced Open Graph and SEO */}
       <NextSEOWrapper
@@ -484,5 +498,34 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
     </Layout>
   );
 };
+
+// Server-side rendering for proper meta tags
+export async function getServerSideProps(context: any) {
+  const { slug } = context.params;
+  
+  try {
+    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/api/posts/slug/${slug}`);
+    
+    if (!response.ok) {
+      return {
+        notFound: true,
+      };
+    }
+    
+    const post = await response.json();
+    
+    return {
+      props: {
+        post,
+        slug,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return {
+      notFound: true,
+    };
+  }
+}
 
 export default SinglePostPage;
