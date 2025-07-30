@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
-import MetaTags from '../../components/SEO/MetaTags';
+import NextSEOWrapper from '../../components/SEO/NextSEOWrapper';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
 const SinglePostPage: React.FC = () => {
@@ -246,22 +246,18 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
 
   return (
     <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
-      <MetaTags
-        pageType="post"
-        pageData={{ post }}
-        customMeta={{
-          title: post.title_ar || post.title,
-          description: post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160),
-          image: post.featured_image ? getImageUrl(post.featured_image) : undefined,
-          url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`,
-          type: 'article',
-          publishedTime: post.created_at,
-          modifiedTime: post.updated_at,
-          author: typeof post.author === 'string' ? post.author : post.author?.username || 'Markaba News',
-          section: typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار',
-          tags: post.tags || undefined
-        }}
-        language="ar"
+      {/* NextSEO for enhanced Open Graph and SEO */}
+      <NextSEOWrapper
+        title={post.title_ar || post.title}
+        description={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)}
+        imageUrl={post.featured_image ? getImageUrl(post.featured_image) : undefined}
+        url={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`}
+        type="article"
+        publishedTime={post.created_at}
+        modifiedTime={post.updated_at}
+        author={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'}
+        category={typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار'}
+        tags={post.tags || []}
       />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
