@@ -70,18 +70,7 @@ const nextConfig = {
   // Rewrites for clean URLs
   async rewrites() {
     return [
-      {
-        source: '/sitemap-index.xml',
-        destination: '/api/sitemap-index.xml',
-      },
-      {
-        source: '/sitemap-posts.xml',
-        destination: '/api/sitemap-posts.xml',
-      },
-      {
-        source: '/sitemap-categories.xml',
-        destination: '/api/sitemap-categories.xml',
-      },
+      // Removed sitemap rewrites to serve static files directly from /public
     ];
   },
   
@@ -89,20 +78,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/api/sitemap:path*.xml',
-        headers: [
-          {
-            key: 'Content-Type',
-            value: 'application/xml',
-          },
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=3600, s-maxage=3600',
-          },
-        ],
-      },
-      {
-        source: '/api/robots.txt',
+        source: '/robots.txt',
         headers: [
           {
             key: 'Content-Type',
@@ -111,6 +87,19 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=86400, s-maxage=86400',
+          },
+        ],
+      },
+      {
+        source: '/sitemap*.xml',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/xml',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=3600',
           },
         ],
       },
