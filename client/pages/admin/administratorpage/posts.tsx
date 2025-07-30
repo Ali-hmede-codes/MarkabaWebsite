@@ -68,7 +68,7 @@ const PostsManagement: React.FC = () => {
         ...(statusFilter !== 'all' && { status: statusFilter })
       });
 
-      const response = await fetch(`/api/admin/administratorpage/posts?${params}`);
+      const response = await fetch(`/api/posts?${params}`);
       const data = await response.json();
 
       if (data.success) {
@@ -104,7 +104,7 @@ const PostsManagement: React.FC = () => {
 
   const togglePublishStatus = async (post: Post) => {
     try {
-      const response = await fetch(`/api/admin/administratorpage/posts/${post.id}`, {
+      const response = await fetch(`/api/posts/${post.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ const PostsManagement: React.FC = () => {
 
   const toggleFeaturedStatus = async (post: Post) => {
     try {
-      const response = await fetch(`/api/admin/administratorpage/posts/${post.id}`, {
+      const response = await fetch(`/api/posts/${post.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ const PostsManagement: React.FC = () => {
     if (!postToDelete) return;
 
     try {
-      const response = await fetch(`/api/admin/administratorpage/posts/${postToDelete.id}`, {
+      const response = await fetch(`/api/posts/${postToDelete.id}`, {
         method: 'DELETE'
       });
 

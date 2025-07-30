@@ -46,7 +46,7 @@ const EditPost: React.FC = () => {
   const fetchPost = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/admin/administratorpage/posts/${id}?t=${Date.now()}`, {
+      const response = await fetch(`/api/posts/${id}?t=${Date.now()}`, {
         cache: 'no-cache',
         headers: {
           'Cache-Control': 'no-cache'
@@ -107,7 +107,7 @@ const EditPost: React.FC = () => {
         formData.append('featured_image', selectedFile);
       }
 
-      const response = await fetch(`/api/admin/administratorpage/posts/${id}`, {
+      const response = await fetch(`/api/posts/${id}`, {
         method: 'PUT',
         body: formData
       });
