@@ -515,6 +515,156 @@ router.get('/trending', async (req, res) => {
   }
 });
 
+// GET /:id - Get single post by ID only (public endpoint)
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { include_related = 'true', track_view = 'true' } = req.query;
+    
+    // Get the main post
+    const post = await queryOne(
+      `SELECT p.*, 
+              c.name_ar as category_name, 
+              c.name_ar as category_name_ar, 
+              c.slug as category_slug, c.color as category_color,
+              u.username as author_name, u.display_name as author_display_name,
+              u.avatar as author_avatar, u.bio as author_bio
+       FROM posts p
+       LEFT JOIN categories c ON p.category_id = c.id
+       LEFT JOIN users u ON p.author_id = u.id
+       WHERE p.id = ? AND p.is_published = 1`,
+      [id]
+    );
+    
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        error: 'Post not found',
+        message: 'The requested post does not exist'
+      });
+    }
+    
+    // Parse JSON fields
+    post.tags = post.tags ? JSON.parse(post.tags) : [];
+    post.is_featured = Boolean(post.is_featured);
+    post.is_published = Boolean(post.is_published);
+    
+    // Track view if requested
+    if (track_view === 'true') {
+      await query('UPDATE posts SET views = views + 1 WHERE id = ?', [post.id]);
+      post.views += 1;
+    }
+    
+    // Try to load content from files if available
+    try {
+      const postDir = path.join(__dirname, '../../posts', id.toString());
+      
+      try {
+        const contentPath = path.join(postDir, 'content.md');
+        const fileContent = await fs.readFile(contentPath, 'utf8');
+        if (fileContent) post.content = fileContent;
+      } catch (err) {
+        // File doesn't exist, use database content
+      }
+      
+      try {
+        const contentArPath = path.join(postDir, 'content_ar.md');
+        const fileContentAr = await fs.readFile(contentArPath, 'utf8');
+        if (fileContentAr) post.content_ar = fileContentAr;
+      } catch (err) {
+        // File doesn't exist, use database content
+      }
+    } catch (err) {
+      // Post directory doesn't exist, use database content
+    }
+    
+    // Get related posts if requested
+    let relatedPosts = [];
+    if (include_related === 'true') {
+      relatedPosts = await query(
+        `SELECT p.id, p.title_ar, p.slug, p.excerpt_ar,
+                p.featured_image, p.views, p.reading_time, p.created_at,
+                c.name_ar as category_name, 
+                c.name_ar as category_name_ar, 
+                c.slug as category_slug
+         FROM posts p
+         LEFT JOIN categories c ON p.category_id = c.id
+         WHERE p.id != ? AND p.is_published = 1 AND (
+           p.category_id = ? OR 
+           JSON_OVERLAPS(p.tags, ?)
+         )
+         ORDER BY (
+           CASE WHEN p.category_id = ? THEN 3 ELSE 0 END +
+           CASE WHEN JSON_OVERLAPS(p.tags, ?) THEN 2 ELSE 0 END
+         ) DESC, p.views DESC, p.created_at DESC
+         LIMIT 5`,
+        [
+          post.id, 
+          post.category_id, 
+          JSON.stringify(post.tags),
+          post.category_id,
+          JSON.stringify(post.tags)
+        ]
+      );
+      
+      relatedPosts = relatedPosts.map(rp => ({
+        ...rp,
+        is_featured: Boolean(rp.is_featured),
+        url: `/post/${rp.id}/${rp.slug}`
+      }));
+    }
+    
+    // Structure the response
+    const response = {
+      success: true,
+      data: {
+        ...post,
+        category: {
+          id: post.category_id,
+          name: post.category_name,
+          name_ar: post.category_name_ar,
+          slug: post.category_slug,
+          color: post.category_color
+        },
+        author: {
+          id: post.author_id,
+          username: post.author_name,
+          display_name: post.author_display_name,
+          avatar: post.author_avatar,
+          bio: post.author_bio
+        },
+        url: `/post/${post.id}/${post.slug}`
+      }
+    };
+    
+    // Remove redundant fields
+    delete response.data.category_id;
+    delete response.data.category_name;
+    delete response.data.category_name_ar;
+    delete response.data.category_slug;
+    delete response.data.category_color;
+    delete response.data.author_id;
+    delete response.data.author_name;
+    delete response.data.author_display_name;
+    delete response.data.author_avatar;
+    delete response.data.author_bio;
+    
+    if (include_related === 'true') {
+      response.data.related_posts = relatedPosts;
+    }
+    
+    res.json(response);
+    
+  } catch (error) {
+    console.error('Post fetch error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'Failed to fetch post'
+    });
+  }
+});
+
 // GET /:id/:slug - Get single post by ID and slug with enhanced Arabic support
 router.get('/:id/:slug', async (req, res) => {
   try {
