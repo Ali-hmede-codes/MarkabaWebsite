@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Helmet } from 'react-helmet';
 import { GetServerSideProps } from 'next';
 import Layout from '../components/Layout/Layout';
+import NextSEOWrapper from '../components/SEO/NextSEOWrapper';
 import { useContent } from '../hooks/useContent';
 import { Post, Category } from '../components/API/types';
 import { 
@@ -111,39 +112,15 @@ const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
 
   return (
     <>
-      <Helmet>
-        <title>{content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'}</title>
-        <meta name="description" content={content?.site?.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة'} />
-        <meta name="keywords" content="أخبار,أخبار عاجلة,تحديثات,صحافة,أحداث جارية,لبنان,الشرق الأوسط" />
-        <meta name="author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content={content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'} />
-        <meta property="og:description" content={content?.site?.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة'} />
-        <meta property="og:image" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/og-default.svg`} />
-        <meta property="og:image:secure_url" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/og-default.svg`} />
-        <meta property="og:image:type" content="image/svg+xml" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta property="og:url" content={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'} />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="مـركـبـا" />
-        <meta property="og:locale" content="ar_AR" />
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'} />
-        <meta name="twitter:description" content={content?.site?.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة'} />
-        <meta name="twitter:image" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/og-default.svg`} />
-        <meta name="twitter:image:alt" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        
-        {/* Additional Meta Tags */}
-        <meta name="language" content="Arabic" />
-        <meta name="geo.region" content="LB" />
-        <meta name="geo.country" content="Lebanon" />
-        <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'} />
-      </Helmet>
+      {/* NextSEO for enhanced Open Graph and SEO */}
+      <NextSEOWrapper
+        title={content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'}
+        description={content?.site?.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة'}
+        imageUrl={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/og-default.svg`}
+        url={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}
+        type="website"
+        tags={['أخبار', 'أخبار عاجلة', 'تحديثات', 'صحافة', 'أحداث جارية', 'لبنان', 'الشرق الأوسط']}
+      />
       
       <Layout
         pageType="home"
