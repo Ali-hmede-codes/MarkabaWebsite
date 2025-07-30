@@ -43,16 +43,15 @@ export default async function handler(
     const currentDate = new Date().toISOString();
 
     // Generate categories sitemap XML
-    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-
-  <!-- Categories -->
-${categories.map(category => {
-  const lastmod = category.updated_at || category.created_at || currentDate;
-  const hasRecentActivity = category.posts_count && category.posts_count > 0;
-  
-  return `  <url>
+    let categoriesUrls = '';
+    let archiveUrls = '';
+    
+    if (categories.length > 0) {
+      categoriesUrls = categories.map(category => {
+        const lastmod = category.updated_at || category.created_at || currentDate;
+        const hasRecentActivity = category.posts_count && category.posts_count > 0;
+        
+        return `  <url>
     <loc>${baseUrl}/categories/${category.slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${hasRecentActivity ? 'daily' : 'weekly'}</changefreq>
@@ -60,13 +59,12 @@ ${categories.map(category => {
     <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories/${category.slug}" />
     <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories/${category.slug}" />
   </url>`;
-}).join('\n')}
-
-  <!-- Category Archive Pages -->
-${categories.map(category => {
-  const lastmod = category.updated_at || category.created_at || currentDate;
-  
-  return `  <url>
+      }).join('\n');
+      
+      archiveUrls = categories.map(category => {
+        const lastmod = category.updated_at || category.created_at || currentDate;
+        
+        return `  <url>
     <loc>${baseUrl}/categories/${category.slug}/archive</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
@@ -74,9 +72,27 @@ ${categories.map(category => {
     <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories/${category.slug}/archive" />
     <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories/${category.slug}/archive" />
   </url>`;
-}).join('\n')}
+      }).join('\n');
+    } else {
+      // Fallback URL when no categories exist to ensure valid XML
+      categoriesUrls = `  <url>
+    <loc>${baseUrl}/categories</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories" />
+  </url>`;
+    }
+    
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
-</urlset>`;
+  <!-- Categories -->
+${categoriesUrls}
+
+${archiveUrls ? `  <!-- Category Archive Pages -->\n${archiveUrls}\n\n` : ''}</urlset>`;
 
     res.status(200).send(sitemap);
   } catch (error) {
