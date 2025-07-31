@@ -1,19 +1,28 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
+import { GetServerSideProps } from 'next';
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
-import NextSEOWrapper from '../../components/SEO/NextSEOWrapper';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
-const SinglePostPage: React.FC = () => {
+interface SinglePostPageProps {
+  post: Post | null;
+  latestPosts: Post[];
+  breakingNews: BreakingNews[];
+  error?: string;
+}
+
+const SinglePostPage: React.FC<SinglePostPageProps> = ({ 
+  post, 
+  latestPosts, 
+  breakingNews, 
+  error 
+}) => {
   const router = useRouter();
-  const { slug: slugParam } = router.query;
-  const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
 
   // Handle route changes to ensure proper navigation
   useEffect(() => {
@@ -28,153 +37,46 @@ const SinglePostPage: React.FC = () => {
     };
   }, [router.events]);
 
-  // Don't render anything until router is ready and slug is available
-  if (!router.isReady || !slug) {
+  if (error || !post) {
     return (
-      <Layout title="جاري التحميل..." description="">
+      <Layout title="المنشور غير موجود" description="">
         <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center py-10 text-gray-600">جاري التحميل...</div>
+          <div className="text-center py-10">
+            <div className="text-red-500 mb-4">{error || 'المنشور غير موجود'}</div>
+            <Link href="/">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                العودة للرئيسية
+              </button>
+            </Link>
+          </div>
         </div>
       </Layout>
     );
   }
 
-  return <PostContent slug={slug} key={`post-content-${slug}`} />;
+  return <PostContent post={post} latestPosts={latestPosts} breakingNews={breakingNews} />;
 };
 
-const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
+const PostContent: React.FC<{ 
+  post: Post; 
+  latestPosts: Post[]; 
+  breakingNews: BreakingNews[]; 
+}> = ({ post, latestPosts, breakingNews }) => {
   const router = useRouter();
   const [fontSize, setFontSize] = useState(20);
-  const [post, setPost] = useState<Post | null>(null);
-  const [latestPosts, setLatestPosts] = useState<Post[]>([]);
-  const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Reset state when slug changes
+  // Reset state when component mounts
   useEffect(() => {
-    setPost(null);
-    setLatestPosts([]);
-    setBreakingNews([]);
     setFontSize(20);
     setCopySuccess(false);
     setCopyMessage('');
-    setError(null);
-    // Force scroll to top when slug changes
+    // Force scroll to top when component mounts
     window.scrollTo(0, 0);
-  }, [slug]);
+  }, [post.slug]);
 
-  // Fetch single post by slug
-  useEffect(() => {
-    const fetchPost = async () => {
-      const { controller, timeoutId, cleanup } = createTimeoutController();
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/posts?slug=${slug}&limit=1&page=1`, {
-          method: 'GET',
-          headers: API_HEADERS,
-          signal: controller.signal
-        });
-        
-        cleanup();
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.data && data.data.posts && data.data.posts.length > 0) {
-          setPost(data.data.posts[0]);
-        } else {
-          setError('المنشور غير موجود');
-        }
-      } catch (err) {
-        cleanup();
-        const apiError = handleApiError(err, '/api/posts');
-        console.error('Error fetching post:', err);
-        setError(apiError.message || 'خطأ في تحميل المنشور');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchPost();
-    }
-  }, [slug]);
-
-  // Fetch latest posts for sidebar
-  useEffect(() => {
-    const fetchLatestPosts = async () => {
-      const { controller, timeoutId, cleanup } = createTimeoutController();
-      try {
-        const response = await fetch('/api/posts?active=true&limit=6&include_content=false', {
-          method: 'GET',
-          headers: API_HEADERS,
-          signal: controller.signal
-        });
-        
-        cleanup();
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.data && data.data.posts) {
-          // Filter out current post
-          const filtered = data.data.posts.filter((p: Post) => p.id !== post?.id);
-          setLatestPosts(filtered.slice(0, 5));
-        }
-      } catch (err) {
-        cleanup();
-        const apiError = handleApiError(err, '/api/posts');
-        console.error('Error fetching latest posts:', apiError.message);
-      }
-    };
-
-    if (post) {
-      fetchLatestPosts();
-    }
-  }, [post]);
-
-  // Fetch breaking news for sidebar
-  useEffect(() => {
-    const fetchBreakingNews = async () => {
-      const { controller, timeoutId, cleanup } = createTimeoutController();
-      try {
-        const response = await fetch('/api/breaking-news?active=true&limit=4&include_content=false', {
-          method: 'GET',
-          headers: API_HEADERS,
-          signal: controller.signal
-        });
-        
-        cleanup();
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.data) {
-          // Filter out current post if it exists in breaking news
-          const filtered = data.data.filter((item: BreakingNews) => item.id !== post?.id);
-          setBreakingNews(filtered.slice(0, 4));
-        }
-      } catch (err) {
-        cleanup();
-        const apiError = handleApiError(err, '/api/breaking-news');
-        console.error('Error fetching breaking news:', apiError.message);
-      }
-    };
-
-    fetchBreakingNews();
-  }, [post]);
+  // No client-side data fetching needed - data comes from SSR
 
   const handleCopyText = async (text: string) => {
     try {
@@ -217,79 +119,25 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
     router.push(href);
   };
 
-  if (loading) {
-    return (
-      <Layout title="جاري التحميل..." description="">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center py-10 text-gray-600">جاري التحميل...</div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (error || !post) {
-    return (
-      <Layout title="المنشور غير موجود" description="">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center py-10">
-            <div className="text-red-500 mb-4">المنشور غير موجود</div>
-            <button 
-              onClick={() => handleNavigation('/')}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-            >
-              العودة للرئيسية
-            </button>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
-    <Layout title={post.title_ar || post.title} description={post.excerpt_ar || post.excerpt}>
-      <Helmet>
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content={post.title_ar || post.title} />
-        <meta property="og:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
-        {(post.featured_image || post.image) && (
-          <meta property="og:image" content={getImageUrl(post.featured_image || post.image || '')} />
-        )}
-        <meta property="og:site_name" content="مركبا - المنصة الاخبارية" />
-        <meta property="article:published_time" content={post.created_at} />
-        <meta property="article:modified_time" content={post.updated_at} />
-        <meta property="article:author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
-        <meta property="article:section" content={typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار'} />
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={post.title_ar || post.title} />
-        <meta name="twitter:description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
-        {(post.featured_image || post.image) && (
-          <meta name="twitter:image" content={getImageUrl(post.featured_image || post.image || '')} />
-        )}
-        
-        {/* Additional SEO Meta Tags */}
-        <meta name="description" content={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)} />
-        <meta name="keywords" content={post.tags?.join(', ') || ''} />
-        <meta name="author" content={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'} />
-        <link rel="canonical" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`} />
-      </Helmet>
-      
-      {/* NextSEO for enhanced Open Graph and SEO */}
-      <NextSEOWrapper
-        title={post.title_ar || post.title}
-        description={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.substring(0, 160)}
-        imageUrl={post.featured_image ? getImageUrl(post.featured_image) : undefined}
-        url={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`}
-        type="article"
-        publishedTime={post.created_at}
-        modifiedTime={post.updated_at}
-        author={typeof post.author === 'string' ? post.author : post.author?.username || 'أخبار مركبا'}
-        category={typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار'}
-        tags={post.tags || []}
-      />
+    <Layout 
+      title={post.title_ar || post.title}
+      description={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.replace(/<[^>]*>/g, '').substring(0, 160)}
+      pageType="post"
+      pageData={{ post }}
+      seo={{
+        title: post.title_ar || post.title,
+        description: post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.replace(/<[^>]*>/g, '').substring(0, 160),
+        image: post.featured_image || post.image,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`,
+        type: 'article',
+        publishedTime: post.created_at,
+        modifiedTime: post.updated_at,
+        author: typeof post.author === 'string' ? post.author : post.author?.username || 'Markaba News',
+        section: typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار',
+        keywords: post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(k => k.trim()) : undefined
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
@@ -483,6 +331,119 @@ const PostContent: React.FC<{ slug: string }> = ({ slug }) => {
       </div>
     </Layout>
   );
+};
+
+// Server-side rendering function
+export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async (context) => {
+  const { slug } = context.params as { slug: string };
+  
+  try {
+    // Use production API URL
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
+    const apiVersion = isDevelopment ? '/api' : '/api/v2';
+    
+    console.log('SSR: Fetching post data for slug:', slug);
+    
+    // Fetch post data
+    const postResponse = await fetch(`${baseUrl}${apiVersion}/posts?slug=${slug}&limit=1&page=1`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'NewsMarkaba-SSR/1.0'
+      }
+    });
+    
+    if (!postResponse.ok) {
+      console.error('SSR: Post response not ok:', postResponse.status);
+      return {
+        props: {
+          post: null,
+          latestPosts: [],
+          breakingNews: [],
+          error: 'المنشور غير موجود'
+        }
+      };
+    }
+    
+    const postData = await postResponse.json();
+    const post = postData.success && postData.data?.posts?.length > 0 ? postData.data.posts[0] : null;
+    
+    if (!post) {
+      return {
+        props: {
+          post: null,
+          latestPosts: [],
+          breakingNews: [],
+          error: 'المنشور غير موجود'
+        }
+      };
+    }
+    
+    // Fetch latest posts and breaking news in parallel
+    const [latestPostsResponse, breakingNewsResponse] = await Promise.all([
+      fetch(`${baseUrl}${apiVersion}/posts?limit=6&sort=latest&active=true&include_content=false`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'NewsMarkaba-SSR/1.0'
+        }
+      }),
+      fetch(`${baseUrl}${apiVersion}/breaking-news?limit=4&active=true&include_content=false`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'NewsMarkaba-SSR/1.0'
+        }
+      })
+    ]);
+    
+    // Process latest posts
+    let latestPosts: Post[] = [];
+    if (latestPostsResponse.ok) {
+      const latestPostsData = await latestPostsResponse.json();
+      if (latestPostsData.success && latestPostsData.data?.posts) {
+        // Filter out current post
+        latestPosts = latestPostsData.data.posts
+          .filter((p: Post) => p.id !== post.id)
+          .slice(0, 5);
+      }
+    }
+    
+    // Process breaking news
+    let breakingNews: BreakingNews[] = [];
+    if (breakingNewsResponse.ok) {
+      const breakingNewsData = await breakingNewsResponse.json();
+      if (breakingNewsData.success && breakingNewsData.data) {
+        // Filter out current post if it exists in breaking news
+        breakingNews = breakingNewsData.data
+          .filter((item: BreakingNews) => item.id !== post.id)
+          .slice(0, 4);
+      }
+    }
+    
+    console.log('SSR: Successfully fetched post data:', {
+      postTitle: post.title_ar || post.title,
+      latestPostsCount: latestPosts.length,
+      breakingNewsCount: breakingNews.length
+    });
+    
+    return {
+      props: {
+        post,
+        latestPosts,
+        breakingNews
+      }
+    };
+    
+  } catch (error) {
+    console.error('SSR Error fetching post data:', error);
+    return {
+      props: {
+        post: null,
+        latestPosts: [],
+        breakingNews: [],
+        error: 'حدث خطأ أثناء تحميل البيانات. يرجى المحاولة مرة أخرى لاحقاً.'
+      }
+    };
+  }
 };
 
 export default SinglePostPage;
