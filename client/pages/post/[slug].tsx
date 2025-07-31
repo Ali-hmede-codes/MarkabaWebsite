@@ -80,7 +80,6 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
         <meta name="keywords" content={keywords} />
         <meta name="author" content={authorName} />
         <meta name="robots" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="canonical" href={postUrl} />
         
         {/* Open Graph Meta Tags */}

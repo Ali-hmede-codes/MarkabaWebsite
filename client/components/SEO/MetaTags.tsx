@@ -116,7 +116,7 @@ const MetaTags: React.FC<MetaTagsProps> = ({
       {/* Theme Color and Mobile App */}
       <meta name="theme-color" content={metaConfig.additional.themeColor} />
       <meta name="msapplication-TileColor" content={metaConfig.additional.msApplicationTileColor} />
-      <meta name="apple-mobile-web-app-capable" content={metaConfig.additional.appleMobileWebAppCapable} />
+      <meta name="mobile-web-app-capable" content={metaConfig.additional.appleMobileWebAppCapable} />
       <meta name="apple-mobile-web-app-status-bar-style" content={metaConfig.additional.appleMobileWebAppStatusBarStyle} />
       <meta name="apple-mobile-web-app-title" content={metaConfig.additional.appleMobileWebAppTitle} />
       
