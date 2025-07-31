@@ -134,6 +134,11 @@ const nextConfig = {
     optimizeCss: true,
     scrollRestoration: true,
   },
+
+  // HTML-limited bots configuration for metadata streaming
+  // Bots matching this regex will receive blocking metadata in <head>
+  // instead of streaming metadata in <body>
+  htmlLimitedBots: /bot|crawler|spider|crawling|facebookexternalhit|twitterbot|whatsapp|telegram|linkedinbot|slackbot|discordbot|applebot|bingbot|duckduckbot|yandexbot|baiduspider|sogou|360spider|bytespider|petalbot|semrushbot|ahrefsbot|mj12bot|dotbot|blexbot|seznambot|ia_archiver|archive\.org|wayback|googlebot-image|googlebot-video|googlebot-news|adsbot-google|mediapartners-google|apis-google|google-structured-data-testing-tool|google-site-verification|google-read-aloud|google-adwords|google-ads|google-adsense|google-analytics|google-tag-manager|google-optimize|google-publisher-tag|google-doubleclick|google-syndication|google-pagespeed|google-lighthouse|google-web-light|google-translate|google-feedfetcher|google-favicon|google-imageproxy|google-inspectiontool|google-other|google-safety|google-sitemaps|google-speakr|google-xrawler|google-youtube|google-plus|google-calendar|google-docs|google-drive|google-gmail|google-hangouts|google-keep|google-maps|google-photos|google-play|google-search|google-shopping|google-sites|google-toolbar|google-trends|google-voice|google-wallet|google-webmaster|google-workspace/i,
   
   // Compression
   compress: true,
