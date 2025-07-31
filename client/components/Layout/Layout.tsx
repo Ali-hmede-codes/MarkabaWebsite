@@ -137,6 +137,18 @@ const Layout: React.FC<LayoutProps> = ({
              {pageData.post.meta_keywords_ar && pageData.post.meta_keywords_ar.split(',').map((tag: string, index: number) => (
                <meta key={index} property="article:tag" content={tag.trim()} />
              ))}
+            
+            {/* Facebook specific tags */}
+            <meta property="og:site_name" content={metaConfig.site.name} />
+            <meta property="og:locale" content="ar_AR" />
+            {metaConfig.social.facebook.appId && (
+              <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
+            )}
+            
+            {/* Additional social media tags */}
+            <meta property="og:type" content="article" />
+            <meta name="robots" content="index, follow" />
+            <meta name="googlebot" content="index, follow" />
           </>
         ) : pageType !== 'post' && (
           <>
@@ -188,6 +200,30 @@ const Layout: React.FC<LayoutProps> = ({
                 <meta name="twitter:image:alt" content={pageData.post.title_ar || pageData.post.title} />
               </>
             )}
+            <meta name="twitter:site" content={metaConfig.social.twitter.site} />
+             <meta name="twitter:creator" content={metaConfig.social.twitter.creator} />
+            
+            {/* LinkedIn specific tags */}
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            
+            {/* WhatsApp and Telegram sharing */}
+            <meta property="og:image:type" content="image/jpeg" />
+            
+            {/* Pinterest */}
+             <meta name="pinterest-rich-pin" content="true" />
+             
+             {/* WhatsApp and Telegram specific */}
+             <meta property="og:image:secure_url" content={`${metaConfig.site.url}/${pageData.post.featured_image?.replace(/^\/+/, '') || 'images/default-og.jpg'}`} />
+             
+             {/* LinkedIn specific */}
+             <meta name="linkedin:owner" content={metaConfig.social.linkedin} />
+             
+             {/* Additional sharing platforms */}
+             <meta name="format-detection" content="telephone=no" />
+             <meta name="mobile-web-app-capable" content="yes" />
+             <meta name="apple-mobile-web-app-capable" content="yes" />
+             <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
           </>
         ) : pageType !== 'post' && (
           <>

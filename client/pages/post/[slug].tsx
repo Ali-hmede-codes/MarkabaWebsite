@@ -10,118 +10,7 @@ import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
-// Server-side rendering function
-export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async (context) => {
-  const { slug } = context.params as { slug: string };
-  
-  try {
-    // Use production API URL
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
-    const apiVersion = isDevelopment ? '/api' : '/api/v2';
-    
-    console.log('SSR: Fetching post data for slug:', slug);
-    
-    // Fetch post data
-    const postResponse = await fetch(`${baseUrl}${apiVersion}/posts?slug=${slug}&limit=1&page=1`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'NewsMarkaba-SSR/1.0'
-      }
-    });
-    
-    if (!postResponse.ok) {
-      console.error('SSR: Post response not ok:', postResponse.status);
-      return {
-        props: {
-          post: null,
-          latestPosts: [],
-          breakingNews: [],
-          error: 'المنشور غير موجود'
-        }
-      };
-    }
-    
-    const postData = await postResponse.json();
-    const post = postData.success && postData.data?.posts?.length > 0 ? postData.data.posts[0] : null;
-    
-    if (!post) {
-      return {
-        props: {
-          post: null,
-          latestPosts: [],
-          breakingNews: [],
-          error: 'المنشور غير موجود'
-        }
-      };
-    }
-    
-    // Fetch latest posts and breaking news in parallel
-    const [latestPostsResponse, breakingNewsResponse] = await Promise.all([
-      fetch(`${baseUrl}${apiVersion}/posts?limit=6&sort=latest&active=true&include_content=false`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'NewsMarkaba-SSR/1.0'
-        }
-      }),
-      fetch(`${baseUrl}${apiVersion}/breaking-news?limit=4&active=true&include_content=false`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'NewsMarkaba-SSR/1.0'
-        }
-      })
-    ]);
-    
-    // Process latest posts
-    let latestPosts: Post[] = [];
-    if (latestPostsResponse.ok) {
-      const latestPostsData = await latestPostsResponse.json();
-      if (latestPostsData.success && latestPostsData.data?.posts) {
-        // Filter out current post
-        latestPosts = latestPostsData.data.posts
-          .filter((p: Post) => p.id !== post.id)
-          .slice(0, 5);
-      }
-    }
-    
-    // Process breaking news
-    let breakingNews: BreakingNews[] = [];
-    if (breakingNewsResponse.ok) {
-      const breakingNewsData = await breakingNewsResponse.json();
-      if (breakingNewsData.success && breakingNewsData.data) {
-        // Filter out current post if it exists in breaking news
-        breakingNews = breakingNewsData.data
-          .filter((item: BreakingNews) => item.id !== post.id)
-          .slice(0, 4);
-      }
-    }
-    
-    console.log('SSR: Successfully fetched post data:', {
-      postTitle: post.title_ar || post.title,
-      latestPostsCount: latestPosts.length,
-      breakingNewsCount: breakingNews.length
-    });
-    
-    return {
-      props: {
-        post,
-        latestPosts,
-        breakingNews
-      }
-    };
-    
-  } catch (error) {
-    console.error('SSR Error fetching post data:', error);
-    return {
-      props: {
-        post: null,
-        latestPosts: [],
-        breakingNews: [],
-        error: 'حدث خطأ أثناء تحميل البيانات. يرجى المحاولة مرة أخرى لاحقاً.'
-      }
-    };
-  }
-};
+
 
 
 interface SinglePostPageProps {
@@ -583,5 +472,118 @@ const PostContent: React.FC<{
       </div>
     </Layout>
   );
+};
+
+// Server-side rendering function
+export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async (context) => {
+  const { slug } = context.params as { slug: string };
+  
+  try {
+    // Use production API URL
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
+    const apiVersion = isDevelopment ? '/api' : '/api/v2';
+    
+    console.log('SSR: Fetching post data for slug:', slug);
+    
+    // Fetch post data
+    const postResponse = await fetch(`${baseUrl}${apiVersion}/posts?slug=${slug}&limit=1&page=1`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'NewsMarkaba-SSR/1.0'
+      }
+    });
+    
+    if (!postResponse.ok) {
+      console.error('SSR: Post response not ok:', postResponse.status);
+      return {
+        props: {
+          post: null,
+          latestPosts: [],
+          breakingNews: [],
+          error: 'المنشور غير موجود'
+        }
+      };
+    }
+    
+    const postData = await postResponse.json();
+    const post = postData.success && postData.data?.posts?.length > 0 ? postData.data.posts[0] : null;
+    
+    if (!post) {
+      return {
+        props: {
+          post: null,
+          latestPosts: [],
+          breakingNews: [],
+          error: 'المنشور غير موجود'
+        }
+      };
+    }
+    
+    // Fetch latest posts and breaking news in parallel
+    const [latestPostsResponse, breakingNewsResponse] = await Promise.all([
+      fetch(`${baseUrl}${apiVersion}/posts?limit=6&sort=latest&active=true&include_content=false`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'NewsMarkaba-SSR/1.0'
+        }
+      }),
+      fetch(`${baseUrl}${apiVersion}/breaking-news?limit=4&active=true&include_content=false`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'NewsMarkaba-SSR/1.0'
+        }
+      })
+    ]);
+    
+    // Process latest posts
+    let latestPosts: Post[] = [];
+    if (latestPostsResponse.ok) {
+      const latestPostsData = await latestPostsResponse.json();
+      if (latestPostsData.success && latestPostsData.data?.posts) {
+        // Filter out current post
+        latestPosts = latestPostsData.data.posts
+          .filter((p: Post) => p.id !== post.id)
+          .slice(0, 5);
+      }
+    }
+    
+    // Process breaking news
+    let breakingNews: BreakingNews[] = [];
+    if (breakingNewsResponse.ok) {
+      const breakingNewsData = await breakingNewsResponse.json();
+      if (breakingNewsData.success && breakingNewsData.data) {
+        // Filter out current post if it exists in breaking news
+        breakingNews = breakingNewsData.data
+          .filter((item: BreakingNews) => item.id !== post.id)
+          .slice(0, 4);
+      }
+    }
+    
+    console.log('SSR: Successfully fetched post data:', {
+      postTitle: post.title_ar || post.title,
+      latestPostsCount: latestPosts.length,
+      breakingNewsCount: breakingNews.length
+    });
+    
+    return {
+      props: {
+        post,
+        latestPosts,
+        breakingNews
+      }
+    };
+    
+  } catch (error) {
+    console.error('SSR Error fetching post data:', error);
+    return {
+      props: {
+        post: null,
+        latestPosts: [],
+        breakingNews: [],
+        error: 'حدث خطأ أثناء تحميل البيانات. يرجى المحاولة مرة أخرى لاحقاً.'
+      }
+    };
+  }
 };
 export default SinglePostPage;
