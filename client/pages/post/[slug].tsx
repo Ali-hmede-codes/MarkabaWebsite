@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
+import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
@@ -39,22 +40,121 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
 
   if (error || !post) {
     return (
-      <Layout title="المنشور غير موجود" description="">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center py-10">
-            <div className="text-red-500 mb-4">{error || 'المنشور غير موجود'}</div>
-            <Link href="/">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                العودة للرئيسية
-              </button>
-            </Link>
+      <>
+        <Head>
+          <title>المنشور غير موجود - مركبا</title>
+          <meta name="description" content="المنشور المطلوب غير موجود أو تم حذفه" />
+          <meta name="robots" content="noindex, nofollow" />
+        </Head>
+        <Layout title="المنشور غير موجود" description="">
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center py-10">
+              <div className="text-red-500 mb-4">{error || 'المنشور غير موجود'}</div>
+              <Link href="/">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                  العودة للرئيسية
+                </button>
+              </Link>
+            </div>
           </div>
-        </div>
-      </Layout>
+        </Layout>
+      </>
     );
   }
 
-  return <PostContent post={post} latestPosts={latestPosts} breakingNews={breakingNews} />;
+  // Generate metadata for the post
+  const postTitle = post.title_ar || post.title;
+  const postDescription = post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.replace(/<[^>]*>/g, '').substring(0, 160);
+  const postImage = post.featured_image || post.image;
+  const postUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`;
+  const authorName = typeof post.author === 'string' ? post.author : post.author?.username || 'Markaba News';
+  const categoryName = typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار';
+  const keywords = post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(k => k.trim()).join(', ') : `${postTitle}, ${categoryName}, مركبا, أخبار`;
+
+  return (
+    <>
+      <Head>
+        {/* Basic Meta Tags */}
+        <title>{postTitle} - مركبا</title>
+        <meta name="description" content={postDescription} />
+        <meta name="keywords" content={keywords} />
+        <meta name="author" content={authorName} />
+        <meta name="robots" content="index, follow" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="canonical" href={postUrl} />
+        
+        {/* Open Graph Meta Tags */}
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={postTitle} />
+        <meta property="og:description" content={postDescription} />
+        <meta property="og:url" content={postUrl} />
+        <meta property="og:site_name" content="مركبا - المنصة الإخبارية" />
+        <meta property="og:locale" content="ar_AR" />
+        {postImage && (
+          <>
+            <meta property="og:image" content={getImageUrl(postImage)} />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            <meta property="og:image:alt" content={postTitle} />
+          </>
+        )}
+        
+        {/* Article Specific Meta Tags */}
+        <meta property="article:published_time" content={post.created_at} />
+        <meta property="article:modified_time" content={post.updated_at} />
+        <meta property="article:author" content={authorName} />
+        <meta property="article:section" content={categoryName} />
+        {post.meta_keywords_ar && post.meta_keywords_ar.split(',').map((tag, index) => (
+          <meta key={index} property="article:tag" content={tag.trim()} />
+        ))}
+        
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={postTitle} />
+        <meta name="twitter:description" content={postDescription} />
+        <meta name="twitter:site" content="@markaba_news" />
+        <meta name="twitter:creator" content="@markaba_news" />
+        {postImage && (
+          <meta name="twitter:image" content={getImageUrl(postImage)} />
+        )}
+        
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "NewsArticle",
+              "headline": postTitle,
+              "description": postDescription,
+              "image": postImage ? [getImageUrl(postImage)] : undefined,
+              "datePublished": post.created_at,
+              "dateModified": post.updated_at,
+              "author": {
+                "@type": "Person",
+                "name": authorName
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "مركبا - المنصة الإخبارية",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo.png`
+                }
+              },
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": postUrl
+              },
+              "articleSection": categoryName,
+              "keywords": keywords
+            })
+          }}
+        />
+      </Head>
+      <PostContent post={post} latestPosts={latestPosts} breakingNews={breakingNews} />
+    </>
+  );
 };
 
 const PostContent: React.FC<{ 
@@ -120,24 +220,7 @@ const PostContent: React.FC<{
   };
 
   return (
-    <Layout 
-      title={post.title_ar || post.title}
-      description={post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.replace(/<[^>]*>/g, '').substring(0, 160)}
-      pageType="post"
-      pageData={{ post }}
-      seo={{
-        title: post.title_ar || post.title,
-        description: post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.replace(/<[^>]*>/g, '').substring(0, 160),
-        image: post.featured_image || post.image,
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`,
-        type: 'article',
-        publishedTime: post.created_at,
-        modifiedTime: post.updated_at,
-        author: typeof post.author === 'string' ? post.author : post.author?.username || 'Markaba News',
-        section: typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار',
-        keywords: post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(k => k.trim()) : undefined
-      }}
-    >
+    <Layout>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
