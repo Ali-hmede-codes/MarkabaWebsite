@@ -75,7 +75,17 @@ const PostLayout: React.FC<PostLayoutProps> = ({
   const postDescription = post ? (post.meta_description_ar || post.meta_description || post.excerpt_ar || post.excerpt || '') : (description || '');
   const postKeywords = post ? (post.meta_keywords_ar || post.meta_keywords || '') : '';
   const postAuthor = post ? (post.author ? post.author.username : metaConfig.site.nameEn) : metaConfig.site.nameEn;
-  const postImage = post && post.featured_image ? getImageUrl(post.featured_image) : `${metaConfig.site.url}/images/og-default.svg`;
+  // Generate absolute image URL for meta tags
+  const getAbsoluteImageUrl = (imagePath: string) => {
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+    return imagePath.startsWith('/') ? `${metaConfig.site.url}${imagePath}` : `${metaConfig.site.url}/${imagePath}`;
+  };
+  
+  const postImage = post && post.featured_image 
+    ? getAbsoluteImageUrl(getImageUrl(post.featured_image))
+    : getAbsoluteImageUrl('/images/og-default.svg');
   const postUrl = post ? `${metaConfig.site.url}/post/${post.slug}` : metaConfig.site.url;
   const postTags = post && post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(tag => tag.trim()) : [];
 
@@ -112,16 +122,12 @@ const PostLayout: React.FC<PostLayoutProps> = ({
       <meta property="og:locale" content="ar_AR" />
       
       {/* Post Image - Critical for social sharing */}
-      {postImage && (
-        <>
-          <meta property="og:image" content={postImage} />
-          <meta property="og:image:secure_url" content={postImage.replace('http:', 'https:')} />
-          <meta property="og:image:type" content="image/jpeg" />
-          <meta property="og:image:width" content="1200" />
-          <meta property="og:image:height" content="630" />
-          <meta property="og:image:alt" content={postTitle} />
-        </>
-      )}
+      <meta property="og:image" content={postImage} />
+      <meta property="og:image:secure_url" content={postImage.replace(/^http:/, 'https:')} />
+      <meta property="og:image:type" content={postImage.endsWith('.svg') ? 'image/svg+xml' : 'image/jpeg'} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={postTitle} />
       
       {/* Article specific tags */}
       {post && <meta property="article:published_time" content={post.created_at} />}
@@ -150,12 +156,8 @@ const PostLayout: React.FC<PostLayoutProps> = ({
       <meta name="twitter:site" content={metaConfig.social.twitter.site} />
       <meta name="twitter:creator" content={metaConfig.social.twitter.creator} />
       
-      {postImage && (
-        <>
-          <meta name="twitter:image" content={postImage} />
-          <meta name="twitter:image:alt" content={postTitle} />
-        </>
-      )}
+      <meta name="twitter:image" content={postImage} />
+      <meta name="twitter:image:alt" content={postTitle} />
     </>
   );
 
@@ -219,9 +221,6 @@ const PostLayout: React.FC<PostLayoutProps> = ({
         
         {/* SEO and Verification Tags */}
         {commonMetaTags.renderSEOTags()}
-        
-        {/* Language and Direction */}
-        <html lang="ar" dir="rtl" />
         
         {/* Preconnect to External Domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
