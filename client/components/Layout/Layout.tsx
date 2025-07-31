@@ -65,12 +65,25 @@ const Layout: React.FC<LayoutProps> = ({
     <>
       <Head>
         {/* Basic Meta Tags */}
-        {pageType !== 'post' && <title>{seoData.title}</title>}
-        <meta name="description" content={seoData.description} />
-        {seoData.keywords && (
-          <meta name="keywords" content={Array.isArray(seoData.keywords) ? seoData.keywords.join(', ') : seoData.keywords} />
+        {pageType === 'post' && pageData.post ? (
+          <title>{pageData.post.title_ar || pageData.post.title} - مركبا</title>
+        ) : pageType !== 'post' && (
+          <title>{seoData.title}</title>
         )}
-        <meta name="author" content={metaConfig.site.nameEn} />
+        {pageType === 'post' && pageData.post ? (
+          <>
+            <meta name="description" content={pageData.post.meta_description_ar || pageData.post.meta_description || pageData.post.excerpt_ar || pageData.post.excerpt} />
+            <meta name="keywords" content={pageData.post.meta_keywords_ar || pageData.post.meta_keywords || ''} />
+            <meta name="author" content={pageData.post.author || metaConfig.site.nameEn} />
+          </>
+        ) : (
+          <>
+            <meta name="description" content={seoData.description} />
+            {seoData.keywords && (
+              <meta name="keywords" content={Array.isArray(seoData.keywords) ? seoData.keywords.join(', ') : seoData.keywords} />
+            )}
+          </>
+        )}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="robots" content={robots} />
         <meta name="googlebot" content={googleBot} />
@@ -91,8 +104,41 @@ const Layout: React.FC<LayoutProps> = ({
         <meta name="application-name" content={metaConfig.additional.applicationName} />
         <meta name="msapplication-tooltip" content={metaConfig.additional.msApplicationTooltip} />
 
-        {/* Open Graph Meta Tags - Only for non-post pages */}
-        {pageType !== 'post' && (
+        {/* Open Graph Meta Tags */}
+        {pageType === 'post' && pageData.post ? (
+          <>
+            <meta property="og:type" content="article" />
+            <meta property="og:title" content={pageData.post.title_ar || pageData.post.title} />
+            <meta property="og:description" content={pageData.post.meta_description_ar || pageData.post.meta_description || pageData.post.excerpt_ar || pageData.post.excerpt} />
+            <meta property="og:url" content={`${metaConfig.site.url}/post/${pageData.post.slug}`} />
+            <meta property="og:site_name" content="مركبا - المنصة الإخبارية" />
+            <meta property="og:locale" content="ar_AR" />
+            {metaConfig.social.facebook.appId && (
+              <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
+            )}
+            {pageData.post.featured_image && (
+              <>
+                <meta property="og:image" content={`${metaConfig.site.url.replace(':3443', ':5000').replace('https:', 'http:')}/${pageData.post.featured_image.replace(/^\/+/, '')}`} />
+                <meta property="og:image:secure_url" content={`${metaConfig.site.url.replace(':3443', ':5000').replace('https:', 'http:')}/${pageData.post.featured_image.replace(/^\/+/, '')}`} />
+                <meta property="og:image:type" content="image/jpeg" />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta property="og:image:alt" content={pageData.post.title_ar || pageData.post.title} />
+              </>
+            )}
+            <meta property="article:published_time" content={pageData.post.created_at} />
+            <meta property="article:modified_time" content={pageData.post.updated_at} />
+            {pageData.post.author && (
+              <meta property="article:author" content={pageData.post.author} />
+            )}
+            {pageData.post.category && (
+               <meta property="article:section" content={pageData.post.category} />
+             )}
+             {pageData.post.meta_keywords_ar && pageData.post.meta_keywords_ar.split(',').map((tag: string, index: number) => (
+               <meta key={index} property="article:tag" content={tag.trim()} />
+             ))}
+          </>
+        ) : pageType !== 'post' && (
           <>
             <meta property="og:title" content={openGraph.title} />
             <meta property="og:description" content={openGraph.description} />
@@ -130,8 +176,20 @@ const Layout: React.FC<LayoutProps> = ({
           </>
         )}
 
-        {/* Twitter Card Meta Tags - Only for non-post pages */}
-        {pageType !== 'post' && (
+        {/* Twitter Card Meta Tags */}
+        {pageType === 'post' && pageData.post ? (
+          <>
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content={pageData.post.title_ar || pageData.post.title} />
+            <meta name="twitter:description" content={pageData.post.meta_description_ar || pageData.post.meta_description || pageData.post.excerpt_ar || pageData.post.excerpt} />
+            {pageData.post.featured_image && (
+              <>
+                <meta name="twitter:image" content={`${metaConfig.site.url.replace(':3443', ':5000').replace('https:', 'http:')}/${pageData.post.featured_image.replace(/^\/+/, '')}`} />
+                <meta name="twitter:image:alt" content={pageData.post.title_ar || pageData.post.title} />
+              </>
+            )}
+          </>
+        ) : pageType !== 'post' && (
           <>
             <meta name="twitter:card" content={twitterCard.card} />
             <meta name="twitter:title" content={twitterCard.title} />

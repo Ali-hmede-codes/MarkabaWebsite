@@ -281,56 +281,11 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
   return (
     <>
       <Head>
-        {/* Basic Meta Tags */}
-        <title>{postTitle} - مركبا</title>
-        <meta name="description" content={postDescription} />
-        <meta name="keywords" content={keywords} />
-        <meta name="author" content={authorName} />
+        {/* Only keep canonical link and basic meta tags that Layout doesn't handle */}
+        <link rel="canonical" href={postUrl} />
         <meta name="robots" content="index, follow" />
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="canonical" href={postUrl} />
-        
-        {/* Open Graph Meta Tags */}
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={postTitle} />
-        <meta property="og:description" content={postDescription} />
-        <meta property="og:url" content={postUrl} />
-        <meta property="og:site_name" content="مركبا - المنصة الإخبارية" />
-        <meta property="og:locale" content="ar_AR" />
-        <meta property="fb:app_id" content={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || ""} />
-        {postImage && (
-          <>
-            <meta property="og:image" content={getImageUrl(postImage)} />
-            <meta property="og:image:secure_url" content={getImageUrl(postImage)} />
-            <meta property="og:image:type" content="image/jpeg" />
-            <meta property="og:image:width" content="1200" />
-            <meta property="og:image:height" content="630" />
-            <meta property="og:image:alt" content={postTitle} />
-          </>
-        )}
-        
-        {/* Article Specific Meta Tags */}
-        <meta property="article:published_time" content={post.created_at} />
-        <meta property="article:modified_time" content={post.updated_at} />
-        <meta property="article:author" content={authorName} />
-        <meta property="article:section" content={categoryName} />
-        {post.meta_keywords_ar && post.meta_keywords_ar.split(',').map((tag, index) => (
-          <meta key={index} property="article:tag" content={tag.trim()} />
-        ))}
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={postTitle} />
-        <meta name="twitter:description" content={postDescription} />
-        <meta name="twitter:site" content="@markaba_news" />
-        <meta name="twitter:creator" content="@markaba_news" />
-        {postImage && (
-          <>
-            <meta name="twitter:image" content={getImageUrl(postImage)} />
-            <meta name="twitter:image:alt" content={postTitle} />
-          </>
-        )}
         
         {/* JSON-LD Structured Data */}
         <script
@@ -434,7 +389,7 @@ const PostContent: React.FC<{
   };
 
   return (
-    <Layout pageType="post">
+    <Layout pageType="post" pageData={{ post }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
