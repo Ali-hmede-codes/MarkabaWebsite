@@ -14,6 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useTheme } from '@/context/ThemeContext';
 import { useSettingsContext } from '@/context/SettingsContext';
+import Layout from '../components/Layout/Layout';
 
 const AboutPage: React.FC = () => {
   const { theme } = useTheme();
@@ -135,7 +136,7 @@ const AboutPage: React.FC = () => {
   };
 
   return (
-    <>
+    <Layout pageType="about">
       <Head>
         <title>
           {theme.language === 'ar' ? 'عن الموقع - موقع الأخبار' : 'About Us - News Website'}
@@ -155,34 +156,7 @@ const AboutPage: React.FC = () => {
           } 
         />
         
-        {/* Open Graph */}
-        <meta 
-          property="og:title" 
-          content={theme.language === 'ar' ? 'عن الموقع - موقع الأخبار' : 'About Us - News Website'} 
-        />
-        <meta 
-          property="og:description" 
-          content={theme.language === 'ar' 
-            ? 'تعرف على موقع الأخبار، مهمتنا في تقديم أحدث الأخبار الموثوقة، قيمنا، وفريق العمل المتخصص'
-            : 'Learn about News Website, our mission to deliver the latest reliable news, our values, and our specialized team'
-          } 
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
-        
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary" />
-        <meta 
-          name="twitter:title" 
-          content={theme.language === 'ar' ? 'عن الموقع - موقع الأخبار' : 'About Us - News Website'} 
-        />
-        <meta 
-          name="twitter:description" 
-          content={theme.language === 'ar' 
-            ? 'تعرف على موقع الأخبار، مهمتنا في تقديم أحدث الأخبار الموثوقة، قيمنا، وفريق العمل المتخصص'
-            : 'Learn about News Website, our mission to deliver the latest reliable news, our values, and our specialized team'
-          } 
-        />
+        {/* Open Graph and Twitter meta tags handled by Layout component */}
         
         {/* Structured Data */}
         <script
@@ -378,7 +352,7 @@ const AboutPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </>
+    </Layout>
   );
 };
 

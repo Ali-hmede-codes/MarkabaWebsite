@@ -91,35 +91,52 @@ const Layout: React.FC<LayoutProps> = ({
         <meta name="application-name" content={metaConfig.additional.applicationName} />
         <meta name="msapplication-tooltip" content={metaConfig.additional.msApplicationTooltip} />
 
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content={openGraph.title} />
-        <meta property="og:description" content={openGraph.description} />
-        <meta property="og:type" content={openGraph.type} />
-        <meta property="og:url" content={openGraph.url} />
-        {openGraph.image && <meta property="og:image" content={openGraph.image} />}
+        {/* Open Graph Meta Tags - Only for non-post pages */}
+        {pageType !== 'post' && (
+          <>
+            <meta property="og:title" content={openGraph.title} />
+            <meta property="og:description" content={openGraph.description} />
+            <meta property="og:type" content={openGraph.type} />
+            <meta property="og:url" content={openGraph.url} />
+            {openGraph.image && <meta property="og:image" content={openGraph.image} />}
+            <meta property="og:site_name" content={openGraph.siteName} />
+            <meta property="og:locale" content={openGraph.locale} />
+            {metaConfig.social.facebook.appId && (
+              <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
+            )}
+            {openGraph.publishedTime && (
+              <meta property="article:published_time" content={openGraph.publishedTime} />
+            )}
+            {openGraph.modifiedTime && (
+              <meta property="article:modified_time" content={openGraph.modifiedTime} />
+            )}
+            {openGraph.author && (
+              <meta property="article:author" content={openGraph.author} />
+            )}
+            {openGraph.section && (
+              <meta property="article:section" content={openGraph.section} />
+            )}
+          </>
+        )}
+        
+        {/* Global Open Graph tags that should always be present */}
         <meta property="og:site_name" content={openGraph.siteName} />
         <meta property="og:locale" content={openGraph.locale} />
         {metaConfig.social.facebook.appId && (
           <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
         )}
-        {openGraph.publishedTime && (
-          <meta property="article:published_time" content={openGraph.publishedTime} />
-        )}
-        {openGraph.modifiedTime && (
-          <meta property="article:modified_time" content={openGraph.modifiedTime} />
-        )}
-        {openGraph.author && (
-          <meta property="article:author" content={openGraph.author} />
-        )}
-        {openGraph.section && (
-          <meta property="article:section" content={openGraph.section} />
-        )}
 
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content={twitterCard.card} />
-        <meta name="twitter:title" content={twitterCard.title} />
-        <meta name="twitter:description" content={twitterCard.description} />
-        {twitterCard.image && <meta name="twitter:image" content={twitterCard.image} />}
+        {/* Twitter Card Meta Tags - Only for non-post pages */}
+        {pageType !== 'post' && (
+          <>
+            <meta name="twitter:card" content={twitterCard.card} />
+            <meta name="twitter:title" content={twitterCard.title} />
+            <meta name="twitter:description" content={twitterCard.description} />
+            {twitterCard.image && <meta name="twitter:image" content={twitterCard.image} />}
+          </>
+        )}
+        
+        {/* Global Twitter tags that should always be present */}
         <meta name="twitter:site" content={twitterCard.site} />
         <meta name="twitter:creator" content={twitterCard.creator} />
 

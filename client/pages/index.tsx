@@ -115,18 +115,7 @@ const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
         <meta name="keywords" content="أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط, مركبا" />
         <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'} />
         
-        {/* Open Graph Tags */}
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta property="og:description" content="ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta property="og:image" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`} />
-        <meta property="og:url" content={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'} />
-        
-        {/* Twitter Card Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta name="twitter:description" content="ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta name="twitter:image" content={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`} />
+        {/* Page-specific meta tags - Open Graph and Twitter handled by Layout component */}
         
         {/* Article Tags */}
         <meta property="article:publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
