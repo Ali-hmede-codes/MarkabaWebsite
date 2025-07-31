@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { GetServerSideProps, Metadata } from 'next';
+import { GetServerSideProps } from 'next';
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
@@ -11,107 +11,11 @@ import PostLayout from '../../components/Layout/PostLayout';
 import Link from 'next/link';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
-
-
-
 interface SinglePostPageProps {
   post: Post | null;
   latestPosts: Post[];
   breakingNews: BreakingNews[];
   error?: string;
-}
-
-// Generate metadata for SEO
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  try {
-    const { slug } = params;
-    const { controller, cleanup } = createTimeoutController(10000);
-    
-    const response = await fetch(`${API_BASE_URL}/posts/slug/${encodeURIComponent(slug)}`, {
-      headers: API_HEADERS,
-      signal: controller.signal,
-    });
-    
-    cleanup();
-
-    if (!response.ok) {
-      return {
-        title: 'المنشور غير موجود - مركبا',
-        description: 'المنشور المطلوب غير موجود أو تم حذفه',
-        robots: 'noindex, nofollow'
-      };
-    }
-
-    const data = await response.json();
-    const post = data.post;
-
-    if (!post) {
-      return {
-        title: 'المنشور غير موجود - مركبا',
-        description: 'المنشور المطلوب غير موجود أو تم حذفه',
-        robots: 'noindex, nofollow'
-      };
-    }
-
-    const postTitle = post.title_ar || post.title;
-    const postDescription = post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.replace(/<[^>]*>/g, '').substring(0, 160);
-    const postImage = post.featured_image || post.image;
-    const postUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`;
-    const authorName = typeof post.author === 'string' ? post.author : post.author?.username || 'Markaba News';
-    const categoryName = typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار';
-    const keywords = post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map((k: string) => k.trim()).join(', ') : `${postTitle}, ${categoryName}, مركبا, أخبار`;
-
-    return {
-      title: `${postTitle} - مركبا`,
-      description: postDescription,
-      keywords: keywords,
-      authors: [{ name: authorName }],
-      robots: 'index, follow',
-      alternates: {
-        canonical: postUrl
-      },
-      openGraph: {
-        type: 'article',
-        title: postTitle,
-        description: postDescription,
-        url: postUrl,
-        siteName: 'مركبا - المنصة الإخبارية',
-        locale: 'ar_AR',
-        images: postImage ? [{
-          url: getImageUrl(postImage),
-          width: 1200,
-          height: 630,
-          alt: postTitle
-        }] : [],
-        publishedTime: post.created_at,
-        modifiedTime: post.updated_at,
-        authors: [authorName],
-        section: categoryName,
-        tags: post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map((k: string) => k.trim()) : []
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: postTitle,
-        description: postDescription,
-        site: '@markaba_news',
-        creator: '@markaba_news',
-        images: postImage ? [getImageUrl(postImage)] : []
-      },
-      other: {
-        'article:author': authorName,
-        'article:section': categoryName,
-        'article:published_time': post.created_at,
-        'article:modified_time': post.updated_at
-      }
-    };
-  } catch (error) {
-    console.error('Error generating metadata:', error);
-    return {
-      title: 'خطأ في تحميل المنشور - مركبا',
-      description: 'حدث خطأ أثناء تحميل المنشور',
-      robots: 'noindex, nofollow'
-    };
-  }
 }
 
 const SinglePostPage: React.FC<SinglePostPageProps> = ({ 
