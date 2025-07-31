@@ -37,14 +37,13 @@ const MetaTags: React.FC<MetaTagsProps> = ({
 
   return (
     <Head>
-      {/* Basic Meta Tags */}
+      {/* Basic Meta Tags (excluding viewport - handled by _document.tsx) */}
       <title>{meta.title}</title>
       <meta name="description" content={meta.description} />
       {meta.keywords && (
         <meta name="keywords" content={meta.keywords.join(', ')} />
       )}
       <meta name="author" content={meta.author || metaConfig.site.nameEn} />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta name="robots" content={robots} />
       <meta name="googlebot" content={googleBot} />
       <meta name="bingbot" content="index, follow" />

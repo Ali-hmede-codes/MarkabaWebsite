@@ -23,7 +23,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
       <Head>
         <title>{fullTitle}</title>
         <meta name="description" content={description} />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {/* viewport meta tag handled by _document.tsx */}
         <meta name="robots" content="noindex, nofollow" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </Head>

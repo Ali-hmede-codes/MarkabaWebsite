@@ -58,18 +58,15 @@ const Layout: React.FC<LayoutProps> = ({
 
   const seoData = seo ? { ...meta, ...seo } : meta;
 
-  // Render Basic Meta Tags
+  // Render Basic Meta Tags (excluding viewport and charset - handled by _document.tsx)
   const renderBasicMetaTags = () => (
     <>
       <title>{seoData.title}</title>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <meta name="description" content={seoData.description} />
       <meta name="keywords" content={
         Array.isArray(seoData.keywords) ? seoData.keywords.join(', ') : seoData.keywords || ''
       } />
       <meta name="author" content={metaConfig.site.nameEn} />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta name="robots" content={robots} />
       <meta name="googlebot" content={googleBot} />
       <meta name="bingbot" content="index, follow" />

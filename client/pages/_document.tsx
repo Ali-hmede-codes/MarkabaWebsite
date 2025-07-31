@@ -28,7 +28,10 @@ export default function Document() {
         <meta name="theme-color" content="#3B82F6" />
         <meta name="msapplication-TileColor" content="#3B82F6" />
         
-        {/* Viewport is handled automatically by Next.js */}
+        {/* Viewport and charset meta tags - centralized here to avoid duplicates */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta httpEquiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         
         {/* Security headers */}
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
