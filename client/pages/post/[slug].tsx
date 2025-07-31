@@ -287,6 +287,8 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
         <meta name="keywords" content={keywords} />
         <meta name="author" content={authorName} />
         <meta name="robots" content="index, follow" />
+        <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="canonical" href={postUrl} />
         
         {/* Open Graph Meta Tags */}
@@ -296,9 +298,12 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
         <meta property="og:url" content={postUrl} />
         <meta property="og:site_name" content="مركبا - المنصة الإخبارية" />
         <meta property="og:locale" content="ar_AR" />
+        <meta property="fb:app_id" content={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || ""} />
         {postImage && (
           <>
             <meta property="og:image" content={getImageUrl(postImage)} />
+            <meta property="og:image:secure_url" content={getImageUrl(postImage)} />
+            <meta property="og:image:type" content="image/jpeg" />
             <meta property="og:image:width" content="1200" />
             <meta property="og:image:height" content="630" />
             <meta property="og:image:alt" content={postTitle} />
@@ -321,7 +326,10 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
         <meta name="twitter:site" content="@markaba_news" />
         <meta name="twitter:creator" content="@markaba_news" />
         {postImage && (
-          <meta name="twitter:image" content={getImageUrl(postImage)} />
+          <>
+            <meta name="twitter:image" content={getImageUrl(postImage)} />
+            <meta name="twitter:image:alt" content={postTitle} />
+          </>
         )}
         
         {/* JSON-LD Structured Data */}
