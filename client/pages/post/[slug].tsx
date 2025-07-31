@@ -7,6 +7,7 @@ import { FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
+import PostLayout from '../../components/Layout/PostLayout';
 import Link from 'next/link';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 
@@ -142,7 +143,7 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
           <meta name="description" content="المنشور المطلوب غير موجود أو تم حذفه" />
           <meta name="robots" content="noindex, nofollow" />
         </Head>
-        <Layout title="المنشور غير موجود" description="">
+        <PostLayout title="المنشور غير موجود" description="">
           <div className="min-h-screen flex items-center justify-center">
             <div className="text-center py-10">
               <div className="text-red-500 mb-4">{error || 'المنشور غير موجود'}</div>
@@ -153,7 +154,7 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
               </Link>
             </div>
           </div>
-        </Layout>
+        </PostLayout>
       </>
     );
   }
@@ -278,7 +279,7 @@ const PostContent: React.FC<{
   };
 
   return (
-    <Layout pageType="post" pageData={{ post }}>
+    <PostLayout post={post}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
@@ -470,7 +471,7 @@ const PostContent: React.FC<{
           </aside>
         </div>
       </div>
-    </Layout>
+    </PostLayout>
   );
 };
 
