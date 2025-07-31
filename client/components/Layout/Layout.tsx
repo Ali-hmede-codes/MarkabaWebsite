@@ -119,11 +119,15 @@ const Layout: React.FC<LayoutProps> = ({
           </>
         )}
         
-        {/* Global Open Graph tags that should always be present */}
-        <meta property="og:site_name" content={openGraph.siteName} />
-        <meta property="og:locale" content={openGraph.locale} />
-        {metaConfig.social.facebook.appId && (
-          <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
+        {/* Global Open Graph tags that should always be present - Only for non-post pages */}
+        {pageType !== 'post' && (
+          <>
+            <meta property="og:site_name" content={openGraph.siteName} />
+            <meta property="og:locale" content={openGraph.locale} />
+            {metaConfig.social.facebook.appId && (
+              <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
+            )}
+          </>
         )}
 
         {/* Twitter Card Meta Tags - Only for non-post pages */}
