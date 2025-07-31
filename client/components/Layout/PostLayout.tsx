@@ -89,23 +89,20 @@ const PostLayout: React.FC<PostLayoutProps> = ({
   const postUrl = post ? `${metaConfig.site.url}/post/${post.slug}` : metaConfig.site.url;
   const postTags = post && post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(tag => tag.trim()) : [];
 
-  // Render post-specific meta tags
+  // Render post-specific meta tags (avoiding duplicates with _document.tsx)
   const renderPostMetaTags = () => (
     <>
-      {/* Basic Meta Tags */}
+      {/* Page-specific Meta Tags */}
       <title>{postTitle} - مركبا</title>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <meta name="description" content={postDescription} />
       <meta name="keywords" content={postKeywords} />
       <meta name="author" content={postAuthor} />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta name="robots" content="index, follow" />
       <meta name="googlebot" content="index, follow" />
       <meta name="bingbot" content="index, follow" />
       <link rel="canonical" href={postUrl} />
       
-      {/* Language and Direction */}
+      {/* Language and Direction for this page */}
       <meta name="language" content="Arabic" />
       <meta httpEquiv="content-language" content="ar" />
     </>
@@ -213,18 +210,11 @@ const PostLayout: React.FC<PostLayoutProps> = ({
         {/* Additional Social Media Tags */}
         {commonMetaTags.renderAdditionalSocialTags()}
         
-        {/* Favicon and App Icons */}
-        {commonMetaTags.renderFaviconTags()}
-        
         {/* Theme and App Meta Tags */}
         {commonMetaTags.renderThemeTags()}
         
         {/* SEO and Verification Tags */}
         {commonMetaTags.renderSEOTags()}
-        
-        {/* Preconnect to External Domains */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
         {/* RSS Feed */}
         <link 

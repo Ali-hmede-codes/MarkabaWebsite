@@ -48,7 +48,6 @@ export const renderCommonMetaTags = () => ({
   // SEO and Verification Tags
   renderSEOTags: () => (
     <React.Fragment>
-      <meta name="language" content="Arabic" />
       <meta name="geo.region" content={metaConfig.site.country} />
       <meta name="geo.country" content={metaConfig.site.region} />
       <meta name="distribution" content={metaConfig.additional.distribution} />

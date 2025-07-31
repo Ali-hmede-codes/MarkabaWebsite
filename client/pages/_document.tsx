@@ -37,14 +37,8 @@ export default function Document() {
         {/* Sitemap */}
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
         
-        {/* Robots */}
-        <meta name="robots" content="index, follow" />
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        {/* Author and publisher */}
-        <meta name="author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        {/* Global site settings - page-specific meta tags handled by layouts */}
         <meta name="publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta name="language" content="ar" />
         
         {/* Global Open Graph Tags - Only site-wide settings */}
         <meta property="og:site_name" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
