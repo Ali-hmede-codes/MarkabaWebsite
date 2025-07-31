@@ -40,12 +40,12 @@ export default function Document() {
         <meta name="robots" content="index, follow" />
         
         {/* Author and publisher */}
-        <meta name="author" content="موقع مــركبــا الاخباري" />
+        <meta name="author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
         <meta name="publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
         <meta name="language" content="ar" />
         
         {/* Global Open Graph Tags - Only site-wide settings */}
-        <meta property="og:site_name" content="موقع مــركبــا الاخباري" />
+        <meta property="og:site_name" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
         <meta property="og:locale" content="ar_AR" />
         
         {/* Global Twitter Tags - Only site-wide settings */}

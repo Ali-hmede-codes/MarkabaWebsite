@@ -227,7 +227,9 @@ const SinglePostPage: React.FC<PostPageProps> = ({
         />
       </Head>
       
-      <PostContent post={post} relatedPosts={relatedPosts} />
+      <Layout>
+        <PostContent post={post} relatedPosts={relatedPosts} />
+      </Layout>
     </>
   );
 };
