@@ -65,7 +65,7 @@ const Layout: React.FC<LayoutProps> = ({
     <>
       <Head>
         {/* Basic Meta Tags */}
-        <title>{seoData.title}</title>
+        {pageType !== 'post' && <title>{seoData.title}</title>}
         <meta name="description" content={seoData.description} />
         {seoData.keywords && (
           <meta name="keywords" content={Array.isArray(seoData.keywords) ? seoData.keywords.join(', ') : seoData.keywords} />
