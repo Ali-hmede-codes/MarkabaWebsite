@@ -58,207 +58,265 @@ const Layout: React.FC<LayoutProps> = ({
     }
   });
 
-  // Fallback to legacy seo prop if provided
+  // Helper function to construct proper image URLs
+  const getImageUrl = (imagePath: string): string => {
+    if (!imagePath) return '';
+    
+    // Remove leading slashes
+    const cleanPath = imagePath.replace(/^\/+/, '');
+    
+    // For development, use the backend server URL
+    if (process.env.NODE_ENV === 'development') {
+      return `http://api.markaba.news/${cleanPath}`;
+    }
+    
+    // For production, use the configured site URL
+    return `${metaConfig.site.url}/${cleanPath}`;
+  };
+
+  // Get post-specific data for meta tags
+  const getPostMetaData = () => {
+    if (pageType !== 'post' || !pageData.post) return null;
+    
+    const post = pageData.post;
+    return {
+      title: post.title_ar || post.title,
+      description: post.meta_description_ar || post.meta_description || post.excerpt_ar || post.excerpt,
+      keywords: post.meta_keywords_ar || post.meta_keywords || '',
+      author: post.author || metaConfig.site.nameEn,
+      image: post.featured_image ? getImageUrl(post.featured_image) : '',
+      url: `${metaConfig.site.url}/post/${post.slug}`,
+      publishedTime: post.created_at,
+      modifiedTime: post.updated_at,
+      category: post.category,
+      tags: post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map((tag: string) => tag.trim()) : []
+    };
+  };
+
+  const postMeta = getPostMetaData();
   const seoData = seo ? { ...meta, ...seo } : meta;
+
+  // Render Basic Meta Tags
+  const renderBasicMetaTags = () => (
+    <>
+      <title>
+        {postMeta ? `${postMeta.title} - مركبا` : seoData.title}
+      </title>
+      <meta name="description" content={postMeta?.description || seoData.description} />
+      <meta name="keywords" content={
+        postMeta?.keywords || 
+        (Array.isArray(seoData.keywords) ? seoData.keywords.join(', ') : seoData.keywords || '')
+      } />
+      <meta name="author" content={postMeta?.author || metaConfig.site.nameEn} />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="robots" content={robots} />
+      <meta name="googlebot" content={googleBot} />
+      <meta name="bingbot" content="index, follow" />
+      <link rel="canonical" href={postMeta?.url || seoData.url} />
+    </>
+  );
+
+  // Render Open Graph Meta Tags
+  const renderOpenGraphTags = () => {
+    if (postMeta) {
+      return (
+        <>
+          <meta property="og:type" content="article" />
+          <meta property="og:title" content={postMeta.title} />
+          <meta property="og:description" content={postMeta.description} />
+          <meta property="og:url" content={postMeta.url} />
+          <meta property="og:site_name" content={metaConfig.site.name} />
+          <meta property="og:locale" content="ar_AR" />
+          
+          {/* Post Image */}
+          {postMeta.image && (
+            <>
+              <meta property="og:image" content={postMeta.image} />
+              <meta property="og:image:secure_url" content={postMeta.image.replace('http:', 'https:')} />
+              <meta property="og:image:type" content="image/jpeg" />
+              <meta property="og:image:width" content="1200" />
+              <meta property="og:image:height" content="630" />
+              <meta property="og:image:alt" content={postMeta.title} />
+            </>
+          )}
+          
+          {/* Article specific tags */}
+          <meta property="article:published_time" content={postMeta.publishedTime} />
+          <meta property="article:modified_time" content={postMeta.modifiedTime} />
+          <meta property="article:author" content={postMeta.author} />
+          {postMeta.category && <meta property="article:section" content={postMeta.category} />}
+          
+          {/* Article tags */}
+          {postMeta.tags.map((tag: string, index: number) => (
+            <meta key={index} property="article:tag" content={tag} />
+          ))}
+          
+          {/* Facebook App ID */}
+          {metaConfig.social.facebook.appId && (
+            <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
+          )}
+        </>
+      );
+    }
+    
+    // Default Open Graph tags for non-post pages
+    return (
+      <>
+        <meta property="og:title" content={openGraph.title} />
+        <meta property="og:description" content={openGraph.description} />
+        <meta property="og:type" content={openGraph.type} />
+        <meta property="og:url" content={openGraph.url} />
+        <meta property="og:site_name" content={openGraph.siteName} />
+        <meta property="og:locale" content={openGraph.locale} />
+        {openGraph.image && <meta property="og:image" content={openGraph.image} />}
+        {metaConfig.social.facebook.appId && (
+          <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
+        )}
+      </>
+    );
+  };
+
+  // Render Twitter Card Meta Tags
+  const renderTwitterCardTags = () => {
+    if (postMeta) {
+      return (
+        <>
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={postMeta.title} />
+          <meta name="twitter:description" content={postMeta.description} />
+          <meta name="twitter:site" content={metaConfig.social.twitter.site} />
+          <meta name="twitter:creator" content={metaConfig.social.twitter.creator} />
+          
+          {postMeta.image && (
+            <>
+              <meta name="twitter:image" content={postMeta.image} />
+              <meta name="twitter:image:alt" content={postMeta.title} />
+            </>
+          )}
+        </>
+      );
+    }
+    
+    // Default Twitter Card tags for non-post pages
+    return (
+      <>
+        <meta name="twitter:card" content={twitterCard.card} />
+        <meta name="twitter:title" content={twitterCard.title} />
+        <meta name="twitter:description" content={twitterCard.description} />
+        <meta name="twitter:site" content={twitterCard.site} />
+        <meta name="twitter:creator" content={twitterCard.creator} />
+        {twitterCard.image && <meta name="twitter:image" content={twitterCard.image} />}
+      </>
+    );
+  };
+
+  // Render Additional Social Media Tags
+  const renderAdditionalSocialTags = () => (
+    <>
+      {/* LinkedIn */}
+      <meta name="linkedin:owner" content={metaConfig.social.linkedin} />
+      
+      {/* Pinterest */}
+      <meta name="pinterest-rich-pin" content="true" />
+      
+      {/* Mobile and App Tags */}
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      <meta name="apple-mobile-web-app-title" content={metaConfig.site.name} />
+    </>
+  );
+
+  // Render Favicon and App Icons
+  const renderFaviconTags = () => (
+    <>
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+      <link rel="manifest" href="/site.webmanifest" />
+    </>
+  );
+
+  // Render Theme and App Meta Tags
+  const renderThemeTags = () => (
+    <>
+      <meta name="theme-color" content={metaConfig.additional.themeColor} />
+      <meta name="msapplication-TileColor" content={metaConfig.additional.msApplicationTileColor} />
+      <meta name="application-name" content={metaConfig.additional.applicationName} />
+      <meta name="msapplication-tooltip" content={metaConfig.additional.msApplicationTooltip} />
+    </>
+  );
+
+  // Render SEO and Verification Tags
+  const renderSEOTags = () => (
+    <>
+      <meta name="language" content="Arabic" />
+      <meta name="geo.region" content={metaConfig.site.country} />
+      <meta name="geo.country" content={metaConfig.site.region} />
+      <meta name="distribution" content={metaConfig.additional.distribution} />
+      <meta name="rating" content={metaConfig.additional.rating} />
+      
+      {/* Google Search Console Verification */}
+      {metaConfig.analytics.googleSearchConsole && (
+        <meta name="google-site-verification" content={metaConfig.analytics.googleSearchConsole} />
+      )}
+    </>
+  );
+
+  // Render Analytics Scripts
+  const renderAnalytics = () => {
+    if (!metaConfig.analytics.googleAnalytics) return null;
+    
+    return (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${metaConfig.analytics.googleAnalytics}`}></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${metaConfig.analytics.googleAnalytics}');
+            `,
+          }}
+        />
+      </>
+    );
+  };
 
   return (
     <>
       <Head>
         {/* Basic Meta Tags */}
-        {pageType === 'post' && pageData.post ? (
-          <title>{pageData.post.title_ar || pageData.post.title} - مركبا</title>
-        ) : pageType !== 'post' && (
-          <title>{seoData.title}</title>
-        )}
-        {pageType === 'post' && pageData.post ? (
-          <>
-            <meta name="description" content={pageData.post.meta_description_ar || pageData.post.meta_description || pageData.post.excerpt_ar || pageData.post.excerpt} />
-            <meta name="keywords" content={pageData.post.meta_keywords_ar || pageData.post.meta_keywords || ''} />
-            <meta name="author" content={pageData.post.author || metaConfig.site.nameEn} />
-          </>
-        ) : (
-          <>
-            <meta name="description" content={seoData.description} />
-            {seoData.keywords && (
-              <meta name="keywords" content={Array.isArray(seoData.keywords) ? seoData.keywords.join(', ') : seoData.keywords} />
-            )}
-          </>
-        )}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="robots" content={robots} />
-        <meta name="googlebot" content={googleBot} />
-        <meta name="bingbot" content="index, follow" />
-        <link rel="canonical" href={seoData.url} />
+        {renderBasicMetaTags()}
         
-        {/* Google Search Console Verification */}
-        {metaConfig.analytics.googleSearchConsole && (
-          <meta name="google-site-verification" content={metaConfig.analytics.googleSearchConsole} />
-        )}
-        
-        {/* Additional SEO Meta Tags */}
-        <meta name="language" content="Arabic" />
-        <meta name="geo.region" content={metaConfig.site.country} />
-        <meta name="geo.country" content={metaConfig.site.region} />
-        <meta name="distribution" content={metaConfig.additional.distribution} />
-        <meta name="rating" content={metaConfig.additional.rating} />
-        <meta name="application-name" content={metaConfig.additional.applicationName} />
-        <meta name="msapplication-tooltip" content={metaConfig.additional.msApplicationTooltip} />
-
         {/* Open Graph Meta Tags */}
-        {pageType === 'post' && pageData.post ? (
-          <>
-            <meta property="og:type" content="article" />
-            <meta property="og:title" content={pageData.post.title_ar || pageData.post.title} />
-            <meta property="og:description" content={pageData.post.meta_description_ar || pageData.post.meta_description || pageData.post.excerpt_ar || pageData.post.excerpt} />
-            <meta property="og:url" content={`${metaConfig.site.url}/post/${pageData.post.slug}`} />
-            <meta property="og:site_name" content="مركبا - المنصة الإخبارية" />
-            <meta property="og:locale" content="ar_AR" />
-            {metaConfig.social.facebook.appId && (
-              <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
-            )}
-            {pageData.post.featured_image && (
-              <>
-                <meta property="og:image" content={`${metaConfig.site.url.replace(':3443', ':5000').replace('https:', 'http:')}/${pageData.post.featured_image.replace(/^\/+/, '')}`} />
-                <meta property="og:image:secure_url" content={`${metaConfig.site.url.replace(':3443', ':5000').replace('https:', 'http:')}/${pageData.post.featured_image.replace(/^\/+/, '')}`} />
-                <meta property="og:image:type" content="image/jpeg" />
-                <meta property="og:image:width" content="1200" />
-                <meta property="og:image:height" content="630" />
-                <meta property="og:image:alt" content={pageData.post.title_ar || pageData.post.title} />
-              </>
-            )}
-            <meta property="article:published_time" content={pageData.post.created_at} />
-            <meta property="article:modified_time" content={pageData.post.updated_at} />
-            {pageData.post.author && (
-              <meta property="article:author" content={pageData.post.author} />
-            )}
-            {pageData.post.category && (
-               <meta property="article:section" content={pageData.post.category} />
-             )}
-             {pageData.post.meta_keywords_ar && pageData.post.meta_keywords_ar.split(',').map((tag: string, index: number) => (
-               <meta key={index} property="article:tag" content={tag.trim()} />
-             ))}
-            
-            {/* Facebook specific tags */}
-            <meta property="og:site_name" content={metaConfig.site.name} />
-            <meta property="og:locale" content="ar_AR" />
-            {metaConfig.social.facebook.appId && (
-              <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
-            )}
-            
-            {/* Additional social media tags */}
-            <meta property="og:type" content="article" />
-            <meta name="robots" content="index, follow" />
-            <meta name="googlebot" content="index, follow" />
-          </>
-        ) : pageType !== 'post' && (
-          <>
-            <meta property="og:title" content={openGraph.title} />
-            <meta property="og:description" content={openGraph.description} />
-            <meta property="og:type" content={openGraph.type} />
-            <meta property="og:url" content={openGraph.url} />
-            {openGraph.image && <meta property="og:image" content={openGraph.image} />}
-            <meta property="og:site_name" content={openGraph.siteName} />
-            <meta property="og:locale" content={openGraph.locale} />
-            {metaConfig.social.facebook.appId && (
-              <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
-            )}
-            {openGraph.publishedTime && (
-              <meta property="article:published_time" content={openGraph.publishedTime} />
-            )}
-            {openGraph.modifiedTime && (
-              <meta property="article:modified_time" content={openGraph.modifiedTime} />
-            )}
-            {openGraph.author && (
-              <meta property="article:author" content={openGraph.author} />
-            )}
-            {openGraph.section && (
-              <meta property="article:section" content={openGraph.section} />
-            )}
-          </>
-        )}
+        {renderOpenGraphTags()}
         
-        {/* Global Open Graph tags that should always be present - Only for non-post pages */}
-        {pageType !== 'post' && (
-          <>
-            <meta property="og:site_name" content={openGraph.siteName} />
-            <meta property="og:locale" content={openGraph.locale} />
-            {metaConfig.social.facebook.appId && (
-              <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
-            )}
-          </>
-        )}
-
         {/* Twitter Card Meta Tags */}
-        {pageType === 'post' && pageData.post ? (
-          <>
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content={pageData.post.title_ar || pageData.post.title} />
-            <meta name="twitter:description" content={pageData.post.meta_description_ar || pageData.post.meta_description || pageData.post.excerpt_ar || pageData.post.excerpt} />
-            {pageData.post.featured_image && (
-              <>
-                <meta name="twitter:image" content={`${metaConfig.site.url.replace(':3443', ':5000').replace('https:', 'http:')}/${pageData.post.featured_image.replace(/^\/+/, '')}`} />
-                <meta name="twitter:image:alt" content={pageData.post.title_ar || pageData.post.title} />
-              </>
-            )}
-            <meta name="twitter:site" content={metaConfig.social.twitter.site} />
-             <meta name="twitter:creator" content={metaConfig.social.twitter.creator} />
-            
-            {/* LinkedIn specific tags */}
-            <meta property="og:image:width" content="1200" />
-            <meta property="og:image:height" content="630" />
-            
-            {/* WhatsApp and Telegram sharing */}
-            <meta property="og:image:type" content="image/jpeg" />
-            
-            {/* Pinterest */}
-             <meta name="pinterest-rich-pin" content="true" />
-             
-             {/* WhatsApp and Telegram specific */}
-             <meta property="og:image:secure_url" content={`${metaConfig.site.url}/${pageData.post.featured_image?.replace(/^\/+/, '') || 'images/default-og.jpg'}`} />
-             
-             {/* LinkedIn specific */}
-             <meta name="linkedin:owner" content={metaConfig.social.linkedin} />
-             
-             {/* Additional sharing platforms */}
-             <meta name="format-detection" content="telephone=no" />
-             <meta name="mobile-web-app-capable" content="yes" />
-             <meta name="apple-mobile-web-app-capable" content="yes" />
-             <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-          </>
-        ) : pageType !== 'post' && (
-          <>
-            <meta name="twitter:card" content={twitterCard.card} />
-            <meta name="twitter:title" content={twitterCard.title} />
-            <meta name="twitter:description" content={twitterCard.description} />
-            {twitterCard.image && <meta name="twitter:image" content={twitterCard.image} />}
-          </>
-        )}
+        {renderTwitterCardTags()}
         
-        {/* Global Twitter tags that should always be present */}
-        <meta name="twitter:site" content={twitterCard.site} />
-        <meta name="twitter:creator" content={twitterCard.creator} />
-
+        {/* Additional Social Media Tags */}
+        {renderAdditionalSocialTags()}
+        
         {/* Favicon and App Icons */}
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/site.webmanifest" />
-
-        {/* Theme Color and Mobile App */}
-        <meta name="theme-color" content={metaConfig.additional.themeColor} />
-        <meta name="msapplication-TileColor" content={metaConfig.additional.msApplicationTileColor} />
-        <meta name="mobile-web-app-capable" content={metaConfig.additional.appleMobileWebAppCapable} />
-        <meta name="apple-mobile-web-app-status-bar-style" content={metaConfig.additional.appleMobileWebAppStatusBarStyle} />
-        <meta name="apple-mobile-web-app-title" content={metaConfig.additional.appleMobileWebAppTitle} />
-
+        {renderFaviconTags()}
+        
+        {/* Theme and App Meta Tags */}
+        {renderThemeTags()}
+        
+        {/* SEO and Verification Tags */}
+        {renderSEOTags()}
+        
         {/* Language and Direction */}
         <html lang="ar" dir="rtl" />
-
+        
         {/* Preconnect to External Domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
+        
         {/* RSS Feed */}
         <link 
           rel="alternate" 
@@ -268,22 +326,8 @@ const Layout: React.FC<LayoutProps> = ({
         />
         
         {/* Analytics */}
-        {metaConfig.analytics.googleAnalytics && (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${metaConfig.analytics.googleAnalytics}`}></script>
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${metaConfig.analytics.googleAnalytics}');
-                `,
-              }}
-            />
-          </>
-        )}
-
+        {renderAnalytics()}
+        
         {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
