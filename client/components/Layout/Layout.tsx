@@ -62,6 +62,8 @@ const Layout: React.FC<LayoutProps> = ({
   const renderBasicMetaTags = () => (
     <>
       <title>{seoData.title}</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <meta name="description" content={seoData.description} />
       <meta name="keywords" content={
         Array.isArray(seoData.keywords) ? seoData.keywords.join(', ') : seoData.keywords || ''

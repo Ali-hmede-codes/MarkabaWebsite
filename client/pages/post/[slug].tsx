@@ -169,50 +169,9 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
   const keywords = post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(k => k.trim()).join(', ') : `${postTitle}, ${categoryName}, مركبا, أخبار`;
 
   return (
-    <>
-      <Head>
-        {/* Only keep canonical link and basic meta tags that Layout doesn't handle */}
-        <link rel="canonical" href={postUrl} />
-        <meta name="robots" content="index, follow" />
-        <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        
-        {/* JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "NewsArticle",
-              "headline": postTitle,
-              "description": postDescription,
-              "image": postImage ? [getImageUrl(postImage)] : undefined,
-              "datePublished": post.created_at,
-              "dateModified": post.updated_at,
-              "author": {
-                "@type": "Person",
-                "name": authorName
-              },
-              "publisher": {
-                "@type": "Organization",
-                "name": "مركبا - المنصة الإخبارية",
-                "logo": {
-                  "@type": "ImageObject",
-                  "url": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo.png`
-                }
-              },
-              "mainEntityOfPage": {
-                "@type": "WebPage",
-                "@id": postUrl
-              },
-              "articleSection": categoryName,
-              "keywords": keywords
-            })
-          }}
-        />
-      </Head>
+    <PostLayout post={post}>
       <PostContent post={post} latestPosts={latestPosts} breakingNews={breakingNews} />
-    </>
+    </PostLayout>
   );
 };
 
@@ -279,27 +238,26 @@ const PostContent: React.FC<{
   };
 
   return (
-    <PostLayout post={post}>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Main Content */}
-          <article className="lg:col-span-3">
-            {/* Post Title */}
-            <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">
-              {post.title_ar || post.title}
-            </h1>
-            
-            {/* Summary Box Container with Category Badge */}
-            <div className="relative mb-8">
-              {/* Category Badge - Outside Right Top */}
-              {post.category?.name_ar && (
-                <div className="absolute top-0 z-10" style={{top: '-25px'}}>
-                  <span className="inline-block bg-blue-500 text-white px-3 py-1 text-xs font-medium shadow-sm" style={{borderTopLeftRadius: '0', borderTopRightRadius: '8px', borderBottomLeftRadius: '0', borderBottomRightRadius: '0'}}>
-                    {typeof post.category === 'string' ? post.category : post.category?.name_ar}
-                  </span>
-                </div>
-              )}
-              {/* Summary Box */}
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Main Content */}
+        <article className="lg:col-span-3">
+          {/* Post Title */}
+          <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">
+            {post.title_ar || post.title}
+          </h1>
+          
+          {/* Summary Box Container with Category Badge */}
+          <div className="relative mb-8">
+            {/* Category Badge - Outside Right Top */}
+            {post.category?.name_ar && (
+              <div className="absolute top-0 z-10" style={{top: '-25px'}}>
+                <span className="inline-block bg-blue-500 text-white px-3 py-1 text-xs font-medium shadow-sm" style={{borderTopLeftRadius: '0', borderTopRightRadius: '8px', borderBottomLeftRadius: '0', borderBottomRightRadius: '0'}}>
+                  {typeof post.category === 'string' ? post.category : post.category?.name_ar}
+                </span>
+              </div>
+            )}
+            {/* Summary Box */}
               <div className="bg-gray-100 border border-gray-300 rounded-lg shadow-sm overflow-hidden">
               <div className="p-6">
                 {/* Post Summary/Excerpt */}
@@ -360,9 +318,9 @@ const PostContent: React.FC<{
                 </div>
               </div>
             </div>
-            </div>
+          </div>
 
-            {/* Featured Image */}
+          {/* Featured Image */}
             {(post.featured_image || post.image) && (
               <div className="relative w-full aspect-video md:h-96 md:aspect-auto mb-8">
                 <Image 
@@ -471,7 +429,6 @@ const PostContent: React.FC<{
           </aside>
         </div>
       </div>
-    </PostLayout>
   );
 };
 

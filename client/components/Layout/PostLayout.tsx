@@ -4,7 +4,8 @@ import { Toaster } from 'react-hot-toast';
 import Header from './Header';
 import Footer from './Footer';
 import metaConfig from '../../config/meta.config';
-import { getImageUrl, renderCommonMetaTags, toasterConfig } from '../../utils/layoutUtils';
+import { getImageUrl } from '../../utils/imageUtils';
+import { renderCommonMetaTags, toasterConfig } from '../../utils/layoutUtils';
 
 interface User {
   id: number;
@@ -74,7 +75,7 @@ const PostLayout: React.FC<PostLayoutProps> = ({
   const postDescription = post ? (post.meta_description_ar || post.meta_description || post.excerpt_ar || post.excerpt || '') : (description || '');
   const postKeywords = post ? (post.meta_keywords_ar || post.meta_keywords || '') : '';
   const postAuthor = post ? (post.author ? post.author.username : metaConfig.site.nameEn) : metaConfig.site.nameEn;
-  const postImage = post && post.featured_image ? getImageUrl(post.featured_image) : '';
+  const postImage = post && post.featured_image ? getImageUrl(post.featured_image) : `${metaConfig.site.url}/images/og-default.svg`;
   const postUrl = post ? `${metaConfig.site.url}/post/${post.slug}` : metaConfig.site.url;
   const postTags = post && post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(tag => tag.trim()) : [];
 
@@ -83,6 +84,8 @@ const PostLayout: React.FC<PostLayoutProps> = ({
     <>
       {/* Basic Meta Tags */}
       <title>{postTitle} - مركبا</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <meta name="description" content={postDescription} />
       <meta name="keywords" content={postKeywords} />
       <meta name="author" content={postAuthor} />

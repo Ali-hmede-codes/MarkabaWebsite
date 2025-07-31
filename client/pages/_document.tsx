@@ -4,6 +4,7 @@ export default function Document() {
   return (
     <Html lang="ar" dir="rtl">
       <Head>
+        
         {/* Preconnect to external domains for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -38,7 +39,8 @@ export default function Document() {
         
         {/* Robots */}
         <meta name="robots" content="index, follow" />
-        
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         {/* Author and publisher */}
         <meta name="author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
         <meta name="publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
