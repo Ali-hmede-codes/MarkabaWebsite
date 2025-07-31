@@ -13,6 +13,7 @@ import Link from 'next/link';
 interface PostPageProps {
   post: Post | null;
   relatedPosts: Post[];
+  meta?: MetaData;
   error?: string;
 }
 
@@ -31,70 +32,40 @@ interface MetaData {
 }
 
 // Main Component
-const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) => {
+const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, meta, error }) => {
   const router = useRouter();
 
-  // Generate meta data for SSR <mcreference link="https://nextjs.org/docs/pages/building-your-application/routing/dynamic-routes" index="2">2</mcreference>
-  const generateMetaData = (post: Post | null): MetaData => {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
-    const defaultImage = `${baseUrl}/images/logo_new.png`;
-    
-    if (!post) {
-      return {
-        title: 'المنشور غير موجود | أخبار مركبا',
-        description: 'موقع أخبار مركبا - آخر الأخبار والمستجدات',
-        image: defaultImage,
-        url: baseUrl,
-        author: 'أخبار مركبا',
-        category: 'أخبار',
-        tags: [],
-        published: new Date().toISOString(),
-        updated: new Date().toISOString(),
-        siteName: 'موقع مــركبــا الاخباري',
-        locale: 'ar_AR'
-      };
-    }
-
-    // Extract and clean description <mcreference link="https://www.davegray.codes/posts/nextjs-open-graph-social-media-cards" index="3">3</mcreference>
-    const description = (post.excerpt_ar || post.excerpt || 
-      (post.content_ar || post.content)?.replace(/<[^>]*>/g, '').substring(0, 160) || 
-      'موقع أخبار مركبا - آخر الأخبار والمستجدات'
-    ).trim();
-
-    // Handle tags properly
-    let tags: string[] = [];
-    if (post.tags) {
-      if (Array.isArray(post.tags)) {
-        tags = post.tags;
-      } else if (typeof post.tags === 'string') {
-        try {
-          tags = JSON.parse(post.tags);
-        } catch {
-          const tagsString = post.tags as string;
-          tags = tagsString.split(',').map((tag: string) => tag.trim());
-        }
-      }
-    }
-
-    return {
-      title: (post.title_ar || post.title || 'أخبار مركبا').trim(),
-      description,
-      image: (post.featured_image || post.image) ? 
-        getImageUrl(post.featured_image || post.image) : defaultImage,
-      url: `${baseUrl}/post/${post.slug}`,
-      author: typeof post.author === 'string' ? post.author : 
-        (post.author?.username || 'أخبار مركبا'),
-      category: typeof post.category === 'string' ? post.category : 
-        (post.category?.name_ar || 'أخبار'),
-      tags,
-      published: post.created_at || new Date().toISOString(),
-      updated: post.updated_at || post.created_at || new Date().toISOString(),
-      siteName: 'موقع مــركبــا الاخباري',
-      locale: 'ar_AR'
-    };
+  // Use server-side generated meta data or fallback
+  const defaultMeta: MetaData = {
+    title: 'المنشور غير موجود | أخبار مركبا',
+    description: 'موقع أخبار مركبا - آخر الأخبار والمستجدات',
+    image: 'https://markaba.news/images/logo_new.png',
+    url: 'https://markaba.news',
+    author: 'أخبار مركبا',
+    category: 'أخبار',
+    tags: [],
+    published: new Date().toISOString(),
+    updated: new Date().toISOString(),
+    siteName: 'موقع مــركبــا الاخباري',
+    locale: 'ar_AR'
   };
 
-  const meta = generateMetaData(post);
+  const finalMeta = meta || defaultMeta;
+
+  // Handle tags properly for display
+  let tags: string[] = [];
+  if (post?.tags) {
+    if (Array.isArray(post.tags)) {
+      tags = post.tags;
+    } else if (typeof post.tags === 'string') {
+      try {
+        tags = JSON.parse(post.tags);
+      } catch {
+        const tagsString = post.tags as string;
+        tags = tagsString.split(',').map((tag: string) => tag.trim());
+      }
+    }
+  }
 
   // Handle route changes
   useEffect(() => {
@@ -130,18 +101,18 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) 
     return (
       <>
         <Head>
-          <title>{meta.title}</title>
-          <meta name="description" content={meta.description} />
-          <meta property="og:title" content={meta.title} />
-          <meta property="og:description" content={meta.description} />
+          <title>{finalMeta.title}</title>
+          <meta name="description" content={finalMeta.description} />
+          <meta property="og:title" content={finalMeta.title} />
+          <meta property="og:description" content={finalMeta.description} />
           <meta property="og:type" content="website" />
-          <meta property="og:url" content={meta.url} />
-          <meta property="og:site_name" content={meta.siteName} />
-          <meta property="og:image" content={meta.image} />
+          <meta property="og:url" content={finalMeta.url} />
+          <meta property="og:site_name" content={finalMeta.siteName} />
+          <meta property="og:image" content={finalMeta.image} />
           <meta name="twitter:card" content="summary" />
-          <meta name="twitter:title" content={meta.title} />
-          <meta name="twitter:description" content={meta.description} />
-          <meta name="twitter:image" content={meta.image} />
+          <meta name="twitter:title" content={finalMeta.title} />
+          <meta name="twitter:description" content={finalMeta.description} />
+          <meta name="twitter:image" content={finalMeta.image} />
         </Head>
         <Layout title="المنشور غير موجود" description="">
           <div className="min-h-screen flex items-center justify-center">
@@ -159,27 +130,27 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) 
     <>
       <Head>
         {/* Basic Meta Tags */}
-        <title>{meta.title}</title>
-        <meta name="description" content={meta.description} />
-        <meta name="keywords" content={meta.tags.join(', ')} />
-        <meta name="author" content={meta.author} />
-        <link rel="canonical" href={meta.url} />
+        <title>{finalMeta.title}</title>
+        <meta name="description" content={finalMeta.description} />
+        <meta name="keywords" content={finalMeta.tags.join(', ')} />
+        <meta name="author" content={finalMeta.author} />
+        <link rel="canonical" href={finalMeta.url} />
         
         {/* Open Graph Meta Tags <mcreference link="https://www.davegray.codes/posts/nextjs-open-graph-social-media-cards" index="3">3</mcreference> */}
-        <meta property="og:title" content={meta.title} />
-        <meta property="og:description" content={meta.description} />
+        <meta property="og:title" content={finalMeta.title} />
+        <meta property="og:description" content={finalMeta.description} />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content={meta.url} />
-        <meta property="og:site_name" content={meta.siteName} />
-        <meta property="og:locale" content={meta.locale} />
-        <meta property="og:image" content={meta.image} />
+        <meta property="og:url" content={finalMeta.url} />
+        <meta property="og:site_name" content={finalMeta.siteName} />
+        <meta property="og:locale" content={finalMeta.locale} />
+        <meta property="og:image" content={finalMeta.image} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="article:published_time" content={meta.published} />
-        <meta property="article:modified_time" content={meta.updated} />
-        <meta property="article:author" content={meta.author} />
-        <meta property="article:section" content={meta.category} />
-        {meta.tags.map((tag, index) => (
+        <meta property="article:published_time" content={finalMeta.published} />
+        <meta property="article:modified_time" content={finalMeta.updated} />
+        <meta property="article:author" content={finalMeta.author} />
+        <meta property="article:section" content={finalMeta.category} />
+        {finalMeta.tags.map((tag, index) => (
           <meta key={`og-tag-${index}`} property="article:tag" content={tag} />
         ))}
         
@@ -187,14 +158,49 @@ const SinglePostPage: React.FC<PostPageProps> = ({ post, relatedPosts, error }) 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@markaba_news" />
         <meta name="twitter:creator" content="@markaba_news" />
-        <meta name="twitter:title" content={meta.title} />
-        <meta name="twitter:description" content={meta.description} />
-        <meta name="twitter:image" content={meta.image} />
+        <meta name="twitter:title" content={finalMeta.title} />
+        <meta name="twitter:description" content={finalMeta.description} />
+        <meta name="twitter:image" content={finalMeta.image} />
         
         {/* Additional SEO Meta Tags */}
         <meta name="robots" content="index, follow" />
         <meta name="language" content="Arabic" />
         <meta httpEquiv="Content-Language" content="ar" />
+        
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "NewsArticle",
+              "headline": finalMeta.title,
+              "description": finalMeta.description,
+              "image": [finalMeta.image],
+              "datePublished": finalMeta.published,
+              "dateModified": finalMeta.updated,
+              "author": {
+                "@type": "Person",
+                "name": finalMeta.author
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": finalMeta.siteName,
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/logo_new.png`
+                }
+              },
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": finalMeta.url
+              },
+              "articleSection": finalMeta.category,
+              "keywords": finalMeta.tags.join(', '),
+              "inLanguage": "ar"
+            })
+          }}
+        />
       </Head>
       
       <PostContent post={post} relatedPosts={relatedPosts} />
@@ -653,10 +659,38 @@ export const getServerSideProps: GetServerSideProps<PostPageProps> = async (cont
       fullPost.tags = [];
     }
 
+    // Generate meta data for SSR
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
+    const defaultImage = `${baseUrl}/images/logo_new.png`;
+    
+    const metaTitle = (fullPost.title_ar || fullPost.title || 'أخبار مركبا').trim();
+    const metaDescription = (fullPost.excerpt_ar || fullPost.excerpt || 
+      (fullPost.content_ar || fullPost.content)?.replace(/<[^>]*>/g, '').substring(0, 160) || 
+      'موقع أخبار مركبا - آخر الأخبار والمستجدات'
+    ).trim();
+    const metaImage = (fullPost.featured_image || fullPost.image) ? 
+      `${baseUrl}/uploads/${fullPost.featured_image || fullPost.image}` : defaultImage;
+    const metaUrl = `${baseUrl}/post/${fullPost.slug}`;
+
     return {
       props: {
         post: fullPost,
         relatedPosts,
+        meta: {
+          title: metaTitle,
+          description: metaDescription,
+          image: metaImage,
+          url: metaUrl,
+          author: typeof fullPost.author === 'string' ? fullPost.author : 
+            (fullPost.author?.username || 'أخبار مركبا'),
+          category: typeof fullPost.category === 'string' ? fullPost.category : 
+            (fullPost.category?.name_ar || 'أخبار'),
+          tags: fullPost.tags || [],
+          published: fullPost.created_at || new Date().toISOString(),
+          updated: fullPost.updated_at || fullPost.created_at || new Date().toISOString(),
+          siteName: 'موقع مــركبــا الاخباري',
+          locale: 'ar_AR'
+        }
       },
     };
   } catch (error) {
