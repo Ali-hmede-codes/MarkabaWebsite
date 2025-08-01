@@ -47,11 +47,13 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   return (
     <div className={`min-h-screen flex flex-col ${className}`}>
-      <SimpleMeta 
-        title={title}
-        description={description}
-        keywords={keywords}
-      />
+      {(title || description || keywords) && (
+        <SimpleMeta 
+          title={title}
+          description={description}
+          keywords={keywords}
+        />
+      )}
       {showHeader && <Header />}
       <main className={`flex-grow ${containerClassName}`}>
         {children}

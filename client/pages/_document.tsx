@@ -7,10 +7,18 @@ import Document, {
   DocumentInitialProps, 
 } from 'next/document' 
 
-class MyDocument extends Document { 
+interface MyDocumentProps extends DocumentInitialProps {
+  metaData?: {
+    title?: string;
+    description?: string;
+    keywords?: string;
+  };
+}
+
+class MyDocument extends Document<MyDocumentProps> { 
   static async getInitialProps( 
     ctx: DocumentContext 
-  ): Promise<DocumentInitialProps> { 
+  ): Promise<MyDocumentProps> { 
     const originalRenderPage = ctx.renderPage 
 
     // Run the React rendering logic synchronously 
@@ -25,16 +33,30 @@ class MyDocument extends Document {
     // Run the parent `getInitialProps`, it now includes the custom `renderPage` 
     const initialProps = await Document.getInitialProps(ctx) 
 
-    return initialProps 
+    // Get meta data from page props if available
+    const metaData = ctx.pathname === '/' ? {
+      title: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+      description: 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+      keywords: 'أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط'
+    } : undefined;
+
+    return { ...initialProps, metaData } 
   }
 
   render() {
+    const { metaData } = this.props;
+    
     return (
       <Html lang="ar" dir="rtl">
         <Head>
           {/* Essential charset - MUST be first */}
           <meta charSet="UTF-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+          
+          {/* Dynamic meta tags from page props */}
+          {metaData?.title && <title>{metaData.title}</title>}
+          {metaData?.description && <meta name="description" content={metaData.description} />}
+          {metaData?.keywords && <meta name="keywords" content={metaData.keywords} />}
           
           {/* Preconnect to external domains for performance */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />

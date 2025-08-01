@@ -124,12 +124,6 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
     <>
       <Layout 
         pageType="home"
-        title={content?.site?.name || "مـركـبـا - الـمـنـصـة الاخـبـاريـة"}
-        description={
-          content?.site?.description ||
-          "ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة"
-        }
-        keywords="أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط"
       >
         <div className="bg-white min-h-screen" dir="rtl">
           {/* Breaking News Banner */}
