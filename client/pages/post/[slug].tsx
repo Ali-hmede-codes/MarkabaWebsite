@@ -4,7 +4,7 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 // import SimpleMeta from '../../components/Meta/SimpleMeta'; // Removed - using _document.tsx for meta tags
 import { Post, BreakingNews } from '../../components/API/types';
-import { FiCopy, FiShare2 } from 'react-icons/fi';
+import { FiCopy, FiShare2, FiFileText, FiAlertTriangle } from 'react-icons/fi';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
@@ -165,6 +165,27 @@ const PostContent: React.FC<{
     });
   };
 
+  const formatRelativeTime = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) {
+      return 'منذ لحظات';
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `منذ ${minutes} ${minutes === 1 ? 'دقيقة' : 'دقائق'}`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `منذ ${hours} ${hours === 1 ? 'ساعة' : 'ساعات'}`;
+    } else if (diffInSeconds < 2592000) {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `منذ ${days} ${days === 1 ? 'يوم' : 'أيام'}`;
+    } else {
+      return formatDate(dateString);
+    }
+  };
+
   const handleNavigation = (href: string) => {
     router.push(href);
   };
@@ -307,8 +328,9 @@ const PostContent: React.FC<{
           <aside className="lg:col-span-1 space-y-6">
             {/* Latest Posts Section */}
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
-                آخر الأخبار
+              <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
+                <FiFileText className="text-green-600" size={20} />
+                آخر المقالات
               </h3>
               <div className="space-y-4">
                 {latestPosts.map((latestPost) => (
@@ -328,8 +350,8 @@ const PostContent: React.FC<{
                         <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
                           {latestPost.title_ar || latestPost.title}
                         </h4>
-                        <p className="text-xs text-gray-500">
-                          {formatDate(latestPost.created_at)}
+                        <p className="text-xs text-green-600 font-medium">
+                          {formatRelativeTime(latestPost.created_at)}
                         </p>
                       </div>
                     </div>
@@ -340,18 +362,19 @@ const PostContent: React.FC<{
 
             {/* Breaking News Section */}
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
+              <h3 className="text-lg font-bold text-red-600 mb-4 border-b border-red-100 pb-2 flex items-center gap-2">
+                <FiAlertTriangle className="text-red-600" size={20} />
                 أخبار عاجلة
               </h3>
               <div className="space-y-4">
                 {breakingNews.map((newsPost) => (
-                  <div key={newsPost.id} className="flex gap-3 p-3 rounded-lg">
+                  <div key={newsPost.id} className="flex gap-3 p-3 rounded-lg border-l-4 border-red-500 bg-red-50">
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium text-gray-900 mb-1">
+                      <h4 className="text-sm font-medium text-red-700 mb-1">
                         {newsPost.title_ar || newsPost.title}
                       </h4>
-                      <p className="text-xs text-gray-500">
-                        {formatDate(newsPost.created_at)}
+                      <p className="text-xs text-red-600 font-medium">
+                        {formatRelativeTime(newsPost.created_at)}
                       </p>
                     </div>
                   </div>
