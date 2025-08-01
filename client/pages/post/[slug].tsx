@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 // import SimpleMeta from '../../components/Meta/SimpleMeta'; // Removed - using _document.tsx for meta tags
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
@@ -60,9 +61,13 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
   }
 
   const postTitle = post.title_ar || post.title || 'مركبا - أخبار لبنان';
+  const pageTitle = `${postTitle} - أخبار - مـركـبـا`;
 
   return (
     <>
+      <Head>
+        <title>{pageTitle}</title>
+      </Head>
       <PostLayout post={post}>
         <PostContent post={post} latestPosts={latestPosts} breakingNews={breakingNews} />
       </PostLayout>

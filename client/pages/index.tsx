@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { NextPage, NextPageContext } from "next";
+import Head from "next/head";
 import Layout from "../components/Layout/Layout";
 import SimpleMeta from "../components/Meta/SimpleMeta";
 import { useContent } from "../hooks/useContent";

@@ -13,6 +13,7 @@ interface MyDocumentProps extends DocumentInitialProps {
     description?: string;
     keywords?: string;
     image?: string;
+    url?: string;
   };
 }
 
@@ -35,7 +36,7 @@ class MyDocument extends Document<MyDocumentProps> {
     const initialProps = await Document.getInitialProps(ctx) 
 
     // Get meta data from page props if available
-    let metaData: { title?: string; description?: string; keywords?: string; image?: string } | undefined;
+    let metaData: { title?: string; description?: string; keywords?: string; image?: string; url?: string } | undefined;
     
     if (ctx.pathname === '/') {
       metaData = {
@@ -67,11 +68,24 @@ class MyDocument extends Document<MyDocumentProps> {
              const postDescription = post.excerpt_ar || post.excerpt || post.meta_description_ar || post.meta_description;
              const postImage = post.featured_image;
              
+             // Ensure image URL is absolute for social media sharing
+             let fullImageUrl = postImage;
+             if (postImage && !postImage.startsWith('http')) {
+               const imageBaseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
+               fullImageUrl = postImage.startsWith('/') ? `${imageBaseUrl}${postImage}` : `${imageBaseUrl}/${postImage}`;
+             }
+             
+             // Construct the full URL for the post
+             const protocol = ctx.req?.headers['x-forwarded-proto'] || (isDevelopment ? 'http' : 'https');
+             const host = ctx.req?.headers.host || (isDevelopment ? 'localhost:3000' : 'markaba.news');
+             const fullUrl = `${protocol}://${host}/post/${slug}`;
+             
              metaData = {
-               title: `${postTitle} - أخبار - مـركـبـا`,
+               title: `${postTitle} - أخبار`,
                description: postDescription || `اقرأ المزيد عن ${postTitle} في مـركـبـا - الـمـنـصـة الاخـبـاريـة`,
                keywords: post.meta_keywords_ar || post.meta_keywords || 'أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط',
-               image: postImage
+               image: fullImageUrl,
+               url: fullUrl
              };
            }
          }
@@ -94,7 +108,6 @@ class MyDocument extends Document<MyDocumentProps> {
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
           
           {/* Dynamic meta tags from page props */}
-          {metaData?.title && <title>{metaData.title}</title>}
           {metaData?.description && <meta name="description" content={metaData.description} />}
           {metaData?.keywords && <meta name="keywords" content={metaData.keywords} />}
           
@@ -102,7 +115,19 @@ class MyDocument extends Document<MyDocumentProps> {
           {metaData?.title && <meta property="og:title" content={metaData.title} />}
           {metaData?.description && <meta property="og:description" content={metaData.description} />}
           {metaData?.image && <meta property="og:image" content={metaData.image} />}
+          {metaData?.image && <meta property="og:image:width" content="1200" />}
+          {metaData?.image && <meta property="og:image:height" content="630" />}
+          {metaData?.url && <meta property="og:url" content={metaData.url} />}
           {metaData && <meta property="og:type" content="article" />}
+          <meta property="og:site_name" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+          <meta property="og:locale" content="ar_AR" />
+          
+          {/* Twitter Card meta tags */}
+          <meta name="twitter:card" content="summary_large_image" />
+          {metaData?.title && <meta name="twitter:title" content={metaData.title} />}
+          {metaData?.description && <meta name="twitter:description" content={metaData.description} />}
+          {metaData?.image && <meta name="twitter:image" content={metaData.image} />}
+          <meta name="twitter:site" content="@markaba_news" />
           
           {/* Preconnect to external domains for performance */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
