@@ -181,7 +181,7 @@ const SearchPage: React.FC = () => {
               {loading ? (
                 <div className="text-center py-12">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                  <p className="mt-4 text-gray-600 dark:text-gray-300">جاري البحث...</p>
+                  <p className="mt-4 text-black dark:text-gray-300">جاري البحث...</p>
                 </div>
               ) : error ? (
                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
@@ -194,7 +194,7 @@ const SearchPage: React.FC = () => {
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                       نتائج البحث عن "{searchResults.query}"
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-300">
+                    <p className="text-black dark:text-gray-300">
                       تم العثور على {totalResults} نتيجة
                     </p>
                   </div>
@@ -249,11 +249,11 @@ const SearchPage: React.FC = () => {
                                     </Link>
                                   </h4>
                                   {(news.excerpt_ar || news.excerpt) && (
-                                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+                                    <p className="text-black dark:text-gray-300 text-sm mb-3 line-clamp-2">
                                       {news.excerpt_ar || news.excerpt}
                                     </p>
                                   )}
-                                  <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                  <div className="flex items-center text-xs text-black dark:text-gray-400">
                                     <FiClock className="ml-1" />
                                     <span>{getRelativeTime(news.created_at)}</span>
                                   </div>
@@ -310,10 +310,10 @@ const SearchPage: React.FC = () => {
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                         لم يتم العثور على نتائج
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-300 mb-6">
+                      <p className="text-black dark:text-gray-300 mb-6">
                         لم نتمكن من العثور على أي نتائج تطابق بحثك عن "{searchResults.query}"
                       </p>
-                      <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="space-y-2 text-sm text-black dark:text-gray-400">
                         <p>• تأكد من صحة الكلمات المكتوبة</p>
                         <p>• جرب كلمات مختلفة أو أكثر عمومية</p>
                         <p>• تأكد من عدم وجود أخطاء إملائية</p>
@@ -329,27 +329,27 @@ const SearchPage: React.FC = () => {
           {!searchQuery && (
             <div className="text-center py-16">
               <FiSearch className="mx-auto text-6xl text-gray-300 dark:text-gray-600 mb-6" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl font-bold text-black dark:text-white mb-4">
                 ابحث في موقع مركبا
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+              <p className="text-black dark:text-gray-300 mb-8 max-w-2xl mx-auto">
                 ابحث في آلاف المقالات والأخبار للعثور على المحتوى الذي تبحث عنه
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
                   <FiCalendar className="text-3xl text-primary-600 dark:text-primary-400 mb-4 mx-auto" />
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">المقالات</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">ابحث في مقالات الموقع والتحليلات</p>
+                  <h3 className="font-semibold text-black dark:text-white mb-2">المقالات</h3>
+                  <p className="text-black dark:text-gray-300 text-sm">ابحث في مقالات الموقع والتحليلات</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
                   <FiClock className="text-3xl text-green-600 dark:text-green-400 mb-4 mx-auto" />
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">آخر الأخبار</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">ابحث في الأخبار العاجلة والحديثة</p>
+                  <h3 className="font-semibold text-black dark:text-white mb-2">آخر الأخبار</h3>
+                  <p className="text-black dark:text-gray-300 text-sm">ابحث في الأخبار العاجلة والحديثة</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
                   <FiFilter className="text-3xl text-blue-600 dark:text-blue-400 mb-4 mx-auto" />
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">بحث متقدم</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">استخدم الفلاتر للبحث المتخصص</p>
+                  <h3 className="font-semibold text-black dark:text-white mb-2">بحث متقدم</h3>
+                  <p className="text-black dark:text-gray-300 text-sm">استخدم الفلاتر للبحث المتخصص</p>
                 </div>
               </div>
             </div>
