@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { GetServerSideProps } from 'next';
 import Layout from '../components/Layout/Layout';
+import SimpleMeta from '../components/Meta/SimpleMeta';
 import { useContent } from '../hooks/useContent';
 import { Post, Category } from '../components/API/types';
 import { 
@@ -108,17 +109,13 @@ const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
   if (!content) return null;
 
   return (
-    <Layout
-        pageType="home"
-        seo={{
-          title: content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
-          description: content?.site?.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة',
-          image: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/images/og-default.svg`,
-          url: process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news',
-          type: 'website',
-          keywords: ['أخبار', 'أخبار عاجلة', 'تحديثات', 'صحافة', 'أحداث جارية', 'لبنان', 'الشرق الأوسط']
-        }}
-      >
+    <>
+      <SimpleMeta 
+        title={content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'}
+        description={content?.site?.description || 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة'}
+        keywords="أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط"
+      />
+      <Layout pageType="home">
       <div className="bg-white min-h-screen" dir="rtl">
         {/* Breaking News Banner */}
         <BreakingNewsBanner />
@@ -354,7 +351,8 @@ const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
           </section>
         </div>
       </div>
-    </Layout>
+      </Layout>
+    </>
   );
 };
 

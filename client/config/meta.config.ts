@@ -4,7 +4,8 @@ export const siteConfig = {
   description: '  مـركـبـا - الـمـنـصـة الاخـبـاريـة - آخر الأخبار والمقالات',
   url: 'https://markaba.news',
   locale: 'ar',
-  author: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'
+  author: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+  logo: '/images/logo_new.png'
 };
 
 export const defaultMeta = {

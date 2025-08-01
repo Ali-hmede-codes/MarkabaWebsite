@@ -8,6 +8,7 @@ interface SimpleMetaProps {
   author?: string;
   robots?: string;
   canonical?: string;
+  image?: string;
 }
 
 const SimpleMeta: React.FC<SimpleMetaProps> = ({
@@ -16,7 +17,8 @@ const SimpleMeta: React.FC<SimpleMetaProps> = ({
   keywords,
   author,
   robots,
-  canonical
+  canonical,
+  image
 }) => {
   const pageTitle = title ? `${title} - ${siteConfig.name}` : defaultMeta.title;
   const pageDescription = description || defaultMeta.description;
@@ -24,6 +26,7 @@ const SimpleMeta: React.FC<SimpleMetaProps> = ({
   const pageAuthor = author || defaultMeta.author;
   const pageRobots = robots || defaultMeta.robots;
   const currentUrl = canonical || siteConfig.url;
+  const pageImage = image || siteConfig.logo;
 
   return (
     <Head>
@@ -43,11 +46,13 @@ const SimpleMeta: React.FC<SimpleMetaProps> = ({
       <meta property="og:type" content="website" />
       <meta property="og:locale" content={siteConfig.locale} />
       <meta property="og:site_name" content={siteConfig.name} />
+      {pageImage && <meta property="og:image" content={pageImage} />}
       
       {/* Twitter Card */}
-      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={pageDescription} />
+      {pageImage && <meta name="twitter:image" content={pageImage} />}
     </Head>
   );
 };
