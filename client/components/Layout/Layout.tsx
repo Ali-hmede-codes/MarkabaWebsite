@@ -18,6 +18,7 @@ interface SEOData {
   modifiedTime?: string;
   author?: string;
   section?: string;
+  structuredData?: any;
 }
 
 interface LayoutProps {
@@ -137,7 +138,7 @@ const Layout: React.FC<LayoutProps> = ({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
+            __html: JSON.stringify(seo?.structuredData || structuredData),
           }}
         />
       </Head>

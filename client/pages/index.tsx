@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import Layout from '../components/Layout/Layout';
 import { useContent } from '../hooks/useContent';
@@ -109,22 +108,7 @@ const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
   if (!content) return null;
 
   return (
-    <>
-      <Head>
-        <meta name="description" content="ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta name="keywords" content="أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط, مركبا" />
-        <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'} />
-        
-        {/* Page-specific meta tags - Open Graph and Twitter handled by Layout component */}
-        
-        {/* Article Tags */}
-        <meta property="article:publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta property="article:author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-      </Head>
-      
-
-      
-      <Layout
+    <Layout
         pageType="home"
         seo={{
           title: content?.site?.name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
@@ -371,7 +355,6 @@ const HomePage: React.FC<HomePageProps> = ({ posts, categories, error }) => {
         </div>
       </div>
     </Layout>
-    </>
   );
 };
 

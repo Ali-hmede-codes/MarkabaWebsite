@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
@@ -41,25 +40,21 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
 
   if (error || !post) {
     return (
-      <>
-        <Head>
-          <title>المنشور غير موجود - مركبا</title>
-          <meta name="description" content="المنشور المطلوب غير موجود أو تم حذفه" />
-          <meta name="robots" content="noindex, nofollow" />
-        </Head>
-        <PostLayout title="المنشور غير موجود" description="">
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="text-center py-10">
-              <div className="text-red-500 mb-4">{error || 'المنشور غير موجود'}</div>
-              <Link href="/">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                  العودة للرئيسية
-                </button>
-              </Link>
-            </div>
+      <PostLayout 
+        title="المنشور غير موجود - مركبا" 
+        description="المنشور المطلوب غير موجود أو تم حذفه"
+      >
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center py-10">
+            <div className="text-red-500 mb-4">{error || 'المنشور غير موجود'}</div>
+            <Link href="/">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                العودة للرئيسية
+              </button>
+            </Link>
           </div>
-        </PostLayout>
-      </>
+        </div>
+      </PostLayout>
     );
   }
 

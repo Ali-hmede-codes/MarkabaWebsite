@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -136,34 +135,20 @@ const AboutPage: React.FC = () => {
   };
 
   return (
-    <Layout pageType="about">
-      <Head>
-        <title>
-          {theme.language === 'ar' ? 'عن الموقع - موقع الأخبار' : 'About Us - News Website'}
-        </title>
-        <meta 
-          name="description" 
-          content={theme.language === 'ar' 
-            ? 'تعرف على موقع الأخبار، مهمتنا في تقديم أحدث الأخبار الموثوقة، قيمنا، وفريق العمل المتخصص'
-            : 'Learn about News Website, our mission to deliver the latest reliable news, our values, and our specialized team'
-          } 
-        />
-        <meta 
-          name="keywords" 
-          content={theme.language === 'ar' 
-            ? 'عن الموقع، مهمتنا، قيمنا، فريق العمل، موقع الأخبار'
-            : 'about us, our mission, our values, our team, news website'
-          } 
-        />
-        
-        {/* Open Graph and Twitter meta tags handled by Layout component */}
-        
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
-      </Head>
+    <Layout 
+      pageType="about"
+      seo={{
+        title: theme.language === 'ar' ? 'عن الموقع - موقع الأخبار' : 'About Us - News Website',
+        description: theme.language === 'ar' 
+          ? 'تعرف على موقع الأخبار، مهمتنا في تقديم أحدث الأخبار الموثوقة، قيمنا، وفريق العمل المتخصص'
+          : 'Learn about News Website, our mission to deliver the latest reliable news, our values, and our specialized team',
+        keywords: theme.language === 'ar' 
+          ? ['عن الموقع', 'مهمتنا', 'قيمنا', 'فريق العمل', 'موقع الأخبار']
+          : ['about us', 'our mission', 'our values', 'our team', 'news website'],
+        type: 'website',
+        structuredData: structuredData
+      }}
+    >
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
