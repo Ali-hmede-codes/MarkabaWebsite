@@ -74,9 +74,7 @@ class MyDocument extends Document {
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="default" />
           
-          {/* Global Twitter Tags - Only site-wide settings */}
-          <meta name="twitter:site" content="@markaba_news" />
-          <meta name="twitter:creator" content="@markaba_news" />
+          {/* Global Twitter Tags removed - handled by SimpleMeta component */}
         </Head>
         <body className="antialiased">
         {/* No-script fallback */}
