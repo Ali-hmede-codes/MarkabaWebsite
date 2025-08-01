@@ -10,6 +10,7 @@
     "@typescript-eslint/no-explicit-any": "off",
     "prefer-const": "warn",
     "no-console": "off",
-    "import/no-anonymous-default-export": "off"
+    "import/no-anonymous-default-export": "off",
+    "react-hooks/exhaustive-deps": "off"
   }
 }
