@@ -6,6 +6,7 @@ import Footer from './Footer';
 import { useMeta } from '../../hooks/useMeta';
 import metaConfig from '../../config/meta.config';
 import { renderCommonMetaTags, toasterConfig } from '../../utils/layoutUtils';
+import MetaHead from '../SEO/MetaHead';
 
 interface SEOData {
   title?: string;
@@ -111,68 +112,26 @@ const Layout: React.FC<LayoutProps> = ({
 
   return (
     <>
-      <Head>
-        {/* Basic Meta Tags */}
-        {renderBasicMetaTags()}
-        
-        {/* Open Graph Meta Tags */}
-        {renderOpenGraphTags()}
-        
-        {/* Twitter Card Meta Tags */}
-        {renderTwitterCardTags()}
-        
-        {/* Additional Social Media Tags */}
-        {commonMetaTags.renderAdditionalSocialTags()}
-        
-        {/* Theme and App Meta Tags */}
-        {commonMetaTags.renderThemeTags()}
-        
-        {/* SEO and Verification Tags */}
-        {commonMetaTags.renderSEOTags()}
-        
-        {/* RSS Feed */}
-        <link 
-          rel="alternate" 
-          type="application/rss+xml" 
-          title={`${metaConfig.site.name} RSS Feed`}
-          href="/api/rss" 
-        />
-        
-        {/* Website Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "@id": `${metaConfig.site.url}/#website`,
-              "url": metaConfig.site.url,
-              "name": metaConfig.site.name,
-              "description": metaConfig.site.description,
-              "inLanguage": metaConfig.site.language,
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": {
-                  "@type": "EntryPoint",
-                  "urlTemplate": `${metaConfig.site.url}/search?q={search_term_string}`
-                },
-                "query-input": "required name=search_term_string"
-              }
-            }),
-          }}
-        />
-        
-        {/* Analytics */}
-        {commonMetaTags.renderAnalytics()}
-        
-        {/* JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(seo?.structuredData || structuredData),
-          }}
-        />
-      </Head>
+      <MetaHead
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        image={seoData.image}
+        url={seoData.url}
+        type={seoData.type as 'website' | 'article'}
+        locale={metaConfig.site.language}
+        siteName={metaConfig.site.name}
+        twitterCard={twitterCard.card as 'summary' | 'summary_large_image'}
+        twitterSite={metaConfig.social.twitter.handle}
+        author={seoData.author}
+        publishedTime={seoData.publishedTime}
+        modifiedTime={seoData.modifiedTime}
+        section={seoData.section}
+        tags={seoData.keywords}
+        noIndex={robots.includes('noindex')}
+        canonical={seoData.url}
+        structuredData={seo?.structuredData || structuredData}
+      />
 
       <div className={`min-h-screen flex flex-col bg-gray-50 ${className}`} dir="rtl">
         {/* Header */}

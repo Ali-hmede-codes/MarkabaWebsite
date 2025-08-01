@@ -3,9 +3,10 @@ import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
 import Header from './Header';
 import Footer from './Footer';
+import { useMeta } from '../../hooks/useMeta';
 import metaConfig from '../../config/meta.config';
-import { getImageUrl } from '../../utils/imageUtils';
 import { renderCommonMetaTags, toasterConfig } from '../../utils/layoutUtils';
+import MetaHead from '../SEO/MetaHead';
 
 interface User {
   id: number;
@@ -84,8 +85,8 @@ const PostLayout: React.FC<PostLayoutProps> = ({
   };
   
   const postImage = (post?.featured_image 
-    ? getAbsoluteImageUrl(getImageUrl(post.featured_image))
-    : getAbsoluteImageUrl('/images/og-default.svg')) || metaConfig.defaults.image;
+    ? getAbsoluteImageUrl(post.featured_image)
+    : getAbsoluteImageUrl('/images/og-default.svg')) || metaConfig.defaults?.image || `${metaConfig.site.url}/images/og-default.svg`;
   const postUrl = (post?.slug ? `${metaConfig.site.url}/post/${post.slug}` : metaConfig.site.url) || metaConfig.site.url;
   const postTags = post && post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(tag => tag.trim()) : [];
 
@@ -278,66 +279,25 @@ const PostLayout: React.FC<PostLayoutProps> = ({
 
   return (
     <>
-      <Head>
-        {/* Post Meta Tags */}
-        {renderPostMetaTags()}
-        
-        {/* Open Graph Meta Tags */}
-        {renderOpenGraphTags()}
-        
-        {/* Twitter Card Meta Tags */}
-        {renderTwitterCardTags()}
-        
-        {/* Additional Social Media Tags */}
-        {commonMetaTags.renderAdditionalSocialTags()}
-        
-        {/* Theme and App Meta Tags */}
-        {commonMetaTags.renderThemeTags()}
-        
-        {/* SEO and Verification Tags */}
-        {commonMetaTags.renderSEOTags()}
-        
-        {/* RSS Feed */}
-        <link 
-          rel="alternate" 
-          type="application/rss+xml" 
-          title={`${metaConfig.site.name} RSS Feed`}
-          href="/api/rss" 
-        />
-        
-        {/* Analytics */}
-        {commonMetaTags.renderAnalytics()}
-        
-        {/* Homepage Reference Meta Tags */}
-        <meta name="referrer" content="origin-when-cross-origin" />
-        <meta property="og:locale" content="ar_LB" />
-        <meta property="og:locale:alternate" content="en_US" />
-        <meta name="news_keywords" content={postKeywords} />
-        
-        {/* JSON-LD Structured Data for Article */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateStructuredData()),
-          }}
-        />
-        
-        {/* JSON-LD Breadcrumb Navigation */}
-         <script
-           type="application/ld+json"
-           dangerouslySetInnerHTML={{
-             __html: JSON.stringify(generateBreadcrumbData()),
-           }}
-         />
-         
-         {/* JSON-LD WebSite Data */}
-         <script
-           type="application/ld+json"
-           dangerouslySetInnerHTML={{
-             __html: JSON.stringify(generateWebSiteData()),
-           }}
-         />
-      </Head>
+      <MetaHead
+        title={post?.title_ar || post?.title || title || metaConfig.site.name}
+        description={post?.meta_description_ar || post?.meta_description || post?.excerpt_ar || post?.excerpt || description || metaConfig.site.description}
+        keywords={post ? (post.meta_keywords_ar || post.meta_keywords || '').split(',').map(k => k.trim()).filter(Boolean) : []}
+        image={post?.featured_image ? getAbsoluteImageUrl(post.featured_image) : undefined}
+        url={post?.slug ? `${metaConfig.site.url}/post/${post.slug}` : undefined}
+        type="article"
+        locale="ar_LB"
+        siteName={metaConfig.site.name}
+        twitterCard="summary_large_image"
+        twitterSite={metaConfig.social.twitter?.handle}
+        author={post?.author?.username || metaConfig.site.nameEn}
+        publishedTime={post?.created_at}
+        modifiedTime={post?.updated_at}
+        section={post?.category?.name_ar}
+        tags={post ? (post.meta_keywords_ar || post.meta_keywords || '').split(',').map(k => k.trim()).filter(Boolean) : []}
+        noIndex={false}
+        canonical={post?.slug ? `${metaConfig.site.url}/post/${post.slug}` : undefined}
+      />
 
       <div className={`min-h-screen flex flex-col bg-gray-50 ${className}`} dir="rtl">
         {/* Header */}
