@@ -138,6 +138,10 @@ const PostLayout: React.FC<PostLayoutProps> = ({
         <meta key={index} property="article:tag" content={tag} />
       ))}
       
+      {/* Website Reference */}
+      <meta property="og:site_name" content={metaConfig.site.name} />
+      <meta property="article:publisher" content={metaConfig.site.url} />
+      
       {/* Facebook App ID */}
       {metaConfig.social.facebook.appId && (
         <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
@@ -187,10 +191,45 @@ const PostLayout: React.FC<PostLayoutProps> = ({
       "url": postUrl,
       "articleSection": post?.category?.name_ar || "News",
       "keywords": postTags,
-      "inLanguage": "ar"
+      "inLanguage": "ar",
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": metaConfig.site.url,
+        "url": metaConfig.site.url,
+        "name": metaConfig.site.name
+      }
     };
 
     return structuredData;
+  };
+
+  // Generate breadcrumb structured data linking to homepage
+  const generateBreadcrumbData = () => {
+    const breadcrumbData = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "الرئيسية",
+          "item": metaConfig.site.url
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": post?.category?.name_ar || "الأخبار",
+          "item": post?.category ? `${metaConfig.site.url}/category/${post.category.slug}` : `${metaConfig.site.url}/category/news`
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": postTitle,
+          "item": postUrl
+        }
+      ]
+    };
+    return breadcrumbData;
   };
 
   return (
@@ -225,11 +264,23 @@ const PostLayout: React.FC<PostLayoutProps> = ({
         {/* Analytics */}
         {commonMetaTags.renderAnalytics()}
         
-        {/* JSON-LD Structured Data */}
+        {/* Homepage Reference Meta Tags */}
+        <link rel="home" href={metaConfig.site.url} />
+        <meta name="referrer" content="origin-when-cross-origin" />
+        
+        {/* JSON-LD Structured Data for Article */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(generateStructuredData()),
+          }}
+        />
+        
+        {/* JSON-LD Breadcrumb Navigation */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateBreadcrumbData()),
           }}
         />
       </Head>
