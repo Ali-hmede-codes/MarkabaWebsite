@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
-import SimpleMeta from '../../components/Meta/SimpleMeta';
+// import SimpleMeta from '../../components/Meta/SimpleMeta'; // Removed - using _document.tsx for meta tags
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
@@ -63,12 +63,6 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
 
   return (
     <>
-      <SimpleMeta 
-        title={post.title}
-        description={post.excerpt || post.content?.substring(0, 160)}
-        keywords={Array.isArray(post.tags) ? post.tags.join(', ') : post.tags || 'أخبار, مقالات'}
-      />
-      
       <PostLayout post={post}>
         <PostContent post={post} latestPosts={latestPosts} breakingNews={breakingNews} />
       </PostLayout>

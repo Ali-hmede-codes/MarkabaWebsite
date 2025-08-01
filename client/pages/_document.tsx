@@ -12,6 +12,7 @@ interface MyDocumentProps extends DocumentInitialProps {
     title?: string;
     description?: string;
     keywords?: string;
+    image?: string;
   };
 }
 
@@ -34,11 +35,50 @@ class MyDocument extends Document<MyDocumentProps> {
     const initialProps = await Document.getInitialProps(ctx) 
 
     // Get meta data from page props if available
-    const metaData = ctx.pathname === '/' ? {
-      title: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
-      description: 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة',
-      keywords: 'أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط'
-    } : undefined;
+    let metaData: { title?: string; description?: string; keywords?: string; image?: string } | undefined;
+    
+    if (ctx.pathname === '/') {
+      metaData = {
+        title: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+        description: 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+        keywords: 'أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط'
+      };
+    } else if (ctx.pathname === '/post/[slug]' && ctx.query?.slug) {
+       // For post pages, fetch the post data to get meta information
+       try {
+         const slug = ctx.query.slug as string;
+         const isDevelopment = process.env.NODE_ENV === 'development';
+         const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
+         const apiVersion = isDevelopment ? '/api' : '/api/v2';
+         
+         const postResponse = await fetch(`${baseUrl}${apiVersion}/posts?slug=${slug}&limit=1&page=1`, {
+           headers: {
+             'Content-Type': 'application/json',
+             'User-Agent': 'NewsMarkaba-SSR/1.0'
+           }
+         });
+         
+         if (postResponse.ok) {
+           const postData = await postResponse.json();
+           const post = postData.success && postData.data?.posts?.length > 0 ? postData.data.posts[0] : null;
+           
+           if (post) {
+             const postTitle = post.title_ar || post.title;
+             const postDescription = post.excerpt_ar || post.excerpt || post.meta_description_ar || post.meta_description;
+             const postImage = post.featured_image;
+             
+             metaData = {
+               title: `${postTitle} - أخبار - مـركـبـا`,
+               description: postDescription || `اقرأ المزيد عن ${postTitle} في مـركـبـا - الـمـنـصـة الاخـبـاريـة`,
+               keywords: post.meta_keywords_ar || post.meta_keywords || 'أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط',
+               image: postImage
+             };
+           }
+         }
+       } catch (error) {
+         console.error('Error fetching post meta data:', error);
+       }
+     }
 
     return { ...initialProps, metaData } 
   }
@@ -57,6 +97,12 @@ class MyDocument extends Document<MyDocumentProps> {
           {metaData?.title && <title>{metaData.title}</title>}
           {metaData?.description && <meta name="description" content={metaData.description} />}
           {metaData?.keywords && <meta name="keywords" content={metaData.keywords} />}
+          
+          {/* Open Graph meta tags for posts */}
+          {metaData?.title && <meta property="og:title" content={metaData.title} />}
+          {metaData?.description && <meta property="og:description" content={metaData.description} />}
+          {metaData?.image && <meta property="og:image" content={metaData.image} />}
+          {metaData && <meta property="og:type" content="article" />}
           
           {/* Preconnect to external domains for performance */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
