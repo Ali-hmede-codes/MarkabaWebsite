@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FiHome, FiFileText, FiFolder, FiUsers, FiSettings, FiShare2, FiAlertTriangle, FiClock } from 'react-icons/fi';
+import { FiHome, FiFileText, FiFolder, FiUsers, FiSettings, FiShare2, FiAlertTriangle, FiClock, FiBarChart } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 
 interface AdminNavProps {
@@ -71,6 +71,13 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
       icon: FiShare2,
       active: router.pathname === '/admin/administratorpage/social-media',
       roles: ['admin']
+    },
+    {
+      href: '/admin/administratorpage/analytics',
+      label: 'تحليلات الموقع',
+      icon: FiBarChart,
+      active: router.pathname === '/admin/administratorpage/analytics',
+      roles: ['admin'] // Only admin can view analytics
     }
   ];
 

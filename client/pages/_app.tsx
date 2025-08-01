@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { SettingsProvider } from '@/context/SettingsContext';
+import { trackPageView } from '@/lib/firebase';
 import '@/styles/globals.css';
 import '@/styles/animations.css';
 
@@ -15,19 +16,23 @@ import '@heroicons/react/24/outline';
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
-  // Handle route changes for analytics or other tracking
+  // Handle route changes for analytics tracking
   useEffect(() => {
     const handleRouteChange = (url: string) => {
-      // Add analytics tracking here if needed
+      // Track page view with Firebase Analytics
+      trackPageView(url);
       console.log('Route changed to:', url);
     };
+
+    // Track initial page load
+    trackPageView(router.asPath);
 
     router.events.on('routeChangeComplete', handleRouteChange);
 
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
-  }, [router.events]);
+  }, [router.events, router.asPath]);
 
   // Handle loading states
   useEffect(() => {
