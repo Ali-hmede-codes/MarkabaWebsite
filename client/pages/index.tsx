@@ -105,6 +105,35 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
     }
   };
 
+  const getHijriDate = () => {
+    const now = new Date();
+    const hijriMonths = [
+      'محرم', 'صفر', 'ربيع الأول', 'ربيع الثاني', 'جمادى الأولى', 'جمادى الثانية',
+      'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
+    ];
+    
+    // Simple Hijri date calculation (approximate)
+    const hijriYear = Math.floor((now.getFullYear() - 622) * 1.030684) + 1;
+    const hijriMonth = hijriMonths[now.getMonth()];
+    const hijriDay = now.getDate();
+    
+    return `${hijriDay} ${hijriMonth} ${hijriYear}هـ`;
+  };
+
+  const getGregorianDate = () => {
+    const now = new Date();
+    const gregorianMonths = [
+      'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+    ];
+    
+    const day = now.getDate();
+    const month = gregorianMonths[now.getMonth()];
+    const year = now.getFullYear();
+    
+    return `${day} ${month} ${year}م`;
+  };
+
   const formatViews = (views: number) => {
     if (views >= 1000000) {
       return `${(views / 1000000).toFixed(1)}م`;
@@ -348,10 +377,15 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 {/* Prayer Times Box */}
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                   <div className="bg-gradient-to-r from-green-600 to-green-700 responsive-padding">
-                    <h3 className="info-box-title font-bold text-white responsive-flex">
-                      <FiSun className="ml-2 sm:ml-3" />
-                      مواقيت الصلاة
-                    </h3>
+                    <div className="flex justify-between items-center">
+                      <h3 className="info-box-title font-bold text-white responsive-flex">
+                        <FiSun className="ml-2 sm:ml-3" />
+                        مواقيت الصلاة
+                      </h3>
+                      <span className="text-green-200 font-medium text-sm">
+                        {getHijriDate()}
+                      </span>
+                    </div>
                   </div>
                   <div className="info-box">
                     <div className="space-y-4">
@@ -407,10 +441,15 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 {/* Weather Box */}
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                   <div className="bg-gradient-to-r from-blue-600 to-blue-700 responsive-padding">
-                    <h3 className="info-box-title font-bold text-white responsive-flex">
-                      <FiCloudRain className="ml-2 sm:ml-3" />
-                      حالة الطقس
-                    </h3>
+                    <div className="flex justify-between items-center">
+                      <h3 className="info-box-title font-bold text-white responsive-flex">
+                        <FiCloudRain className="ml-2 sm:ml-3" />
+                        حالة الطقس
+                      </h3>
+                      <span className="text-green-200 font-medium text-sm">
+                        {getGregorianDate()}
+                      </span>
+                    </div>
                   </div>
                   <div className="info-box">
                     <div className="text-center mb-6">
