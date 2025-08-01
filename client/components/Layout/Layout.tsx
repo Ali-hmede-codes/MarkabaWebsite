@@ -72,6 +72,8 @@ const Layout: React.FC<LayoutProps> = ({
       <meta name="googlebot" content={googleBot} />
       <meta name="bingbot" content="index, follow" />
       <meta name="referrer" content="origin-when-cross-origin" />
+      <meta name="language" content="Arabic" />
+      <meta httpEquiv="content-language" content="ar" />
       <link rel="canonical" href={seoData.url} />
       <link rel="home" href={metaConfig.site.url} />
     </>

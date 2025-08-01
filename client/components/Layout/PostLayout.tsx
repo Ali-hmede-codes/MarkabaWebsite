@@ -102,6 +102,8 @@ const PostLayout: React.FC<PostLayoutProps> = ({
       <meta name="robots" content="index, follow" />
       <meta name="googlebot" content="index, follow" />
       <meta name="bingbot" content="index, follow" />
+      <meta name="language" content="Arabic" />
+      <meta httpEquiv="content-language" content="ar" />
       <link rel="canonical" href={postUrl} />
       
       {/* Website Navigation Links */}
@@ -113,10 +115,7 @@ const PostLayout: React.FC<PostLayoutProps> = ({
       {post?.category && (
         <link rel="section" href={`${metaConfig.site.url}/category/${post.category.slug}`} title={post.category.name_ar} />
       )}
-      
-      {/* Language and Direction for this page */}
-      <meta name="language" content="Arabic" />
-      <meta httpEquiv="content-language" content="ar" />
+
     </>
   );
 
