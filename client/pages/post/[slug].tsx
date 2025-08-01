@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
-import Head from 'next/head';
+import SimpleMeta from '../../components/Meta/SimpleMeta';
 import { Post, BreakingNews } from '../../components/API/types';
 import { FiCopy, FiShare2 } from 'react-icons/fi';
 import Image from 'next/image';
@@ -10,27 +10,19 @@ import Layout from '../../components/Layout/Layout';
 import PostLayout from '../../components/Layout/PostLayout';
 import Link from 'next/link';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
-import { injectMetaForSSR, MetaInjectionData } from '../../utils/metaInjector';
-import metaConfig from '../../config/meta.config';
 
 interface SinglePostPageProps {
   post: Post | null;
   latestPosts: Post[];
   breakingNews: BreakingNews[];
   error?: string;
-  metaTags?: string;
-  structuredData?: string;
-  pageTitle?: string;
 }
 
 const SinglePostPage: React.FC<SinglePostPageProps> = ({ 
   post, 
   latestPosts, 
   breakingNews, 
-  error,
-  metaTags,
-  structuredData,
-  pageTitle
+  error
 }) => {
   const router = useRouter();
 
@@ -67,30 +59,15 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
     );
   }
 
-  // Generate metadata for the post
-  const postTitle = post.title_ar || post.title;
-  const postDescription = post.excerpt_ar || post.excerpt || (post.content_ar || post.content)?.replace(/<[^>]*>/g, '').substring(0, 160);
-  const postImage = post.featured_image || post.image;
-  const postUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news'}/post/${post.slug}`;
-  const authorName = typeof post.author === 'string' ? post.author : post.author?.username || 'Markaba News';
-  const categoryName = typeof post.category === 'string' ? post.category : post.category?.name_ar || 'أخبار';
-  const keywords = post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(k => k.trim()).join(', ') : `${postTitle}, ${categoryName}, مركبا, أخبار`;
+  const postTitle = post.title_ar || post.title || 'مركبا - أخبار لبنان';
 
   return (
     <>
-      {/* Server-side injected meta tags for social sharing */}
-      <Head>
-        {pageTitle && <title>{pageTitle}</title>}
-        {metaTags && (
-          <div dangerouslySetInnerHTML={{ __html: metaTags }} />
-        )}
-        {structuredData && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: structuredData }}
-          />
-        )}
-      </Head>
+      <SimpleMeta 
+        title={post.title}
+        description={post.excerpt || post.content?.substring(0, 160)}
+        keywords={Array.isArray(post.tags) ? post.tags.join(', ') : post.tags || 'أخبار, مقالات'}
+      />
       
       <PostLayout post={post}>
         <PostContent post={post} latestPosts={latestPosts} breakingNews={breakingNews} />
@@ -442,26 +419,7 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
       }
     }
     
-    // Generate server-side meta tags for social sharing
-    const metaData: MetaInjectionData = {
-      title: post.title_ar || post.title || metaConfig.site.name,
-      description: post.meta_description_ar || post.meta_description || post.excerpt_ar || post.excerpt || metaConfig.site.description,
-      keywords: post.meta_keywords_ar || post.meta_keywords ? (post.meta_keywords_ar || post.meta_keywords).split(',').map((k: string) => k.trim()).filter(Boolean) : [],
-      image: post.featured_image ? `${metaConfig.site.url}${post.featured_image}` : undefined,
-      url: `${metaConfig.site.url}/post/${post.slug}`,
-      type: 'article',
-      locale: 'ar_LB',
-      siteName: metaConfig.site.name,
-      twitterCard: 'summary_large_image',
-      twitterSite: metaConfig.social.twitter?.handle,
-      author: post.author?.username || metaConfig.site.nameEn,
-      publishedTime: post.created_at,
-      modifiedTime: post.updated_at,
-      section: post.category?.name_ar,
-      tags: post.meta_keywords_ar || post.meta_keywords ? (post.meta_keywords_ar || post.meta_keywords).split(',').map((k: string) => k.trim()).filter(Boolean) : []
-    };
-    
-    const injectedMeta = injectMetaForSSR(metaData);
+
     
     console.log('SSR: Successfully fetched post data:', {
       postTitle: post.title_ar || post.title,
@@ -473,10 +431,7 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
       props: {
         post,
         latestPosts,
-        breakingNews,
-        metaTags: injectedMeta.htmlMeta,
-        structuredData: injectedMeta.structuredData,
-        pageTitle: injectedMeta.title
+        breakingNews
       }
     };
     

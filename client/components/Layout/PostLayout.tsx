@@ -1,12 +1,7 @@
 import React, { ReactNode } from 'react';
-import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
 import Header from './Header';
 import Footer from './Footer';
-import { useMeta } from '../../hooks/useMeta';
-import metaConfig from '../../config/meta.config';
-import { renderCommonMetaTags, toasterConfig } from '../../utils/layoutUtils';
-import MetaHead from '../SEO/MetaHead';
 
 interface User {
   id: number;
@@ -68,254 +63,22 @@ const PostLayout: React.FC<PostLayoutProps> = ({
   className = '',
   containerClassName = '',
 }) => {
-  // Get common meta tag renderers
-  const commonMetaTags = renderCommonMetaTags();
-
-  // Get post meta data
-  const postTitle = post?.title_ar || post?.title || title || metaConfig.site.name;
-  const postDescription = post?.meta_description_ar || post?.meta_description || post?.excerpt_ar || post?.excerpt || description || metaConfig.site.description;
-  const postKeywords = post ? (post.meta_keywords_ar || post.meta_keywords || '') : '';
-  const postAuthor = post ? (post.author ? post.author.username : metaConfig.site.nameEn) : metaConfig.site.nameEn;
-  // Generate absolute image URL for meta tags
-  const getAbsoluteImageUrl = (imagePath: string) => {
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return imagePath;
-    }
-    return imagePath.startsWith('/') ? `${metaConfig.site.url}${imagePath}` : `${metaConfig.site.url}/${imagePath}`;
-  };
-  
-  const postImage = (post?.featured_image 
-    ? getAbsoluteImageUrl(post.featured_image)
-    : getAbsoluteImageUrl('/images/og-default.svg')) || metaConfig.defaults?.image || `${metaConfig.site.url}/images/og-default.svg`;
-  const postUrl = (post?.slug ? `${metaConfig.site.url}/post/${post.slug}` : metaConfig.site.url) || metaConfig.site.url;
-  const postTags = post && post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(tag => tag.trim()) : [];
 
 
-
-  // Render post-specific meta tags (avoiding duplicates with _document.tsx)
-  const renderPostMetaTags = () => (
-    <>
-      {/* Page-specific Meta Tags */}
-      <title>{postTitle} - مركبا</title>
-      <meta name="description" content={postDescription} />
-      <meta name="keywords" content={postKeywords} />
-      <meta name="author" content={postAuthor} />
-      <meta name="robots" content="index, follow" />
-      <meta name="googlebot" content="index, follow" />
-      <meta name="bingbot" content="index, follow" />
-      <meta name="language" content="Arabic" />
-      <meta httpEquiv="content-language" content="ar" />
-      <link rel="canonical" href={postUrl} />
-      
-      {/* Website Navigation Links */}
-      <link rel="home" href={metaConfig.site.url} title="الصفحة الرئيسية - مركبا" />
-      <link rel="up" href={metaConfig.site.url} title="العودة للرئيسية" />
-      <link rel="index" href={metaConfig.site.url} title="فهرس الموقع" />
-      
-      {/* Category Link */}
-      {post?.category && (
-        <link rel="section" href={`${metaConfig.site.url}/category/${post.category.slug}`} title={post.category.name_ar} />
-      )}
-
-    </>
-  );
-
-  // Render Open Graph meta tags
-  const renderOpenGraphTags = () => (
-    <>
-      <meta property="og:type" content="article" />
-      <meta property="og:url" content={postUrl} />
-      <meta property="og:title" content={postTitle} />
-      <meta property="og:description" content={postDescription} />
-      
-      {/* Post Image - Critical for social sharing */}
-      <meta property="og:image" content={postImage} />
-      <meta property="og:image:secure_url" content={postImage.replace(/^http:/, 'https:')} />
-      <meta property="og:image:type" content={postImage.endsWith('.svg') ? 'image/svg+xml' : 'image/jpeg'} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content={postTitle} />
-      <meta property="og:logo" content={`${metaConfig.site.url}/images/logo_new.png`} />
-      
-      {/* Article specific tags */}
-      {post && <meta property="article:published_time" content={post.created_at} />}
-      {post && <meta property="article:modified_time" content={post.updated_at} />}
-      <meta property="article:author" content={postAuthor} />
-      {post && post.category && <meta property="article:section" content={post.category.name_ar || 'News'} />}
-      
-      {/* Article tags */}
-      {postTags.map((tag: string, index: number) => (
-        <meta key={index} property="article:tag" content={tag} />
-      ))}
-      
-      {/* Website Reference */}
-      <meta property="og:site_name" content={metaConfig.site.name} />
-      <meta property="article:publisher" content={metaConfig.site.url} />
-      
-      {/* Facebook App ID */}
-      {metaConfig.social.facebook.appId && (
-        <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
-      )}
-    </>
-  );
-
-  // Render Twitter Card meta tags (page-specific only)
-  const renderTwitterCardTags = () => (
-    <>
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={postTitle} />
-      <meta name="twitter:description" content={postDescription} />
-      <meta name="twitter:image" content={postImage} />
-      <meta name="twitter:image:alt" content={postTitle} />
-    </>
-  );
-
-
-
-  // Generate JSON-LD structured data for the post
-  const generateStructuredData = () => {
-    const structuredData = {
-      "@context": "https://schema.org",
-      "@type": "NewsArticle",
-      "headline": postTitle,
-      "description": postDescription,
-      "image": postImage ? [postImage] : [],
-      "datePublished": post?.created_at || new Date().toISOString(),
-      "dateModified": post?.updated_at || new Date().toISOString(),
-      "author": {
-        "@type": "Person",
-        "name": postAuthor
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": metaConfig.site.name,
-        "url": metaConfig.site.url,
-        "logo": {
-          "@type": "ImageObject",
-          "url": `${metaConfig.site.url}/images/logo.png`
-        },
-        "sameAs": [
-          metaConfig.site.url,
-          `${metaConfig.site.url}/about`,
-          `${metaConfig.site.url}/contact`
-        ]
-      },
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": postUrl,
-        "url": postUrl,
-        "isPartOf": {
-          "@type": "WebSite",
-          "@id": metaConfig.site.url + "/#website",
-          "url": metaConfig.site.url,
-          "name": metaConfig.site.name,
-          "description": metaConfig.site.description,
-          "inLanguage": "ar"
-        }
-      },
-      "url": postUrl,
-      "articleSection": post?.category?.name_ar || "News",
-      "keywords": postTags,
-      "inLanguage": "ar",
-      "about": {
-        "@type": "Thing",
-        "name": post?.category?.name_ar || "أخبار"
-      }
-    };
-
-    return structuredData;
-  };
-
-  // Generate breadcrumb structured data linking to homepage
-   const generateBreadcrumbData = () => {
-     const breadcrumbData = {
-       "@context": "https://schema.org",
-       "@type": "BreadcrumbList",
-       "itemListElement": [
-         {
-           "@type": "ListItem",
-           "position": 1,
-           "name": "الرئيسية",
-           "item": metaConfig.site.url
-         },
-         {
-           "@type": "ListItem",
-           "position": 2,
-           "name": post?.category?.name_ar || "الأخبار",
-           "item": post?.category ? `${metaConfig.site.url}/category/${post.category.slug}` : `${metaConfig.site.url}/category/news`
-         },
-         {
-           "@type": "ListItem",
-           "position": 3,
-           "name": postTitle,
-           "item": postUrl
-         }
-       ]
-     };
-     return breadcrumbData;
-   };
-
-   // Generate WebSite structured data for main site reference
-   const generateWebSiteData = () => {
-     const webSiteData = {
-       "@context": "https://schema.org",
-       "@type": "WebSite",
-       "@id": metaConfig.site.url + "/#website",
-       "url": metaConfig.site.url,
-       "name": metaConfig.site.name,
-       "description": metaConfig.site.description,
-       "inLanguage": "ar",
-       "potentialAction": {
-         "@type": "SearchAction",
-         "target": {
-           "@type": "EntryPoint",
-           "urlTemplate": `${metaConfig.site.url}/search?q={search_term_string}`
-         },
-         "query-input": "required name=search_term_string"
-       }
-     };
-     return webSiteData;
-   };
 
   return (
-    <>
-      <MetaHead
-        title={post?.title_ar || post?.title || title || metaConfig.site.name}
-        description={post?.meta_description_ar || post?.meta_description || post?.excerpt_ar || post?.excerpt || description || metaConfig.site.description}
-        keywords={post ? (post.meta_keywords_ar || post.meta_keywords || '').split(',').map(k => k.trim()).filter(Boolean) : []}
-        image={post?.featured_image ? getAbsoluteImageUrl(post.featured_image) : undefined}
-        url={post?.slug ? `${metaConfig.site.url}/post/${post.slug}` : undefined}
-        type="article"
-        locale="ar_LB"
-        siteName={metaConfig.site.name}
-        twitterCard="summary_large_image"
-        twitterSite={metaConfig.social.twitter?.handle}
-        author={post?.author?.username || metaConfig.site.nameEn}
-        publishedTime={post?.created_at}
-        modifiedTime={post?.updated_at}
-        section={post?.category?.name_ar}
-        tags={post ? (post.meta_keywords_ar || post.meta_keywords || '').split(',').map(k => k.trim()).filter(Boolean) : []}
-        noIndex={false}
-        canonical={post?.slug ? `${metaConfig.site.url}/post/${post.slug}` : undefined}
-      />
-
-      <div className={`min-h-screen flex flex-col bg-gray-50 ${className}`} dir="rtl">
-        {/* Header */}
-        <Header />
-
-        {/* Main Content */}
-        <main className={`flex-1 ${containerClassName}`}>
-          {children}
-        </main>
-
-        {/* Footer */}
-        <Footer />
-
-        {/* Toast Notifications */}
-        <Toaster {...toasterConfig} />
-      </div>
-    </>
+    <div className={`min-h-screen flex flex-col ${className}`}>
+      <Header />
+      <main className={`flex-grow ${containerClassName}`}>
+        {children}
+      </main>
+      <Footer />
+      <Toaster position="top-right" />
+    </div>
   );
-};
+  };
+
+
+
 
 export default PostLayout;
