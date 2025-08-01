@@ -71,8 +71,8 @@ const PostLayout: React.FC<PostLayoutProps> = ({
   const commonMetaTags = renderCommonMetaTags();
 
   // Get post meta data
-  const postTitle = post ? (post.title_ar || post.title) : (title || 'مركبا');
-  const postDescription = post ? (post.meta_description_ar || post.meta_description || post.excerpt_ar || post.excerpt || '') : (description || '');
+  const postTitle = post?.title_ar || post?.title || title || metaConfig.site.name;
+  const postDescription = post?.meta_description_ar || post?.meta_description || post?.excerpt_ar || post?.excerpt || description || metaConfig.site.description;
   const postKeywords = post ? (post.meta_keywords_ar || post.meta_keywords || '') : '';
   const postAuthor = post ? (post.author ? post.author.username : metaConfig.site.nameEn) : metaConfig.site.nameEn;
   // Generate absolute image URL for meta tags
@@ -83,11 +83,17 @@ const PostLayout: React.FC<PostLayoutProps> = ({
     return imagePath.startsWith('/') ? `${metaConfig.site.url}${imagePath}` : `${metaConfig.site.url}/${imagePath}`;
   };
   
-  const postImage = post && post.featured_image 
+  const postImage = (post?.featured_image 
     ? getAbsoluteImageUrl(getImageUrl(post.featured_image))
-    : getAbsoluteImageUrl('/images/og-default.svg');
-  const postUrl = post ? `${metaConfig.site.url}/post/${post.slug}` : metaConfig.site.url;
+    : getAbsoluteImageUrl('/images/og-default.svg')) || metaConfig.defaults.image;
+  const postUrl = (post?.slug ? `${metaConfig.site.url}/post/${post.slug}` : metaConfig.site.url) || metaConfig.site.url;
   const postTags = post && post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(tag => tag.trim()) : [];
+
+  console.log('OG Debug: postTitle', postTitle);
+  console.log('OG Debug: postDescription', postDescription);
+  console.log('OG Debug: postUrl', postUrl);
+  console.log('OG Debug: postImage', postImage);
+  console.log('OG Debug: metaConfig.site.name', metaConfig.site.name);
 
   // Render post-specific meta tags (avoiding duplicates with _document.tsx)
   const renderPostMetaTags = () => (
@@ -112,9 +118,12 @@ const PostLayout: React.FC<PostLayoutProps> = ({
   const renderOpenGraphTags = () => (
     <>
       <meta property="og:type" content="article" />
+      <meta property="og:url" content={postUrl} />
+
+
+
       <meta property="og:title" content={postTitle} />
       <meta property="og:description" content={postDescription} />
-      <meta property="og:url" content={postUrl} />
       <meta property="og:site_name" content={metaConfig.site.name} />
       <meta property="og:locale" content="ar_AR" />
       
@@ -125,6 +134,7 @@ const PostLayout: React.FC<PostLayoutProps> = ({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:image:alt" content={postTitle} />
+      <meta property="og:logo" content={`${metaConfig.site.url}/images/logo_new.png`} />
       
       {/* Article specific tags */}
       {post && <meta property="article:published_time" content={post.created_at} />}
