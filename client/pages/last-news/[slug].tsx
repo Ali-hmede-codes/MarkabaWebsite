@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
-import { FiCalendar } from 'react-icons/fi';
+import { FiCalendar, FiClock } from 'react-icons/fi';
 import Image from 'next/image';
 import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
@@ -254,7 +254,8 @@ const SingleLastNewsPage: React.FC = () => {
             <aside className="lg:col-span-1 space-y-6">
               {/* Latest Last News Section */}
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
+                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
+                  <FiClock className="text-green-500" size={20} />
                   آخر الأخبار
                 </h3>
                 <div className="space-y-4">
@@ -265,8 +266,8 @@ const SingleLastNewsPage: React.FC = () => {
                           <h4 className="text-sm font-medium text-gray-900 mb-1">
                             {latestItem.title || latestItem.title_ar}
                           </h4>
-                          <div className="text-xs text-gray-500">
-                            <FiCalendar className="inline ml-1" size={10} />
+                          <div className="text-xs text-green-500">
+                            <FiClock className="inline ml-1" size={10} />
                             {getRelativeTime(latestItem.created_at)}
                           </div>
                         </div>
@@ -278,18 +279,18 @@ const SingleLastNewsPage: React.FC = () => {
 
               {/* Breaking News Section */}
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
-                  آخر الأخبار العاجلة
+                <h3 className="text-lg font-bold text-red-600 mb-4 border-b border-gray-100 pb-2">
+                  الأخبار العاجلة
                 </h3>
                 <div className="space-y-4">
                   {breakingNews.map((breakingItem) => (
                     <div key={breakingItem.id} className="flex gap-3 p-3 rounded-lg">
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-medium text-gray-900 mb-1">
+                        <h4 className="text-sm font-medium text-red-600 mb-1">
                           {breakingItem.title || breakingItem.title_ar}
                         </h4>
-                        <div className="text-xs text-gray-500">
-                          <FiCalendar className="inline ml-1" size={10} />
+                        <div className="text-xs text-red-500">
+                          <FiClock className="inline ml-1" size={10} />
                           {getRelativeTime(breakingItem.created_at)}
                         </div>
                       </div>

@@ -187,6 +187,25 @@ export interface BreakingNews {
   updated_at: string;
 }
 
+// Last News Types
+export interface LastNews {
+  id: number;
+  title: string;
+  title_ar?: string;
+  content: string;
+  content_ar?: string;
+  excerpt?: string;
+  excerpt_ar?: string;
+  slug: string;
+  image?: string;
+  featured_image?: string;
+  priority?: number;
+  is_active: boolean;
+  views?: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // Social Media Types
 export interface SocialMedia {
   id: number;
