@@ -104,6 +104,16 @@ const PostLayout: React.FC<PostLayoutProps> = ({
       <meta name="bingbot" content="index, follow" />
       <link rel="canonical" href={postUrl} />
       
+      {/* Website Navigation Links */}
+      <link rel="home" href={metaConfig.site.url} title="الصفحة الرئيسية - مركبا" />
+      <link rel="up" href={metaConfig.site.url} title="العودة للرئيسية" />
+      <link rel="index" href={metaConfig.site.url} title="فهرس الموقع" />
+      
+      {/* Category Link */}
+      {post?.category && (
+        <link rel="section" href={`${metaConfig.site.url}/category/${post.category.slug}`} title={post.category.name_ar} />
+      )}
+      
       {/* Language and Direction for this page */}
       <meta name="language" content="Arabic" />
       <meta httpEquiv="content-language" content="ar" />
@@ -166,7 +176,7 @@ const PostLayout: React.FC<PostLayoutProps> = ({
   const generateStructuredData = () => {
     const structuredData = {
       "@context": "https://schema.org",
-      "@type": "Article",
+      "@type": "NewsArticle",
       "headline": postTitle,
       "description": postDescription,
       "image": postImage ? [postImage] : [],
@@ -179,24 +189,37 @@ const PostLayout: React.FC<PostLayoutProps> = ({
       "publisher": {
         "@type": "Organization",
         "name": metaConfig.site.name,
+        "url": metaConfig.site.url,
         "logo": {
           "@type": "ImageObject",
           "url": `${metaConfig.site.url}/images/logo.png`
-        }
+        },
+        "sameAs": [
+          metaConfig.site.url,
+          `${metaConfig.site.url}/about`,
+          `${metaConfig.site.url}/contact`
+        ]
       },
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": postUrl
+        "@id": postUrl,
+        "url": postUrl,
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": metaConfig.site.url + "/#website",
+          "url": metaConfig.site.url,
+          "name": metaConfig.site.name,
+          "description": metaConfig.site.description,
+          "inLanguage": "ar"
+        }
       },
       "url": postUrl,
       "articleSection": post?.category?.name_ar || "News",
       "keywords": postTags,
       "inLanguage": "ar",
-      "isPartOf": {
-        "@type": "WebSite",
-        "@id": metaConfig.site.url,
-        "url": metaConfig.site.url,
-        "name": metaConfig.site.name
+      "about": {
+        "@type": "Thing",
+        "name": post?.category?.name_ar || "أخبار"
       }
     };
 
@@ -204,33 +227,55 @@ const PostLayout: React.FC<PostLayoutProps> = ({
   };
 
   // Generate breadcrumb structured data linking to homepage
-  const generateBreadcrumbData = () => {
-    const breadcrumbData = {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "الرئيسية",
-          "item": metaConfig.site.url
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": post?.category?.name_ar || "الأخبار",
-          "item": post?.category ? `${metaConfig.site.url}/category/${post.category.slug}` : `${metaConfig.site.url}/category/news`
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": postTitle,
-          "item": postUrl
-        }
-      ]
-    };
-    return breadcrumbData;
-  };
+   const generateBreadcrumbData = () => {
+     const breadcrumbData = {
+       "@context": "https://schema.org",
+       "@type": "BreadcrumbList",
+       "itemListElement": [
+         {
+           "@type": "ListItem",
+           "position": 1,
+           "name": "الرئيسية",
+           "item": metaConfig.site.url
+         },
+         {
+           "@type": "ListItem",
+           "position": 2,
+           "name": post?.category?.name_ar || "الأخبار",
+           "item": post?.category ? `${metaConfig.site.url}/category/${post.category.slug}` : `${metaConfig.site.url}/category/news`
+         },
+         {
+           "@type": "ListItem",
+           "position": 3,
+           "name": postTitle,
+           "item": postUrl
+         }
+       ]
+     };
+     return breadcrumbData;
+   };
+
+   // Generate WebSite structured data for main site reference
+   const generateWebSiteData = () => {
+     const webSiteData = {
+       "@context": "https://schema.org",
+       "@type": "WebSite",
+       "@id": metaConfig.site.url + "/#website",
+       "url": metaConfig.site.url,
+       "name": metaConfig.site.name,
+       "description": metaConfig.site.description,
+       "inLanguage": "ar",
+       "potentialAction": {
+         "@type": "SearchAction",
+         "target": {
+           "@type": "EntryPoint",
+           "urlTemplate": `${metaConfig.site.url}/search?q={search_term_string}`
+         },
+         "query-input": "required name=search_term_string"
+       }
+     };
+     return webSiteData;
+   };
 
   return (
     <>
@@ -265,8 +310,10 @@ const PostLayout: React.FC<PostLayoutProps> = ({
         {commonMetaTags.renderAnalytics()}
         
         {/* Homepage Reference Meta Tags */}
-        <link rel="home" href={metaConfig.site.url} />
         <meta name="referrer" content="origin-when-cross-origin" />
+        <meta property="og:locale" content="ar_LB" />
+        <meta property="og:locale:alternate" content="en_US" />
+        <meta name="news_keywords" content={postKeywords} />
         
         {/* JSON-LD Structured Data for Article */}
         <script
@@ -277,12 +324,20 @@ const PostLayout: React.FC<PostLayoutProps> = ({
         />
         
         {/* JSON-LD Breadcrumb Navigation */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateBreadcrumbData()),
-          }}
-        />
+         <script
+           type="application/ld+json"
+           dangerouslySetInnerHTML={{
+             __html: JSON.stringify(generateBreadcrumbData()),
+           }}
+         />
+         
+         {/* JSON-LD WebSite Data */}
+         <script
+           type="application/ld+json"
+           dangerouslySetInnerHTML={{
+             __html: JSON.stringify(generateWebSiteData()),
+           }}
+         />
       </Head>
 
       <div className={`min-h-screen flex flex-col bg-gray-50 ${className}`} dir="rtl">
