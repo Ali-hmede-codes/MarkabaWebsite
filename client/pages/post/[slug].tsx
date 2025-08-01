@@ -62,11 +62,43 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
 
   const postTitle = post.title_ar || post.title || 'مركبا - أخبار لبنان';
   const pageTitle = `${postTitle} - أخبار - مـركـبـا`;
+  const postDescription = post.excerpt_ar || post.excerpt || post.content_ar?.substring(0, 160) || post.content?.substring(0, 160) || 'اقرأ آخر الأخبار والمقالات على مـركـبـا';
+  const postImage = post.featured_image ? `https://markaba.news${post.featured_image}` : 'https://markaba.news/images/og-image.jpg';
+  const postUrl = `https://markaba.news/post/${post.slug}`;
 
   return (
     <>
       <Head>
         <title>{pageTitle}</title>
+        <meta name="description" content={postDescription} />
+        <meta name="keywords" content="أخبار, مقالات, مركبة, NewsMarkaba, لبنان" />
+        <meta name="author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={postUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={postDescription} />
+        <meta property="og:url" content={postUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:locale" content="ar" />
+        <meta property="og:site_name" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
+        <meta property="og:image" content={postImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={postTitle} />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={postDescription} />
+        <meta name="twitter:image" content={postImage} />
+        <meta name="twitter:image:alt" content={postTitle} />
+        
+        {/* Article specific */}
+        {post.created_at && <meta property="article:published_time" content={new Date(post.created_at).toISOString()} />}
+        {post.updated_at && <meta property="article:modified_time" content={new Date(post.updated_at).toISOString()} />}
+        <meta property="article:author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
       </Head>
       <PostLayout post={post}>
         <PostContent post={post} latestPosts={latestPosts} breakingNews={breakingNews} />

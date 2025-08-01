@@ -123,6 +123,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
   return (
     <>
+      <SimpleMeta 
+        title="الصفحة الرئيسية"
+        description="مـركـبـا - الـمـنـصـة الاخـبـاريـة - آخر الأخبار والمقالات من مختلف المجالات"
+        image="/images/og-image.jpg"
+        canonical="https://markaba.news"
+      />
       <Layout 
         pageType="home"
       >
