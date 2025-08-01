@@ -1,10 +1,10 @@
 // Basic meta configuration for NewsMarkaba
 export const siteConfig = {
-  name: 'NewsMarkaba',
-  description: 'موقع أخبار مركبة - آخر الأخبار والمقالات',
-  url: 'https://newsmarkaba.com',
+  name: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+  description: '  مـركـبـا - الـمـنـصـة الاخـبـاريـة - آخر الأخبار والمقالات',
+  url: 'https://markaba.news',
   locale: 'ar',
-  author: 'NewsMarkaba Team'
+  author: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'
 };
 
 export const defaultMeta = {
