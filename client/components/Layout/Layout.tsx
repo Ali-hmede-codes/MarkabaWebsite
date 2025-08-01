@@ -22,6 +22,7 @@ interface LayoutProps {
   children: ReactNode;
   title?: string;
   description?: string;
+  keywords?: string;
   seo?: SEOData;
   pageType?: 'home' | 'category' | 'search' | 'about' | 'contact' | 'custom';
   pageData?: Record<string, any>;
@@ -35,6 +36,7 @@ const Layout: React.FC<LayoutProps> = ({
   children,
   title,
   description,
+  keywords,
   seo,
   pageType = 'custom',
   pageData = {},
@@ -48,6 +50,7 @@ const Layout: React.FC<LayoutProps> = ({
       <SimpleMeta 
         title={title}
         description={description}
+        keywords={keywords}
       />
       {showHeader && <Header />}
       <main className={`flex-grow ${containerClassName}`}>

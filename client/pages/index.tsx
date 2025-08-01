@@ -122,15 +122,15 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
   return (
     <>
-      <SimpleMeta
+      <Layout 
+        pageType="home"
         title={content?.site?.name || "مـركـبـا - الـمـنـصـة الاخـبـاريـة"}
         description={
           content?.site?.description ||
           "ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة"
         }
         keywords="أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط"
-      />
-      <Layout pageType="home">
+      >
         <div className="bg-white min-h-screen" dir="rtl">
           {/* Breaking News Banner */}
           <BreakingNewsBanner />
@@ -450,13 +450,29 @@ HomePage.getInitialProps = async (
   ctx: NextPageContext,
 ): Promise<HomePageProps> => {
   try {
+    // Check if we're on server or client side
+    const isServer = typeof window === 'undefined';
+    
     // Use production API URL for www.markaba.news
     const isDevelopment = process.env.NODE_ENV === "development";
-    const baseUrl = isDevelopment
-      ? "http://localhost:5000"
-      : "https://api.markaba.news";
+    
+    // For SSR, use internal API calls or direct database access
+    // For client-side, use external API URLs
+    let baseUrl: string;
+    
+    if (isServer) {
+      // Server-side: use localhost for development, external API for production
+      baseUrl = isDevelopment
+        ? "http://localhost:5000"
+        : "https://api.markaba.news";
+    } else {
+      // Client-side: use relative paths or external API
+      baseUrl = isDevelopment
+        ? "http://localhost:5000"
+        : "https://api.markaba.news";
+    }
 
-    console.log("getInitialProps: Fetching data from:", baseUrl);
+    console.log(`getInitialProps (${isServer ? 'server' : 'client'}): Fetching data from:`, baseUrl);
 
     // Fetch posts and categories in parallel
     const postsEndpoint = isDevelopment
@@ -466,18 +482,43 @@ HomePage.getInitialProps = async (
       ? `${baseUrl}/api/categories`
       : `${baseUrl}/api/v2/categories`;
 
+    // Use dynamic import for node-fetch on server side
+    let fetchFunction: typeof fetch;
+    
+    if (isServer && isDevelopment) {
+      // For server-side in development, we might need to handle ECONNREFUSED
+      // by providing fallback data or using a different approach
+      try {
+        fetchFunction = fetch;
+      } catch {
+        // If fetch is not available on server, provide fallback
+        console.warn('Fetch not available on server, providing fallback data');
+        return {
+          posts: [],
+          categories: [],
+          error: undefined,
+        };
+      }
+    } else {
+      fetchFunction = fetch;
+    }
+
     const [postsResponse, categoriesResponse] = await Promise.all([
-      fetch(postsEndpoint, {
+      fetchFunction(postsEndpoint, {
         headers: {
           "Content-Type": "application/json",
           "User-Agent": "NewsMarkaba-getInitialProps/1.0",
         },
+        // Add timeout for server-side requests
+        ...(isServer && { signal: AbortSignal.timeout(5000) }),
       }),
-      fetch(categoriesEndpoint, {
+      fetchFunction(categoriesEndpoint, {
         headers: {
           "Content-Type": "application/json",
           "User-Agent": "NewsMarkaba-getInitialProps/1.0",
         },
+        // Add timeout for server-side requests
+        ...(isServer && { signal: AbortSignal.timeout(5000) }),
       }),
     ]);
 
@@ -520,6 +561,19 @@ HomePage.getInitialProps = async (
     };
   } catch (error) {
     console.error("getInitialProps Error fetching homepage data:", error);
+    
+    // For server-side errors (like ECONNREFUSED), provide fallback
+    if (typeof window === 'undefined' && error instanceof Error) {
+      if (error.message.includes('ECONNREFUSED') || error.message.includes('fetch')) {
+        console.warn('Server-side API connection failed, providing fallback data');
+        return {
+          posts: [],
+          categories: [],
+          error: undefined, // Don't show error to user for server-side issues
+        };
+      }
+    }
+    
     return {
       posts: [],
       categories: [],
