@@ -368,9 +368,9 @@ const PostContent: React.FC<{
               </h3>
               <div className="space-y-4">
                 {breakingNews.map((newsPost) => (
-                  <div key={newsPost.id} className="flex gap-3 p-3 rounded-lg border-l-4 border-red-500 bg-red-50">
+                  <div key={newsPost.id} className="flex gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium text-red-700 mb-1">
+                      <h4 className="text-sm font-medium text-red-600 mb-1">
                         {newsPost.title_ar || newsPost.title}
                       </h4>
                       <p className="text-xs text-red-600 font-medium">
