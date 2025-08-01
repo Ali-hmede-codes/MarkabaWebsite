@@ -65,7 +65,7 @@ const PostCard: React.FC<PostCardProps> = ({
         {/* Title */}
         <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2" dir="rtl">
           <Link 
-            href={`/posts/${post.slug}`}
+            href={`/post/${post.slug}`}
             className="hover:text-blue-600 transition-colors"
           >
             {post.title_ar || post.title}
