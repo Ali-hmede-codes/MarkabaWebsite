@@ -27,7 +27,7 @@ interface MetaHeadProps {
   noIndex?: boolean;
   canonical?: string;
   alternateLanguages?: { hreflang: string; href: string }[];
-  structuredData?: any;
+  structuredData?: Record<string, any>;
 }
 
 const MetaHead: React.FC<MetaHeadProps> = ({
@@ -51,6 +51,14 @@ const MetaHead: React.FC<MetaHeadProps> = ({
   alternateLanguages = [],
   structuredData
 }) => {
+  // Debug logging
+  console.log('MetaHead Debug:', {
+    title,
+    description,
+    image,
+    url,
+    type
+  });
   // Prepare meta injection data
   const metaData: MetaInjectionData = {
     title,
@@ -71,7 +79,7 @@ const MetaHead: React.FC<MetaHeadProps> = ({
   };
 
   // Generate meta tags
-  const metaTags = generateMetaTags(metaData);
+
   
   // Generate structured data
   const defaultStructuredData = generateStructuredData(metaData);

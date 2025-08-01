@@ -60,6 +60,16 @@ const Layout: React.FC<LayoutProps> = ({
 
   const seoData = seo ? { ...meta, ...seo } : meta;
 
+  // Debug logging
+  console.log('Layout Debug:', {
+    pageType,
+    seo,
+    meta,
+    seoData,
+    title: seoData.title,
+    description: seoData.description
+  });
+
   // Render Basic Meta Tags (excluding viewport and charset - handled by _document.tsx)
   const renderBasicMetaTags = () => (
     <>
