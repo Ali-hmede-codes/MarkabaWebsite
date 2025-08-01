@@ -128,7 +128,7 @@ const Footer: React.FC = () => {
   return (
     <>
       {/* Mobile-responsive footer with rounded top edges */}
-      <footer className="bg-gray-100 text-gray-800 relative rounded-t-3xl mx-2 sm:mx-4 lg:mx-12" dir="rtl">
+      <footer className="bg-gray-50 text-gray-800 relative rounded-t-3xl mx-2 sm:mx-4 lg:mx-12" dir="rtl">
         {/* Main Footer Content */}
         <div className="max-w-2xl sm:max-w-3xl lg:max-w-3xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-8">
           {/* Logo Section */}

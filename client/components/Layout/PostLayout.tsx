@@ -67,7 +67,7 @@ const PostLayout: React.FC<PostLayoutProps> = ({
 
 
   return (
-    <div className={`min-h-screen flex flex-col ${className}`}>
+    <div className={`min-h-screen flex flex-col bg-gray-50 ${className}`}>
       <Header />
       <main className={`flex-grow ${containerClassName}`}>
         {children}
