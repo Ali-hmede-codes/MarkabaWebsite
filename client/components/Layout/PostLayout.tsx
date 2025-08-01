@@ -89,11 +89,7 @@ const PostLayout: React.FC<PostLayoutProps> = ({
   const postUrl = (post?.slug ? `${metaConfig.site.url}/post/${post.slug}` : metaConfig.site.url) || metaConfig.site.url;
   const postTags = post && post.meta_keywords_ar ? post.meta_keywords_ar.split(',').map(tag => tag.trim()) : [];
 
-  console.log('OG Debug: postTitle', postTitle);
-  console.log('OG Debug: postDescription', postDescription);
-  console.log('OG Debug: postUrl', postUrl);
-  console.log('OG Debug: postImage', postImage);
-  console.log('OG Debug: metaConfig.site.name', metaConfig.site.name);
+
 
   // Render post-specific meta tags (avoiding duplicates with _document.tsx)
   const renderPostMetaTags = () => (
@@ -119,13 +115,8 @@ const PostLayout: React.FC<PostLayoutProps> = ({
     <>
       <meta property="og:type" content="article" />
       <meta property="og:url" content={postUrl} />
-
-
-
       <meta property="og:title" content={postTitle} />
       <meta property="og:description" content={postDescription} />
-      <meta property="og:site_name" content={metaConfig.site.name} />
-      <meta property="og:locale" content="ar_AR" />
       
       {/* Post Image - Critical for social sharing */}
       <meta property="og:image" content={postImage} />
@@ -154,15 +145,12 @@ const PostLayout: React.FC<PostLayoutProps> = ({
     </>
   );
 
-  // Render Twitter Card meta tags
+  // Render Twitter Card meta tags (page-specific only)
   const renderTwitterCardTags = () => (
     <>
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={postTitle} />
       <meta name="twitter:description" content={postDescription} />
-      <meta name="twitter:site" content={metaConfig.social.twitter.site} />
-      <meta name="twitter:creator" content={metaConfig.social.twitter.creator} />
-      
       <meta name="twitter:image" content={postImage} />
       <meta name="twitter:image:alt" content={postTitle} />
     </>

@@ -74,15 +74,13 @@ const Layout: React.FC<LayoutProps> = ({
     </>
   );
 
-  // Render Open Graph Meta Tags
+  // Render Open Graph Meta Tags (page-specific only)
   const renderOpenGraphTags = () => (
     <>
       <meta property="og:title" content={openGraph.title} />
       <meta property="og:description" content={openGraph.description} />
       <meta property="og:type" content={openGraph.type} />
       <meta property="og:url" content={openGraph.url} />
-      <meta property="og:site_name" content={openGraph.siteName} />
-      <meta property="og:locale" content={openGraph.locale} />
       {openGraph.image && <meta property="og:image" content={openGraph.image} />}
       {metaConfig.social.facebook.appId && (
         <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
@@ -90,14 +88,12 @@ const Layout: React.FC<LayoutProps> = ({
     </>
   );
 
-  // Render Twitter Card Meta Tags
+  // Render Twitter Card Meta Tags (page-specific only)
   const renderTwitterCardTags = () => (
     <>
       <meta name="twitter:card" content={twitterCard.card} />
       <meta name="twitter:title" content={twitterCard.title} />
       <meta name="twitter:description" content={twitterCard.description} />
-      <meta name="twitter:site" content={twitterCard.site} />
-      <meta name="twitter:creator" content={twitterCard.creator} />
       {twitterCard.image && <meta name="twitter:image" content={twitterCard.image} />}
     </>
   );
@@ -120,21 +116,11 @@ const Layout: React.FC<LayoutProps> = ({
         {/* Additional Social Media Tags */}
         {commonMetaTags.renderAdditionalSocialTags()}
         
-        {/* Favicon and App Icons */}
-        {commonMetaTags.renderFaviconTags()}
-        
         {/* Theme and App Meta Tags */}
         {commonMetaTags.renderThemeTags()}
         
         {/* SEO and Verification Tags */}
         {commonMetaTags.renderSEOTags()}
-        
-        {/* Language and Direction */}
-        <html lang="ar" dir="rtl" />
-        
-        {/* Preconnect to External Domains */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
         {/* RSS Feed */}
         <link 
