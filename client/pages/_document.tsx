@@ -39,13 +39,7 @@ export default function Document() {
         
         {/* Sitemap */}
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-        
-        {/* Global site settings - page-specific meta tags handled by layouts */}
-        <meta name="publisher" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        
-        {/* Global Open Graph Tags - Only site-wide settings */}
-        <meta property="og:site_name" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
-        <meta property="og:locale" content="ar_AR" />
+
         
         {/* Global Twitter Tags - Only site-wide settings */}
         <meta name="twitter:site" content="@markaba_news" />
