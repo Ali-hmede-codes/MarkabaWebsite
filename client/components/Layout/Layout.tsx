@@ -71,7 +71,9 @@ const Layout: React.FC<LayoutProps> = ({
       <meta name="robots" content={robots} />
       <meta name="googlebot" content={googleBot} />
       <meta name="bingbot" content="index, follow" />
+      <meta name="referrer" content="origin-when-cross-origin" />
       <link rel="canonical" href={seoData.url} />
+      <link rel="home" href={metaConfig.site.url} />
     </>
   );
 
@@ -82,6 +84,9 @@ const Layout: React.FC<LayoutProps> = ({
       <meta property="og:description" content={openGraph.description} />
       <meta property="og:type" content={openGraph.type} />
       <meta property="og:url" content={openGraph.url} />
+      <meta property="og:site_name" content={metaConfig.site.name} />
+      <meta property="og:locale" content={metaConfig.site.language} />
+      <meta property="og:locale:alternate" content="en_US" />
       {openGraph.image && <meta property="og:image" content={openGraph.image} />}
       {metaConfig.social.facebook.appId && (
         <meta property="fb:app_id" content={metaConfig.social.facebook.appId} />
@@ -129,6 +134,30 @@ const Layout: React.FC<LayoutProps> = ({
           type="application/rss+xml" 
           title={`${metaConfig.site.name} RSS Feed`}
           href="/api/rss" 
+        />
+        
+        {/* Website Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "@id": `${metaConfig.site.url}/#website`,
+              "url": metaConfig.site.url,
+              "name": metaConfig.site.name,
+              "description": metaConfig.site.description,
+              "inLanguage": metaConfig.site.language,
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": `${metaConfig.site.url}/search?q={search_term_string}`
+                },
+                "query-input": "required name=search_term_string"
+              }
+            }),
+          }}
         />
         
         {/* Analytics */}
