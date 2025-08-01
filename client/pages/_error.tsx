@@ -9,7 +9,7 @@ function Error({ statusCode }: { statusCode?: number }) {
         <title>{statusCode ? `${statusCode} Error` : "An error occurred"}</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900 px-4">
         <div className="max-w-lg w-full text-center">
           <h1 className="text-6xl font-bold text-primary-600 dark:text-primary-400 mb-4">
             {statusCode || "Error"}

@@ -96,7 +96,7 @@ const Custom404: React.FC<Custom404Props> = ({ popularPosts, categories }) => {
         />
       </Head>
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           {/* Error Section */}
           <div className="text-center mb-16">

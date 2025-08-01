@@ -46,7 +46,7 @@ const Layout: React.FC<LayoutProps> = ({
   containerClassName = '',
 }) => {
   return (
-    <div className={`min-h-screen flex flex-col ${className}`}>
+    <div className={`min-h-screen flex flex-col bg-white ${className}`}>
       {(title || description || keywords) && (
         <SimpleMeta 
           title={title}
