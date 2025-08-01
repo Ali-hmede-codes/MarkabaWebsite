@@ -35,6 +35,27 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
     return new Date(date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
+  const getRelativeTime = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) {
+      return 'منذ لحظات';
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `منذ ${minutes} ${minutes === 1 ? 'دقيقة' : 'دقائق'}`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `منذ ${hours} ${hours === 1 ? 'ساعة' : 'ساعات'}`;
+    } else if (diffInSeconds < 2592000) {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `منذ ${days} ${days === 1 ? 'يوم' : 'أيام'}`;
+    } else {
+      return formatDate(dateString);
+    }
+  };
+
   const formatViews = (views: number) => views.toString();
 
   return (
@@ -62,7 +83,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
               <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
                 <h3 className="font-bold text-lg sm:text-2xl text-white mb-3 leading-tight drop-shadow-lg">{latestPosts[0].title_ar}</h3>
                 <div className="flex flex-col sm:flex-row sm:justify-between gap-2 text-sm text-white/90">
-                  <span className="flex items-center"><FiCalendar className="inline ml-1" /> {formatDate(latestPosts[0].created_at)}</span>
+                  <span className="flex items-center"><FiCalendar className="inline ml-1" /> {getRelativeTime(latestPosts[0].created_at)}</span>
                 </div>
               </div>
             </div>
@@ -86,7 +107,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
                 <div className="flex flex-col flex-1 min-w-0">
                    <h3 className="font-bold text-sm md:text-base lg:text-lg mb-2 md:mb-3 text-gray-800 hover:text-blue-600 transition-colors leading-tight line-clamp-2">{post.title_ar}</h3>
                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-xs text-gray-500 mt-auto">
-                     <span className="flex items-center"><FiCalendar className="inline ml-1" /> {formatDate(post.created_at)}</span>
+                     <span className="flex items-center"><FiCalendar className="inline ml-1" /> {getRelativeTime(post.created_at)}</span>
                    </div>
                  </div>
               </Link>

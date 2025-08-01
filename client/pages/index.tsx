@@ -84,6 +84,27 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
     return `${day} ${month} ${year}`;
   };
 
+  const getRelativeTime = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) {
+      return 'منذ لحظات';
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `منذ ${minutes} ${minutes === 1 ? 'دقيقة' : 'دقائق'}`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `منذ ${hours} ${hours === 1 ? 'ساعة' : 'ساعات'}`;
+    } else if (diffInSeconds < 2592000) {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `منذ ${days} ${days === 1 ? 'يوم' : 'أيام'}`;
+    } else {
+      return formatDate(dateString);
+    }
+  };
+
   const formatViews = (views: number) => {
     if (views >= 1000000) {
       return `${(views / 1000000).toFixed(1)}م`;
@@ -227,7 +248,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               size={10}
                               className="ml-1 rtl:ml-0 rtl:mr-1"
                             />
-                            {formatDate(post.created_at)}
+                            {getRelativeTime(post.created_at)}
                           </div>
                         </div>
                       </div>
@@ -311,7 +332,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               size={10}
                               className="ml-1 rtl:ml-0 rtl:mr-1"
                             />
-                            {formatDate(post.created_at)}
+                            {getRelativeTime(post.created_at)}
                           </div>
                         </div>
                       </div>
