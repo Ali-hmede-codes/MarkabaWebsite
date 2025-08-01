@@ -196,7 +196,7 @@ const EditPost: React.FC = () => {
               />
             )}
             <p className="text-gray-600 mb-4">{post.excerpt_ar}</p>
-            <div className="prose" dangerouslySetInnerHTML={{ __html: post.content_ar }} />
+            <div className="prose" dangerouslySetInnerHTML={{ __html: (post.content_ar || '').replace(/\n/g, '<br>') }} />
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-sm border p-6">

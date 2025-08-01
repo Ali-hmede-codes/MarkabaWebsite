@@ -234,7 +234,7 @@ const SingleLastNewsPage: React.FC = () => {
               <div 
                 className="prose max-w-none mb-8 text-gray-800 leading-relaxed" 
                 style={{ fontSize: `${fontSize}px` }}
-                dangerouslySetInnerHTML={{ __html: lastNews.content || lastNews.content_ar || '' }} 
+                dangerouslySetInnerHTML={{ __html: (lastNews.content || lastNews.content_ar || '').replace(/\n/g, '<br>') }} 
               />
 
               {/* Back to Home Button */}
