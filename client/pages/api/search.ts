@@ -13,7 +13,7 @@ export default async function handler(
     });
   }
 
-  const { q, type = 'all', page = '1', limit = '10', sort = 'relevance' } = req.query;
+  const { q, type = 'posts', page = '1', limit = '10', sort = 'relevance' } = req.query;
 
   if (!q || typeof q !== 'string' || q.trim().length === 0) {
     return res.status(400).json({

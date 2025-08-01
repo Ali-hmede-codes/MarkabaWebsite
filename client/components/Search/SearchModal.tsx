@@ -87,46 +87,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
     };
   }, [isOpen, onClose]);
 
-  // Search function
-  const performSearch = async (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setResults({ posts: [], loading: false, error: null });
-      return;
-    }
-
-    setResults(prev => ({ ...prev, loading: true, error: null }));
-
-    try {
-      const response = await fetch(`/api/posts/search?q=${encodeURIComponent(searchQuery)}`);
-      if (!response.ok) {
-        throw new Error('Search failed');
-      }
-      
-      const data = await response.json();
-      setResults({
-        posts: data.data || [],
-        loading: false,
-        error: null
-      });
-    } catch (error) {
-      setResults({
-        posts: [],
-        loading: false,
-        error: 'Search failed. Please try again.'
-      });
-    }
-  };
-
-  // Debounced search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (query) {
-        performSearch(query);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [query]);
+  // No longer need performSearch or debounced search since we're not showing results
 
   // Save search to recent searches
   const saveRecentSearch = (searchQuery: string) => {
@@ -149,7 +110,6 @@ const SearchModal: React.FC<SearchModalProps> = ({
   // Handle recent search click
   const handleRecentSearchClick = (searchQuery: string) => {
     setQuery(searchQuery);
-    performSearch(searchQuery);
   };
 
   if (!isOpen) return null;
@@ -178,23 +138,31 @@ const SearchModal: React.FC<SearchModalProps> = ({
           
           {/* Search Form */}
           <form onSubmit={handleSubmit} className="p-4 border-b">
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search articles, categories, or topics..."
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+            <div className="flex gap-3">
+              <div className="relative flex-1">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search articles, categories, or topics..."
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-6 py-3 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium"
+              >
+                البحث
+              </button>
             </div>
           </form>
           
           {/* Content */}
           <div className="max-h-96 overflow-y-auto">
             {/* Recent Searches */}
-            {!query && recentSearches.length > 0 && (
+            {recentSearches.length > 0 && (
               <div className="p-4">
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Recent Searches</h3>
                 <div className="space-y-2">
@@ -210,77 +178,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
                 </div>
               </div>
             )}
-            
-            {/* Loading */}
-            {results.loading && (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              </div>
-            )}
-            
-            {/* Error */}
-            {results.error && (
-              <div className="p-4 text-center text-red-600">
-                {results.error}
-              </div>
-            )}
-            
-            {/* Results */}
-            {query && !results.loading && !results.error && (
-              <div className="p-4">
-                {results.posts.length > 0 ? (
-                  <>
-                    <h3 className="text-sm font-medium text-gray-900 mb-3">
-                      Found {results.posts.length} result{results.posts.length !== 1 ? 's' : ''}
-                    </h3>
-                    <div className="space-y-3">
-                      {results.posts.map((post) => (
-                        <Link
-                          key={post.id}
-                          href={`/posts/${post.slug}`}
-                          onClick={() => {
-                            saveRecentSearch(query);
-                            onClose();
-                          }}
-                          className="block p-3 hover:bg-gray-50 rounded-lg transition-colors"
-                        >
-                          <h4 className="font-medium text-gray-900 mb-1">{post.title}</h4>
-                          {post.excerpt && (
-                            <p className="text-sm text-gray-600 line-clamp-2">{post.excerpt}</p>
-                          )}
-                          {post.category && (
-                            <span className="inline-block mt-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
-                              {post.category.name_ar}
-                            </span>
-                          )}
-                        </Link>
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    No results found for "{query}"
-                  </div>
-                )}
-              </div>
-            )}
           </div>
-          
-          {/* Footer */}
-          {query && (
-            <div className="p-4 border-t bg-gray-50">
-              <Link
-                href={`/search?q=${encodeURIComponent(query)}`}
-                onClick={() => {
-                  saveRecentSearch(query);
-                  onClose();
-                }}
-                className="text-sm text-blue-600 hover:text-blue-800"
-              >
-                View all results for "{query}" →
-              </Link>
-            </div>
-          )}
         </div>
       </div>
     </div>

@@ -27,7 +27,7 @@ const SearchPage: React.FC = () => {
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchType, setSearchType] = useState('all');
+  const [searchType, setSearchType] = useState('posts');
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState('');
 
@@ -129,7 +129,7 @@ const SearchPage: React.FC = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Head>
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Search Header */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
@@ -165,37 +165,14 @@ const SearchPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white rounded-lg transition-colors font-medium"
+                  className="px-6 py-3 bg-white hover:bg-gray-50 disabled:bg-gray-200 text-black border border-gray-300 rounded-lg transition-colors font-medium"
                 >
                   {loading ? 'جاري البحث...' : 'بحث'}
                 </button>
               </div>
             </form>
 
-            {/* Search Filters */}
-            <div className="flex items-center gap-4">
-              <FiFilter className="text-gray-500 dark:text-gray-400" />
-              <span className="text-sm text-gray-600 dark:text-gray-300">البحث في:</span>
-              <div className="flex gap-2">
-                {[
-                  { value: 'all', label: 'الكل' },
-                  { value: 'posts', label: 'المقالات' },
-                  { value: 'last-news', label: 'آخر الأخبار' }
-                ].map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleTypeChange(option.value)}
-                    className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                      searchType === option.value
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* Removed filter buttons since we're only showing posts */}
           </div>
 
           {/* Search Results */}
