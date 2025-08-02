@@ -62,7 +62,7 @@ const PostsManagement: React.FC = () => {
       setLoading(true);
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: '10',
+        limit: '8',
         ...(searchTerm && { search: searchTerm }),
         ...(selectedCategory && { category: selectedCategory }),
         ...(statusFilter !== 'all' && { status: statusFilter })
@@ -73,7 +73,7 @@ const PostsManagement: React.FC = () => {
 
       if (data.success) {
         setPosts(data.data.posts || []);
-        setTotalPages(Math.ceil((data.data.total || 0) / 10));
+        setTotalPages(Math.ceil((data.data.total || 0) / 8));
       } else {
         toast.error('فشل في تحميل المقالات');
       }
@@ -431,7 +431,7 @@ const PostsManagement: React.FC = () => {
         {totalPages > 1 && (
           <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg">
             <div className="text-sm text-gray-700">
-              صفحة {currentPage} من {totalPages}
+              صفحة {currentPage} من {totalPages} - عرض {posts.length} من {posts.length} مقال
             </div>
             <div className="flex space-x-2 rtl:space-x-reverse">
               <button
@@ -441,6 +441,35 @@ const PostsManagement: React.FC = () => {
               >
                 السابق
               </button>
+              
+              {/* Page numbers */}
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`px-3 py-1 text-sm border rounded-md ${
+                      currentPage === pageNum
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { FiPlus, FiEdit, FiTrash2, FiSearch, FiFilter } from 'react-icons/fi';
 
 interface LastNews {
   id: number;
@@ -30,6 +31,10 @@ const LastNewsAdmin: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<LastNews | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const itemsPerPage = 8;
   const [formData, setFormData] = useState<LastNewsFormData>({
     title_ar: '',
     content_ar: '',
@@ -173,6 +178,27 @@ const LastNewsAdmin: React.FC = () => {
     resetForm();
   };
 
+  // Filter and pagination logic
+  const filteredNews = lastNews.filter(item => {
+    const matchesSearch = item.title_ar.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.content_ar.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || 
+                         (statusFilter === 'active' && item.is_active) ||
+                         (statusFilter === 'inactive' && !item.is_active);
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedNews = filteredNews.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
+
   if (loading) {
     return (
       <AdminLayout>
@@ -194,10 +220,42 @@ const LastNewsAdmin: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-800">إدارة آخر الأخبار</h1>
           <button
             onClick={() => setShowForm(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
           >
+            <FiPlus className="ml-2" />
             إضافة خبر جديد
           </button>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="relative">
+              <FiSearch className="absolute right-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="البحث في الأخبار..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+            >
+              <option value="all">جميع الحالات</option>
+              <option value="active">نشط</option>
+              <option value="inactive">غير نشط</option>
+            </select>
+            
+            <div className="text-sm text-gray-600 flex items-center">
+              <FiFilter className="ml-2" />
+              عرض {filteredNews.length} من {lastNews.length} عنصر
+            </div>
+          </div>
         </div>
 
         {/* Form Modal */}
@@ -285,9 +343,9 @@ const LastNewsAdmin: React.FC = () => {
 
         {/* Last News List */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          {lastNews.length === 0 ? (
+          {paginatedNews.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              لا توجد أخبار حالياً
+              {filteredNews.length === 0 && lastNews.length > 0 ? 'لا توجد نتائج للبحث' : 'لا توجد أخبار حالياً'}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -315,7 +373,7 @@ const LastNewsAdmin: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {lastNews.map((item) => (
+                  {paginatedNews.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900" dir="rtl">
@@ -368,6 +426,60 @@ const LastNewsAdmin: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg mt-4">
+            <div className="text-sm text-gray-700">
+              صفحة {currentPage} من {totalPages} - عرض {paginatedNews.length} من {filteredNews.length} عنصر
+            </div>
+            <div className="flex space-x-2 rtl:space-x-reverse">
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                السابق
+              </button>
+              
+              {/* Page numbers */}
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`px-3 py-1 text-sm border rounded-md ${
+                      currentPage === pageNum
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                التالي
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );

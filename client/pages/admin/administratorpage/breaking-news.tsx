@@ -36,6 +36,8 @@ const BreakingNewsManagement: React.FC = () => {
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<BreakingNews | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
   const [formData, setFormData] = useState<BreakingNewsFormData>({
     title_ar: '',
     content_ar: '',
@@ -184,6 +186,17 @@ const BreakingNewsManagement: React.FC = () => {
     
     return matchesSearch && matchesStatus && matchesPriority;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedNews = filteredNews.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, priorityFilter]);
 
   const getPriorityLabel = (priority: number) => {
     switch (priority) {
@@ -376,7 +389,7 @@ const BreakingNewsManagement: React.FC = () => {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
               <p className="mt-2 text-gray-600">جاري التحميل...</p>
             </div>
-          ) : filteredNews.length === 0 ? (
+          ) : paginatedNews.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <FiAlertTriangle size={48} className="mx-auto mb-4 text-gray-300" />
               <p>لا توجد أخبار عاجلة</p>
@@ -407,7 +420,7 @@ const BreakingNewsManagement: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredNews.map((item) => (
+                  {paginatedNews.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div>
@@ -470,6 +483,60 @@ const BreakingNewsManagement: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg mt-4">
+            <div className="text-sm text-gray-700">
+              صفحة {currentPage} من {totalPages} - عرض {paginatedNews.length} من {filteredNews.length} عنصر
+            </div>
+            <div className="flex space-x-2 rtl:space-x-reverse">
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                السابق
+              </button>
+              
+              {/* Page numbers */}
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`px-3 py-1 text-sm border rounded-md ${
+                      currentPage === pageNum
+                        ? 'bg-red-600 text-white border-red-600'
+                        : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                التالي
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
