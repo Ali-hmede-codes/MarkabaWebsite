@@ -56,7 +56,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   // Fetch prayer times from API
   const fetchPrayerTimes = async () => {
     try {
-      const response = await fetch('/api/prayer/current');
+      // Use correct API URL based on environment
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
+      const apiVersion = isDevelopment ? '/api' : '/api/v2';
+      
+      const response = await fetch(`${baseUrl}${apiVersion}/prayer/current`);
       const data = await response.json();
       if (data.success && data.data?.results) {
         setPrayerTimes(data.data.results);
@@ -69,7 +74,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   // Fetch weather data from API
   const fetchWeatherData = async () => {
     try {
-      const response = await fetch('/api/weather');
+      // Use correct API URL based on environment
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
+      const apiVersion = isDevelopment ? '/api' : '/api/v2';
+      
+      const response = await fetch(`${baseUrl}${apiVersion}/weather`);
       const data = await response.json();
       if (data.success && data.data) {
         const weather = data.data;
@@ -459,7 +469,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <div className="bg-white rounded-xl shadow-lg p-8 mx-auto max-w-md">
+                  <div className="bg-white rounded-xl p-8 mx-auto max-w-md">
                     <div className="text-gray-400 mb-4">
                       <FiTrendingUp className="text-4xl mx-auto" />
                     </div>
