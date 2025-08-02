@@ -9,16 +9,14 @@ import { Post, Category } from "../components/API/types";
 import {
   FiCalendar,
   FiEye,
-  FiSun,
-  FiCloudRain,
-  FiMapPin,
-  FiTrendingUp,
   FiBook,
+  FiTrendingUp,
 } from "react-icons/fi";
 import { getImageUrl } from "../utils/imageUtils";
 import LastNewsBanner from "../components/LastNews/LastNewsBanner";
 import LatestArticles from "../components/LatestArticles/LatestArticles";
 import BreakingNewsBanner from "../components/BreakingNews/BreakingNewsBanner";
+import { PrayerTimes, Weather } from "../components/PrayerWeather";
 
 interface HomePageProps {
   posts: Post[];
@@ -97,52 +95,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
     }
   };
 
-  const getHijriDate = () => {
-    const hijriMonths = [
-      'محرم', 'صفر', 'ربيع الأول', 'ربيع الثاني', 'جمادى الأولى', 'جمادى الثانية',
-      'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
-    ];
-    
-    // Proper Hijri date calculation using Umm al-Qura algorithm
-    const gregorianToHijri = (date: Date) => {
-      const julianDay = Math.floor((date.getTime() / 86400000) + 2440587.5);
-      const hijriEpoch = 1948439.5; // Hijri epoch in Julian days
-      const daysSinceHijriEpoch = julianDay - hijriEpoch;
-      
-      // Average Hijri year is approximately 354.367 days
-      const hijriYear = Math.floor(daysSinceHijriEpoch / 354.367) + 1;
-      const dayOfYear = Math.floor(daysSinceHijriEpoch % 354.367);
-      
-      // Approximate month calculation (each month ~29.5 days)
-      const hijriMonth = Math.floor(dayOfYear / 29.5);
-      const hijriDay = Math.floor(dayOfYear % 29.5) + 1;
-      
-      return {
-        year: hijriYear,
-        month: Math.min(hijriMonth, 11), // Ensure month is 0-11
-        day: Math.max(1, Math.min(hijriDay, 30)) // Ensure day is 1-30
-      };
-    };
-    
-    const now = new Date();
-    const hijriDate = gregorianToHijri(now);
-    
-    return `${hijriDate.day} ${hijriMonths[hijriDate.month]} ${hijriDate.year}هـ`;
-  };
 
-  const getGregorianDate = () => {
-    const now = new Date();
-    const gregorianMonths = [
-      'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
-    ];
-    
-    const day = now.getDate();
-    const month = gregorianMonths[now.getMonth()];
-    const year = now.getFullYear();
-    
-    return `${day} ${month} ${year}م`;
-  };
 
   const formatViews = (views: number) => {
     if (views >= 1000000) {
@@ -396,129 +349,10 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             <section className="mb-16">
               <div className="info-boxes">
                 {/* Prayer Times Box */}
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                  <div className="bg-gradient-to-r from-green-600 to-green-700 responsive-padding">
-                    <div className="flex justify-between items-center">
-                      <h3 className="info-box-title font-bold text-white responsive-flex">
-                        <FiSun className="ml-2 sm:ml-3" />
-                        مواقيت الصلاة
-                      </h3>
-                      <span className="text-green-200 font-medium text-sm">
-                        {getHijriDate()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="info-box">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="font-semibold text-gray-700">
-                          الفجر
-                        </span>
-                        <span className="text-green-600 font-bold">05:30</span>
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="font-semibold text-gray-700">
-                          الشروق
-                        </span>
-                        <span className="text-green-600 font-bold">06:45</span>
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="font-semibold text-gray-700">
-                          الظهر
-                        </span>
-                        <span className="text-green-600 font-bold">12:15</span>
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="font-semibold text-gray-700">
-                          العصر
-                        </span>
-                        <span className="text-green-600 font-bold">15:30</span>
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="font-semibold text-gray-700">
-                          المغرب
-                        </span>
-                        <span className="text-green-600 font-bold">18:00</span>
-                      </div>
-                      <div className="flex justify-between items-center py-2">
-                        <span className="font-semibold text-gray-700">
-                          العشاء
-                        </span>
-                        <span className="text-green-600 font-bold">19:30</span>
-                      </div>
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-gray-100">
-                      <div className="flex items-center text-sm text-gray-500">
-                        <FiMapPin
-                          size={12}
-                          className="ml-1 rtl:ml-0 rtl:mr-1"
-                        />
-                        <span>بيروت، لبنان</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <PrayerTimes />
 
                 {/* Weather Box */}
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                  <div className="bg-gradient-to-r from-blue-600 to-blue-700 responsive-padding">
-                    <div className="flex justify-between items-center">
-                      <h3 className="info-box-title font-bold text-white responsive-flex">
-                        <FiCloudRain className="ml-2 sm:ml-3" />
-                        حالة الطقس
-                      </h3>
-                      <span className="text-green-200 font-medium text-sm">
-                        {getGregorianDate()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="info-box">
-                    <div className="text-center mb-6">
-                      <div className="text-4xl font-bold text-blue-600 mb-2">
-                        28°C
-                      </div>
-                      <div className="text-gray-600 font-medium">
-                        مشمس جزئياً
-                      </div>
-                      <div className="flex items-center justify-center text-sm text-gray-500 mt-2">
-                        <FiMapPin
-                          size={12}
-                          className="ml-1 rtl:ml-0 rtl:mr-1"
-                        />
-                        <span>بيروت</span>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-3 bg-blue-50 rounded-lg">
-                        <div className="text-sm text-gray-600 mb-1">
-                          الرطوبة
-                        </div>
-                        <div className="text-lg font-bold text-blue-600">
-                          65%
-                        </div>
-                      </div>
-                      <div className="text-center p-3 bg-blue-50 rounded-lg">
-                        <div className="text-sm text-gray-600 mb-1">الرياح</div>
-                        <div className="text-lg font-bold text-blue-600">
-                          15 كم/س
-                        </div>
-                      </div>
-                      <div className="text-center p-3 bg-blue-50 rounded-lg">
-                        <div className="text-sm text-gray-600 mb-1">الضغط</div>
-                        <div className="text-lg font-bold text-blue-600">
-                          1013 هكتوباسكال
-                        </div>
-                      </div>
-                      <div className="text-center p-3 bg-blue-50 rounded-lg">
-                        <div className="text-sm text-gray-600 mb-1">الرؤية</div>
-                        <div className="text-lg font-bold text-blue-600">
-                          10 كم
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <Weather />
               </div>
             </section>
           </div>
