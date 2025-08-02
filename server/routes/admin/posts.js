@@ -292,9 +292,19 @@ router.post('/',
     body('is_published')
       .isBoolean()
       .withMessage('حالة النشر يجب أن تكون true أو false'),
+    body('is_published')
+      .optional()
+      .custom((value) => {
+        if (value === undefined || value === null) return true;
+        return value === true || value === false || value === 'true' || value === 'false' || value === '1' || value === '0';
+      })
+      .withMessage('حالة النشر يجب أن تكون true أو false'),
     body('is_featured')
       .optional()
-      .isBoolean()
+      .custom((value) => {
+        if (value === undefined || value === null) return true;
+        return value === true || value === false || value === 'true' || value === 'false' || value === '1' || value === '0';
+      })
       .withMessage('حالة الإبراز يجب أن تكون true أو false'),
     body('meta_description_ar')
       .optional()
@@ -474,9 +484,19 @@ router.put('/:id',
       .optional()
       .isIn(['draft', 'published', 'archived'])
       .withMessage('حالة المقال غير صحيحة'),
+    body('is_published')
+      .optional()
+      .custom((value) => {
+        if (value === undefined || value === null) return true;
+        return value === true || value === false || value === 'true' || value === 'false' || value === '1' || value === '0';
+      })
+      .withMessage('حالة النشر يجب أن تكون true أو false'),
     body('is_featured')
       .optional()
-      .isBoolean()
+      .custom((value) => {
+        if (value === undefined || value === null) return true;
+        return value === true || value === false || value === 'true' || value === 'false' || value === '1' || value === '0';
+      })
       .withMessage('حالة الإبراز يجب أن تكون true أو false'),
     body('meta_description_ar')
       .optional()
@@ -580,6 +600,15 @@ router.put('/:id',
       if (updateData.status !== undefined) {
         updateData.is_published = updateData.status === 'published';
         delete updateData.status; // Remove status from updateData since we use is_published
+      }
+      
+      // Convert string boolean values to actual booleans
+      if (updateData.is_published !== undefined) {
+        updateData.is_published = updateData.is_published === true || updateData.is_published === 'true' || updateData.is_published === '1';
+      }
+      
+      if (updateData.is_featured !== undefined) {
+        updateData.is_featured = updateData.is_featured === true || updateData.is_featured === 'true' || updateData.is_featured === '1';
       }
       
       // Whitelist allowed update fields to prevent SQL injection
