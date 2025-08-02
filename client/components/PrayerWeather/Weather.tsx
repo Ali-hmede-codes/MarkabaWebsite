@@ -59,14 +59,10 @@ const Weather: React.FC = () => {
     const fetchWeather = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-        console.log('Fetching weather from:', `${apiUrl}/api/weather`);
         const response = await axios.get<WeatherResponse>(`${apiUrl}/api/weather`);
-        console.log('Weather API response:', response.data);
         if (response.data.success) {
-          console.log('Setting weather data:', response.data.data);
           setWeather(response.data.data);
         } else {
-          console.error('Weather API error:', response.data.message);
           setError(response.data.message || 'فشل في جلب بيانات الطقس');
         }
       } catch (err) {
