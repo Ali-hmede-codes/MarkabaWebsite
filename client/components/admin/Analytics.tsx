@@ -10,6 +10,8 @@ interface AnalyticsData {
   totalPosts: number;
   totalCategories: number;
   loading: boolean;
+  isRealData?: boolean;
+  lastUpdated?: string;
 }
 
 const Analytics: React.FC = () => {
@@ -21,35 +23,33 @@ const Analytics: React.FC = () => {
     totalPosts: 0,
     totalCategories: 0,
     loading: true,
+    isRealData: false,
+    lastUpdated: new Date().toISOString(),
   });
 
   const fetchAnalyticsData = async () => {
     try {
       setAnalyticsData(prev => ({ ...prev, loading: true }));
       
-      // Fetch posts count
-      const postsResponse = await fetch('/api/posts');
-      const postsData = await postsResponse.json();
+      // Fetch real analytics data from our API endpoint
+      const response = await fetch('/api/analytics');
+      const data = await response.json();
       
-      // Fetch categories count
-      const categoriesResponse = await fetch('/api/categories');
-      const categoriesData = await categoriesResponse.json();
-      
-      // Simulate analytics data (in real app, this would come from Firebase Analytics API)
-      const currentHour = new Date().getHours();
-      const baseUsers = 1250;
-      const dailyVariation = Math.floor(Math.random() * 200) + 50;
-      const hourlyFactor = currentHour / 24;
-      
-      setAnalyticsData({
-        totalUsers: baseUsers + dailyVariation,
-        pageViews: Math.floor((baseUsers + dailyVariation) * 2.7) + Math.floor(Math.random() * 500),
-        sessionsToday: Math.floor((baseUsers + dailyVariation) * 0.08) + Math.floor(Math.random() * 30),
-        avgSessionDuration: `${Math.floor(Math.random() * 3) + 2}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`,
-        totalPosts: postsData.posts ? postsData.posts.length : 0,
-        totalCategories: categoriesData.categories ? categoriesData.categories.length : 0,
-        loading: false,
-      });
+      if (response.ok) {
+         setAnalyticsData({
+           totalUsers: data.totalUsers || 0,
+           pageViews: data.pageViews || 0,
+           sessionsToday: data.sessionsToday || 0,
+           avgSessionDuration: data.avgSessionDuration || '0:00',
+           totalPosts: data.totalPosts || 0,
+           totalCategories: data.totalCategories || 0,
+           loading: false,
+           isRealData: !data.error && data.totalUsers !== undefined,
+           lastUpdated: new Date().toISOString(),
+         });
+       } else {
+         throw new Error(data.error || 'Failed to fetch analytics data');
+       }
     } catch (error) {
       console.error('Error fetching analytics data:', error);
       setAnalyticsData(prev => ({ ...prev, loading: false }));
@@ -201,10 +201,22 @@ const Analytics: React.FC = () => {
               </span>
             </div>
             <div className="flex items-center justify-between py-3 px-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <span className="text-gray-600 dark:text-gray-400 font-medium">الحالة:</span>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                نشط
+              <span className="text-gray-600 dark:text-gray-400 font-medium">نوع البيانات:</span>
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${
+                analyticsData.isRealData 
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+              }`}>
+                <div className={`w-2 h-2 rounded-full mr-2 ${
+                  analyticsData.isRealData ? 'bg-green-500 animate-pulse' : 'bg-yellow-500'
+                }`}></div>
+                {analyticsData.isRealData ? 'بيانات حقيقية' : 'بيانات تجريبية'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-3 px-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <span className="text-gray-600 dark:text-gray-400 font-medium">آخر تحديث:</span>
+              <span className="text-gray-900 dark:text-white font-medium text-sm">
+                {analyticsData.lastUpdated ? new Date(analyticsData.lastUpdated).toLocaleString('ar-SA') : 'غير محدد'}
               </span>
             </div>
           </div>
@@ -216,19 +228,30 @@ const Analytics: React.FC = () => {
             إعدادات التتبع
           </h2>
           <div className="space-y-4">
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-              <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
-                <strong>ملاحظة:</strong> يتم تتبع جميع زيارات الصفحات تلقائياً. يمكنك عرض التقارير التفصيلية في
-                <a
-                  href="https://analytics.google.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline ml-1 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
-                >
-                  Google Analytics
-                </a>
-              </p>
-            </div>
+            {analyticsData.isRealData ? (
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <p className="text-sm text-green-800 dark:text-green-200 leading-relaxed">
+                  <strong>✅ تم التكوين بنجاح:</strong> البيانات المعروضة هنا مأخوذة من Firebase Analytics الحقيقي. يمكنك عرض التقارير التفصيلية في
+                  <a
+                    href="https://analytics.google.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline ml-1 hover:text-green-600 dark:hover:text-green-300 transition-colors"
+                  >
+                    Google Analytics
+                  </a>
+                </p>
+              </div>
+            ) : (
+              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200 leading-relaxed mb-2">
+                  <strong>⚠️ بيانات تجريبية:</strong> البيانات المعروضة حالياً هي بيانات تجريبية. لعرض البيانات الحقيقية من Firebase Analytics، يجب تكوين Google Analytics Data API.
+                </p>
+                <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                  راجع ملف <code className="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">FIREBASE_ANALYTICS_SETUP_GUIDE.md</code> للحصول على تعليمات التكوين.
+                </p>
+              </div>
+            )}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600 dark:text-gray-400">تتبع الصفحات:</span>
