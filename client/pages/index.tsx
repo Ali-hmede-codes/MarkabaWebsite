@@ -26,77 +26,10 @@ interface HomePageProps {
   error?: string | null;
 }
 
-interface PrayerTimes {
-  Fajr: string;
-  Duha?: string;
-  Dhuhr: string;
-  Asr: string;
-  Maghrib: string;
-  Isha: string;
-}
-
-interface WeatherData {
-  temperature: number;
-  description: string;
-  humidity: number;
-  windSpeed: number;
-  pressure: number;
-  visibility: number;
-  location: string;
-}
-
 const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   const { content } = useContent();
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);
   const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
-  const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
-  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [currentDate, setCurrentDate] = useState(new Date());
-
-  // Fetch prayer times from API
-  const fetchPrayerTimes = async () => {
-    try {
-      // Use correct API URL based on environment
-      const isDevelopment = process.env.NODE_ENV === 'development';
-      const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
-      const apiVersion = isDevelopment ? '/api' : '/api/v2';
-      
-      const response = await fetch(`${baseUrl}${apiVersion}/prayer/current`);
-      const data = await response.json();
-      if (data.success && data.data?.results) {
-        setPrayerTimes(data.data.results);
-      }
-    } catch (error) {
-      console.error('Error fetching prayer times:', error);
-    }
-  };
-
-  // Fetch weather data from API
-  const fetchWeatherData = async () => {
-    try {
-      // Use correct API URL based on environment
-      const isDevelopment = process.env.NODE_ENV === 'development';
-      const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
-      const apiVersion = isDevelopment ? '/api' : '/api/v2';
-      
-      const response = await fetch(`${baseUrl}${apiVersion}/weather`);
-      const data = await response.json();
-      if (data.success && data.data) {
-        const weather = data.data;
-        setWeatherData({
-          temperature: weather.temperature || weather.main?.temp || 0,
-          description: weather.description || weather.weather?.[0]?.description || 'غير متوفر',
-          humidity: weather.humidity || weather.main?.humidity || 0,
-          windSpeed: weather.windSpeed || weather.wind?.speed || 0,
-          pressure: weather.pressure || weather.main?.pressure || 0,
-          visibility: weather.visibility || (weather.visibility ? weather.visibility / 1000 : 0),
-          location: weather.location || 'بيروت'
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-    }
-  };
 
   useEffect(() => {
     if (posts.length > 0) {
@@ -118,28 +51,6 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
       setFeaturedPosts(featuredPostsList);
     }
   }, [posts]);
-
-  // Fetch prayer times and weather data on component mount
-  useEffect(() => {
-    fetchPrayerTimes();
-    fetchWeatherData();
-    
-    // Update current date every minute
-    const dateInterval = setInterval(() => {
-      setCurrentDate(new Date());
-    }, 60000);
-
-    // Refresh prayer times and weather data every hour
-    const dataInterval = setInterval(() => {
-      fetchPrayerTimes();
-      fetchWeatherData();
-    }, 3600000);
-
-    return () => {
-      clearInterval(dateInterval);
-      clearInterval(dataInterval);
-    };
-  }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -469,7 +380,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <div className="bg-white rounded-xl p-8 mx-auto max-w-md">
+                  <div className="bg-white rounded-xl shadow-lg p-8 mx-auto max-w-md">
                     <div className="text-gray-400 mb-4">
                       <FiTrendingUp className="text-4xl mx-auto" />
                     </div>
@@ -498,64 +409,51 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                     </div>
                   </div>
                   <div className="info-box">
-                    {prayerTimes ? (
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                          <span className="font-semibold text-gray-700">
-                            الفجر
-                          </span>
-                          <span className="text-green-600 font-bold">{prayerTimes.Fajr}</span>
-                        </div>
-                        {prayerTimes.Duha && (
-                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="font-semibold text-gray-700">
-                              الضحى
-                            </span>
-                            <span className="text-green-600 font-bold">{prayerTimes.Duha}</span>
-                          </div>
-                        )}
-                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                          <span className="font-semibold text-gray-700">
-                            الظهر
-                          </span>
-                          <span className="text-green-600 font-bold">{prayerTimes.Dhuhr}</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                          <span className="font-semibold text-gray-700">
-                            العصر
-                          </span>
-                          <span className="text-green-600 font-bold">{prayerTimes.Asr}</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                          <span className="font-semibold text-gray-700">
-                            المغرب
-                          </span>
-                          <span className="text-green-600 font-bold">{prayerTimes.Maghrib}</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2">
-                          <span className="font-semibold text-gray-700">
-                            العشاء
-                          </span>
-                          <span className="text-green-600 font-bold">{prayerTimes.Isha}</span>
-                        </div>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="font-semibold text-gray-700">
+                          الفجر
+                        </span>
+                        <span className="text-green-600 font-bold">05:30</span>
                       </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <div className="text-gray-500">جاري تحميل مواقيت الصلاة...</div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="font-semibold text-gray-700">
+                          الشروق
+                        </span>
+                        <span className="text-green-600 font-bold">06:45</span>
                       </div>
-                    )}
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="font-semibold text-gray-700">
+                          الظهر
+                        </span>
+                        <span className="text-green-600 font-bold">12:15</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="font-semibold text-gray-700">
+                          العصر
+                        </span>
+                        <span className="text-green-600 font-bold">15:30</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="font-semibold text-gray-700">
+                          المغرب
+                        </span>
+                        <span className="text-green-600 font-bold">18:00</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2">
+                        <span className="font-semibold text-gray-700">
+                          العشاء
+                        </span>
+                        <span className="text-green-600 font-bold">19:30</span>
+                      </div>
+                    </div>
                     <div className="mt-4 pt-4 border-t border-gray-100">
                       <div className="flex items-center text-sm text-gray-500">
-                        <FiCalendar
-                          size={14}
-                          className="ml-2 rtl:ml-0 rtl:mr-2"
+                        <FiMapPin
+                          size={12}
+                          className="ml-1 rtl:ml-0 rtl:mr-1"
                         />
-                        <span>{currentDate.toLocaleDateString('ar-LB', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}</span>
+                        <span>بيروت، لبنان</span>
                       </div>
                     </div>
                   </div>
@@ -570,68 +468,55 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                         حالة الطقس
                       </h3>
                       <span className="text-green-200 font-medium text-sm">
-                        {currentDate.toLocaleDateString('ar-LB', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                        {getGregorianDate()}
                       </span>
                     </div>
                   </div>
                   <div className="info-box">
-                    {weatherData ? (
-                      <>
-                        <div className="text-center mb-6">
-                          <div className="text-4xl font-bold text-blue-600 mb-2">
-                            {Math.round(weatherData.temperature)}°C
-                          </div>
-                          <div className="text-gray-600 font-medium">
-                            {weatherData.description}
-                          </div>
-                          <div className="flex items-center justify-center text-sm text-gray-500 mt-2">
-                            <FiMapPin
-                              size={12}
-                              className="ml-1 rtl:ml-0 rtl:mr-1"
-                            />
-                            <span>{weatherData.location}</span>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="text-center p-3 bg-blue-50 rounded-lg">
-                            <div className="text-sm text-gray-600 mb-1">
-                              الرطوبة
-                            </div>
-                            <div className="text-lg font-bold text-blue-600">
-                              {weatherData.humidity}%
-                            </div>
-                          </div>
-                          <div className="text-center p-3 bg-blue-50 rounded-lg">
-                            <div className="text-sm text-gray-600 mb-1">الرياح</div>
-                            <div className="text-lg font-bold text-blue-600">
-                              {weatherData.windSpeed} كم/س
-                            </div>
-                          </div>
-                          <div className="text-center p-3 bg-blue-50 rounded-lg">
-                            <div className="text-sm text-gray-600 mb-1">الضغط</div>
-                            <div className="text-lg font-bold text-blue-600">
-                              {weatherData.pressure} هكتوباسكال
-                            </div>
-                          </div>
-                          <div className="text-center p-3 bg-blue-50 rounded-lg">
-                            <div className="text-sm text-gray-600 mb-1">الرؤية</div>
-                            <div className="text-lg font-bold text-blue-600">
-                              {weatherData.visibility} كم
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-center py-8">
-                        <div className="text-gray-500">جاري تحميل بيانات الطقس...</div>
+                    <div className="text-center mb-6">
+                      <div className="text-4xl font-bold text-blue-600 mb-2">
+                        28°C
                       </div>
-                    )}
+                      <div className="text-gray-600 font-medium">
+                        مشمس جزئياً
+                      </div>
+                      <div className="flex items-center justify-center text-sm text-gray-500 mt-2">
+                        <FiMapPin
+                          size={12}
+                          className="ml-1 rtl:ml-0 rtl:mr-1"
+                        />
+                        <span>بيروت</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="text-sm text-gray-600 mb-1">
+                          الرطوبة
+                        </div>
+                        <div className="text-lg font-bold text-blue-600">
+                          65%
+                        </div>
+                      </div>
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="text-sm text-gray-600 mb-1">الرياح</div>
+                        <div className="text-lg font-bold text-blue-600">
+                          15 كم/س
+                        </div>
+                      </div>
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="text-sm text-gray-600 mb-1">الضغط</div>
+                        <div className="text-lg font-bold text-blue-600">
+                          1013 هكتوباسكال
+                        </div>
+                      </div>
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="text-sm text-gray-600 mb-1">الرؤية</div>
+                        <div className="text-lg font-bold text-blue-600">
+                          10 كم
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
