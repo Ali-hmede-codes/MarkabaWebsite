@@ -142,7 +142,6 @@ const PostsManagement: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...post,
           is_featured: !post.is_featured
         })
       });

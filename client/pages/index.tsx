@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { NextPage, NextPageContext } from "next";
+import { NextPage, GetServerSideProps } from "next";
 import Head from "next/head";
 import Layout from "../components/Layout/Layout";
 import SimpleMeta from "../components/Meta/SimpleMeta";
@@ -23,7 +23,7 @@ import BreakingNewsBanner from "../components/BreakingNews/BreakingNewsBanner";
 interface HomePageProps {
   posts: Post[];
   categories: Category[];
-  error?: string;
+  error?: string | null;
 }
 
 const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
@@ -42,21 +42,13 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
       // Latest posts for آخر الأخبار (last 8 posts)
       setLatestPosts(sortedPosts.slice(0, 8));
 
-      // Featured posts for الأخبار المميزة - most trending (by views)
-      const trendingPosts = [...posts]
-        .filter((post) => post.views && post.views > 0)
-        .sort((a, b) => (b.views || 0) - (a.views || 0))
-        .slice(0, 5);
+      // Featured posts for الأخبار المميزة - last 4 featured posts
+      const featuredPostsList = [...posts]
+        .filter((post) => post.is_featured)
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 4);
 
-      // If not enough trending posts, fill with latest
-      if (trendingPosts.length < 5) {
-        const remainingPosts = sortedPosts
-          .filter((post) => !trendingPosts.find((tp) => tp.id === post.id))
-          .slice(0, 5 - trendingPosts.length);
-        setFeaturedPosts([...trendingPosts, ...remainingPosts]);
-      } else {
-        setFeaturedPosts(trendingPosts);
-      }
+      setFeaturedPosts(featuredPostsList);
     }
   }, [posts]);
 
@@ -106,18 +98,36 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   };
 
   const getHijriDate = () => {
-    const now = new Date();
     const hijriMonths = [
       'محرم', 'صفر', 'ربيع الأول', 'ربيع الثاني', 'جمادى الأولى', 'جمادى الثانية',
       'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
     ];
     
-    // Simple Hijri date calculation (approximate)
-    const hijriYear = Math.floor((now.getFullYear() - 622) * 1.030684) + 1;
-    const hijriMonth = hijriMonths[now.getMonth()];
-    const hijriDay = now.getDate();
+    // Proper Hijri date calculation using Umm al-Qura algorithm
+    const gregorianToHijri = (date: Date) => {
+      const julianDay = Math.floor((date.getTime() / 86400000) + 2440587.5);
+      const hijriEpoch = 1948439.5; // Hijri epoch in Julian days
+      const daysSinceHijriEpoch = julianDay - hijriEpoch;
+      
+      // Average Hijri year is approximately 354.367 days
+      const hijriYear = Math.floor(daysSinceHijriEpoch / 354.367) + 1;
+      const dayOfYear = Math.floor(daysSinceHijriEpoch % 354.367);
+      
+      // Approximate month calculation (each month ~29.5 days)
+      const hijriMonth = Math.floor(dayOfYear / 29.5);
+      const hijriDay = Math.floor(dayOfYear % 29.5) + 1;
+      
+      return {
+        year: hijriYear,
+        month: Math.min(hijriMonth, 11), // Ensure month is 0-11
+        day: Math.max(1, Math.min(hijriDay, 30)) // Ensure day is 1-30
+      };
+    };
     
-    return `${hijriDay} ${hijriMonth} ${hijriYear}هـ`;
+    const now = new Date();
+    const hijriDate = gregorianToHijri(now);
+    
+    return `${hijriDate.day} ${hijriMonths[hijriDate.month]} ${hijriDate.year}هـ`;
   };
 
   const getGregorianDate = () => {
@@ -301,7 +311,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
               {featuredPosts.length > 0 && (
                 <div className="featured-grid">
-                  {featuredPosts.slice(0, 4).map((post, index) => (
+                  {featuredPosts.map((post, index) => (
                     <article
                       key={post.id}
                       className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 aspect-square flex flex-col"
@@ -507,9 +517,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   );
 };
 
-HomePage.getInitialProps = async (
-  ctx: NextPageContext,
-): Promise<HomePageProps> => {
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async (context) => {
   try {
     // Check if we're on server or client side
     const isServer = typeof window === 'undefined';
@@ -555,9 +563,11 @@ HomePage.getInitialProps = async (
         // If fetch is not available on server, provide fallback
         console.warn('Fetch not available on server, providing fallback data');
         return {
-          posts: [],
-          categories: [],
-          error: undefined,
+          props: {
+            posts: [],
+            categories: [],
+            error: null,
+          },
         };
       }
     } else {
@@ -617,8 +627,10 @@ HomePage.getInitialProps = async (
       : [];
 
     return {
-      posts,
-      categories,
+      props: {
+        posts,
+        categories,
+      },
     };
   } catch (error) {
     console.error("getInitialProps Error fetching homepage data:", error);
@@ -628,17 +640,21 @@ HomePage.getInitialProps = async (
       if (error.message.includes('ECONNREFUSED') || error.message.includes('fetch')) {
         console.warn('Server-side API connection failed, providing fallback data');
         return {
-          posts: [],
-          categories: [],
-          error: undefined, // Don't show error to user for server-side issues
+          props: {
+            posts: [],
+            categories: [],
+            error: null, // Don't show error to user for server-side issues
+          },
         };
       }
     }
     
     return {
-      posts: [],
-      categories: [],
-      error: "حدث خطأ أثناء تحميل البيانات. يرجى المحاولة مرة أخرى لاحقاً.",
+      props: {
+        posts: [],
+        categories: [],
+        error: "حدث خطأ أثناء تحميل البيانات. يرجى المحاولة مرة أخرى لاحقاً.",
+      },
     };
   }
 };

@@ -54,7 +54,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
         
-        const response = await fetch('/api/breaking-news?active=true', {
+        const response = await fetch('/api/breaking-news?active=true&limit=10', {
           signal: controller.signal
         });
         
@@ -132,7 +132,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
           setIsVisible(true);
         }, 200); // 200ms transition time for quick content change
       }, 500); // 0.5 seconds expansion time (25% of 2 seconds)
-    }, 8000); // 8 seconds per item for better readability
+    }, 4000); // 4 seconds per item
 
     return () => clearInterval(interval);
   }, [breakingNews.length]);
