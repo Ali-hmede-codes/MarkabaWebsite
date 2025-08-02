@@ -525,6 +525,11 @@ router.put('/:id',
       if (updateData.excerpt_ar) updateData.excerpt_ar = updateData.excerpt_ar.trim();
       if (updateData.meta_description_ar) updateData.meta_description_ar = updateData.meta_description_ar.trim();
       
+      // Generate slug if title is provided but slug is not
+      if (updateData.title_ar && !updateData.slug) {
+        updateData.slug = generateArabicSlug(updateData.title_ar);
+      }
+      
       // Validate slug if provided
       if (updateData.slug && updateData.slug.length < 3) {
         return res.status(400).json({
@@ -562,10 +567,8 @@ router.put('/:id',
         );
         
         if (duplicatePosts.length > 0) {
-          return res.status(400).json({
-            success: false,
-            message: 'الرابط المختصر موجود بالفعل'
-          });
+          // If slug is duplicate, make it unique by appending timestamp
+          updateData.slug = `${updateData.slug}-${Date.now()}`;
         }
       }
       
