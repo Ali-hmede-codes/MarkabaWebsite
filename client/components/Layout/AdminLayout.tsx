@@ -28,13 +28,17 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </Head>
 
-      <div className={`min-h-screen bg-gray-50 ${className}`} dir="rtl">
+      <div className={`min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 ${className}`} dir="rtl">
         {/* Admin Navigation */}
         <AdminNav />
 
         {/* Main Admin Content */}
-        <main className="flex-1">
-          {children}
+        <main className="flex-1 relative">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 min-h-[calc(100vh-120px)]">
+              {children}
+            </div>
+          </div>
         </main>
 
         {/* Toast Notifications */}

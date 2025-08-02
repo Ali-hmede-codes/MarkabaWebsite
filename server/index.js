@@ -378,6 +378,19 @@ app.get('/api', (req, res) => {
 
 // Rate limiting removed - no restrictions applied
 
+// Serve robots.txt for API subdomain to block indexing
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send(`# Robots.txt for API subdomain (api.markaba.news)
+# Block all crawlers from indexing API endpoints
+
+User-agent: *
+Disallow: /
+
+# No sitemap for API subdomain
+# API endpoints should not be indexed by search engines`);
+});
+
 // Enhanced API routes (v2)
 app.use('/api/v2/auth', authEnhancedRoutes);
 app.use('/api/v2/posts', postsRoutes);
