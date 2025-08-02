@@ -206,7 +206,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
                   if (e.currentTarget.src.includes('breaking-news.png')) {
                     e.currentTarget.src = '/images/logo.png';
                   } else if (e.currentTarget.src.includes('logo.png')) {
-                    e.currentTarget.src = '/images/logo.svg';
+                    e.currentTarget.src = '/images/logo.png';
                   } else {
                     e.currentTarget.style.display = 'none';
                     e.currentTarget.parentElement!.innerHTML = '<span class="text-blue-600 font-bold text-sm">📰</span>';
