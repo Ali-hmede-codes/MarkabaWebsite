@@ -44,7 +44,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
       // Featured posts for الأخبار المميزة - last 4 featured posts
       const featuredPostsList = [...posts]
-        .filter((post) => post.is_featured)
+        .filter((post) => Boolean(post.is_featured))
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         .slice(0, 4);
 
