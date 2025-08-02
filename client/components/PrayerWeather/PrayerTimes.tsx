@@ -24,6 +24,26 @@ const PrayerTimes: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper function to format prayer times with Arabic AM/PM
+  const formatPrayerTime = (time: string) => {
+    return time
+      .replace(/%am%/g, 'صباحاً')
+      .replace(/%pm%/g, 'مساءً');
+  };
+
+  // Helper function to translate prayer names to Arabic
+  const translatePrayerName = (name: string) => {
+    const translations: { [key: string]: string } = {
+      'Fajr': 'الفجر',
+      'Duha': 'الضحى',
+      'Dhuhr': 'الظهر',
+      'Asr': 'العصر',
+      'Maghrib': 'المغرب',
+      'Isha': 'العشاء'
+    };
+    return translations[name] || name;
+  };
+
   // Helper function to get Hijri date
   const getHijriDate = () => {
     const hijriMonths = [
@@ -58,7 +78,8 @@ const PrayerTimes: React.FC = () => {
   useEffect(() => {
     const fetchPrayerTimes = async () => {
       try {
-        const response = await axios.get<PrayerTimesResponse>('/api/prayer/today');
+        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+        const response = await axios.get<PrayerTimesResponse>(`${apiUrl}/api/prayer/today`);
         if (response.data.success) {
           setPrayerTimes(response.data.data.results);
         } else {
@@ -123,8 +144,8 @@ const PrayerTimes: React.FC = () => {
       <div className="space-y-2">
         {Object.entries(prayerTimes).map(([name, time]) => (
           <div key={name} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
-            <span className="font-medium text-gray-700">{name}</span>
-            <span className="text-green-600 font-bold">{time}</span>
+            <span className="font-medium text-gray-700">{translatePrayerName(name)}</span>
+            <span className="text-green-600 font-bold">{formatPrayerTime(time)}</span>
           </div>
         ))}
       </div>

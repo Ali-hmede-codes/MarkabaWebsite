@@ -9,7 +9,12 @@ interface WeatherData {
   wind_speed: number;
   pressure: number;
   visibility: number;
-  location?: string;
+  location?: {
+    country: string;
+    city: string;
+    latitude: number;
+    longitude: number;
+  } | string;
 }
 
 interface WeatherResponse {
@@ -39,7 +44,10 @@ const Weather: React.FC = () => {
   };
 
   // Helper function to get weather icon
-  const getWeatherIcon = (condition: string) => {
+  const getWeatherIcon = (condition: string | undefined) => {
+    if (!condition) {
+      return <FiSun className="text-yellow-500" size={24} />;
+    }
     const lowerCondition = condition.toLowerCase();
     if (lowerCondition.includes('rain') || lowerCondition.includes('مطر')) {
       return <FiCloudRain className="text-blue-500" size={24} />;
@@ -50,10 +58,15 @@ const Weather: React.FC = () => {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        const response = await axios.get<WeatherResponse>('/api/weather');
+        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+        console.log('Fetching weather from:', `${apiUrl}/api/weather`);
+        const response = await axios.get<WeatherResponse>(`${apiUrl}/api/weather`);
+        console.log('Weather API response:', response.data);
         if (response.data.success) {
+          console.log('Setting weather data:', response.data.data);
           setWeather(response.data.data);
         } else {
+          console.error('Weather API error:', response.data.message);
           setError(response.data.message || 'فشل في جلب بيانات الطقس');
         }
       } catch (err) {
@@ -113,7 +126,12 @@ const Weather: React.FC = () => {
       {weather.location && (
         <div className="flex items-center justify-center mb-4">
           <FiMapPin className="text-gray-500 ml-1" size={16} />
-          <span className="text-sm text-gray-600">{weather.location}</span>
+          <span className="text-sm text-gray-600">
+            {typeof weather.location === 'string' 
+              ? weather.location 
+              : `${weather.location.city}, ${weather.location.country}`
+            }
+          </span>
         </div>
       )}
       
@@ -128,7 +146,7 @@ const Weather: React.FC = () => {
         <div className="text-3xl font-bold text-blue-600 mb-1">
           {weather.temperature}°م
         </div>
-        <div className="text-gray-600">{weather.condition}</div>
+        <div className="text-gray-600">{weather.condition || 'غير محدد'}</div>
       </div>
       
       <div className="grid grid-cols-2 gap-3">

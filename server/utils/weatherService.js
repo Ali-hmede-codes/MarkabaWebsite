@@ -4,20 +4,18 @@ const path = require('path');
 
 /**
  * Weather Service for Lebanon
- * Fetches weather data from RapidAPI and stores it in JSON file
+ * Fetches weather data from WeatherAPI.com and stores it in JSON file
  */
 class WeatherService {
   constructor() {
-    this.apiKey = process.env.WEATHER_API_KEY;
-    this.apiHost = process.env.WEATHER_API_HOST;
-    this.latitude = process.env.WEATHER_LATITUDE || '33.8547';
-    this.longitude = process.env.WEATHER_LONGITUDE || '35.8623';
-    this.language = process.env.WEATHER_LANGUAGE || 'AR';
-    this.dataFile = path.resolve(__dirname, process.env.WEATHER_DATA_FILE || '../../data/weather.json');
+    this.apiKey = 'e8c815c19ac742ba917185014250208';
+    this.apiHost = 'api.weatherapi.com';
+    this.location = 'Lebanon';
+    this.dataFile = path.resolve(__dirname, process.env.WEATHER_DATA_FILE || '../data/weather.json');
   }
 
   /**
-   * Fetch weather data from RapidAPI
+   * Fetch weather data from WeatherAPI.com
    * @returns {Promise<Object>} Weather data
    */
   async fetchWeatherData() {
@@ -26,10 +24,9 @@ class WeatherService {
         method: 'GET',
         hostname: this.apiHost,
         port: null,
-        path: `/latlon?latitude=${this.latitude}&longitude=${this.longitude}&lang=${this.language}`,
+        path: `/v1/current.json?key=${this.apiKey}&q=${this.location}&aqi=no`,
         headers: {
-          'x-rapidapi-key': this.apiKey,
-          'x-rapidapi-host': this.apiHost
+          'Content-Type': 'application/json'
         }
       };
 
@@ -45,15 +42,20 @@ class WeatherService {
             const body = Buffer.concat(chunks);
             const data = JSON.parse(body.toString());
             
-            // Add timestamp and location info
+            // Transform WeatherAPI.com response to our format
             const weatherData = {
-              ...data,
+              temperature: data.current.temp_c,
+              condition: data.current.condition.text,
+              humidity: data.current.humidity,
+              wind_speed: data.current.wind_kph,
+              pressure: data.current.pressure_mb,
+              visibility: data.current.vis_km,
               lastUpdated: new Date().toISOString(),
               location: {
-                country: 'Lebanon',
-                city: 'Beirut',
-                latitude: this.latitude,
-                longitude: this.longitude
+                country: data.location.country,
+                city: data.location.name,
+                latitude: data.location.lat,
+                longitude: data.location.lon
               }
             };
             
