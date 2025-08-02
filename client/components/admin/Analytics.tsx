@@ -36,20 +36,20 @@ const Analytics: React.FC = () => {
       const data = await response.json();
       
       if (response.ok) {
-         setAnalyticsData({
-           totalUsers: data.totalUsers || 0,
-           pageViews: data.pageViews || 0,
-           sessionsToday: data.sessionsToday || 0,
-           avgSessionDuration: data.avgSessionDuration || '0:00',
-           totalPosts: data.totalPosts || 0,
-           totalCategories: data.totalCategories || 0,
-           loading: false,
-           isRealData: !data.error && data.totalUsers !== undefined,
-           lastUpdated: new Date().toISOString(),
-         });
-       } else {
-         throw new Error(data.error || 'Failed to fetch analytics data');
-       }
+          setAnalyticsData({
+            totalUsers: data.totalUsers || 0,
+            pageViews: data.pageViews || 0,
+            sessionsToday: data.sessionsToday || 0,
+            avgSessionDuration: data.avgSessionDuration || '0:00',
+            totalPosts: data.totalPosts || 0,
+            totalCategories: data.totalCategories || 0,
+            loading: false,
+            isRealData: data.isRealData === true,
+            lastUpdated: new Date().toISOString(),
+          });
+        } else {
+          throw new Error(data.error || 'Failed to fetch analytics data');
+        }
     } catch (error) {
       console.error('Error fetching analytics data:', error);
       setAnalyticsData(prev => ({ ...prev, loading: false }));

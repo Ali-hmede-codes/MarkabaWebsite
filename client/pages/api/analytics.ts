@@ -32,6 +32,7 @@ interface AnalyticsResponse {
   totalCategories: number;
   realTimeUsers?: number;
   topPages?: Array<{ page: string; views: number }>;
+  isRealData?: boolean;
   error?: string;
 }
 
@@ -58,20 +59,16 @@ export default async function handler(
       totalCategories: categoriesData.categories ? categoriesData.categories.length : 0,
     };
 
-    // If Analytics Data API is available, fetch real data
-    if (analyticsDataClient && process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID) {
+    // Check if Google Analytics Data API is properly configured
+    const isApiConfigured = analyticsDataClient && 
+                           process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL && 
+                           process.env.GOOGLE_ANALYTICS_PRIVATE_KEY && 
+                           process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID;
+
+    if (isApiConfigured && analyticsDataClient && process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID) {
       try {
         const propertyId = process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID.replace('G-', '');
         
-        // Get today's date range
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-        
-        const formatDate = (date: Date) => {
-          return date.toISOString().split('T')[0];
-        };
-
         // Fetch analytics data for the last 7 days
         const [response] = await analyticsDataClient.runReport({
           property: `properties/${propertyId}`,
@@ -104,24 +101,6 @@ export default async function handler(
           ],
         });
 
-        // Fetch top pages
-        const [topPagesResponse] = await analyticsDataClient.runReport({
-          property: `properties/${propertyId}`,
-          dateRanges: [
-            {
-              startDate: '7daysAgo',
-              endDate: 'today',
-            },
-          ],
-          metrics: [
-            { name: 'screenPageViews' },
-          ],
-          dimensions: [
-            { name: 'pagePath' },
-          ],
-          limit: 10,
-        });
-
         // Parse the response
         if (response.rows && response.rows.length > 0) {
           const row = response.rows[0];
@@ -138,27 +117,27 @@ export default async function handler(
           analyticsData.sessionsToday = parseInt(todayResponse.rows[0].metricValues?.[0]?.value || '0');
         }
 
-        // Parse top pages
-        if (topPagesResponse.rows) {
-          analyticsData.topPages = topPagesResponse.rows.map(row => ({
-            page: row.dimensionValues?.[0]?.value || '',
-            views: parseInt(row.metricValues?.[0]?.value || '0')
-          }));
-        }
+        // Mark as real data
+        (analyticsData as any).isRealData = true;
 
       } catch (analyticsError) {
         console.error('Error fetching Firebase Analytics data:', analyticsError);
         // Fall back to simulated data if Analytics API fails
         analyticsData = {
           ...analyticsData,
-          ...getSimulatedData()
+          ...getSimulatedData(),
+          isRealData: false,
+          error: 'Analytics API error'
         };
       }
     } else {
       // Use simulated data if Analytics API is not configured
+      console.log('Google Analytics Data API not configured, using simulated data');
       analyticsData = {
         ...analyticsData,
-        ...getSimulatedData()
+        ...getSimulatedData(),
+        isRealData: false,
+        error: 'API not configured'
       };
     }
 

@@ -14,6 +14,7 @@
     "deploy": "npm run build:production"
   },
   "dependencies": {
+    "@google-analytics/data": "^5.2.0",
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.10",
@@ -24,6 +25,7 @@
     "axios": "^1.5.0",
     "cookies-next": "^4.3.0",
     "critters": "^0.0.23",
+    "firebase": "^12.0.0",
     "form-data": "^4.0.4",
     "formidable": "^3.5.4",
     "js-cookie": "^3.0.5",
