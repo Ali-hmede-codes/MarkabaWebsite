@@ -104,26 +104,26 @@ const PostsManagement: React.FC = () => {
 
   const togglePublishStatus = async (post: Post) => {
     try {
-      const response = await fetch(`/api/posts/${post.id}`, {
+      const response = await fetch(`/api/posts/${post.id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...post,
-          is_published: !post.is_published
+          status: !post.is_published ? 'published' : 'draft'
         })
       });
 
       const data = await response.json();
       if (data.success) {
+        const newPublishedStatus = !post.is_published;
         setPosts(posts.map(p => 
           p.id === post.id 
-            ? { ...p, is_published: !p.is_published }
+            ? { ...p, is_published: newPublishedStatus }
             : p
         ));
         toast.success(
-          post.is_published ? 'تم إلغاء نشر المقال' : 'تم نشر المقال'
+          newPublishedStatus ? 'تم نشر المقال' : 'تم إلغاء نشر المقال'
         );
       } else {
         toast.error('فشل في تحديث حالة النشر');
@@ -145,13 +145,14 @@ const PostsManagement: React.FC = () => {
 
       const data = await response.json();
       if (data.success) {
+        const newFeaturedStatus = !post.is_featured;
         setPosts(posts.map(p => 
           p.id === post.id 
-            ? { ...p, is_featured: !p.is_featured }
+            ? { ...p, is_featured: newFeaturedStatus }
             : p
         ));
         toast.success(
-          post.is_featured ? 'تم إلغاء تمييز المقال' : 'تم تمييز المقال'
+          newFeaturedStatus ? 'تم تمييز المقال' : 'تم إلغاء تمييز المقال'
         );
       } else {
         toast.error('فشل في تحديث حالة التمييز');

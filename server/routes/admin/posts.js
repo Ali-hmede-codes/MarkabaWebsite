@@ -310,7 +310,12 @@ router.post('/',
       .optional()
       .trim()
       .isLength({ max: 160 })
-      .withMessage('وصف SEO يجب أن يكون أقل من 160 حرف')
+      .withMessage('وصف SEO يجب أن يكون أقل من 160 حرف'),
+    body('tags')
+      .optional()
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage('الكلمات المفتاحية يجب أن تكون أقل من 500 حرف')
   ],
   async (req, res) => {
     try {
@@ -502,7 +507,12 @@ router.put('/:id',
       .optional()
       .trim()
       .isLength({ max: 160 })
-      .withMessage('وصف SEO يجب أن يكون أقل من 160 حرف')
+      .withMessage('وصف SEO يجب أن يكون أقل من 160 حرف'),
+    body('tags')
+      .optional()
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage('الكلمات المفتاحية يجب أن تكون أقل من 500 حرف')
   ],
   async (req, res) => {
     try {
@@ -524,6 +534,7 @@ router.put('/:id',
       if (updateData.content_ar) updateData.content_ar = updateData.content_ar.trim();
       if (updateData.excerpt_ar) updateData.excerpt_ar = updateData.excerpt_ar.trim();
       if (updateData.meta_description_ar) updateData.meta_description_ar = updateData.meta_description_ar.trim();
+      if (updateData.tags) updateData.tags = updateData.tags.trim();
       
       // Generate slug if title is provided but slug is not
       if (updateData.title_ar && !updateData.slug) {
@@ -617,7 +628,7 @@ router.put('/:id',
       // Whitelist allowed update fields to prevent SQL injection
       const allowedUpdateFields = [
         'title_ar', 'slug', 'content_ar', 'excerpt_ar', 'featured_image', 'category_id',
-        'is_published', 'is_featured', 'meta_description_ar'
+        'is_published', 'is_featured', 'meta_description_ar', 'tags'
       ];
       
       // Prepare update fields with whitelist validation
@@ -639,12 +650,11 @@ router.put('/:id',
       }
       
       updateFields.push('updated_at = NOW()');
-      updateValues.push(id);
       
       // Update post
       await db.execute(
         `UPDATE posts SET ${updateFields.join(', ')} WHERE id = ?`,
-        updateValues
+        [...updateValues, id]
       );
       
       // Get updated post

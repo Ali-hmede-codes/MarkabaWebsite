@@ -31,53 +31,86 @@ export default async function handler(
     }
     
     if (method === 'PUT') {
-      // Handle multipart form data for file uploads
-      const form = formidable({
-        multiples: false,
-        keepExtensions: true,
-      });
-
-      const [fields, files] = await form.parse(req);
-
-      // Create FormData for backend request
-      const formData = new FormData();
-
-      // Add all text fields
-      Object.entries(fields).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          formData.append(key, value[0]);
-        } else {
-          formData.append(key, value || '');
-        }
-      });
-
-      // Add file if present
-      if (files.featured_image && Array.isArray(files.featured_image) && files.featured_image[0]) {
-        const file = files.featured_image[0];
-        const fileStream = fs.createReadStream(file.filepath);
-        formData.append('featured_image', fileStream, {
-          filename: file.originalFilename || 'image.jpg',
-          contentType: file.mimetype || 'image/jpeg',
-        });
-      }
-
-      // Forward request to backend
-      const response = await fetch(backendUrl, {
-        method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          ...formData.getHeaders(),
-        },
-        body: formData as any,
-      });
-
-      const data = await response.json();
+      // Check content type to determine how to handle the request
+      const contentType = req.headers['content-type'] || '';
       
-      if (!response.ok) {
-        return res.status(response.status).json(data);
-      }
+      if (contentType.includes('multipart/form-data')) {
+        // Handle multipart form data for file uploads
+        const form = formidable({
+          multiples: false,
+          keepExtensions: true,
+        });
 
-      res.status(200).json(data);
+        const [fields, files] = await form.parse(req);
+
+        // Create FormData for backend request
+        const formData = new FormData();
+
+        // Add all text fields
+        Object.entries(fields).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            formData.append(key, value[0]);
+          } else {
+            formData.append(key, value || '');
+          }
+        });
+
+        // Add file if present
+        if (files.featured_image && Array.isArray(files.featured_image) && files.featured_image[0]) {
+          const file = files.featured_image[0];
+          const fileStream = fs.createReadStream(file.filepath);
+          formData.append('featured_image', fileStream, {
+            filename: file.originalFilename || 'image.jpg',
+            contentType: file.mimetype || 'image/jpeg',
+          });
+        }
+
+        // Forward request to backend
+        const response = await fetch(backendUrl, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            ...formData.getHeaders(),
+          },
+          body: formData as any,
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          return res.status(response.status).json(data);
+        }
+
+        res.status(200).json(data);
+      } else {
+        // Handle JSON requests (for simple status updates)
+        let body = '';
+        req.on('data', chunk => {
+          body += chunk.toString();
+        });
+        
+        await new Promise(resolve => {
+          req.on('end', resolve);
+        });
+
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        };
+        
+        const fetchOptions: RequestInit = {
+          method,
+          headers,
+          body: body || undefined,
+        };
+        
+        // Make request to backend
+        const response = await fetch(backendUrl, fetchOptions);
+        const data = await response.json();
+        
+        // Return response with same status code
+        res.status(response.status).json(data);
+      }
     } else if (method === 'PATCH') {
       // Handle PATCH requests with JSON body (for featured toggle, status updates, etc.)
       let body = '';
