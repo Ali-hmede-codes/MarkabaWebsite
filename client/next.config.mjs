@@ -70,7 +70,19 @@ const nextConfig = {
   // Rewrites for clean URLs
   async rewrites() {
     return [
-      // Removed sitemap rewrites to serve static files directly from /public
+      // Sitemap rewrites to serve API-generated sitemaps at root level
+      {
+        source: '/sitemap-posts.xml',
+        destination: '/api/sitemap-posts.xml',
+      },
+      {
+        source: '/sitemap-categories.xml',
+        destination: '/api/sitemap-categories.xml',
+      },
+      {
+        source: '/sitemap.xml',
+        destination: '/api/sitemap.xml',
+      },
     ];
   },
   
