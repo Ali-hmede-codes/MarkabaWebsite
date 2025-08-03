@@ -60,8 +60,8 @@ export default async function handler(
     <lastmod>${lastmod}</lastmod>
     <changefreq>${isRecent ? 'hourly' : isBreaking ? 'daily' : 'weekly'}</changefreq>
     <priority>${isBreaking ? '1.0' : isRecent ? '0.9' : '0.7'}</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/posts/${post.slug}"/>
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/posts/${post.slug}"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/posts/${post.slug}" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/posts/${post.slug}" />
     ${isRecent ? `<news:news>
       <news:publication>
         <news:name>Markaba News</news:name>
@@ -80,8 +80,8 @@ export default async function handler(
     <lastmod>${currentDate}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/" />
   </url>`;
     }
     

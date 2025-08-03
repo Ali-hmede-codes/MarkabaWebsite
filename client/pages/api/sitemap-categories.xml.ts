@@ -58,8 +58,8 @@ export default async function handler(
     <lastmod>${lastmod}</lastmod>
     <changefreq>${hasRecentActivity ? 'daily' : 'weekly'}</changefreq>
     <priority>${hasRecentActivity ? '0.9' : '0.7'}</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories/${category.slug}"/>
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories/${category.slug}"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories/${category.slug}" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories/${category.slug}" />
   </url>`;
       }).join('\n');
       
@@ -71,8 +71,8 @@ export default async function handler(
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories/${category.slug}/archive"/>
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories/${category.slug}/archive"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories/${category.slug}/archive" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories/${category.slug}/archive" />
   </url>`;
       }).join('\n');
     } else {
@@ -82,8 +82,8 @@ export default async function handler(
     <lastmod>${currentDate}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories"/>
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories" />
   </url>`;
     }
     
