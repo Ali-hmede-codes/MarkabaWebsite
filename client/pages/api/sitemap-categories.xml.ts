@@ -39,7 +39,7 @@ export default async function handler(
     cleanup();
 
     const categoriesData = await categoriesResponse.json();
-    const categories: Category[] = categoriesData.data || [];
+    const categories: Category[] = categoriesData.data?.categories || [];
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
     const currentDate = new Date().toISOString();
@@ -49,30 +49,43 @@ export default async function handler(
     let archiveUrls = '';
     
     if (categories.length > 0) {
-      categoriesUrls = categories.map(category => {
+      // Add main categories page
+      categoriesUrls = `  <url>
+    <loc>${baseUrl}/categories</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories" />
+  </url>`;
+      
+      // Add individual category pages
+      const individualCategoriesUrls = categories.map(category => {
         const lastmod = category.updated_at || category.created_at || currentDate;
         const hasRecentActivity = category.posts_count && category.posts_count > 0;
         
         return `  <url>
-    <loc>${baseUrl}/categories/${category.slug}</loc>
+    <loc>${baseUrl}/category/${category.slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${hasRecentActivity ? 'daily' : 'weekly'}</changefreq>
     <priority>${hasRecentActivity ? '0.9' : '0.7'}</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories/${category.slug}" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories/${category.slug}" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/category/${category.slug}" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/category/${category.slug}" />
   </url>`;
       }).join('\n');
+      
+      categoriesUrls += '\n' + individualCategoriesUrls;
       
       archiveUrls = categories.map(category => {
         const lastmod = category.updated_at || category.created_at || currentDate;
         
         return `  <url>
-    <loc>${baseUrl}/categories/${category.slug}/archive</loc>
+    <loc>${baseUrl}/category/${category.slug}/archive</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories/${category.slug}/archive" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories/${category.slug}/archive" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/category/${category.slug}/archive" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/category/${category.slug}/archive" />
   </url>`;
       }).join('\n');
     } else {
