@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode, useCa
 import { useRouter } from 'next/router';
 import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 import toast from 'react-hot-toast';
-import { authApi } from '@/lib/api';
+import { authApi } from '../lib/api';
 import type { User, LoginCredentials } from '../components/API/types';
 import type { AuthContextType } from '@/types';
 
@@ -17,7 +17,7 @@ interface AuthProviderProps {
 }
 
 // Auth provider component
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,6 +30,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     deleteCookie('token');
     deleteCookie('user');
   }, []);
+
+  // Periodic user validation check
+  useEffect(() => {
+    let validationInterval: NodeJS.Timeout;
+
+    const validateUser = async () => {
+      if (token && user) {
+        try {
+          const response = await authApi.verifyToken();
+          if (!response.success || !response.data?.user || !response.data.user.is_active) {
+            // User no longer exists or is deactivated
+            clearAuth();
+            toast.error('Your session has been terminated. Please log in again.');
+            router.replace('/admin/administratorpage/login');
+          }
+        } catch (error) {
+          // Token verification failed
+          clearAuth();
+          router.replace('/admin/administratorpage/login');
+        }
+      }
+    };
+
+    // Set up periodic validation every 2 minutes for active sessions
+    if (token && user) {
+      validationInterval = setInterval(validateUser, 2 * 60 * 1000); // 2 minutes
+    }
+
+    return () => {
+      if (validationInterval) {
+        clearInterval(validationInterval);
+      }
+    };
+  }, [token, user, clearAuth, router]);
 
   // Initialize auth state from cookies
   useEffect(() => {
@@ -45,17 +79,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Verify token with server
           try {
             const response = await authApi.verifyToken();
-            if (response.success && response.data?.valid) {
-              if (response.data.user) {
-                setUser(response.data.user);
-                setCookie('user', JSON.stringify(response.data.user), {
-                  maxAge: 7 * 24 * 60 * 60, // 7 days
+            if (response.success && response.data?.user) {
+              // Check if user still exists and is active
+              const userData = response.data.user;
+              if (userData.is_active) {
+                setUser(userData);
+                // Update cookie with fresh user data
+                const cookieMaxAge = 7 * 24 * 60 * 60; // Always 7 days
+                setCookie('user', JSON.stringify(userData), {
+                  maxAge: cookieMaxAge,
                   secure: window.location.protocol === 'https:',
                   sameSite: 'strict',
                 });
+              } else {
+                // User account deactivated, clear auth state
+                clearAuth();
+                toast.error('Your account has been deactivated. Please contact an administrator.');
               }
             } else {
-              // Token is invalid, clear auth state
+              // Token is invalid or user doesn't exist, clear auth state
               clearAuth();
             }
           } catch (error) {
@@ -86,14 +128,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(userData);
         setToken(userToken);
 
-        // Set cookies
+        // Set cookies with 1 week expiration for all sessions
+        const cookieMaxAge = 7 * 24 * 60 * 60; // Always 7 days
+        
         setCookie('token', userToken, {
-          maxAge: 7 * 24 * 60 * 60, // 7 days
+          maxAge: cookieMaxAge,
           secure: window.location.protocol === 'https:',
           sameSite: 'strict',
         });
         setCookie('user', JSON.stringify(userData), {
-          maxAge: 7 * 24 * 60 * 60, // 7 days
+          maxAge: cookieMaxAge,
           secure: window.location.protocol === 'https:',
           sameSite: 'strict',
         });

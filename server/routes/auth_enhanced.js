@@ -10,8 +10,7 @@ const router = express.Router();
 
 // Enhanced security configurations
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
-const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || '30d';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d'; // 1 week for all sessions
 const ADMIN_MIN_PASSWORD_LENGTH = 8;
 const ADMIN_REQUIRE_COMPLEX_PASSWORD = true;
 
@@ -42,10 +41,11 @@ const generateTokens = (user) => {
     is_active: user.is_active
   };
   
-  const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  const expiresIn = JWT_EXPIRES_IN; // Always 1 week
+  const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn });
   const refreshToken = crypto.randomBytes(64).toString('hex');
   
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken, expiresIn };
 };
 
 // Enhanced login with security features
@@ -149,8 +149,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     }
     
     // Successful login - generate tokens
-    const { accessToken, refreshToken } = generateTokens(user);
-    const expiresIn = remember_me ? REFRESH_TOKEN_EXPIRES_IN : JWT_EXPIRES_IN;
+    const { accessToken, refreshToken, expiresIn } = generateTokens(user);
     
     // Update user login info
     await query(
@@ -159,12 +158,14 @@ router.post('/login', validate(loginSchema), async (req, res) => {
         last_login_ip = ?,
         refresh_token = ?,
         refresh_token_expires = DATE_ADD(NOW(), INTERVAL ? DAY),
+        remember_me = ?,
         updated_at = NOW()
        WHERE id = ?`,
       [
         clientIP,
         refreshToken,
-        remember_me ? 30 : 7, // 30 days if remember_me, otherwise 7 days
+        7, // Always 7 days
+        remember_me,
         user.id
       ]
     );
@@ -185,11 +186,11 @@ router.post('/login', validate(loginSchema), async (req, res) => {
       created_at: user.created_at,
       last_login: new Date().toISOString(),
       login_ip: clientIP,
-      session_expires: remember_me ? '30 days' : '7 days'
+      session_expires: '7 days'
     };
     
     // Set secure HTTP-only cookie for refresh token
-    const cookieMaxAge = remember_me ? 30 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000; // 30 days or 7 days
+    const cookieMaxAge = 7 * 24 * 60 * 60 * 1000; // Always 7 days
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -592,20 +593,42 @@ router.put('/change-password', auth, validate(changePasswordSchema), async (req,
 });
 
 // Verify token (for middleware testing)
-router.get('/verify', auth, (req, res) => {
-  res.json({
-    success: true,
-    message: 'Token is valid',
-    data: {
-      user: {
-        id: req.user.id,
-        username: req.user.username,
-        email: req.user.email,
-        role: req.user.role,
-        is_active: req.user.is_active
-      }
+router.get('/verify', auth, async (req, res) => {
+  try {
+    // Get fresh user data from database to check current status
+    const user = await queryOne(
+      'SELECT id, username, email, role, is_active, remember_me FROM users WHERE id = ?',
+      [req.user.id]
+    );
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: 'User not found'
+      });
     }
-  });
+    
+    res.json({
+      success: true,
+      message: 'Token is valid',
+      data: {
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          is_active: user.is_active,
+          remember_me: user.remember_me || false
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Token verification error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
+  }
 });
 
 // Get user permissions (for frontend role checking)
