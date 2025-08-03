@@ -69,8 +69,8 @@ export default async function handler(
     <lastmod>${currentDate}</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/"/>
   </url>
 
   <!-- Main Pages -->
@@ -79,8 +79,8 @@ export default async function handler(
     <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/about" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/about" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/about"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/about"/>
   </url>
   
   <url>
@@ -88,8 +88,8 @@ export default async function handler(
     <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/contact" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/contact" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/contact"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/contact"/>
   </url>
   
   <url>
@@ -97,8 +97,8 @@ export default async function handler(
     <lastmod>${currentDate}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories"/>
   </url>
   
   <url>
@@ -106,8 +106,8 @@ export default async function handler(
     <lastmod>${currentDate}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/search" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/search" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/search"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/search"/>
   </url>
   
   <url>
@@ -115,8 +115,8 @@ export default async function handler(
     <lastmod>${currentDate}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/sitemap" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/sitemap" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/sitemap"/>
   </url>
   
   <url>
@@ -124,8 +124,8 @@ export default async function handler(
     <lastmod>${currentDate}</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/privacy" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/privacy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/privacy"/>
   </url>
   
   <url>
@@ -133,8 +133,8 @@ export default async function handler(
     <lastmod>${currentDate}</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/terms" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/terms" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/terms"/>
   </url>
 
   <!-- Categories -->
@@ -143,8 +143,8 @@ ${categories.map(category => `  <url>
     <lastmod>${category.updated_at || currentDate}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories/${category.slug}" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories/${category.slug}" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/categories/${category.slug}"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/categories/${category.slug}"/>
   </url>`).join('\n')}
 
   <!-- Posts -->
@@ -157,8 +157,8 @@ ${posts.map(post => {
     <lastmod>${lastmod}</lastmod>
     <changefreq>${isRecent ? 'hourly' : 'weekly'}</changefreq>
     <priority>${isRecent ? '0.9' : '0.7'}</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/posts/${post.slug}" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/posts/${post.slug}" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/posts/${post.slug}"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/posts/${post.slug}"/>
     ${isRecent ? `<news:news>
       <news:publication>
         <news:name>Markaba News</news:name>
