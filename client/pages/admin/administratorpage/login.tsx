@@ -62,7 +62,7 @@ const AdminLogin: React.FC = () => {
   return (
     <>
       <Head>
-        <title></title>
+        <title>مـركـبـا - الـمـنـصـة الاخـبـاريـة - الأدمن</title>
         <meta name="description" content="Admin login for News Markaba" />
         <meta name="robots" content="noindex, nofollow" />
       </Head>
