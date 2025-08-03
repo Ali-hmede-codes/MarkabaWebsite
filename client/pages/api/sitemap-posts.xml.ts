@@ -96,7 +96,7 @@ ${postsUrls}
 
 </urlset>`;
 
-    res.status(200).send(sitemap);
+    res.status(200).end(sitemap);
   } catch (error) {
     console.error('Error generating posts sitemap:', error);
     res.status(500).json({ 
