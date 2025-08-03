@@ -30,7 +30,7 @@ export default async function handler(
       return res.status(401).json({ message: 'Unauthorized' });
     }
     
-    if (method === 'PUT' || method === 'PATCH') {
+    if (method === 'PUT') {
       // Handle multipart form data for file uploads
       const form = formidable({
         multiples: false,
@@ -78,6 +78,34 @@ export default async function handler(
       }
 
       res.status(200).json(data);
+    } else if (method === 'PATCH') {
+      // Handle PATCH requests with JSON body (for featured toggle, status updates, etc.)
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk.toString();
+      });
+      
+      await new Promise(resolve => {
+        req.on('end', resolve);
+      });
+
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      };
+      
+      const fetchOptions: RequestInit = {
+        method,
+        headers,
+        body: body || undefined,
+      };
+      
+      // Make request to backend
+      const response = await fetch(backendUrl, fetchOptions);
+      const data = await response.json();
+      
+      // Return response with same status code
+      res.status(response.status).json(data);
     } else {
       // Handle other methods (GET, DELETE) with JSON
       const headers: HeadersInit = {

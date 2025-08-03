@@ -136,14 +136,11 @@ const PostsManagement: React.FC = () => {
 
   const toggleFeaturedStatus = async (post: Post) => {
     try {
-      const response = await fetch(`/api/posts/${post.id}`, {
-        method: 'PUT',
+      const response = await fetch(`/api/posts/${post.id}/featured`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          is_featured: !post.is_featured
-        })
+        }
       });
 
       const data = await response.json();
