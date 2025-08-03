@@ -39,7 +39,7 @@ export default async function handler(
     cleanup();
 
     const categoriesData = await categoriesResponse.json();
-    const categories: Category[] = categoriesData.categories || [];
+    const categories: Category[] = categoriesData.data || [];
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
     const currentDate = new Date().toISOString();

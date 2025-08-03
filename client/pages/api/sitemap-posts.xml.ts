@@ -41,7 +41,7 @@ export default async function handler(
     cleanup();
 
     const postsData = await postsResponse.json();
-    const posts: Post[] = postsData.posts || [];
+    const posts: Post[] = postsData.data?.posts || [];
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
     const currentDate = new Date().toISOString();

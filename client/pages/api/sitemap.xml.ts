@@ -51,8 +51,8 @@ export default async function handler(
     const postsData = await postsResponse.json();
     const categoriesData = await categoriesResponse.json();
 
-    const posts: Post[] = postsData.posts || [];
-    const categories: Category[] = categoriesData.categories || [];
+    const posts: Post[] = postsData.data?.posts || [];
+    const categories: Category[] = categoriesData.data || [];
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
     const currentDate = new Date().toISOString();
