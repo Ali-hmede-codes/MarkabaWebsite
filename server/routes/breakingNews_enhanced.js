@@ -32,7 +32,7 @@ const generateBreakingNewsSlug = (title, title_ar) => {
 // Get active breaking news (up to 5 items) - Public endpoint (NO AUTH REQUIRED)
 router.get('/active', async (req, res) => {
   try {
-    const limit = Math.min(parseInt(req.query.limit, 10) || 5, 5); // Max 5 breaking news
+    const limit = Math.min(parseInt(req.query.limit, 10) || 10, 10); // Max 10 breaking news
     const { language, include_content = 'false' } = req.query;
     
     let queryStr = `

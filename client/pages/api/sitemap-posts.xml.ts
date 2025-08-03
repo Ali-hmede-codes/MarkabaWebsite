@@ -25,8 +25,10 @@ export default async function handler(
 
   try {
     // Set content type for XML
-    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=1800, s-maxage=1800'); // Cache for 30 minutes
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Robots-Tag', 'noindex');
 
     // Fetch posts
     const { controller, timeoutId, cleanup } = createTimeoutController();

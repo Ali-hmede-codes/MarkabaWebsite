@@ -23,8 +23,10 @@ export default async function handler(
 
   try {
     // Set content type for XML
-    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600'); // Cache for 1 hour
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Robots-Tag', 'noindex');
 
     // Fetch categories
     const { controller, timeoutId, cleanup } = createTimeoutController();
@@ -92,7 +94,8 @@ export default async function handler(
   <!-- Categories -->
 ${categoriesUrls}
 
-${archiveUrls ? `  <!-- Category Archive Pages -->\n${archiveUrls}\n\n` : ''}</urlset>`;
+${archiveUrls ? `  <!-- Category Archive Pages -->\n${archiveUrls}\n` : ''}
+</urlset>`;
 
     res.status(200).send(sitemap);
   } catch (error) {
