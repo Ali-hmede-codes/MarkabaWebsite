@@ -59,7 +59,7 @@ const EditPost: React.FC = () => {
       if (data.success) {
         setPost(data.data);
         // Initialize tags from post data
-        if (data.data.tags) {
+        if (data.data.tags && typeof data.data.tags === 'string') {
           setTags(data.data.tags.split(',').filter((tag: string) => tag.trim() !== ''));
         } else {
           setTags([]);
