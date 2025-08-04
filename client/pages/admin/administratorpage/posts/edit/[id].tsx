@@ -93,18 +93,32 @@ const EditPost: React.FC = () => {
   const handleSave = async () => {
     if (!post) return;
 
+    // Validate required fields
+    if (!post.title_ar?.trim()) {
+      toast.error('عنوان المقال مطلوب');
+      return;
+    }
+    if (!post.content_ar?.trim()) {
+      toast.error('محتوى المقال مطلوب');
+      return;
+    }
+    if (!post.category_id) {
+      toast.error('فئة المقال مطلوبة');
+      return;
+    }
+
     try {
       setSaving(true);
       
       // If there's a new file selected, handle it with FormData
       if (selectedFile) {
         const formData = new FormData();
-        formData.append('title_ar', post.title_ar);
-        formData.append('content_ar', post.content_ar);
-        formData.append('excerpt_ar', post.excerpt_ar);
-        formData.append('category_id', post.category_id.toString());
-        formData.append('is_published', post.is_published.toString());
-        formData.append('is_featured', post.is_featured.toString());
+        formData.append('title_ar', post.title_ar || '');
+        formData.append('content_ar', post.content_ar || '');
+        formData.append('excerpt_ar', post.excerpt_ar || '');
+        formData.append('category_id', (post.category_id || 0).toString());
+        formData.append('is_published', (post.is_published || false).toString());
+        formData.append('is_featured', (post.is_featured || false).toString());
         formData.append('tags', post.tags || '');
         formData.append('featured_image', selectedFile);
 
@@ -129,13 +143,13 @@ const EditPost: React.FC = () => {
           ?.split('=')[1];
         
         const postData = {
-          title_ar: post.title_ar.trim(),
-          content_ar: post.content_ar.trim(),
-          excerpt_ar: post.excerpt_ar.trim(),
-          category_id: parseInt(post.category_id.toString()),
+          title_ar: (post.title_ar || '').trim(),
+          content_ar: (post.content_ar || '').trim(),
+          excerpt_ar: (post.excerpt_ar || '').trim(),
+          category_id: parseInt((post.category_id || 0).toString()),
           tags: post.tags || '',
-          is_featured: post.is_featured,
-          is_published: post.is_published
+          is_featured: post.is_featured || false,
+          is_published: post.is_published || false
         };
         
         const response = await fetch(`${API_BASE}/admin/administratorpage/posts/${id}`, {
