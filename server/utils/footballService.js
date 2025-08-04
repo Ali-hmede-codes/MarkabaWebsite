@@ -17,10 +17,7 @@ class FootballService {
       78: 'Bundesliga', // Germany
       61: 'Ligue 1', // France
       2: 'UEFA Champions League',
-      3: 'UEFA Europa League',
-      88: 'Eredivisie', // Netherlands
-      94: 'Primeira Liga', // Portugal
-      203: 'Süper Lig' // Turkey
+      3: 'UEFA Europa League'
     };
   }
 
@@ -148,7 +145,15 @@ class FootballService {
   async getStoredMatches() {
     try {
       const footballData = await this.getFootballData();
-      return footballData.matches || [];
+      const allMatches = footballData.matches || [];
+      
+      // Filter matches to only include important leagues
+      const importantLeagueIds = Object.keys(this.importantLeagues).map(id => parseInt(id, 10));
+      const filteredMatches = allMatches.filter(match => 
+        match.league && importantLeagueIds.includes(match.league.id)
+      );
+      
+      return filteredMatches;
     } catch (error) {
       // No stored matches found
       return [];
