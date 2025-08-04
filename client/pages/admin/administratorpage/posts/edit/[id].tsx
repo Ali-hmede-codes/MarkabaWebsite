@@ -231,7 +231,7 @@ const EditPost: React.FC = () => {
         content_ar: post.content_ar.trim(),
         excerpt_ar: post.excerpt_ar?.trim() || '',
         category_id: parseInt(post.category_id.toString()),
-        tags: post.tags || '',
+        tags: tags, // Send tags array instead of string
         meta_description_ar: post.meta_description_ar?.trim() || '',
         is_featured: post.is_featured || false,
         is_published: post.is_published || false,

@@ -31,7 +31,7 @@ const loginSchema = Joi.object({
   remember_me: Joi.boolean().default(false)
 }).or('username', 'email');
 
-// Post creation/update validation
+// Post creation validation
 const postSchema = Joi.object({
   title_ar: Joi.string().min(3).max(255).required(),
   content_ar: Joi.string().min(10).required(),
@@ -43,6 +43,23 @@ const postSchema = Joi.object({
   status: Joi.string().valid('draft', 'published', 'archived').default('draft'),
   is_featured: Joi.boolean().default(false),
   is_breaking: Joi.boolean().default(false),
+  scheduled_at: Joi.date().allow(null),
+  tags: Joi.array().items(Joi.string()).default([])
+});
+
+// Post update validation
+const postUpdateSchema = Joi.object({
+  title_ar: Joi.string().min(3).max(255).optional(),
+  content_ar: Joi.string().min(10).optional(),
+  excerpt_ar: Joi.string().max(500).allow(''),
+  category_id: Joi.number().integer().positive().optional(),
+  featured_image: Joi.string().allow(''),
+  meta_description_ar: Joi.string().max(160).allow(''),
+  meta_keywords_ar: Joi.string().max(255).allow(''),
+  status: Joi.string().valid('draft', 'published', 'archived').optional(),
+  is_featured: Joi.boolean().optional(),
+  is_published: Joi.boolean().optional(),
+  is_breaking: Joi.boolean().optional(),
   scheduled_at: Joi.date().allow(null),
   tags: Joi.array().items(Joi.string()).default([])
 });
@@ -118,6 +135,7 @@ module.exports = {
   registerSchema,
   loginSchema,
   postSchema,
+  postUpdateSchema,
   categorySchema,
   breakingNewsSchema,
   changePasswordSchema,

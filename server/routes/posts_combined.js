@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
 const { query, queryOne } = require('../db');
-const { validate, postSchema } = require('../middlewares/validation');
+const { validate, postSchema, postUpdateSchema } = require('../middlewares/validation');
 const { auth, requireAuthorOrEditor, canEditContent, requireAdminOrEditor } = require('../middlewares/auth');
 const { generateArabicSlug, calculateReadingTime, createPostFiles, deletePostFiles } = require('../utils/postUtils');
 
@@ -952,7 +952,7 @@ router.post('/', auth, requireAuthorOrEditor, validate(postSchema), async (req, 
 });
 
 // PUT /:id - Update post with enhanced features
-router.put('/:id', auth, canEditContent, validate(postSchema), async (req, res) => {
+router.put('/:id', auth, canEditContent, validate(postUpdateSchema), async (req, res) => {
   try {
     const postId = parseInt(req.params.id, 10);
     
