@@ -35,6 +35,8 @@ const EditPost: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
+  const [newTag, setNewTag] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -56,6 +58,12 @@ const EditPost: React.FC = () => {
       
       if (data.success) {
         setPost(data.data);
+        // Initialize tags from post data
+        if (data.data.tags) {
+          setTags(data.data.tags.split(',').filter((tag: string) => tag.trim() !== ''));
+        } else {
+          setTags([]);
+        }
       } else {
         toast.error('فشل في تحميل المقال');
         router.push('/admin/administratorpage/posts');
@@ -90,88 +98,171 @@ const EditPost: React.FC = () => {
     }
   };
 
+  const validateForm = (): boolean => {
+    if (!post?.title_ar?.trim()) {
+      toast.error('العنوان العربي مطلوب');
+      return false;
+    }
+    
+    if (post.title_ar.length < 3 || post.title_ar.length > 255) {
+      toast.error('عنوان المقال يجب أن يكون بين 3 و 255 حرف');
+      return false;
+    }
+    
+    if (!post.content_ar?.trim()) {
+      toast.error('المحتوى العربي مطلوب');
+      return false;
+    }
+    
+    if (post.content_ar.length < 10) {
+      toast.error('محتوى المقال يجب أن يكون 10 أحرف على الأقل');
+      return false;
+    }
+    
+    if (!post.category_id) {
+      toast.error('التصنيف مطلوب');
+      return false;
+    }
+    
+    if (post.meta_description_ar && post.meta_description_ar.length > 160) {
+      toast.error('وصف SEO يجب أن يكون أقل من 160 حرف');
+      return false;
+    }
+    
+    if (post.excerpt_ar && post.excerpt_ar.length > 500) {
+      toast.error('المقتطف يجب أن يكون أقل من 500 حرف');
+      return false;
+    }
+    
+    return true;
+  };
+
+  const addTag = () => {
+    if (newTag.trim() && !tags.includes(newTag.trim())) {
+      const updatedTags = [...tags, newTag.trim()];
+      setTags(updatedTags);
+      setPost(prev => prev ? { ...prev, tags: updatedTags.join(',') } : null);
+      setNewTag('');
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    const updatedTags = tags.filter(tag => tag !== tagToRemove);
+    setTags(updatedTags);
+    setPost(prev => prev ? { ...prev, tags: updatedTags.join(',') } : null);
+  };
+
+  const handleTagKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
+  const handleImageUpload = async (file: File): Promise<string | null> => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
+      
+      const response = await fetch(`${API_BASE}/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'فشل في رفع الصورة');
+      }
+      
+      const data = await response.json();
+      if (data.success) {
+        toast.success('تم رفع الصورة بنجاح');
+        return data.imageUrl;
+      } else {
+        throw new Error(data.message || 'فشل في رفع الصورة');
+      }
+    } catch (error: any) {
+      console.error('Error uploading image:', error);
+      toast.error(error.message || 'حدث خطأ في رفع الصورة');
+      return null;
+    }
+  };
+
   const handleSave = async () => {
     if (!post) return;
 
-    // Validate required fields
-    if (!post.title_ar?.trim()) {
-      toast.error('عنوان المقال مطلوب');
-      return;
-    }
-    if (!post.content_ar?.trim()) {
-      toast.error('محتوى المقال مطلوب');
-      return;
-    }
-    if (!post.category_id) {
-      toast.error('فئة المقال مطلوبة');
+    if (!validateForm()) {
       return;
     }
 
     try {
       setSaving(true);
       
-      // If there's a new file selected, handle it with FormData
+      let featuredImageUrl = post.featured_image;
+      
+      // Upload new image if selected
       if (selectedFile) {
-        const formData = new FormData();
-        formData.append('title_ar', post.title_ar || '');
-        formData.append('content_ar', post.content_ar || '');
-        formData.append('excerpt_ar', post.excerpt_ar || '');
-        formData.append('category_id', (post.category_id || 0).toString());
-        formData.append('is_published', (post.is_published || false).toString());
-        formData.append('is_featured', (post.is_featured || false).toString());
-        formData.append('tags', post.tags || '');
-        formData.append('featured_image', selectedFile);
-
-        const response = await fetch(`/api/posts/${id}`, {
-          method: 'PUT',
-          body: formData
-        });
-
-        const data = await response.json();
-        if (data.success) {
-          toast.success('تم حفظ المقال بنجاح');
-          router.push('/admin/administratorpage/posts');
+        const uploadedImageUrl = await handleImageUpload(selectedFile);
+        if (uploadedImageUrl) {
+          featuredImageUrl = uploadedImageUrl;
         } else {
-          toast.error(data.message || 'فشل في حفظ المقال');
-        }
-      } else {
-        // No new file, use JSON like the add form
-        const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const token = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('token='))
-          ?.split('=')[1];
-        
-        const postData = {
-          title_ar: (post.title_ar || '').trim(),
-          content_ar: (post.content_ar || '').trim(),
-          excerpt_ar: (post.excerpt_ar || '').trim(),
-          category_id: parseInt((post.category_id || 0).toString()),
-          tags: post.tags || '',
-          is_featured: post.is_featured || false,
-          is_published: post.is_published || false
-        };
-        
-        const response = await fetch(`${API_BASE}/admin/administratorpage/posts/${id}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(postData)
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-          toast.success('تم حفظ المقال بنجاح');
-          router.push('/admin/administratorpage/posts');
-        } else {
-          toast.error(data.message || 'فشل في حفظ المقال');
+          setSaving(false);
+          return;
         }
       }
+      
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
+      
+      const postData = {
+        title_ar: post.title_ar.trim(),
+        content_ar: post.content_ar.trim(),
+        excerpt_ar: post.excerpt_ar?.trim() || '',
+        category_id: parseInt(post.category_id.toString()),
+        tags: post.tags || '',
+        meta_description_ar: post.meta_description_ar?.trim() || '',
+        is_featured: post.is_featured || false,
+        is_published: post.is_published || false,
+        featured_image: featuredImageUrl
+      };
+      
+      const response = await fetch(`${API_BASE}/admin/administratorpage/posts/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update post');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success(data.message || 'تم تحديث المقال بنجاح');
+        router.push('/admin/administratorpage/posts');
+      } else {
+        throw new Error(data.message || 'فشل في تحديث المقال');
+      }
     } catch (error: any) {
-      console.error('Error saving post:', error);
-      toast.error(error.message || 'حدث خطأ في حفظ المقال');
+      console.error('Error updating post:', error);
+      toast.error(error.message || 'حدث خطأ في تحديث المقال');
     } finally {
       setSaving(false);
     }
@@ -311,14 +402,41 @@ const EditPost: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   الكلمات المفتاحية
                 </label>
-                <input
-                  type="text"
-                  value={post.tags || ''}
-                  onChange={(e) => handleInputChange('tags', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                  placeholder="كلمة1، كلمة2، كلمة3"
-                  dir="rtl"
-                />
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(tag)}
+                        className="text-blue-600 hover:text-blue-800 font-bold"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyPress={handleTagKeyPress}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    placeholder="أضف كلمة مفتاحية"
+                    dir="rtl"
+                  />
+                  <button
+                    type="button"
+                    onClick={addTag}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    إضافة
+                  </button>
+                </div>
               </div>
 
               </div>
@@ -337,6 +455,26 @@ const EditPost: React.FC = () => {
                   placeholder="وصف مختصر للمقال"
                   style={{ fontFamily: 'Noto Sans Arabic, sans-serif', lineHeight: '1.8' }}
                 />
+              </div>
+
+              {/* Meta Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  وصف SEO (اختياري)
+                </label>
+                <textarea
+                  value={post.meta_description_ar || ''}
+                  onChange={(e) => handleInputChange('meta_description_ar', e.target.value)}
+                  rows={2}
+                  maxLength={160}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900"
+                  dir="rtl"
+                  placeholder="وصف المقال لمحركات البحث (160 حرف كحد أقصى)"
+                  style={{ fontFamily: 'Noto Sans Arabic, sans-serif', lineHeight: '1.8' }}
+                />
+                <div className="text-sm text-gray-500 mt-1 text-right">
+                  {(post.meta_description_ar || '').length}/160 حرف
+                </div>
               </div>
 
               {/* Arabic Content */}
