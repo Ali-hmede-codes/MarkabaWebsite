@@ -63,7 +63,7 @@ const FootballPage: React.FC = () => {
       const isDevelopment = process.env.NODE_ENV === 'development';
       const apiUrl = isDevelopment 
         ? 'http://localhost:5000/api/football/leagues-with-matches'
-        : 'https://api.markaba.website/api/football/leagues-with-matches';
+        : 'https://api.markaba.news/api/football/leagues-with-matches';
       
       const response = await fetch(apiUrl);
       if (!response.ok) {
