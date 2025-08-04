@@ -20,13 +20,20 @@ export default async function handler(
   const { id } = query;
   
   try {
-    // Build the backend URL for specific post (admin endpoint for editing)
-    const backendUrl = `${API_BASE_URL}/admin/administratorpage/posts/${id}`;
+    // Build the backend URL based on the request method
+    // GET requests go to public endpoint, PUT/PATCH/DELETE go to admin endpoint
+    let backendUrl;
+    if (method === 'GET') {
+      backendUrl = `${API_BASE_URL}/posts/${id}`;
+    } else {
+      backendUrl = `${API_BASE_URL}/admin/administratorpage/posts/${id}`;
+    }
     
     // Get auth token from cookies
     const token = req.cookies.token;
     
-    if (!token) {
+    // Only require authentication for admin operations (PUT, PATCH, DELETE)
+    if (method !== 'GET' && !token) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
     
@@ -69,7 +76,7 @@ export default async function handler(
         const response = await fetch(backendUrl, {
           method,
           headers: {
-            'Authorization': `Bearer ${token}`,
+            ...(token && { 'Authorization': `Bearer ${token}` }),
             ...formData.getHeaders(),
           },
           body: formData as any,
@@ -95,7 +102,7 @@ export default async function handler(
 
         const headers: HeadersInit = {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          ...(token && { 'Authorization': `Bearer ${token}` }),
         };
         
         const fetchOptions: RequestInit = {
@@ -143,7 +150,7 @@ export default async function handler(
       // Handle other methods (GET, DELETE) with JSON
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        ...(token && { 'Authorization': `Bearer ${token}` }),
       };
       
       const fetchOptions: RequestInit = {
