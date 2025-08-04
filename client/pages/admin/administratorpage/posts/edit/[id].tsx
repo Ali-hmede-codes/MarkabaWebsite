@@ -220,12 +220,6 @@ const EditPost: React.FC = () => {
         }
       }
       
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('token='))
-        ?.split('=')[1];
-      
       const postData = {
         title_ar: post.title_ar.trim(),
         content_ar: post.content_ar.trim(),
@@ -238,10 +232,9 @@ const EditPost: React.FC = () => {
         featured_image: featuredImageUrl
       };
       
-      const response = await fetch(`${API_BASE}/admin/administratorpage/posts/${id}`, {
+      const response = await fetch(`/api/posts/${id}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(postData)
