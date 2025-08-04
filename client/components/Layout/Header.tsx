@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FiSearch, FiMenu, FiX } from 'react-icons/fi';
+import { MdSportsSoccer } from 'react-icons/md';
 import { SiFacebook, SiTwitter, SiInstagram, SiYoutube, SiLinkedin, SiTelegram, SiWhatsapp, SiTiktok } from 'react-icons/si';
 import { useContent } from '../../hooks/useContent';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -185,10 +186,10 @@ const Header: React.FC = () => {
               {/* Football Button */}
               <Link href="/football">
                 <button
-                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
                   aria-label="كرة القدم"
                 >
-                  <span className="text-lg">⚽</span>
+                  <MdSportsSoccer size={20} />
                 </button>
               </Link>
 
@@ -232,10 +233,10 @@ const Header: React.FC = () => {
               {/* Football Button */}
               <Link href="/football">
                 <button
-                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
                   aria-label="كرة القدم"
                 >
-                  <span className="text-lg">⚽</span>
+                  <MdSportsSoccer size={22} />
                 </button>
               </Link>
               <button
