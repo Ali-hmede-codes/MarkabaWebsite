@@ -95,33 +95,69 @@ const EditPost: React.FC = () => {
 
     try {
       setSaving(true);
-      const formData = new FormData();
-      formData.append('title_ar', post.title_ar);
-      formData.append('content_ar', post.content_ar);
-      formData.append('excerpt_ar', post.excerpt_ar);
-      formData.append('category_id', post.category_id.toString());
-      formData.append('is_published', post.is_published.toString());
-      formData.append('is_featured', post.is_featured.toString());
-      formData.append('tags', post.tags || '');
+      
+      // If there's a new file selected, handle it with FormData
       if (selectedFile) {
+        const formData = new FormData();
+        formData.append('title_ar', post.title_ar);
+        formData.append('content_ar', post.content_ar);
+        formData.append('excerpt_ar', post.excerpt_ar);
+        formData.append('category_id', post.category_id.toString());
+        formData.append('is_published', post.is_published.toString());
+        formData.append('is_featured', post.is_featured.toString());
+        formData.append('tags', post.tags || '');
         formData.append('featured_image', selectedFile);
-      }
 
-      const response = await fetch(`/api/posts/${id}`, {
-        method: 'PUT',
-        body: formData
-      });
+        const response = await fetch(`/api/posts/${id}`, {
+          method: 'PUT',
+          body: formData
+        });
 
-      const data = await response.json();
-      if (data.success) {
-        toast.success('تم حفظ المقال بنجاح');
-        router.push('/admin/administratorpage/posts');
+        const data = await response.json();
+        if (data.success) {
+          toast.success('تم حفظ المقال بنجاح');
+          router.push('/admin/administratorpage/posts');
+        } else {
+          toast.error(data.message || 'فشل في حفظ المقال');
+        }
       } else {
-        toast.error('فشل في حفظ المقال');
+        // No new file, use JSON like the add form
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const token = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('token='))
+          ?.split('=')[1];
+        
+        const postData = {
+          title_ar: post.title_ar.trim(),
+          content_ar: post.content_ar.trim(),
+          excerpt_ar: post.excerpt_ar.trim(),
+          category_id: parseInt(post.category_id.toString()),
+          tags: post.tags || '',
+          is_featured: post.is_featured,
+          is_published: post.is_published
+        };
+        
+        const response = await fetch(`${API_BASE}/admin/administratorpage/posts/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(postData)
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          toast.success('تم حفظ المقال بنجاح');
+          router.push('/admin/administratorpage/posts');
+        } else {
+          toast.error(data.message || 'فشل في حفظ المقال');
+        }
       }
-    } catch (error) {
-      //console.error('Error saving post:', error);
-      toast.error('حدث خطأ في حفظ المقال');
+    } catch (error: any) {
+      console.error('Error saving post:', error);
+      toast.error(error.message || 'حدث خطأ في حفظ المقال');
     } finally {
       setSaving(false);
     }
