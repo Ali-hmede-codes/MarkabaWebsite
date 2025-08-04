@@ -60,12 +60,17 @@ const FootballPage: React.FC = () => {
   const fetchFootballData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/football/leagues-with-matches');
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      const apiUrl = isDevelopment 
+        ? 'http://localhost:5000/api/football/leagues-with-matches'
+        : 'https://api.markaba.website/api/football/leagues-with-matches';
+      
+      const response = await fetch(apiUrl);
       if (!response.ok) {
         throw new Error('Failed to fetch football data');
       }
       const data = await response.json();
-      setLeagues(data.leagues || []);
+      setLeagues(data.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

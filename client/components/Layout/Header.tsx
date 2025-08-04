@@ -131,17 +131,6 @@ const Header: React.FC = () => {
                 </Link>
               ))}
               
-              {/* Football Link */}
-              <Link
-                href="/football"
-                className="relative px-3 py-2 text-gray-700 hover:text-blue-600 transition-all duration-200 font-medium whitespace-nowrap group flex items-center gap-2"
-              >
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                  ⚽
-                </div>
-                كرة القدم
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
-              </Link>
               
               {/* More Categories Dropdown */}
               {hasMoreCategories && (
@@ -182,7 +171,7 @@ const Header: React.FC = () => {
               )}
             </div>
 
-            {/* Desktop Search Button and Social Media */}
+            {/* Desktop Search Button, Football Button and Social Media */}
             <div className="hidden md:flex items-center space-x-3 rtl:space-x-reverse">
               {/* Search Button */}
               <button
@@ -192,6 +181,16 @@ const Header: React.FC = () => {
               >
                 <FiSearch size={20} />
               </button>
+              
+              {/* Football Button */}
+              <Link href="/football">
+                <button
+                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                  aria-label="كرة القدم"
+                >
+                  <span className="text-lg">⚽</span>
+                </button>
+              </Link>
 
               {/* Social Media Icons */}
               <div className="flex items-center space-x-2 rtl:space-x-reverse">
@@ -220,7 +219,7 @@ const Header: React.FC = () => {
               </div>
             </div>
 
-            {/* Mobile Search and Menu Buttons */}
+            {/* Mobile Search, Football and Menu Buttons */}
             <div className="md:hidden flex items-center space-x-3 rtl:space-x-reverse">
               <button
                 onClick={() => setIsSearchModalOpen(true)}
@@ -229,6 +228,16 @@ const Header: React.FC = () => {
               >
                 <FiSearch size={22} className="drop-shadow-sm" />
               </button>
+              
+              {/* Football Button */}
+              <Link href="/football">
+                <button
+                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                  aria-label="كرة القدم"
+                >
+                  <span className="text-lg">⚽</span>
+                </button>
+              </Link>
               <button
                 onClick={toggleMenu}
                 className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
@@ -262,17 +271,7 @@ const Header: React.FC = () => {
                   </Link>
                 ))}
                 
-                {/* Football Link */}
-                <Link
-                  href="/football"
-                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 text-sm font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <div className="w-6 h-6 bg-blue-100 rounded-md flex items-center justify-center text-xs">
-                    ⚽
-                  </div>
-                  كرة القدم
-                </Link>
+
                 {categoriesLoading && (
                   <div className="col-span-2 px-3 py-2 text-sm text-gray-400 text-center">
                     جاري تحميل الأقسام...
