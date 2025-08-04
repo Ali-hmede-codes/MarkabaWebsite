@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Layout from '../components/Layout/Layout';
 import PostCard from '../components/Posts/PostCard';
 import { Post, LastNews } from '../components/API/types';
-import { FiSearch, FiFilter, FiX, FiClock, FiCalendar } from 'react-icons/fi';
+import { FiSearch, FiFilter, FiX, FiClock, FiCalendar, FiArrowLeft } from 'react-icons/fi';
 import { getImageUrl } from '../utils/imageUtils';
 import Image from 'next/image';
 
@@ -131,11 +131,19 @@ const SearchPage: React.FC = () => {
 
       <div className="min-h-screen bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Return Button */}
+          <div className="mb-6">
+            <Link href="/" className="inline-flex items-center gap-2 text-black hover:text-gray-700 transition-colors">
+              <FiArrowLeft className="text-lg" />
+              <span className="font-medium">العودة إلى الصفحة الرئيسية</span>
+            </Link>
+          </div>
+
           {/* Search Header */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
             <div className="flex items-center gap-4 mb-6">
-              <FiSearch className="text-2xl text-primary-600 dark:text-primary-400" />
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <FiSearch className="text-2xl text-black dark:text-white" />
+              <h1 className="text-2xl font-bold text-black dark:text-white">
                 البحث في الموقع
               </h1>
             </div>
@@ -149,14 +157,14 @@ const SearchPage: React.FC = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="ابحث في المقالات والأخبار..."
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   />
-                  <FiSearch className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FiSearch className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black" />
                   {searchQuery && (
                     <button
                       type="button"
                       onClick={clearSearch}
-                      className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black hover:text-gray-600 dark:hover:text-gray-300"
                     >
                       <FiX />
                     </button>
@@ -180,7 +188,7 @@ const SearchPage: React.FC = () => {
             <div>
               {loading ? (
                 <div className="text-center py-12">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
                   <p className="mt-4 text-black dark:text-gray-300">جاري البحث...</p>
                 </div>
               ) : error ? (
@@ -191,7 +199,7 @@ const SearchPage: React.FC = () => {
                 <div>
                   {/* Results Summary */}
                   <div className="mb-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    <h2 className="text-lg font-semibold text-black dark:text-white mb-2">
                       نتائج البحث عن "{searchResults.query}"
                     </h2>
                     <p className="text-black dark:text-gray-300">
@@ -205,8 +213,8 @@ const SearchPage: React.FC = () => {
                       {/* Posts Results */}
                       {searchResults.posts.length > 0 && (
                         <div>
-                          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <FiCalendar className="text-primary-600 dark:text-primary-400" />
+                          <h3 className="text-xl font-bold text-black dark:text-white mb-4 flex items-center gap-2">
+                            <FiCalendar className="text-black dark:text-white" />
                             المقالات ({searchResults.posts.length})
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -225,8 +233,8 @@ const SearchPage: React.FC = () => {
                       {/* Last News Results */}
                       {searchResults.lastNews.length > 0 && (
                         <div>
-                          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <FiClock className="text-green-600 dark:text-green-400" />
+                          <h3 className="text-xl font-bold text-black dark:text-white mb-4 flex items-center gap-2">
+                            <FiClock className="text-black dark:text-white" />
                             آخر الأخبار ({searchResults.lastNews.length})
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -243,8 +251,8 @@ const SearchPage: React.FC = () => {
                                   </div>
                                 )}
                                 <div className="p-4">
-                                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
-                                    <Link href={`/last-news/${news.slug}`} className="hover:text-primary-600 dark:hover:text-primary-400">
+                                  <h4 className="font-semibold text-black dark:text-white mb-2 line-clamp-2">
+                                    <Link href={`/last-news/${news.slug}`} className="hover:text-gray-600 dark:hover:text-gray-400">
                                       {news.title_ar || news.title}
                                     </Link>
                                   </h4>
@@ -271,7 +279,7 @@ const SearchPage: React.FC = () => {
                             <button
                               onClick={() => handlePageChange(currentPage - 1)}
                               disabled={currentPage <= 1}
-                              className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+                              className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-black dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
                             >
                               السابق
                             </button>
@@ -284,8 +292,8 @@ const SearchPage: React.FC = () => {
                                   onClick={() => handlePageChange(pageNum)}
                                   className={`px-3 py-2 rounded-lg ${
                                     currentPage === pageNum
-                                      ? 'bg-primary-600 text-white'
-                                      : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                      ? 'bg-black text-white'
+                                      : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-black dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                                   }`}
                                 >
                                   {pageNum}
@@ -296,7 +304,7 @@ const SearchPage: React.FC = () => {
                             <button
                               onClick={() => handlePageChange(currentPage + 1)}
                               disabled={currentPage >= totalPages}
-                              className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+                              className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-black dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
                             >
                               التالي
                             </button>
@@ -307,7 +315,7 @@ const SearchPage: React.FC = () => {
                   ) : (
                     <div className="text-center py-12">
                       <FiSearch className="mx-auto text-6xl text-gray-300 dark:text-gray-600 mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                      <h3 className="text-xl font-semibold text-black dark:text-white mb-2">
                         لم يتم العثور على نتائج
                       </h3>
                       <p className="text-black dark:text-gray-300 mb-6">
@@ -337,17 +345,17 @@ const SearchPage: React.FC = () => {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-                  <FiCalendar className="text-3xl text-primary-600 dark:text-primary-400 mb-4 mx-auto" />
+                  <FiCalendar className="text-3xl text-black dark:text-white mb-4 mx-auto" />
                   <h3 className="font-semibold text-black dark:text-white mb-2">المقالات</h3>
                   <p className="text-black dark:text-gray-300 text-sm">ابحث في مقالات الموقع والتحليلات</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-                  <FiClock className="text-3xl text-green-600 dark:text-green-400 mb-4 mx-auto" />
+                  <FiClock className="text-3xl text-black dark:text-white mb-4 mx-auto" />
                   <h3 className="font-semibold text-black dark:text-white mb-2">آخر الأخبار</h3>
                   <p className="text-black dark:text-gray-300 text-sm">ابحث في الأخبار العاجلة والحديثة</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-                  <FiFilter className="text-3xl text-blue-600 dark:text-blue-400 mb-4 mx-auto" />
+                  <FiFilter className="text-3xl text-black dark:text-white mb-4 mx-auto" />
                   <h3 className="font-semibold text-black dark:text-white mb-2">بحث متقدم</h3>
                   <p className="text-black dark:text-gray-300 text-sm">استخدم الفلاتر للبحث المتخصص</p>
                 </div>
