@@ -339,7 +339,7 @@ const PostContent: React.FC<{
                     <Link key={relatedPost.id} href={`/post/${relatedPost.slug}`}>
                       <div className="group cursor-pointer bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
                         {/* Image Container */}
-                        <div className="relative h-48 w-full overflow-hidden">
+                        <div className="relative h-32 w-full overflow-hidden">
                           {relatedPost.featured_image ? (
                             <Image
                               src={getImageUrl(relatedPost.featured_image)}
@@ -529,21 +529,30 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
 
     // Process related posts
     let relatedPosts: Post[] = [];
+    console.log('SSR: Related posts response status:', relatedPostsResponse.ok, 'Category ID:', post.category_id);
     if (relatedPostsResponse.ok && 'json' in relatedPostsResponse) {
       const relatedPostsData = await relatedPostsResponse.json();
+      console.log('SSR: Related posts API response:', {
+        success: relatedPostsData.success,
+        totalPosts: relatedPostsData.data?.posts?.length || 0,
+        posts: relatedPostsData.data?.posts?.map((p: Post) => ({ id: p.id, title: p.title_ar || p.title, categoryId: p.category_id })) || []
+      });
       if (relatedPostsData.success && relatedPostsData.data?.posts) {
         // Filter out current post and limit to 4
         relatedPosts = relatedPostsData.data.posts
           .filter((p: Post) => p.id !== post.id)
           .slice(0, 4);
+        console.log('SSR: Filtered related posts:', relatedPosts.map(p => ({ id: p.id, title: p.title_ar || p.title, categoryId: p.category_id })));
       }
     }
 
     console.log('SSR: Successfully fetched post data:', {
       postTitle: post.title_ar || post.title,
+      postCategoryId: post.category_id,
       latestPostsCount: latestPosts.length,
       breakingNewsCount: breakingNews.length,
-      relatedPostsCount: relatedPosts.length
+      relatedPostsCount: relatedPosts.length,
+      relatedPostsCategories: relatedPosts.map(p => ({ id: p.id, title: p.title_ar || p.title, categoryId: p.category_id }))
     });
     
     return {
