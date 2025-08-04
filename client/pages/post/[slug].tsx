@@ -339,7 +339,7 @@ const PostContent: React.FC<{
                     <Link key={relatedPost.id} href={`/post/${relatedPost.slug}`}>
                       <div className="group cursor-pointer bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
                         {/* Image Container */}
-                        <div className="relative h-32 w-full overflow-hidden">
+                        <div className="relative h-40 w-full overflow-hidden">
                           {relatedPost.featured_image ? (
                             <Image
                               src={getImageUrl(relatedPost.featured_image)}
@@ -495,7 +495,7 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
         }
       }),
       // Fetch related posts from same category
-      post.category_id ? fetch(`${baseUrl}${apiVersion}/posts?category_id=${post.category_id}&limit=5&sort=latest&active=true&include_content=false`, {
+      post.category_id ? fetch(`${baseUrl}${apiVersion}/posts?category=${post.category_id}&limit=5&sort=latest&status=published&include_content=false`, {
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'NewsMarkaba-SSR/1.0'
