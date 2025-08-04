@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const WeatherService = require('./weatherService');
 const PrayerService = require('./prayerService');
+const footballService = require('./footballService');
 
 /**
  * Scheduler Service
@@ -10,6 +11,7 @@ class Scheduler {
   constructor() {
     this.weatherService = new WeatherService();
     this.prayerService = new PrayerService();
+    this.footballService = footballService;
     this.tasks = new Map();
   }
 
@@ -20,6 +22,7 @@ class Scheduler {
     console.log('Starting scheduler service...');
     this.startWeatherUpdates();
     this.startPrayerUpdates();
+    this.startFootballUpdates();
     console.log('Scheduler service started successfully');
   }
 
@@ -89,6 +92,31 @@ class Scheduler {
   }
 
   /**
+   * Start football data update scheduler
+   */
+  startFootballUpdates() {
+    const schedule = process.env.FOOTBALL_UPDATE_SCHEDULE || '0 7 * * *'; // Default: 7:00 AM daily
+    
+    console.log(`Scheduling football updates with cron: ${schedule}`);
+    
+    const task = cron.schedule(schedule, async () => {
+      try {
+        console.log('Running scheduled football update...');
+        await this.triggerFootballUpdate();
+        console.log('Scheduled football update completed');
+      } catch (error) {
+        console.error('Error in scheduled football update:', error);
+      }
+    }, {
+      scheduled: true,
+      timezone: 'Asia/Beirut' // Lebanon timezone
+    });
+    
+    this.tasks.set('footballUpdate', task);
+    console.log('Football update scheduler started');
+  }
+
+  /**
    * Manually trigger weather update
    */
   async triggerWeatherUpdate() {
@@ -119,6 +147,21 @@ class Scheduler {
   }
 
   /**
+   * Manually trigger football data update
+   */
+  async triggerFootballUpdate() {
+    try {
+      console.log('Manually triggering football data update...');
+      const result = await this.footballService.fetchTodayMatches();
+      console.log('Manual football data update completed successfully');
+      return { success: true, message: 'Football data updated successfully', data: result };
+    } catch (error) {
+      console.error('Manual football data update failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
    * Get scheduler status
    */
   getStatus() {
@@ -127,7 +170,8 @@ class Scheduler {
       isRunning: tasks.length > 0,
       activeTasks: tasks,
       weatherSchedule: process.env.WEATHER_UPDATE_SCHEDULE || '0 6 * * *',
-      prayerSchedule: process.env.PRAYER_UPDATE_SCHEDULE || '0 5 * * *'
+      prayerSchedule: process.env.PRAYER_UPDATE_SCHEDULE || '0 5 * * *',
+      footballSchedule: process.env.FOOTBALL_UPDATE_SCHEDULE || '0 7 * * *'
     };
   }
 

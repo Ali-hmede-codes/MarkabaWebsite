@@ -32,6 +32,7 @@ const settingsEnhancedRoutes = require('./routes/settings_enhanced');
 const weatherEnhancedRoutes = require('./routes/weather_enhanced');
 const prayerEnhancedRoutes = require('./routes/prayer_enhanced');
 const socialMediaEnhancedRoutes = require('./routes/socialMedia_enhanced');
+const footballEnhancedRoutes = require('./routes/football_enhanced');
 
 // Import admin routes
 const adminRoutes = require('./routes/admin');
@@ -403,6 +404,7 @@ app.use('/api/v2/settings', settingsEnhancedRoutes);
 app.use('/api/v2/weather', weatherEnhancedRoutes);
 app.use('/api/v2/prayer', prayerEnhancedRoutes);
 app.use('/api/v2/social-media', socialMediaEnhancedRoutes);
+app.use('/api/v2/football', footballEnhancedRoutes);
 app.use('/api/v2/admin/administratorpage', adminRoutes);
 
 // Legacy v1 routes removed - only enhanced routes available
@@ -419,6 +421,7 @@ app.use('/api/settings', settingsEnhancedRoutes);
 app.use('/api/weather', weatherEnhancedRoutes);
 app.use('/api/prayer', prayerEnhancedRoutes);
 app.use('/api/social-media', socialMediaEnhancedRoutes);
+app.use('/api/football', footballEnhancedRoutes);
 app.use('/api/admin/administratorpage', adminRoutes);
 
 // Error handling middleware

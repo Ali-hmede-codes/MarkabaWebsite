@@ -1,0 +1,15 @@
+{
+  "lastFetch": null,
+  "timestamp": null,
+  "matches": [],
+  "leagues": {
+    "fetchedAt": null,
+    "date": null,
+    "leagues": {}
+  },
+  "standings": {
+    "fetchedAt": null,
+    "date": null,
+    "standings": {}
+  }
+}
