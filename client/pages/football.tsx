@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { Clock, Calendar, Trophy } from 'lucide-react';
+import Layout from '../components/Layout/Layout';
 
 interface Team {
   id: number;
@@ -48,6 +49,30 @@ interface League {
   matches: Match[];
 }
 
+// Transform stored matches to leagues format
+const transformStoredMatchesToLeagues = (matches: any[]): League[] => {
+  const leaguesMap = new Map<number, League>();
+  
+  matches.forEach((match) => {
+    const leagueId = match.league.id;
+    
+    if (!leaguesMap.has(leagueId)) {
+      leaguesMap.set(leagueId, {
+        id: leagueId,
+        name: match.league.name,
+        country: match.league.country,
+        logo: match.league.logo,
+        season: match.league.season,
+        matches: []
+      });
+    }
+    
+    leaguesMap.get(leagueId)!.matches.push(match);
+  });
+  
+  return Array.from(leaguesMap.values());
+};
+
 const FootballPage: React.FC = () => {
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,15 +87,18 @@ const FootballPage: React.FC = () => {
       setLoading(true);
       const isDevelopment = process.env.NODE_ENV === 'development';
       const apiUrl = isDevelopment 
-        ? 'http://localhost:5000/api/football/leagues-with-matches'
-        : 'https://api.markaba.news/api/football/leagues-with-matches';
+        ? 'http://localhost:5000/api/football/matches/stored'
+        : 'https://api.markaba.news/api/football/matches/stored';
       
       const response = await fetch(apiUrl);
       if (!response.ok) {
         throw new Error('Failed to fetch football data');
       }
       const data = await response.json();
-      setLeagues(data.data || []);
+      
+      // Transform stored matches data to leagues format
+      const transformedLeagues = transformStoredMatchesToLeagues(data.data || []);
+      setLeagues(transformedLeagues);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -114,11 +142,11 @@ const FootballPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Head>
-          <title>كرة القدم -  مـركـبـا - الـمـنـصـة الاخـبـاريـة</title>
-          <meta name="description" content="متابعة أحدث مباريات كرة القدم والدوريات العالمية" />
-        </Head>
+      <Layout 
+        title="كرة القدم - مـركـبـا - الـمـنـصـة الاخـبـاريـة"
+        description="متابعة أحدث مباريات كرة القدم والدوريات العالمية"
+        keywords="كرة القدم, مباريات, دوريات, نتائج"
+      >
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="text-center">
@@ -127,16 +155,17 @@ const FootballPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Head>
-          <title>كرة القدم - مـركـبـا - الـمـنـصـة الاخـبـاريـة</title>
-        </Head>
+      <Layout 
+        title="كرة القدم - مـركـبـا - الـمـنـصـة الاخـبـاريـة"
+        description="متابعة أحدث مباريات كرة القدم والدوريات العالمية"
+        keywords="كرة القدم, مباريات, دوريات, نتائج"
+      >
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="text-center">
@@ -153,17 +182,17 @@ const FootballPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Head>
-        <title>كرة القدم - أخبار مركبا</title>
-        <meta name="description" content="متابعة أحدث مباريات كرة القدم والدوريات العالمية" />
-        <meta name="keywords" content="كرة القدم, مباريات, دوريات, نتائج" />
-      </Head>
+    <Layout 
+      title="كرة القدم - مـركـبـا - الـمـنـصـة الاخـبـاريـة"
+      description="متابعة أحدث مباريات كرة القدم والدوريات العالمية"
+      keywords="كرة القدم, مباريات, دوريات, نتائج"
+      className="bg-gray-50"
+    >
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
@@ -302,7 +331,7 @@ const FootballPage: React.FC = () => {
           </button>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
