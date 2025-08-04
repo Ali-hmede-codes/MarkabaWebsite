@@ -111,31 +111,53 @@ class FootballService {
         return await this.getStoredMatches();
       }
 
-      // Fetching today's football matches
+      // Fetching today's football matches for important leagues only
       const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-      const endpoint = `/v3/fixtures?date=${today}`;
+      const allMatches = [];
       
-      const data = await this.makeRequest(endpoint);
+      // Fetch matches for each important league
+      const leagueIds = Object.keys(this.importantLeagues);
       
-      if (data && data.response) {
-        const matchesData = {
-          date: today,
-          fetchedAt: new Date().toISOString(),
-          matches: data.response,
-          total: data.response.length
-        };
-        
-        // Save to consolidated file
-        const footballData = await this.getFootballData();
-        footballData.matches = data.response;
-        await this.saveFootballData(footballData);
-        
-        await this.updateLastFetch();
-        
-        // Successfully fetched matches for today
-        return matchesData;
-      } 
-        throw new Error('Invalid API response format');
+      // Process leagues sequentially to avoid rate limiting
+      /* eslint-disable no-await-in-loop */
+      for (let i = 0; i < leagueIds.length; i += 1) {
+        const leagueId = leagueIds[i];
+        try {
+          const endpoint = `/v3/fixtures?league=${leagueId}&date=${today}`;
+          const data = await this.makeRequest(endpoint);
+          
+          if (data && data.response && data.response.length > 0) {
+            allMatches.push(...data.response);
+          }
+          
+          // Small delay between requests to avoid rate limiting
+          await new Promise((resolve) => {
+            setTimeout(resolve, 500);
+          });
+          
+        } catch (error) {
+          // Continue with other leagues even if one fails
+          console.error(`Failed to fetch matches for league ${leagueId}:`, error.message);
+        }
+      }
+      /* eslint-enable no-await-in-loop */
+      
+      const matchesData = {
+        date: today,
+        fetchedAt: new Date().toISOString(),
+        matches: allMatches,
+        total: allMatches.length
+      };
+      
+      // Save to consolidated file
+      const footballData = await this.getFootballData();
+      footballData.matches = allMatches;
+      await this.saveFootballData(footballData);
+      
+      await this.updateLastFetch();
+      
+      // Successfully fetched matches for today
+      return matchesData;
       
     } catch (error) {
       throw new Error(`Failed to fetch football matches: ${error.message}`);
@@ -161,23 +183,23 @@ class FootballService {
   }
 
   async getMatchesByLeague(leagueId) {
-    const storedData = await this.getStoredMatches();
-    if (!storedData.matches || storedData.matches.length === 0) {
+    const storedMatches = await this.getStoredMatches();
+    if (!storedMatches || storedMatches.length === 0) {
       return [];
     }
     
-    return storedData.matches.filter(match => 
+    return storedMatches.filter(match => 
           match.league && match.league.id === parseInt(leagueId, 10)
         );
   }
 
   async getMatchesByTeam(teamId) {
-    const storedData = await this.getStoredMatches();
-    if (!storedData.matches || storedData.matches.length === 0) {
+    const storedMatches = await this.getStoredMatches();
+    if (!storedMatches || storedMatches.length === 0) {
       return [];
     }
     
-    return storedData.matches.filter(match => 
+    return storedMatches.filter(match => 
           (match.teams.home.id === parseInt(teamId, 10)) || 
           (match.teams.away.id === parseInt(teamId, 10))
         );
