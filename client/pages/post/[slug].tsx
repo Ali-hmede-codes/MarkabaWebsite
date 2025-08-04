@@ -16,6 +16,7 @@ interface SinglePostPageProps {
   post: Post | null;
   latestPosts: Post[];
   breakingNews: BreakingNews[];
+  relatedPosts: Post[];
   error?: string;
 }
 
@@ -23,6 +24,7 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
   post, 
   latestPosts, 
   breakingNews, 
+  relatedPosts,
   error
 }) => {
   const router = useRouter();
@@ -101,7 +103,7 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
         <meta property="article:author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
       </Head>
       <PostLayout post={post}>
-        <PostContent post={post} latestPosts={latestPosts} breakingNews={breakingNews} />
+        <PostContent post={post} latestPosts={latestPosts} breakingNews={breakingNews} relatedPosts={relatedPosts} />
       </PostLayout>
     </>
   );
@@ -110,8 +112,9 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
 const PostContent: React.FC<{ 
   post: Post; 
   latestPosts: Post[]; 
-  breakingNews: BreakingNews[]; 
-}> = ({ post, latestPosts, breakingNews }) => {
+  breakingNews: BreakingNews[];
+  relatedPosts: Post[];
+}> = ({ post, latestPosts, breakingNews, relatedPosts }) => {
   const router = useRouter();
   const [fontSize, setFontSize] = useState(20);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -324,6 +327,46 @@ const PostContent: React.FC<{
                 </button>
               </a>
             </div>
+
+            {/* Related Articles Section */}
+            {relatedPosts.length > 0 && (
+              <div className="mt-12 mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+                  مقالات ذات صلة
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {relatedPosts.map((relatedPost) => (
+                    <Link key={relatedPost.id} href={`/post/${relatedPost.slug}`}>
+                      <div className="group cursor-pointer bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
+                        {/* Image Container */}
+                        <div className="relative h-48 w-full overflow-hidden">
+                          {relatedPost.featured_image ? (
+                            <Image
+                              src={getImageUrl(relatedPost.featured_image)}
+                              alt={relatedPost.title_ar || relatedPost.title}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                              <FiFileText className="text-blue-400" size={48} />
+                            </div>
+                          )}
+                          {/* Black fade overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                          {/* Title overlay */}
+                          <div className="absolute bottom-0 left-0 right-0 p-4">
+                            <h3 className="text-white font-semibold text-sm leading-tight line-clamp-3">
+                              {relatedPost.title_ar || relatedPost.title}
+                            </h3>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </article>
 
           {/* Sidebar */}
@@ -416,6 +459,7 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
           post: null,
           latestPosts: [],
           breakingNews: [],
+          relatedPosts: [],
           error: 'المنشور غير موجود'
         }
       };
@@ -430,13 +474,14 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
           post: null,
           latestPosts: [],
           breakingNews: [],
+          relatedPosts: [],
           error: 'المنشور غير موجود'
         }
       };
     }
     
-    // Fetch latest posts and breaking news in parallel
-    const [latestPostsResponse, breakingNewsResponse] = await Promise.all([
+    // Fetch latest posts, breaking news, and related posts in parallel
+    const [latestPostsResponse, breakingNewsResponse, relatedPostsResponse] = await Promise.all([
       fetch(`${baseUrl}${apiVersion}/posts?limit=6&sort=latest&active=true&include_content=false`, {
         headers: {
           'Content-Type': 'application/json',
@@ -448,7 +493,14 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
           'Content-Type': 'application/json',
           'User-Agent': 'NewsMarkaba-SSR/1.0'
         }
-      })
+      }),
+      // Fetch related posts from same category
+      post.category_id ? fetch(`${baseUrl}${apiVersion}/posts?category_id=${post.category_id}&limit=5&sort=latest&active=true&include_content=false`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'NewsMarkaba-SSR/1.0'
+        }
+      }) : Promise.resolve({ ok: false })
     ]);
     
     // Process latest posts
@@ -474,20 +526,32 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
           .slice(0, 4);
       }
     }
-    
 
-    
+    // Process related posts
+    let relatedPosts: Post[] = [];
+    if (relatedPostsResponse.ok && 'json' in relatedPostsResponse) {
+      const relatedPostsData = await relatedPostsResponse.json();
+      if (relatedPostsData.success && relatedPostsData.data?.posts) {
+        // Filter out current post and limit to 4
+        relatedPosts = relatedPostsData.data.posts
+          .filter((p: Post) => p.id !== post.id)
+          .slice(0, 4);
+      }
+    }
+
     console.log('SSR: Successfully fetched post data:', {
       postTitle: post.title_ar || post.title,
       latestPostsCount: latestPosts.length,
-      breakingNewsCount: breakingNews.length
+      breakingNewsCount: breakingNews.length,
+      relatedPostsCount: relatedPosts.length
     });
     
     return {
       props: {
         post,
         latestPosts,
-        breakingNews
+        breakingNews,
+        relatedPosts
       }
     };
     
@@ -498,6 +562,7 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
         post: null,
         latestPosts: [],
         breakingNews: [],
+        relatedPosts: [],
         error: 'حدث خطأ أثناء تحميل البيانات. يرجى المحاولة مرة أخرى لاحقاً.'
       }
     };
