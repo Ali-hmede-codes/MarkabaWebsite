@@ -437,7 +437,7 @@ const LastNewsAdmin: React.FC = () => {
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm border rounded-md text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
                 السابق
               </button>
@@ -462,7 +462,7 @@ const LastNewsAdmin: React.FC = () => {
                     className={`px-3 py-1 text-sm border rounded-md ${
                       currentPage === pageNum
                         ? 'bg-blue-600 text-white border-blue-600'
-                        : 'hover:bg-gray-50'
+                        : 'text-black hover:bg-gray-50'
                     }`}
                   >
                     {pageNum}
@@ -473,7 +473,7 @@ const LastNewsAdmin: React.FC = () => {
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm border rounded-md text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
                 التالي
               </button>

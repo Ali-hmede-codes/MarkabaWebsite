@@ -1,18 +1,12 @@
 # Robots.txt for Markaba News
 # This file tells search engine crawlers which pages or files the crawler can or can't request from your site.
 
-# Block entire API subdomain from indexing
-User-agent: *
-Disallow: /
-Host: api.markaba.news
-
 # Main site crawling rules
 User-agent: *
 Allow: /
 
 # Disallow access to admin and private areas
 Disallow: /admin/
-Disallow: /admin/administratorpage/
 Disallow: /api/
 Disallow: /auth/
 Disallow: /login
@@ -26,68 +20,12 @@ Disallow: /500
 # Disallow access to search results with parameters to avoid duplicate content
 Disallow: /search?*
 
-# Allow access to important pages
-Allow: /
-Allow: /about
-Allow: /contact
-Allow: /categories
-Allow: /posts
-Allow: /sitemap
-Allow: /privacy
-Allow: /terms
+# Crawl delay (optional - be respectful to server resources)
+Crawl-delay: 1
 
 # Sitemap locations
 Sitemap: https://markaba.news/sitemap.xml
 Sitemap: https://markaba.news/sitemap-main.xml
-
-# Crawl delay (optional - be respectful to server resources)
-Crawl-delay: 1
-
-# Specific rules for different crawlers
-
-# Google Bot
-User-agent: Googlebot
-Allow: /
-Disallow: /admin/administratorpage/
-Disallow: /api/
-Disallow: /auth/
-Crawl-delay: 1
-
-# Bing Bot
-User-agent: Bingbot
-Allow: /
-Disallow: /admin/administratorpage/
-Disallow: /api/
-Disallow: /auth/
-Crawl-delay: 1
-
-# Facebook Bot (for Open Graph)
-User-agent: facebookexternalhit
-Allow: /
-Disallow: /admin/administratorpage/
-Disallow: /api/
-Disallow: /auth/
-
-# Twitter Bot (for Twitter Cards)
-User-agent: Twitterbot
-Allow: /
-Disallow: /admin/administratorpage/
-Disallow: /api/
-Disallow: /auth/
-
-# WhatsApp Bot (for link previews)
-User-agent: WhatsApp
-Allow: /
-Disallow: /admin/administratorpage/
-Disallow: /api/
-Disallow: /auth/
-
-# Telegram Bot (for link previews)
-User-agent: TelegramBot
-Allow: /
-Disallow: /admin/administratorpage/
-Disallow: /api/
-Disallow: /auth/
 
 # Block malicious bots
 User-agent: AhrefsBot
@@ -101,6 +39,3 @@ Disallow: /
 
 User-agent: SemrushBot
 Disallow: /
-
-# Host directive (if needed)
-# Host: markaba.news

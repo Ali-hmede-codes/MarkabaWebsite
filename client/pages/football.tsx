@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { Clock, Calendar, Trophy } from 'lucide-react';
 import Layout from '../components/Layout/Layout';
 
@@ -82,6 +83,7 @@ const transformStoredMatchesToLeagues = (matches: any[]): League[] => {
 };
 
 const FootballPage: React.FC = () => {
+  const router = useRouter();
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -182,10 +184,10 @@ const FootballPage: React.FC = () => {
               </div>
               <p className="text-red-600 mb-4">خطأ في تحميل بيانات كرة القدم</p>
               <button
-                onClick={fetchFootballData}
+                onClick={() => router.push('/')}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
-                إعادة المحاولة
+                العودة للقائمة الرئيسية
               </button>
             </div>
           </div>
@@ -329,13 +331,13 @@ const FootballPage: React.FC = () => {
           )}
         </div>
 
-        {/* Refresh Button */}
+        {/* Return to Menu Button */}
         <div className="text-center mt-8">
           <button
-            onClick={fetchFootballData}
+            onClick={() => router.push('/')}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
-            تحديث البيانات
+            العودة للقائمة الرئيسية
           </button>
         </div>
       </div>

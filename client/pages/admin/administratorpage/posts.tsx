@@ -49,6 +49,7 @@ const PostsManagement: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalPosts, setTotalPosts] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
@@ -73,6 +74,7 @@ const PostsManagement: React.FC = () => {
 
       if (data.success) {
         setPosts(data.data.posts || []);
+        setTotalPosts(data.data.total || 0);
         setTotalPages(Math.ceil((data.data.total || 0) / 8));
       } else {
         toast.error('فشل في تحميل المقالات');
@@ -428,13 +430,13 @@ const PostsManagement: React.FC = () => {
         {totalPages > 1 && (
           <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg">
             <div className="text-sm text-gray-700">
-              صفحة {currentPage} من {totalPages} - عرض {posts.length} من {posts.length} مقال
+              صفحة {currentPage} من {totalPages} - عرض {posts.length} من {totalPosts} مقال
             </div>
             <div className="flex space-x-2 rtl:space-x-reverse">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm border rounded-md text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
                 السابق
               </button>
@@ -459,7 +461,7 @@ const PostsManagement: React.FC = () => {
                     className={`px-3 py-1 text-sm border rounded-md ${
                       currentPage === pageNum
                         ? 'bg-blue-600 text-white border-blue-600'
-                        : 'hover:bg-gray-50'
+                        : 'text-black hover:bg-gray-50'
                     }`}
                   >
                     {pageNum}
@@ -470,7 +472,7 @@ const PostsManagement: React.FC = () => {
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm border rounded-md text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
                 التالي
               </button>
