@@ -153,7 +153,7 @@ const FootballPage: React.FC = () => {
   if (loading) {
     return (
       <Layout 
-        title="كرة القدم - مـركـبـا - الـمـنـصـة الاخـبـاريـة"
+        title="كرة القدم - "
         description="متابعة أحدث مباريات كرة القدم والدوريات العالمية"
         keywords="كرة القدم, مباريات, دوريات, نتائج"
       >
