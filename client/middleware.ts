@@ -20,7 +20,7 @@ export function middleware(request: NextRequest) {
     font-src 'self' https://fonts.gstatic.com;
     img-src 'self' blob: data: https: http:;
     media-src 'self' https:;
-    frame-src 'self' https://www.youtube.com https://youtube.com https://*.youtube.com;
+    frame-src 'self' https://www.youtube.com/embed/ https://youtube.com/embed/ https://*.youtube.com/embed/;
     connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000;
     object-src 'none';
     base-uri 'self';
