@@ -15,12 +15,12 @@ export function middleware(request: NextRequest) {
   const isDev = process.env.NODE_ENV === 'development';
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''} https://www.googletagmanager.com https://www.google-analytics.com;
-    style-src 'self' 'nonce-${nonce}' ${isDev ? "'unsafe-inline'" : ''} https://fonts.googleapis.com;
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''} https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
     img-src 'self' blob: data: https: http:;
     media-src 'self' https:;
-    frame-src 'self' https://www.youtube.com/embed/ https://youtube.com/embed/ https://*.youtube.com/embed/;
+    frame-src 'self' youtube.com www.youtube.com *.youtube.com https://youtube.com https://www.youtube.com https://*.youtube.com;
     connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000;
     object-src 'none';
     base-uri 'self';

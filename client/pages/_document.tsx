@@ -155,7 +155,7 @@ class MyDocument extends Document<MyDocumentProps> {
           {/* Security headers */}
           <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
           <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
-          <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:;" />
+          
           
           {/* Sitemap */}
           <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
