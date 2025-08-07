@@ -11,17 +11,24 @@ export function middleware(request: NextRequest) {
   // Add CSP headers for all other routes
   const response = NextResponse.next();
   
-  const cspHeader = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: https: http:",
-    "media-src 'self' https:",
-    "frame-src 'self' https://www.youtube.com https://youtube.com",
-    "connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000"
-  ].join('; ');
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+  const isDev = process.env.NODE_ENV === 'development';
+  const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''} https://www.googletagmanager.com https://www.google-analytics.com;
+    style-src 'self' 'nonce-${nonce}' ${isDev ? "'unsafe-inline'" : ''} https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    img-src 'self' blob: data: https: http:;
+    media-src 'self' https:;
+    frame-src 'self' https://www.youtube.com https://youtube.com https://*.youtube.com;
+    connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    upgrade-insecure-requests;
+  `.replace(/\n/g, '');
 
+  response.headers.set('x-nonce', nonce);
   response.headers.set('Content-Security-Policy', cspHeader);
   response.headers.set('X-Frame-Options', 'SAMEORIGIN');
   
