@@ -35,6 +35,7 @@ export interface Post {
   author?: User;
   author_name?: string;
   featured_image?: string;
+  video_link?: string;
   image?: string;
   tags?: string[];
   meta_description?: string;

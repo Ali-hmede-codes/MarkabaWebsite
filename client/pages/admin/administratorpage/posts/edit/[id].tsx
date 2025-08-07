@@ -14,6 +14,7 @@ interface Post {
   content_ar: string;
   excerpt_ar: string;
   featured_image: string;
+  video_link: string;
   is_published: boolean;
   is_featured: boolean;
   category_id: number;
@@ -227,6 +228,7 @@ const EditPost: React.FC = () => {
         category_id: parseInt(post.category_id.toString()),
         tags: tags, // Send tags array instead of string
         meta_description_ar: post.meta_description_ar?.trim() || '',
+        video_link: post.video_link?.trim() || '',
         is_featured: post.is_featured || false,
         is_published: post.is_published || false,
         featured_image: featuredImageUrl
@@ -388,6 +390,22 @@ const EditPost: React.FC = () => {
                   onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
+              </div>
+
+              {/* Video Link */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  رابط الفيديو (YouTube)
+                </label>
+                <input
+                  type="url"
+                  value={post.video_link || ''}
+                  onChange={(e) => setPost({ ...post, video_link: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  dir="ltr"
+                />
+                <p className="text-sm text-gray-500 mt-1">أدخل رابط فيديو YouTube لعرضه في المقال (اختياري)</p>
               </div>
 
               {/* Tags */}

@@ -11,6 +11,7 @@ import Layout from '../../components/Layout/Layout';
 import PostLayout from '../../components/Layout/PostLayout';
 import Link from 'next/link';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
+import YouTubePlayer from '../../components/Posts/YouTubePlayer';
 
 interface SinglePostPageProps {
   post: Post | null;
@@ -286,6 +287,14 @@ const PostContent: React.FC<{
                   className="object-cover rounded-lg shadow-lg" 
                 />
               </div>
+            )}
+
+            {/* YouTube Video Player */}
+            {post.video_link && (
+              <YouTubePlayer 
+                videoUrl={post.video_link} 
+                title={post.title_ar || post.title}
+              />
             )}
 
             {/* Font Size Controller */}

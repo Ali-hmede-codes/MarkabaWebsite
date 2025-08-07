@@ -14,6 +14,7 @@ interface PostForm {
   content_ar: string;
   excerpt_ar: string;
   featured_image: string;
+  video_link: string;
   is_published: boolean;
   is_featured: boolean;
   category_id: number | string;
@@ -42,6 +43,7 @@ const CreatePost: React.FC = () => {
     content_ar: '',
     excerpt_ar: '',
     featured_image: '',
+    video_link: '',
     is_published: false,
     is_featured: false,
     category_id: '',
@@ -204,6 +206,7 @@ const CreatePost: React.FC = () => {
         excerpt_ar: post.excerpt_ar.trim(),
         category_id: parseInt(post.category_id.toString()),
         featured_image: post.featured_image,
+        video_link: post.video_link.trim(),
         tags: post.tags,
         meta_description_ar: post.meta_description_ar.trim(),
         meta_keywords_ar: post.meta_keywords_ar.trim(),
@@ -392,6 +395,22 @@ const CreatePost: React.FC = () => {
                     )}
                   </div>
                 </div>
+              </div>
+
+              {/* Video Link */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  رابط الفيديو (YouTube)
+                </label>
+                <input
+                  type="url"
+                  value={post.video_link}
+                  onChange={(e) => handleInputChange('video_link', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  dir="ltr"
+                />
+                <p className="text-sm text-gray-500 mt-1">أدخل رابط فيديو YouTube لعرضه في المقال (اختياري)</p>
               </div>
 
               {/* Tags */}

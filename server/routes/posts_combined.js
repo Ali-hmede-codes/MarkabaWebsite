@@ -824,6 +824,7 @@ router.post('/', auth, requireAuthorOrEditor, validate(postSchema), async (req, 
       excerpt_ar,
       category_id,
       featured_image,
+      video_link,
       tags = [],
       meta_description_ar,
       meta_keywords_ar,
@@ -889,13 +890,13 @@ router.post('/', auth, requireAuthorOrEditor, validate(postSchema), async (req, 
     const result = await query(
       `INSERT INTO posts (
         title_ar, content_ar, excerpt_ar,
-        slug, category_id, author_id, featured_image, tags,
+        slug, category_id, author_id, featured_image, video_link, tags,
         meta_description_ar, meta_keywords_ar, reading_time,
         is_featured, is_published, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
       [
         title_ar, content_ar, excerpt_ar,
-        slug, category_id, req.user.id, featured_image, JSON.stringify(tags),
+        slug, category_id, req.user.id, featured_image, video_link || null, JSON.stringify(tags),
         meta_description_ar, meta_keywords_ar, reading_time,
         is_featured ? 1 : 0, finalIsPublished ? 1 : 0
       ]
@@ -972,6 +973,7 @@ router.put('/:id', auth, canEditContent, validate(postUpdateSchema), async (req,
       excerpt_ar,
       category_id,
       featured_image,
+      video_link,
       tags,
       meta_description_ar,
       meta_keywords_ar,
@@ -1049,6 +1051,10 @@ router.put('/:id', auth, canEditContent, validate(postUpdateSchema), async (req,
       updateFields.push('featured_image = ?');
       updateValues.push(featured_image);
     }
+    if (video_link !== undefined) {
+      updateFields.push('video_link = ?');
+      updateValues.push(video_link || null);
+    }
     if (tags !== undefined) {
       updateFields.push('tags = ?');
       updateValues.push(JSON.stringify(tags));
@@ -1089,6 +1095,7 @@ router.put('/:id', auth, canEditContent, validate(postUpdateSchema), async (req,
           slug,
           category_id: category_id !== undefined ? category_id : existingPost.category_id,
           featured_image: featured_image !== undefined ? featured_image : existingPost.featured_image,
+          video_link: video_link !== undefined ? video_link : existingPost.video_link,
           tags: tags !== undefined ? tags : JSON.parse(existingPost.tags || '[]'),
           meta_description_ar: meta_description_ar !== undefined ? meta_description_ar : existingPost.meta_description_ar,
           meta_keywords_ar: meta_keywords_ar !== undefined ? meta_keywords_ar : existingPost.meta_keywords_ar,
