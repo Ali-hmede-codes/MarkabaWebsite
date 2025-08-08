@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Post } from '../API/types';
-import { FiCalendar, FiEye, FiUser } from 'react-icons/fi';
+import { FiCalendar, FiUser } from 'react-icons/fi';
 import { getImageUrl } from '../../utils/imageUtils';
 
 interface PostCardProps {
@@ -80,18 +80,12 @@ const PostCard: React.FC<PostCardProps> = ({
         )}
         
         {/* Meta Information */}
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <div className="flex items-center space-x-4">
-            {showAuthor && post.author && (
-              <span>By {post.author.name || post.author.username}</span>
-            )}
-            {showDate && post.created_at && (
-              <span>{formatDate(post.created_at)}</span>
-            )}
-          </div>
-          
-          {post.views && (
-            <span>{post.views} views</span>
+        <div className="flex items-center space-x-4 text-xs text-gray-500">
+          {showAuthor && post.author && (
+            <span>By {post.author.name || post.author.username}</span>
+          )}
+          {showDate && post.created_at && (
+            <span>{formatDate(post.created_at)}</span>
           )}
         </div>
       </div>
