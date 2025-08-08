@@ -5,7 +5,7 @@ import Layout from '../../components/Layout/Layout';
 import { useContent } from '../../hooks/useContent';
 import { usePosts, useCategories, useAPI } from '../../components/API/hooks';
 import { Post, Category } from '../../components/API/types';
-import { FiCalendar, FiUser, FiEye, FiArrowRight } from 'react-icons/fi';
+import { FiCalendar, FiUser, FiArrowRight } from 'react-icons/fi';
 import { getImageUrl } from '../../utils/imageUtils';
 
 const CategoryPage: React.FC = () => {
@@ -239,12 +239,7 @@ const CategoryPage: React.FC = () => {
                               <FiCalendar size={14} className="flex-shrink-0" />
                               <span>{getTimeAgo(post.created_at)}</span>
                             </div>
-                            {post.views && (
-                              <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                                <FiEye size={14} className="flex-shrink-0" />
-                                <span>{post.views}</span>
-                              </div>
-                            )}
+
                           </div>
                         </div>
                         
