@@ -8,7 +8,6 @@ import { useContent } from "../hooks/useContent";
 import { Post, Category } from "../components/API/types";
 import {
   FiCalendar,
-  FiEye,
   FiBook,
   FiTrendingUp,
   FiPlay,
@@ -215,17 +214,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             {getCategoryName(post.category_id)}
                           </span>
                         </div>
-                        {post.views && (
-                          <div className="absolute top-3 left-3 flex items-center bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
-                            <FiEye
-                              size={12}
-                              className="ml-1 rtl:ml-0 rtl:mr-1 text-white"
-                            />
-                            <span className="text-white text-xs font-medium">
-                              {formatViews(post.views)}
-                            </span>
-                          </div>
-                        )}
+
                       </div>
                       <div className="p-4">
                         <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-2 line-clamp-2 hover:text-purple-600 transition-colors leading-tight">
@@ -308,17 +297,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             {getCategoryName(post.category_id)}
                           </span>
                         </div>
-                        {post.views && (
-                          <div className="absolute top-3 left-3 flex items-center bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
-                            <FiEye
-                              size={12}
-                              className="ml-1 rtl:ml-0 rtl:mr-1 text-white"
-                            />
-                            <span className="text-white text-xs font-medium">
-                              {formatViews(post.views)}
-                            </span>
-                          </div>
-                        )}
+
                       </div>
                       <div className="p-4">
                         <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-2 line-clamp-2 hover:text-green-600 transition-colors leading-tight">
@@ -403,17 +382,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             {getCategoryName(post.category_id)}
                           </span>
                         </div>
-                        {post.views && (
-                          <div className="absolute top-3 left-3 flex items-center bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
-                            <FiEye
-                              size={12}
-                              className="ml-1 rtl:ml-0 rtl:mr-1 text-white"
-                            />
-                            <span className="text-white text-xs font-medium">
-                              {formatViews(post.views)}
-                            </span>
-                          </div>
-                        )}
+
                       </div>
                       <div className="p-4 flex-shrink-0">
                         <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors leading-tight">
