@@ -937,7 +937,7 @@ router.post('/', auth, requireAuthorOrEditor, validate(postSchema), async (req, 
     
     // Fetch the created post with related data
     const createdPost = await queryOne(
-      `SELECT p.*, c.name_ar as category_name, c.name_ar as category_name_ar,
+      `SELECT p.*, c.name as category_name, c.name_ar as category_name_ar,
               u.username as author_name, u.display_name as author_display_name
        FROM posts p
        LEFT JOIN categories c ON p.category_id = c.id
@@ -1136,7 +1136,7 @@ router.put('/:id', auth, canEditContent, validate(postUpdateSchema), async (req,
     
     // Fetch updated post
     const updatedPost = await queryOne(
-      `SELECT p.*, c.name_ar as category_name, c.name_ar as category_name_ar,
+      `SELECT p.*, c.name as category_name, c.name_ar as category_name_ar,
               u.username as author_name, u.display_name as author_display_name
        FROM posts p
        LEFT JOIN categories c ON p.category_id = c.id
