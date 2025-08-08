@@ -15,6 +15,7 @@ interface MyDocumentProps extends DocumentInitialProps {
     image?: string;
     url?: string;
   };
+  nonce?: string;
 }
 
 class MyDocument extends Document<MyDocumentProps> { 
@@ -94,12 +95,12 @@ class MyDocument extends Document<MyDocumentProps> {
        }
      }
 
-    return { ...initialProps, metaData } 
+    const nonce = ctx.req?.headers['x-nonce'] as string || '';
+    return { ...initialProps, metaData, nonce };
   }
 
   render() {
-    const { metaData } = this.props;
-    
+    const { metaData, nonce } = this.props;
     return (
       <Html lang="ar" dir="rtl">
         <Head>
@@ -196,57 +197,34 @@ class MyDocument extends Document<MyDocumentProps> {
           </div>
         </noscript>
         <Main />
-        <NextScript />
-        
-        {/* Analytics scripts can be added here */}
+        <NextScript nonce={nonce} />
         {process.env.NODE_ENV === 'production' && (
           <>
-            {/* Google Analytics */}
-            {process.env.NEXT_PUBLIC_GA_ID && (
-              <>
-                <script
-                  async
-                  src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-                />
-                <script
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      window.dataLayer = window.dataLayer || [];
-                      function gtag(){dataLayer.push(arguments);}
-                      gtag('js', new Date());
-                      gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
-                        page_title: document.title,
-                        page_location: window.location.href,
-                      });
-                    `,
-                  }}
-                />
-              </>
-            )}
-            
-            {/* Facebook Pixel */}
-            {process.env.NEXT_PUBLIC_FB_PIXEL_ID && (
-              <script
-                dangerouslySetInnerHTML={{
-                  __html: `
-                    !function(f,b,e,v,n,t,s)
-                    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-                    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-                    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-                    n.queue=[];t=b.createElement(e);t.async=!0;
-                    t.src=v;s=b.getElementsByTagName(e)[0];
-                    s.parentNode.insertBefore(t,s)}(window, document,'script',
-                    'https://connect.facebook.net/en_US/fbevents.js');
-                    fbq('init', '${process.env.NEXT_PUBLIC_FB_PIXEL_ID}');
-                    fbq('track', 'PageView');
-                  `,
-                }}
-              />
-            )}
+            <script
+              nonce={nonce}
+              async
+              src="https://www.googletagmanager.com/gtag/js?id=G-XV0VQHJ2NJ"
+            />
+            <script
+              nonce={nonce}
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', 'G-XV0VQHJ2NJ');
+                `,
+              }}
+            />
+            <script
+              nonce={nonce}
+              async
+              src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v13.0"
+            />
           </>
         )}
-        </body>
-      </Html>
+      </body>
+    </Html>
     );
   }
 }
