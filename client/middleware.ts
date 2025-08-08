@@ -16,6 +16,7 @@ export function middleware(request: NextRequest) {
   const cspHeader = `
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''} https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com;
+    script-src-elem 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''} https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
     img-src 'self' blob: data: https: http:;
