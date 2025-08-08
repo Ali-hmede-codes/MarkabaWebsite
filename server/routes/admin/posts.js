@@ -131,6 +131,7 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
         p.slug,
         p.excerpt_ar as excerpt,
         p.featured_image,
+        p.video_link,
         p.is_published as status,
         p.is_featured,
         p.views,
@@ -221,6 +222,7 @@ router.get('/:id',
           p.meta_description_ar,
           p.slug,
           p.featured_image,
+          p.video_link,
           p.category_id,
           p.author_id,
           p.is_published,
@@ -337,6 +339,8 @@ router.post('/',
         meta_description_ar 
       } = req.body;
       
+      const { video_link } = req.body;
+      
       const { category_id, is_published } = req.body;
       const isPublished = is_published === true || is_published === 'true' || is_published === '1';
       const isFeatured = is_featured === true || is_featured === 'true' || is_featured === '1';
@@ -401,12 +405,12 @@ router.post('/',
       // Insert new post
       const [result] = await db.execute(
         `INSERT INTO posts (
-          title_ar, slug, content_ar, excerpt_ar, featured_image, category_id, author_id, 
+          title_ar, slug, content_ar, excerpt_ar, featured_image, video_link, category_id, author_id, 
           is_published, is_featured, meta_description_ar, 
           created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
         [
-          title_ar, slug, content_ar, excerpt_ar, featured_image, category_id, req.user.id,
+          title_ar, slug, content_ar, excerpt_ar, featured_image, video_link || null, category_id, req.user.id,
           isPublished ? 1 : 0, isFeatured ? 1 : 0, meta_description_ar
         ]
       );
@@ -420,6 +424,7 @@ router.post('/',
           p.excerpt_ar as excerpt,
           p.slug,
           p.featured_image,
+          p.video_link,
           p.category_id,
           p.author_id,
           p.is_published,
@@ -535,6 +540,7 @@ router.put('/:id',
       if (updateData.excerpt_ar) updateData.excerpt_ar = updateData.excerpt_ar.trim();
       if (updateData.meta_description_ar) updateData.meta_description_ar = updateData.meta_description_ar.trim();
       if (updateData.tags) updateData.tags = updateData.tags.trim();
+      if (updateData.video_link) updateData.video_link = updateData.video_link.trim();
       
       // Generate slug if title is provided but slug is not
       if (updateData.title_ar && !updateData.slug) {
@@ -627,7 +633,7 @@ router.put('/:id',
       
       // Whitelist allowed update fields to prevent SQL injection
       const allowedUpdateFields = [
-        'title_ar', 'slug', 'content_ar', 'excerpt_ar', 'featured_image', 'category_id',
+        'title_ar', 'slug', 'content_ar', 'excerpt_ar', 'featured_image', 'video_link', 'category_id',
         'is_published', 'is_featured', 'meta_description_ar', 'tags'
       ];
       
