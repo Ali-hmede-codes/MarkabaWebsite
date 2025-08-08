@@ -8,6 +8,7 @@ import { FiSave, FiArrowLeft, FiEye, FiUpload } from 'react-icons/fi';
 import Link from 'next/link';
 import { useAuth } from '../../../../context/AuthContext';
 import { getImageUrl } from '../../../../utils/imageUtils';
+import { formatPostContent } from '../../../../utils/textFormatter';
 
 interface PostForm {
   title_ar: string;
@@ -321,9 +322,12 @@ const CreatePost: React.FC = () => {
             )}
             
             <div className="prose max-w-none" dir="rtl">
-              <div className="whitespace-pre-wrap text-gray-800 leading-relaxed text-lg">
-                {post.content_ar || 'محتوى المقال'}
-              </div>
+              <div 
+                className="text-gray-800 leading-relaxed text-lg"
+                dangerouslySetInnerHTML={{ 
+                  __html: formatPostContent(post.content_ar || 'محتوى المقال') 
+                }} 
+              />
             </div>
           </div>
         ) : (

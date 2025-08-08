@@ -12,6 +12,7 @@ import PostLayout from '../../components/Layout/PostLayout';
 import Link from 'next/link';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 import YouTubePlayer from '../../components/Posts/YouTubePlayer';
+import { formatPostContent } from '../../utils/textFormatter';
 
 interface SinglePostPageProps {
   post: Post | null;
@@ -321,7 +322,7 @@ const PostContent: React.FC<{
               className="prose max-w-none mb-8 text-gray-800 leading-relaxed" 
               style={{ fontSize: `${fontSize}px` }}
               dangerouslySetInnerHTML={{ 
-                __html: (post.content_ar || post.content || '').replace(/\n/g, '<br>') 
+                __html: formatPostContent(post.content_ar || post.content || '') 
               }} 
             />
 
