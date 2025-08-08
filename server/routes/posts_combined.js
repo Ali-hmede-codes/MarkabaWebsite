@@ -9,6 +9,23 @@ const { generateArabicSlug, calculateReadingTime, createPostFiles, deletePostFil
 
 const router = express.Router();
 
+// Helper function to safely parse JSON tags
+function safeParseJsonTags(tags, postId = null) {
+  if (!tags) return [];
+  
+  try {
+    return JSON.parse(tags);
+  } catch (error) {
+    if (postId) {
+      console.warn(`Invalid JSON in tags for post ${postId}:`, tags);
+    } else {
+      console.warn('Invalid JSON in tags:', tags);
+    }
+    // If tags is not valid JSON, treat it as a single tag or empty array
+    return typeof tags === 'string' && tags.trim() ? [tags.trim()] : [];
+  }
+}
+
 // Enhanced post file management functions (from posts_enhanced.js)
 async function updatePostFiles(postId, postData) {
   const postDir = path.join(__dirname, '../../posts', postId.toString());
@@ -331,7 +348,7 @@ router.get('/', async (req, res) => {
     // Parse JSON fields and process posts
     const processedPosts = posts.map(post => ({
       ...post,
-      tags: post.tags ? JSON.parse(post.tags) : [],
+      tags: safeParseJsonTags(post.tags, post.id),
       is_featured: Boolean(post.is_featured),
       is_published: Boolean(post.is_published),
       url: `/post/${post.id}/${post.slug}`,
@@ -428,7 +445,7 @@ router.get('/featured', async (req, res) => {
     
     const processedPosts = posts.map(post => ({
       ...post,
-      tags: post.tags ? JSON.parse(post.tags) : [],
+      tags: safeParseJsonTags(post.tags, post.id),
       is_featured: Boolean(post.is_featured),
       is_published: Boolean(post.is_published),
       url: `/post/${post.id}/${post.slug}`
@@ -494,7 +511,7 @@ router.get('/trending', async (req, res) => {
     
     const processedPosts = posts.map(post => ({
       ...post,
-      tags: post.tags ? JSON.parse(post.tags) : [],
+      tags: safeParseJsonTags(post.tags, post.id),
       is_featured: Boolean(post.is_featured),
       is_published: Boolean(post.is_published),
       url: `/post/${post.id}/${post.slug}`
@@ -545,7 +562,7 @@ router.get('/:id', async (req, res) => {
     }
     
     // Parse JSON fields
-    post.tags = post.tags ? JSON.parse(post.tags) : [];
+    post.tags = safeParseJsonTags(post.tags, post.id);
     post.is_featured = Boolean(post.is_featured);
     post.is_published = Boolean(post.is_published);
     
@@ -703,7 +720,7 @@ router.get('/:id/:slug', async (req, res) => {
     }
     
     // Parse JSON fields
-    post.tags = post.tags ? JSON.parse(post.tags) : [];
+    post.tags = safeParseJsonTags(post.tags, post.id);
     post.is_featured = Boolean(post.is_featured);
     post.is_published = Boolean(post.is_published);
     
@@ -947,7 +964,7 @@ router.post('/', auth, requireAuthorOrEditor, validate(postSchema), async (req, 
     );
     
     // Process the response
-    createdPost.tags = JSON.parse(createdPost.tags || '[]');
+    createdPost.tags = safeParseJsonTags(createdPost.tags, createdPost.id);
     createdPost.is_featured = Boolean(createdPost.is_featured);
     createdPost.is_published = Boolean(createdPost.is_published);
     createdPost.url = `/post/${createdPost.id}/${createdPost.slug}`;
@@ -1112,7 +1129,7 @@ router.put('/:id', auth, canEditContent, validate(postUpdateSchema), async (req,
           category_id: category_id !== undefined ? category_id : existingPost.category_id,
           featured_image: featured_image !== undefined ? featured_image : existingPost.featured_image,
           video_link: video_link !== undefined ? video_link : existingPost.video_link,
-          tags: tags !== undefined ? tags : JSON.parse(existingPost.tags || '[]'),
+          tags: tags !== undefined ? tags : safeParseJsonTags(existingPost.tags, existingPost.id),
           meta_description_ar: meta_description_ar !== undefined ? meta_description_ar : existingPost.meta_description_ar,
           meta_keywords_ar: meta_keywords_ar !== undefined ? meta_keywords_ar : existingPost.meta_keywords_ar,
           reading_time,
@@ -1146,7 +1163,7 @@ router.put('/:id', auth, canEditContent, validate(postUpdateSchema), async (req,
     );
     
     // Process response
-    updatedPost.tags = JSON.parse(updatedPost.tags || '[]');
+    updatedPost.tags = safeParseJsonTags(updatedPost.tags, updatedPost.id);
     updatedPost.is_featured = Boolean(updatedPost.is_featured);
     updatedPost.is_published = Boolean(updatedPost.is_published);
     updatedPost.url = `/post/${updatedPost.id}/${updatedPost.slug}`;
@@ -1250,7 +1267,7 @@ router.patch('/bulk/status', auth, requireAdminOrEditor, async (req, res) => {
         try {
           await createPostFiles(post.id, {
             ...post,
-            tags: JSON.parse(post.tags || '[]'),
+            tags: safeParseJsonTags(post.tags, post.id),
             is_featured: Boolean(post.is_featured),
             is_published: true
           });
