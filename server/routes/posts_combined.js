@@ -581,6 +581,17 @@ router.get('/:id', async (req, res) => {
     // Get related posts if requested
     let relatedPosts = [];
     if (include_related === 'true') {
+      // MariaDB-compatible query using JSON_CONTAINS instead of JSON_OVERLAPS
+      const postTags = post.tags || [];
+      let tagConditions = '';
+      let tagParams = [];
+      
+      if (postTags.length > 0) {
+        const tagChecks = postTags.map(() => 'JSON_CONTAINS(p.tags, ?)');
+        tagConditions = ` OR (${tagChecks.join(' OR ')})`;
+        tagParams = postTags.map(tag => JSON.stringify(tag));
+      }
+      
       relatedPosts = await query(
         `SELECT p.id, p.title_ar, p.slug, p.excerpt_ar,
                 p.featured_image, p.views, p.reading_time, p.created_at,
@@ -590,20 +601,17 @@ router.get('/:id', async (req, res) => {
          FROM posts p
          LEFT JOIN categories c ON p.category_id = c.id
          WHERE p.id != ? AND p.is_published = 1 AND (
-           p.category_id = ? OR 
-           JSON_OVERLAPS(p.tags, ?)
+           p.category_id = ?${tagConditions}
          )
          ORDER BY (
-           CASE WHEN p.category_id = ? THEN 3 ELSE 0 END +
-           CASE WHEN JSON_OVERLAPS(p.tags, ?) THEN 2 ELSE 0 END
+           CASE WHEN p.category_id = ? THEN 3 ELSE 0 END
          ) DESC, p.views DESC, p.created_at DESC
          LIMIT 5`,
         [
           post.id, 
-          post.category_id, 
-          JSON.stringify(post.tags),
           post.category_id,
-          JSON.stringify(post.tags)
+          ...tagParams,
+          post.category_id
         ]
       );
       
@@ -731,6 +739,17 @@ router.get('/:id/:slug', async (req, res) => {
     // Get related posts if requested
     let relatedPosts = [];
     if (include_related === 'true') {
+      // MariaDB-compatible query using JSON_CONTAINS instead of JSON_OVERLAPS
+      const postTags = post.tags || [];
+      let tagConditions = '';
+      let tagParams = [];
+      
+      if (postTags.length > 0) {
+        const tagChecks = postTags.map(() => 'JSON_CONTAINS(p.tags, ?)');
+        tagConditions = ` OR (${tagChecks.join(' OR ')})`;
+        tagParams = postTags.map(tag => JSON.stringify(tag));
+      }
+      
       relatedPosts = await query(
         `SELECT p.id, p.title_ar, p.slug, p.excerpt_ar,
                 p.featured_image, p.views, p.reading_time, p.created_at,
@@ -740,20 +759,17 @@ router.get('/:id/:slug', async (req, res) => {
          FROM posts p
          LEFT JOIN categories c ON p.category_id = c.id
          WHERE p.id != ? AND p.is_published = 1 AND (
-           p.category_id = ? OR 
-           JSON_OVERLAPS(p.tags, ?)
+           p.category_id = ?${tagConditions}
          )
          ORDER BY (
-           CASE WHEN p.category_id = ? THEN 3 ELSE 0 END +
-           CASE WHEN JSON_OVERLAPS(p.tags, ?) THEN 2 ELSE 0 END
+           CASE WHEN p.category_id = ? THEN 3 ELSE 0 END
          ) DESC, p.views DESC, p.created_at DESC
          LIMIT 5`,
         [
           post.id, 
-          post.category_id, 
-          JSON.stringify(post.tags),
           post.category_id,
-          JSON.stringify(post.tags)
+          ...tagParams,
+          post.category_id
         ]
       );
       
