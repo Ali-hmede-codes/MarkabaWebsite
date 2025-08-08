@@ -22,7 +22,6 @@ export function middleware(request: NextRequest) {
     img-src 'self' blob: data: https: http:;
     media-src 'self' https:;
     frame-src 'self' https://youtube.com https://www.youtube.com https://*.youtube.com;
-    connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000 https://www.youtube.com https://youtube.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
