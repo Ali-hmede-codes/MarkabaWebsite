@@ -1,10 +1,15 @@
 {
-  "message": "You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https://rapidapi.com/worldapi/api/open-weather13",
-  "lastUpdated": "2025-07-30T18:50:01.703Z",
+  "temperature": 31.3,
+  "condition": "Partly cloudy",
+  "humidity": 66,
+  "wind_speed": 10.4,
+  "pressure": 1007,
+  "visibility": 8,
+  "lastUpdated": "2025-08-08T11:50:28.218Z",
   "location": {
     "country": "Lebanon",
     "city": "Beirut",
-    "latitude": "33.8547",
-    "longitude": "35.8623"
+    "latitude": 33.872,
+    "longitude": 35.51
   }
 }

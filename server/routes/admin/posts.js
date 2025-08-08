@@ -227,7 +227,7 @@ router.get('/:id',
           p.author_id,
           p.is_published,
           p.is_featured,
-          
+          p.views,
           p.created_at,
           p.updated_at,
           u.display_name as author_name,

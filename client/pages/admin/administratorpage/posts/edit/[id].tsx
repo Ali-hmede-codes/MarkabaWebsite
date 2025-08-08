@@ -60,8 +60,30 @@ const EditPost: React.FC = () => {
       if (data.success) {
         setPost(data.data);
         // Initialize tags from post data
-        if (data.data.tags && typeof data.data.tags === 'string') {
-          setTags(data.data.tags.split(',').filter((tag: string) => tag.trim() !== ''));
+        if (data.data.tags) {
+          try {
+            // If tags is a JSON string, parse it
+            if (typeof data.data.tags === 'string') {
+              const parsedTags = JSON.parse(data.data.tags);
+              if (Array.isArray(parsedTags)) {
+                setTags(parsedTags);
+              } else {
+                // Fallback to comma-separated string
+                setTags(data.data.tags.split(',').filter((tag: string) => tag.trim() !== ''));
+              }
+            } else if (Array.isArray(data.data.tags)) {
+              setTags(data.data.tags);
+            } else {
+              setTags([]);
+            }
+          } catch (error) {
+            // If JSON parsing fails, try comma-separated string
+            if (typeof data.data.tags === 'string') {
+              setTags(data.data.tags.split(',').filter((tag: string) => tag.trim() !== ''));
+            } else {
+              setTags([]);
+            }
+          }
         } else {
           setTags([]);
         }
@@ -142,7 +164,7 @@ const EditPost: React.FC = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
       const updatedTags = [...tags, newTag.trim()];
       setTags(updatedTags);
-      setPost(prev => prev ? { ...prev, tags: updatedTags.join(',') } : null);
+      setPost(prev => prev ? { ...prev, tags: JSON.stringify(updatedTags) } : null);
       setNewTag('');
     }
   };
@@ -150,7 +172,7 @@ const EditPost: React.FC = () => {
   const removeTag = (tagToRemove: string) => {
     const updatedTags = tags.filter(tag => tag !== tagToRemove);
     setTags(updatedTags);
-    setPost(prev => prev ? { ...prev, tags: updatedTags.join(',') } : null);
+    setPost(prev => prev ? { ...prev, tags: JSON.stringify(updatedTags) } : null);
   };
 
   const handleTagKeyPress = (e: React.KeyboardEvent) => {
@@ -226,7 +248,7 @@ const EditPost: React.FC = () => {
         content_ar: post.content_ar.trim(),
         excerpt_ar: post.excerpt_ar?.trim() || '',
         category_id: parseInt(post.category_id.toString()),
-        tags: tags.join(','), // Send tags as comma-separated string
+        tags: JSON.stringify(tags), // Send tags as JSON string
         meta_description_ar: post.meta_description_ar?.trim() || '',
         video_link: post.video_link?.trim() || '',
         is_featured: post.is_featured || false,
@@ -234,12 +256,21 @@ const EditPost: React.FC = () => {
         featured_image: featuredImageUrl
       };
       
-      const response = await fetch(`/api/posts/${id}`, {
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(postData)
+        body: JSON.stringify({
+          ...postData,
+          tags: JSON.stringify(tags), // Convert tags array to JSON string
+        })
       });
       
       if (!response.ok) {
