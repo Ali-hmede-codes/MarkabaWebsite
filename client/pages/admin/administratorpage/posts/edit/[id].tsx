@@ -226,7 +226,7 @@ const EditPost: React.FC = () => {
         content_ar: post.content_ar.trim(),
         excerpt_ar: post.excerpt_ar?.trim() || '',
         category_id: parseInt(post.category_id.toString()),
-        tags: tags, // Send tags array instead of string
+        tags: tags.join(','), // Send tags as comma-separated string
         meta_description_ar: post.meta_description_ar?.trim() || '',
         video_link: post.video_link?.trim() || '',
         is_featured: post.is_featured || false,

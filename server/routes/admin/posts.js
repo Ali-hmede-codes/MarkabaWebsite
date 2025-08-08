@@ -539,7 +539,14 @@ router.put('/:id',
       if (updateData.content_ar) updateData.content_ar = updateData.content_ar.trim();
       if (updateData.excerpt_ar) updateData.excerpt_ar = updateData.excerpt_ar.trim();
       if (updateData.meta_description_ar) updateData.meta_description_ar = updateData.meta_description_ar.trim();
-      if (updateData.tags) updateData.tags = updateData.tags.trim();
+      if (updateData.tags) {
+        // Handle tags as array or string
+        if (Array.isArray(updateData.tags)) {
+          updateData.tags = updateData.tags.join(',').trim();
+        } else {
+          updateData.tags = updateData.tags.trim();
+        }
+      }
       if (updateData.video_link) updateData.video_link = updateData.video_link.trim();
       
       // Generate slug if title is provided but slug is not
