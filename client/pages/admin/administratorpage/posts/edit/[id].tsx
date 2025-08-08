@@ -58,7 +58,12 @@ const EditPost: React.FC = () => {
       const data = await response.json();
       
       if (data.success) {
-        setPost(data.data);
+        // Handle the new API response structure where category_id is nested
+        const postData = {
+          ...data.data,
+          category_id: data.data.category?.id || data.data.category_id || null
+        };
+        setPost(postData);
         // Initialize tags from post data
         if (data.data.tags) {
           try {
@@ -261,7 +266,7 @@ const EditPost: React.FC = () => {
         .find(row => row.startsWith('token='))
         ?.split('=')[1];
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
