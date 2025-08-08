@@ -253,7 +253,7 @@ const EditPost: React.FC = () => {
         content_ar: post.content_ar.trim(),
         excerpt_ar: post.excerpt_ar?.trim() || '',
         category_id: parseInt(post.category_id.toString()),
-        tags: JSON.stringify(tags), // Send tags as JSON string
+        tags: tags, // Send tags as array
         meta_description_ar: post.meta_description_ar?.trim() || '',
         video_link: post.video_link?.trim() || '',
         is_featured: post.is_featured || false,
@@ -272,10 +272,7 @@ const EditPost: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          ...postData,
-          tags: JSON.stringify(tags), // Convert tags array to JSON string
-        })
+        body: JSON.stringify(postData)
       });
       
       if (!response.ok) {
