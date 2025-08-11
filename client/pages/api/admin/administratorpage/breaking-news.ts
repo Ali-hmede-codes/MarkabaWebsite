@@ -4,10 +4,14 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/a
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    // Get auth token from cookies or headers
-    const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
+    // Get auth token from cookies
+    const token = req.cookies.token;
+    
     if (!token) {
-      return res.status(401).json({ message: 'Authentication required' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'Unauthorized - Authentication required' 
+      });
     }
 
     let url = `${API_BASE_URL}/admin/administratorpage/breaking-news`;
