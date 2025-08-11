@@ -61,15 +61,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               if (refreshResponse.ok) {
                 const refreshData = await refreshResponse.json();
                 if (refreshData.success && refreshData.data?.token) {
-                  // Update token in state and cookies
+                  // Update token in state and cookies with consistent expiration
                   setToken(refreshData.data.token);
                   const rememberMe = getCookie('remember_me') === 'true';
-                  const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 2 * 60 * 60;
+                  const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 48 * 60 * 60; // Consistent with backend
                   
                   setCookie('token', refreshData.data.token, {
                     maxAge: cookieMaxAge,
                     secure: window.location.protocol === 'https:',
                     sameSite: 'strict',
+                    httpOnly: false, // Allow client-side access
                   });
                   
                   toast.success('Session refreshed successfully');
@@ -103,7 +104,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (data.success && data.data?.token) {
               setToken(data.data.token);
               const rememberMe = getCookie('remember_me') === 'true';
-              const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 2 * 60 * 60;
+              const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 48 * 60 * 60;
               
               setCookie('token', data.data.token, {
                 maxAge: cookieMaxAge,
@@ -118,19 +119,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     };
 
-    // Set up intervals based on remember_me preference
+    // Set up intervals based on remember_me preference with more reasonable timings
     if (token && user) {
       const rememberMe = getCookie('remember_me') === 'true';
       
-      // Validation interval - check token validity
+      // Validation interval - check token validity (reduced frequency to prevent premature expiration)
       const validationInterval_ms = rememberMe 
-        ? 30 * 60 * 1000  // 30 minutes for remember me sessions
-        : 10 * 60 * 1000; // 10 minutes for regular sessions
+        ? 2 * 60 * 60 * 1000  // 2 hours for remember me sessions
+        : 45 * 60 * 1000;     // 45 minutes for regular sessions
       
-      // Refresh interval - proactively refresh tokens
+      // Refresh interval - proactively refresh tokens (more conservative)
       const refreshInterval_ms = rememberMe 
-        ? 60 * 60 * 1000  // 1 hour for remember me sessions
-        : 30 * 60 * 1000; // 30 minutes for regular sessions
+        ? 4 * 60 * 60 * 1000  // 4 hours for remember me sessions
+        : 90 * 60 * 1000;     // 90 minutes for regular sessions
       
       validationInterval = setInterval(validateUser, validationInterval_ms);
       refreshInterval = setInterval(refreshToken, refreshInterval_ms);
@@ -169,7 +170,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 const rememberMe = getCookie('remember_me') === 'true';
                 const cookieMaxAge = rememberMe 
                   ? 30 * 24 * 60 * 60  // 30 days if remember me was checked
-                  : 2 * 60 * 60;       // 2 hours if not checked
+                  : 48 * 60 * 60;      // 48 hours if not checked (consistent with backend)
                 
                 setCookie('user', JSON.stringify(userData), {
                   maxAge: cookieMaxAge,
@@ -220,20 +221,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(userData);
         setToken(userToken);
 
-        // Set cookies based on remember_me preference
+        // Set cookies based on remember_me preference (consistent with backend)
         const cookieMaxAge = credentials.remember_me 
           ? 30 * 24 * 60 * 60  // 30 days if remember me is checked
-          : 2 * 60 * 60;       // 2 hours if not checked
+          : 48 * 60 * 60;      // 48 hours if not checked (consistent with backend)
         
         setCookie('token', userToken, {
           maxAge: cookieMaxAge,
           secure: window.location.protocol === 'https:',
           sameSite: 'strict',
+          httpOnly: false, // Allow client-side access for API calls
         });
         setCookie('user', JSON.stringify(userData), {
           maxAge: cookieMaxAge,
           secure: window.location.protocol === 'https:',
           sameSite: 'strict',
+          httpOnly: false, // Allow client-side access
         });
         
         // Store remember_me preference for session management
@@ -241,6 +244,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           maxAge: cookieMaxAge,
           secure: window.location.protocol === 'https:',
           sameSite: 'strict',
+          httpOnly: false, // Allow client-side access
         });
 
         toast.success(`Welcome back, ${userData.username}!`);

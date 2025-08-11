@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { apiRequest } from '../../../lib/api';
 import { FiPlus, FiEdit, FiTrash2, FiSearch, FiFilter } from 'react-icons/fi';
 
 interface LastNews {
@@ -54,25 +55,24 @@ const LastNewsAdmin: React.FC = () => {
   const fetchLastNews = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/administratorpage/last-news', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      const data = await response.json();
+      const data = await apiRequest('/admin/administratorpage/last-news');
       
       if (data.success) {
         setLastNews(data.data);
       } else {
         toast.error(data.message || 'خطأ في جلب البيانات');
       }
-    } catch {
-      toast.error('خطأ في الاتصال بالخادم');
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error('انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى');
+        router.push('/auth/login');
+      } else {
+        toast.error('خطأ في الاتصال بالخادم');
+      }
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [router]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -90,22 +90,16 @@ const LastNewsAdmin: React.FC = () => {
     }
 
     try {
-      const url = editingItem 
-        ? `/api/admin/administratorpage/last-news/${editingItem.id}`
-        : '/api/admin/administratorpage/last-news';
+      const endpoint = editingItem 
+        ? `/admin/administratorpage/last-news/${editingItem.id}`
+        : '/admin/administratorpage/last-news';
       
       const method = editingItem ? 'PUT' : 'POST';
       
-      const response = await fetch(url, {
+      const data = await apiRequest(endpoint, {
         method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(formData),
       });
-
-      const data = await response.json();
       
       if (data.success) {
         toast.success(data.message || (editingItem ? 'تم التحديث بنجاح' : 'تم الإضافة بنجاح'));
@@ -116,8 +110,13 @@ const LastNewsAdmin: React.FC = () => {
       } else {
         toast.error(data.message || 'حدث خطأ');
       }
-    } catch {
-      toast.error('خطأ في الاتصال بالخادم');
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error('انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى');
+        router.push('/auth/login');
+      } else {
+        toast.error('خطأ في الاتصال بالخادم');
+      }
     }
   };
 
@@ -128,15 +127,9 @@ const LastNewsAdmin: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`/api/admin/administratorpage/last-news/${id}`, {
+      const data = await apiRequest(`/admin/administratorpage/last-news/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
       });
-
-      const data = await response.json();
       
       if (data.success) {
         toast.success(data.message || 'تم الحذف بنجاح');
@@ -144,8 +137,13 @@ const LastNewsAdmin: React.FC = () => {
       } else {
         toast.error(data.message || 'حدث خطأ في الحذف');
       }
-    } catch {
-      toast.error('خطأ في الاتصال بالخادم');
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error('انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى');
+        router.push('/auth/login');
+      } else {
+        toast.error('خطأ في الاتصال بالخادم');
+      }
     }
   };
 

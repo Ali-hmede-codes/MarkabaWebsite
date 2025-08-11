@@ -58,11 +58,22 @@ export default async function handler(
         });
       }
 
-      // Forward the new refresh token cookie if provided
-      const setCookieHeader = response.headers.get('set-cookie');
-      if (setCookieHeader) {
-        res.setHeader('Set-Cookie', setCookieHeader);
+      // Set new token cookie with consistent expiration
+      const rememberMe = req.cookies.remember_me === 'true';
+      const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 48 * 60 * 60; // Consistent with backend
+      const isSecure = process.env.NODE_ENV === 'production';
+      
+      const cookies = [
+        `token=${newToken}; Path=/; Max-Age=${cookieMaxAge}; SameSite=Strict${isSecure ? '; Secure' : ''}`
+      ];
+      
+      // Forward backend refresh token cookie if present
+      const refreshTokenCookie = response.headers.get('set-cookie');
+      if (refreshTokenCookie) {
+        cookies.push(refreshTokenCookie);
       }
+      
+      res.setHeader('Set-Cookie', cookies);
 
       return res.status(200).json({
         success: true,

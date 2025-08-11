@@ -65,14 +65,15 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}, re
         if (refreshResponse.ok) {
           const refreshData = await refreshResponse.json();
           if (refreshData.success && refreshData.data?.token) {
-            // Update token in cookies
+            // Update token in cookies with consistent expiration
             const rememberMe = document.cookie
               .split('; ')
               .find(row => row.startsWith('remember_me='))
               ?.split('=')[1] === 'true';
             
-            const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 2 * 60 * 60;
-            document.cookie = `token=${refreshData.data.token}; max-age=${cookieMaxAge}; path=/; secure=${window.location.protocol === 'https:'}; samesite=strict`;
+            const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 48 * 60 * 60; // Consistent with backend
+            const isSecure = window.location.protocol === 'https:';
+            document.cookie = `token=${refreshData.data.token}; max-age=${cookieMaxAge}; path=/; ${isSecure ? 'secure; ' : ''}samesite=strict`;
             
             // Retry the original request with new token
             return apiRequest(endpoint, options, retryCount + 1);

@@ -64,6 +64,7 @@ const PostsManagement: React.FC = () => {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: '8',
+        status: 'all', // Show all posts (published and drafts)
         ...(searchTerm && { search: searchTerm }),
         ...(selectedCategory && { category: selectedCategory }),
         ...(statusFilter !== 'all' && { status: statusFilter })

@@ -83,27 +83,24 @@ export default async function handler(
         });
       }
 
-      // Set secure cookies for frontend
-      const cookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict' as const,
-        maxAge: remember_me ? 7 * 24 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000,
-        path: '/'
-      };
-
-      // Set authentication cookies
-      res.setHeader('Set-Cookie', [
-        `token=${token}; ${Object.entries(cookieOptions)
-          .map(([key, value]) => `${key}=${value}`)
-          .join('; ')}`,
-        `user=${encodeURIComponent(JSON.stringify(user))}; ${Object.entries(cookieOptions)
-          .map(([key, value]) => `${key}=${value}`)
-          .join('; ')}`,
-        `remember_me=${remember_me ? 'true' : 'false'}; ${Object.entries(cookieOptions)
-          .map(([key, value]) => `${key}=${value}`)
-          .join('; ')}`
-      ]);
+      // Set secure cookies for frontend with consistent expiration
+      const cookieMaxAge = remember_me ? 30 * 24 * 60 * 60 * 1000 : 48 * 60 * 60 * 1000; // Consistent with backend
+      const isSecure = process.env.NODE_ENV === 'production';
+      
+      // Set authentication cookies with proper formatting (no HttpOnly for client-side access)
+      const cookies = [
+        `token=${token}; Path=/; Max-Age=${Math.floor(cookieMaxAge / 1000)}; SameSite=Strict${isSecure ? '; Secure' : ''}`,
+        `user=${encodeURIComponent(JSON.stringify(user))}; Path=/; Max-Age=${Math.floor(cookieMaxAge / 1000)}; SameSite=Strict${isSecure ? '; Secure' : ''}`,
+        `remember_me=${remember_me ? 'true' : 'false'}; Path=/; Max-Age=${Math.floor(cookieMaxAge / 1000)}; SameSite=Strict${isSecure ? '; Secure' : ''}`
+      ];
+      
+      // Forward backend refresh token cookie if present
+      const backendCookies = response.headers.get('set-cookie');
+      if (backendCookies) {
+        cookies.push(...backendCookies.split(', '));
+      }
+      
+      res.setHeader('Set-Cookie', cookies);
 
       return res.status(200).json({
         success: true,

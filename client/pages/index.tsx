@@ -8,6 +8,7 @@ import { useContent } from "../hooks/useContent";
 import { Post, Category } from "../components/API/types";
 import {
   FiCalendar,
+  FiEye,
   FiBook,
   FiTrendingUp,
   FiPlay,

@@ -158,7 +158,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     const { accessToken, refreshToken, expiresIn } = generateTokens(user, remember_me);
     
     // Update user login info with proper session duration
-    const sessionDays = remember_me ? 30 : 1; // 30 days for remember me, 1 day for regular
+    const sessionDays = remember_me ? 30 : 2; // 30 days for remember me, 2 days for regular (increased from 1)
     await query(
       `UPDATE users SET 
         last_login = NOW(), 
@@ -172,7 +172,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
         clientIP,
         refreshToken,
         sessionDays,
-        remember_me,
+        remember_me ? 1 : 0, // Ensure boolean is stored as integer
         user.id
       ]
     );
@@ -199,12 +199,13 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     // Set secure HTTP-only cookie for refresh token
     const cookieMaxAge = remember_me 
       ? 30 * 24 * 60 * 60 * 1000  // 30 days for remember me
-      : 2 * 60 * 60 * 1000;       // 2 hours for regular sessions
+      : 48 * 60 * 60 * 1000;      // 48 hours for regular sessions (increased from 2 hours)
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: cookieMaxAge
+      maxAge: cookieMaxAge,
+      path: '/'
     });
     
     res.json({
@@ -365,14 +366,14 @@ router.post('/refresh', async (req, res) => {
     const { accessToken, refreshToken: newRefreshToken, expiresIn } = generateTokens(user, user.remember_me);
     
     // Update refresh token and session info in database
-    const sessionDays = user.remember_me ? 30 : 1;
+    const sessionDays = user.remember_me ? 30 : 2; // Consistent with login logic
     await query(
       'UPDATE users SET refresh_token = ?, refresh_token_expires = DATE_ADD(NOW(), INTERVAL ? DAY), last_login = NOW(), updated_at = NOW() WHERE id = ?',
       [newRefreshToken, sessionDays, user.id]
     );
     
     // Set new refresh token cookie with proper expiration
-    const cookieMaxAge = user.remember_me ? 30 * 24 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000;
+    const cookieMaxAge = user.remember_me ? 30 * 24 * 60 * 60 * 1000 : 48 * 60 * 60 * 1000; // Consistent with login
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
