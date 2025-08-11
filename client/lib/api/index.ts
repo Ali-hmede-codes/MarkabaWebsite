@@ -5,8 +5,8 @@ import { LoginCredentials, AuthResponse, User } from '../../components/API/types
 // Base API configuration
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
 
-// API request helper
-export const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
+// Enhanced API request helper with automatic token refresh
+export const apiRequest = async (endpoint: string, options: RequestInit = {}, retryCount = 0): Promise<any> => {
   const url = `${API_BASE_URL}${endpoint}`;
   
   const defaultOptions: RequestInit = {
@@ -14,6 +14,7 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
       'Content-Type': 'application/json',
       ...options.headers,
     },
+    credentials: 'include', // Include cookies for refresh token
     ...options,
   };
 
@@ -51,6 +52,36 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
   try {
     const response = await fetch(url, defaultOptions);
     const data = await response.json();
+    
+    // Handle 401 errors with automatic token refresh
+    if (response.status === 401 && retryCount === 0 && typeof window !== 'undefined') {
+      try {
+        // Attempt to refresh token
+        const refreshResponse = await fetch('/api/auth/refresh', {
+          method: 'POST',
+          credentials: 'include'
+        });
+        
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          if (refreshData.success && refreshData.data?.token) {
+            // Update token in cookies
+            const rememberMe = document.cookie
+              .split('; ')
+              .find(row => row.startsWith('remember_me='))
+              ?.split('=')[1] === 'true';
+            
+            const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 2 * 60 * 60;
+            document.cookie = `token=${refreshData.data.token}; max-age=${cookieMaxAge}; path=/; secure=${window.location.protocol === 'https:'}; samesite=strict`;
+            
+            // Retry the original request with new token
+            return apiRequest(endpoint, options, retryCount + 1);
+          }
+        }
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
+      }
+    }
     
     if (!response.ok) {
       // Create error object with response data

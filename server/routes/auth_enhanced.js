@@ -10,7 +10,6 @@ const router = express.Router();
 
 // Enhanced security configurations
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d'; // 1 week for all sessions
 const ADMIN_MIN_PASSWORD_LENGTH = 8;
 const ADMIN_REQUIRE_COMPLEX_PASSWORD = true;
 
@@ -31,18 +30,25 @@ const isPasswordComplex = (password) => {
 
 
 
-// Generate secure tokens
-const generateTokens = (user) => {
+// Generate secure tokens with consistent expiration
+const generateTokens = (user, remember_me = false) => {
   const payload = {
     id: user.id,
     username: user.username,
     email: user.email,
     role: user.role,
-    is_active: user.is_active
+    is_active: user.is_active,
+    iat: Math.floor(Date.now() / 1000),
+    remember_me: remember_me
   };
   
-  const expiresIn = JWT_EXPIRES_IN; // Always 1 week
-  const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn });
+  // Consistent token expiration times
+  const expiresIn = remember_me ? '30d' : '2h'; // 30 days for remember me, 2 hours for regular
+  const accessToken = jwt.sign(payload, JWT_SECRET, { 
+    expiresIn,
+    issuer: 'markaba-news',
+    audience: 'markaba-admin'
+  });
   const refreshToken = crypto.randomBytes(64).toString('hex');
   
   return { accessToken, refreshToken, expiresIn };
@@ -149,9 +155,10 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     }
     
     // Successful login - generate tokens
-    const { accessToken, refreshToken, expiresIn } = generateTokens(user);
+    const { accessToken, refreshToken, expiresIn } = generateTokens(user, remember_me);
     
-    // Update user login info
+    // Update user login info with proper session duration
+    const sessionDays = remember_me ? 30 : 1; // 30 days for remember me, 1 day for regular
     await query(
       `UPDATE users SET 
         last_login = NOW(), 
@@ -164,7 +171,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
       [
         clientIP,
         refreshToken,
-        7, // Always 7 days
+        sessionDays,
         remember_me,
         user.id
       ]
@@ -190,7 +197,9 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     };
     
     // Set secure HTTP-only cookie for refresh token
-    const cookieMaxAge = 7 * 24 * 60 * 60 * 1000; // Always 7 days
+    const cookieMaxAge = remember_me 
+      ? 30 * 24 * 60 * 60 * 1000  // 30 days for remember me
+      : 2 * 60 * 60 * 1000;       // 2 hours for regular sessions
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -314,7 +323,7 @@ router.post('/register', auth, requireAdmin, validate(registerSchema), async (re
   }
 });
 
-// Refresh access token
+// Enhanced token refresh endpoint
 router.post('/refresh', async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken || req.body.refresh_token;
@@ -343,30 +352,53 @@ router.post('/refresh', async (req, res) => {
       });
     }
     
-    // Generate new tokens
-    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
+    // Validate user role for admin access
+    if (!['admin', 'editor', 'author'].includes(user.role)) {
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied',
+        message: 'Insufficient permissions'
+      });
+    }
     
-    // Update refresh token in database
+    // Generate new tokens with consistent expiration
+    const { accessToken, refreshToken: newRefreshToken, expiresIn } = generateTokens(user, user.remember_me);
+    
+    // Update refresh token and session info in database
+    const sessionDays = user.remember_me ? 30 : 1;
     await query(
-      'UPDATE users SET refresh_token = ?, refresh_token_expires = DATE_ADD(NOW(), INTERVAL 30 DAY), updated_at = NOW() WHERE id = ?',
-      [newRefreshToken, user.id]
+      'UPDATE users SET refresh_token = ?, refresh_token_expires = DATE_ADD(NOW(), INTERVAL ? DAY), last_login = NOW(), updated_at = NOW() WHERE id = ?',
+      [newRefreshToken, sessionDays, user.id]
     );
     
-    // Set new refresh token cookie
+    // Set new refresh token cookie with proper expiration
+    const cookieMaxAge = user.remember_me ? 30 * 24 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000;
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      maxAge: cookieMaxAge,
+      path: '/'
     });
+    
+    // Log token refresh activity
+    console.log(`Token refreshed for user: ${user.username} (${user.role}) from IP: ${req.ip || req.connection.remoteAddress}`);
     
     res.json({
       success: true,
       message: 'Token refreshed successfully',
       data: {
         access_token: accessToken,
-        expires_in: JWT_EXPIRES_IN,
-        token_type: 'Bearer'
+        token: accessToken, // Provide both for compatibility
+        expires_in: expiresIn,
+        token_type: 'Bearer',
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          remember_me: user.remember_me || false
+        }
       }
     });
     

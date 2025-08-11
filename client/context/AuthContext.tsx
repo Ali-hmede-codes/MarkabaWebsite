@@ -29,11 +29,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setToken(null);
     deleteCookie('token');
     deleteCookie('user');
+    deleteCookie('remember_me');
   }, []);
 
-  // Periodic user validation check
+  // Enhanced token refresh and validation system
   useEffect(() => {
     let validationInterval: NodeJS.Timeout;
+    let refreshInterval: NodeJS.Timeout;
 
     const validateUser = async () => {
       if (token && user) {
@@ -45,22 +47,101 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             toast.error('Your session has been terminated. Please log in again.');
             router.replace('/admin/administratorpage/login');
           }
-        } catch (error) {
-          // Token verification failed
-          clearAuth();
-          router.replace('/admin/administratorpage/login');
+        } catch (error: any) {
+          // Token verification failed - try to refresh token first
+          console.error('Token verification error:', error);
+          if (error.response?.status === 401 || error.response?.status === 403) {
+            try {
+              // Attempt token refresh
+              const refreshResponse = await fetch('/api/auth/refresh', {
+                method: 'POST',
+                credentials: 'include'
+              });
+              
+              if (refreshResponse.ok) {
+                const refreshData = await refreshResponse.json();
+                if (refreshData.success && refreshData.data?.token) {
+                  // Update token in state and cookies
+                  setToken(refreshData.data.token);
+                  const rememberMe = getCookie('remember_me') === 'true';
+                  const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 2 * 60 * 60;
+                  
+                  setCookie('token', refreshData.data.token, {
+                    maxAge: cookieMaxAge,
+                    secure: window.location.protocol === 'https:',
+                    sameSite: 'strict',
+                  });
+                  
+                  toast.success('Session refreshed successfully');
+                  return; // Don't clear auth, token was refreshed
+                }
+              }
+            } catch (refreshError) {
+              console.error('Token refresh failed:', refreshError);
+            }
+            
+            // If refresh failed, clear auth and redirect
+            clearAuth();
+            toast.error('Your session has expired. Please log in again.');
+            router.replace('/admin/administratorpage/login');
+          }
         }
       }
     };
 
-    // Set up periodic validation every 2 minutes for active sessions
+    // Automatic token refresh before expiration
+    const refreshToken = async () => {
+      if (token && user) {
+        try {
+          const response = await fetch('/api/auth/refresh', {
+            method: 'POST',
+            credentials: 'include'
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.data?.token) {
+              setToken(data.data.token);
+              const rememberMe = getCookie('remember_me') === 'true';
+              const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 2 * 60 * 60;
+              
+              setCookie('token', data.data.token, {
+                maxAge: cookieMaxAge,
+                secure: window.location.protocol === 'https:',
+                sameSite: 'strict',
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Automatic token refresh failed:', error);
+        }
+      }
+    };
+
+    // Set up intervals based on remember_me preference
     if (token && user) {
-      validationInterval = setInterval(validateUser, 2 * 60 * 1000); // 2 minutes
+      const rememberMe = getCookie('remember_me') === 'true';
+      
+      // Validation interval - check token validity
+      const validationInterval_ms = rememberMe 
+        ? 30 * 60 * 1000  // 30 minutes for remember me sessions
+        : 10 * 60 * 1000; // 10 minutes for regular sessions
+      
+      // Refresh interval - proactively refresh tokens
+      const refreshInterval_ms = rememberMe 
+        ? 60 * 60 * 1000  // 1 hour for remember me sessions
+        : 30 * 60 * 1000; // 30 minutes for regular sessions
+      
+      validationInterval = setInterval(validateUser, validationInterval_ms);
+      refreshInterval = setInterval(refreshToken, refreshInterval_ms);
     }
 
     return () => {
       if (validationInterval) {
         clearInterval(validationInterval);
+      }
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
       }
     };
   }, [token, user, clearAuth, router]);
@@ -84,9 +165,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               const userData = response.data.user;
               if (userData.is_active) {
                 setUser(userData);
-                // Update cookie with fresh user data
-                const cookieMaxAge = 7 * 24 * 60 * 60; // Always 7 days
+                // Update cookie with fresh user data based on remember_me preference
+                const rememberMe = getCookie('remember_me') === 'true';
+                const cookieMaxAge = rememberMe 
+                  ? 30 * 24 * 60 * 60  // 30 days if remember me was checked
+                  : 2 * 60 * 60;       // 2 hours if not checked
+                
                 setCookie('user', JSON.stringify(userData), {
+                  maxAge: cookieMaxAge,
+                  secure: window.location.protocol === 'https:',
+                  sameSite: 'strict',
+                });
+                
+                // Refresh the token cookie with the same expiration
+                setCookie('token', savedToken, {
                   maxAge: cookieMaxAge,
                   secure: window.location.protocol === 'https:',
                   sameSite: 'strict',
@@ -128,8 +220,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(userData);
         setToken(userToken);
 
-        // Set cookies with 1 week expiration for all sessions
-        const cookieMaxAge = 7 * 24 * 60 * 60; // Always 7 days
+        // Set cookies based on remember_me preference
+        const cookieMaxAge = credentials.remember_me 
+          ? 30 * 24 * 60 * 60  // 30 days if remember me is checked
+          : 2 * 60 * 60;       // 2 hours if not checked
         
         setCookie('token', userToken, {
           maxAge: cookieMaxAge,
@@ -137,6 +231,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           sameSite: 'strict',
         });
         setCookie('user', JSON.stringify(userData), {
+          maxAge: cookieMaxAge,
+          secure: window.location.protocol === 'https:',
+          sameSite: 'strict',
+        });
+        
+        // Store remember_me preference for session management
+        setCookie('remember_me', credentials.remember_me ? 'true' : 'false', {
           maxAge: cookieMaxAge,
           secure: window.location.protocol === 'https:',
           sameSite: 'strict',

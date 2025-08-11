@@ -99,6 +99,9 @@ export default async function handler(
           .join('; ')}`,
         `user=${encodeURIComponent(JSON.stringify(user))}; ${Object.entries(cookieOptions)
           .map(([key, value]) => `${key}=${value}`)
+          .join('; ')}`,
+        `remember_me=${remember_me ? 'true' : 'false'}; ${Object.entries(cookieOptions)
+          .map(([key, value]) => `${key}=${value}`)
           .join('; ')}`
       ]);
 

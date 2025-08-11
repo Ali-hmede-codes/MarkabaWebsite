@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import { toast } from 'react-hot-toast';
 import { FiPlus, FiEdit, FiTrash2, FiSearch, FiFilter, FiEye, FiEyeOff, FiAlertTriangle } from 'react-icons/fi';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth, useAuthError } from '../../../context/AuthContext';
 
 type BreakingNews = {
   id: number;
@@ -29,6 +29,7 @@ type BreakingNewsFormData = {
 
 const BreakingNewsManagement: React.FC = () => {
   const { token } = useAuth();
+  const { handleAuthError } = useAuthError();
   const [newsItems, setNewsItems] = useState<BreakingNews[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,6 +57,12 @@ const BreakingNewsManagement: React.FC = () => {
       const response = await fetch('/api/admin/administratorpage/breaking-news', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
+      if (response.status === 401) {
+        handleAuthError({ response: { status: 401 } });
+        return;
+      }
+      
       const data = await response.json();
       if (data.success) {
         setNewsItems(data.data || []);
@@ -93,6 +100,11 @@ const BreakingNewsManagement: React.FC = () => {
         body: JSON.stringify(formData)
       });
       
+      if (response.status === 401) {
+        handleAuthError({ response: { status: 401 } });
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.success) {
@@ -129,6 +141,12 @@ const BreakingNewsManagement: React.FC = () => {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
+      if (response.status === 401) {
+        handleAuthError({ response: { status: 401 } });
+        return;
+      }
+      
       const data = await response.json();
       if (data.success) {
         toast.success('تم حذف الخبر بنجاح');
@@ -151,6 +169,11 @@ const BreakingNewsManagement: React.FC = () => {
         },
         body: JSON.stringify({ is_active: !currentStatus })
       });
+      
+      if (response.status === 401) {
+        handleAuthError({ response: { status: 401 } });
+        return;
+      }
       
       const data = await response.json();
       if (data.success) {
