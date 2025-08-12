@@ -54,8 +54,8 @@ const LastNewsPage: React.FC = () => {
         
         // Fetch both breaking news and last news
         const [breakingResponse, lastNewsResponse] = await Promise.all([
-          fetch('/api/breaking-news?active=true&limit=50'),
-          fetch('/api/last-news?active=true&limit=50')
+          fetch('/api/breaking-news?active=true&limit=100'),
+          fetch('/api/last-news?active=true&limit=100')
         ]);
         
         if (!breakingResponse.ok || !lastNewsResponse.ok) {
