@@ -8,12 +8,14 @@ interface BreakingNewsBannerProps {
   className?: string;
   autoHide?: boolean;
   autoHideDelay?: number;
+  limit?: number;
 }
 
 const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
   className = '',
   autoHide = false,
-  autoHideDelay = 10000
+  autoHideDelay = 10000,
+  limit = 10
 }) => {
   const [breakingNews, setBreakingNews] = useState<BreakingNews[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +56,7 @@ const BreakingNewsBanner: React.FC<BreakingNewsBannerProps> = ({
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
         
-        const response = await fetch('/api/breaking-news?active=true&limit=10', {
+        const response = await fetch(`/api/breaking-news?active=true&limit=${limit}`, {
           signal: controller.signal
         });
         
