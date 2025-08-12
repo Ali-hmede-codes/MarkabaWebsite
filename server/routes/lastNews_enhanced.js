@@ -34,9 +34,9 @@ function prepareParams(params) {
 // GET active last news (public)
 router.get('/active', async (req, res) => {
   try {
-    const limit = Math.min(parseInt(req.query.limit, 10) || 5, 100);
+    const limit = Math.min(parseInt(req.query.limit, 10) || 10, 100);
     const lastNews = await query(
-      'SELECT * FROM last_news WHERE is_active = 1 ORDER BY priority DESC, created_at DESC LIMIT ?',
+      'SELECT * FROM last_news WHERE is_active = 1 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR) ORDER BY priority DESC, created_at DESC LIMIT ?',
       prepareParams([limit])
     );
     res.json({ success: true, data: lastNews });
@@ -52,12 +52,12 @@ router.get('/', optionalAuth, async (req, res) => {
     
     // Public endpoint for active last news
     if (active === 'true') {
-      const limitNum = Math.min(parseInt(limit, 10) || 5, 100);
+      const limitNum = Math.min(parseInt(limit, 10) || 10, 100);
       let queryStr = `
         SELECT id, title_ar as title, ${include_content === 'true' ? 'content_ar as content,' : ''}
                slug, priority, views, created_at, updated_at
         FROM last_news 
-        WHERE is_active = 1
+        WHERE is_active = 1 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
       `;
       
       const params = [];

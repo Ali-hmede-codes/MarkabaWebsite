@@ -29,7 +29,7 @@ const generateBreakingNewsSlug = (title, title_ar) => {
   return slug || 'breaking-news';
 };
 
-// Get active breaking news (up to 5 items) - Public endpoint (NO AUTH REQUIRED)
+// Get active breaking news (up to 10 items) - Public endpoint (NO AUTH REQUIRED)
 router.get('/active', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit, 10) || 10, 100); // Max 100 breaking news
@@ -188,7 +188,7 @@ router.get('/:id/:slug', async (req, res) => {
 router.get('/', optionalAuth, async (req, res) => {
   try {
     if (req.query.active === 'true') {
-      const limit = Math.min(parseInt(req.query.limit, 10) || 5, 100);
+      const limit = Math.min(parseInt(req.query.limit, 10) || 10, 100);
       const { language, include_content = 'false' } = req.query;
       let queryStr = `
         SELECT id, title_ar as title, ${include_content === 'true' ? 'content_ar as content,' : ''}
