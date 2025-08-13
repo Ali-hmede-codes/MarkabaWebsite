@@ -88,7 +88,7 @@ const AdsAdmin: React.FC = () => {
       if (filterPosition) params.append('position', filterPosition);
       if (filterStatus) params.append('status', filterStatus);
       
-      const response = await apiRequest(`/admin/ads?${params.toString()}`, {
+      const response = await apiRequest(`/admin/administratorpage/ads?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -112,7 +112,7 @@ const AdsAdmin: React.FC = () => {
 
   const fetchPositions = useCallback(async () => {
     try {
-      const response = await apiRequest('/admin/ads/positions', {
+      const response = await apiRequest('/admin/administratorpage/ads/positions', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -129,7 +129,7 @@ const AdsAdmin: React.FC = () => {
 
   const fetchAdStats = async (adId: number) => {
     try {
-      const response = await apiRequest(`/admin/ads/${adId}/stats`, {
+      const response = await apiRequest(`/admin/administratorpage/ads/${adId}/stats`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -177,7 +177,7 @@ const AdsAdmin: React.FC = () => {
         formDataToSend.append('image', formData.image);
       }
       
-      const url = editingAd ? `/admin/ads/${editingAd.id}` : '/admin/ads';
+      const url = editingAd ? `/admin/administratorpage/ads/${editingAd.id}` : '/admin/administratorpage/ads';
       const method = editingAd ? 'PUT' : 'POST';
       
       const response = await apiRequest(url, {
@@ -208,7 +208,7 @@ const AdsAdmin: React.FC = () => {
     if (!confirm('هل أنت متأكد من حذف هذا الإعلان؟')) return;
     
     try {
-      const response = await apiRequest(`/admin/ads/${id}`, {
+      const response = await apiRequest(`/admin/administratorpage/ads/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
