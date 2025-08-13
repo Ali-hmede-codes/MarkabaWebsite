@@ -29,7 +29,7 @@ const generateBreakingNewsSlug = (title, title_ar) => {
   return slug || 'breaking-news';
 };
 
-// Get active breaking news (up to 10 items) - Public endpoint (NO AUTH REQUIRED)
+// Get active breaking news (up to 100 items) - Public endpoint (NO AUTH REQUIRED)
 router.get('/active', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit, 10) || 10, 100); // Max 100 breaking news
@@ -188,38 +188,8 @@ router.get('/:id/:slug', async (req, res) => {
 router.get('/', optionalAuth, async (req, res) => {
   try {
     if (req.query.active === 'true') {
-      const limit = Math.min(parseInt(req.query.limit, 10) || 10, 100);
-      const { language, include_content = 'false' } = req.query;
-      let queryStr = `
-        SELECT id, title_ar as title, ${include_content === 'true' ? 'content_ar as content,' : ''}
-               slug, priority, views, created_at, updated_at
-        FROM breaking_news 
-        WHERE is_active = 1
-      `;
-      const params = [];
-      if (language) {
-        if (language === 'ar') {
-          queryStr += ' AND (title_ar IS NOT NULL AND title_ar != "")';
-        }
-      }
-      queryStr += ' ORDER BY priority DESC, created_at DESC LIMIT ?';
-      params.push(limit.toString());
-      const breakingNews = await query(queryStr, params);
-      const processedNews = breakingNews.map(news => ({
-        ...news,
-        is_active: true,
-        url: `/breaking/${news.id}/${news.slug}`
-      }));
-      res.json({
-        success: true,
-        data: processedNews,
-        meta: {
-          total: processedNews.length,
-          limit,
-          language: language || 'all'
-        }
-      });
-      return;
+      // Redirect to /active endpoint for consistency
+      return res.redirect(`/api/breaking-news/active?${new URLSearchParams(req.query).toString()}`);
     }
     if (!req.user) {
       return res.status(401).json({ success: false, message: 'Access denied. No token provided.' });
