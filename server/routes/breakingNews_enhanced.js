@@ -651,7 +651,7 @@ router.get('/stats/overview', auth, requireAdminOrEditor, async (req, res) => {
       SELECT id, title, title_ar, views, priority, is_active
       FROM breaking_news 
       ORDER BY views DESC 
-      LIMIT 5
+      LIMIT 10
     `);
     
     res.json({
