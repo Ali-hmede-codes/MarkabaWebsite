@@ -28,7 +28,7 @@ const generateBreakingNewsSlug = (title, title_ar) => {
     
   return slug || 'breaking-news';
 };
-
+// newfileupdate
 // Get active breaking news (up to 100 items) - Public endpoint (NO AUTH REQUIRED)
 router.get('/active', async (req, res) => {
   try {
