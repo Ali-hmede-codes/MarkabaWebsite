@@ -64,7 +64,7 @@ export default async function handler(
       const isSecure = process.env.NODE_ENV === 'production';
       
       const cookies = [
-        `token=${newToken}; Path=/; Max-Age=${cookieMaxAge}; SameSite=Strict${isSecure ? '; Secure' : ''}`
+        `token=${newToken}; Path=/; Max-Age=${cookieMaxAge}; SameSite=Lax${isSecure ? '; Secure' : ''}`
       ];
       
       // Forward backend refresh token cookie if present
@@ -87,7 +87,7 @@ export default async function handler(
     } else {
       // Clear invalid refresh token cookie
       res.setHeader('Set-Cookie', [
-        'refreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Strict'
+        'refreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax'
       ]);
       
       return res.status(response.status).json({

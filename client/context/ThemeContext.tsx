@@ -117,7 +117,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     setCookie('theme', JSON.stringify(updatedTheme), {
       maxAge: 365 * 24 * 60 * 60, // 1 year
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
     });
   };
 

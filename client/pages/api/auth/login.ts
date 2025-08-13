@@ -89,9 +89,9 @@ export default async function handler(
       
       // Set authentication cookies with proper formatting (no HttpOnly for client-side access)
       const cookies = [
-        `token=${token}; Path=/; Max-Age=${Math.floor(cookieMaxAge / 1000)}; SameSite=Strict${isSecure ? '; Secure' : ''}`,
-        `user=${encodeURIComponent(JSON.stringify(user))}; Path=/; Max-Age=${Math.floor(cookieMaxAge / 1000)}; SameSite=Strict${isSecure ? '; Secure' : ''}`,
-        `remember_me=${remember_me ? 'true' : 'false'}; Path=/; Max-Age=${Math.floor(cookieMaxAge / 1000)}; SameSite=Strict${isSecure ? '; Secure' : ''}`
+        `token=${token}; Path=/; Max-Age=${Math.floor(cookieMaxAge / 1000)}; SameSite=Lax${isSecure ? '; Secure' : ''}`,
+        `user=${encodeURIComponent(JSON.stringify(user))}; Path=/; Max-Age=${Math.floor(cookieMaxAge / 1000)}; SameSite=Lax${isSecure ? '; Secure' : ''}`,
+        `remember_me=${remember_me ? 'true' : 'false'}; Path=/; Max-Age=${Math.floor(cookieMaxAge / 1000)}; SameSite=Lax${isSecure ? '; Secure' : ''}`
       ];
       
       // Forward backend refresh token cookie if present
