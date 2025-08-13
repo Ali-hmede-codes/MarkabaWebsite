@@ -461,12 +461,12 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (cont
     if (isServer) {
       // Server-side: use localhost for development, external API for production
       baseUrl = isDevelopment
-        ? "http://localhost:5000"
+        ? "https://api.markaba.news"
         : "https://api.markaba.news";
     } else {
       // Client-side: use relative paths or external API
       baseUrl = isDevelopment
-        ? "http://localhost:5000"
+        ? "https://api.markaba.news"
         : "https://api.markaba.news";
     }
 
