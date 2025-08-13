@@ -130,7 +130,7 @@ const AdBanner: React.FC<AdBannerProps> = ({ position, className = '' }) => {
     
     // Determine which default image to use based on position
     const isSquarePosition = position === 'post_square';
-    const defaultImage = isSquarePosition ? 'https://api.markaba.news/uploads/general/ads-square-300.png' : 'https://api.markaba.news/uploads/general/ads-rectangle-1280.png';
+    const defaultImage = isSquarePosition ? 'https://api.markaba.news/uploads/ads-square-300.png' : 'https://api.markaba.news/uploads/ads-rectangle-1280.png';
     const defaultWidth = isSquarePosition ? 300 : 1280;
     const defaultHeight = isSquarePosition ? 300 : 400;
     
