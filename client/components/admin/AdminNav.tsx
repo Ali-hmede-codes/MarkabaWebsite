@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FiHome, FiFileText, FiFolder, FiUsers, FiSettings, FiShare2, FiAlertTriangle, FiClock, FiBarChart } from 'react-icons/fi';
+import { FiHome, FiFileText, FiFolder, FiUsers, FiSettings, FiShare2, FiAlertTriangle, FiClock, FiBarChart, FiImage } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 
 interface AdminNavProps {
@@ -36,6 +36,13 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
       icon: FiFolder,
       active: router.pathname === '/admin/administratorpage/categories',
       roles: ['admin'] // Only admin can manage categories
+    },
+    {
+      href: '/admin/administratorpage/ads',
+      label: 'الإعلانات',
+      icon: FiImage,
+      active: router.pathname === '/admin/administratorpage/ads',
+      roles: ['admin'] // Only admin can manage ads
     },
     {
       href: '/admin/administratorpage/breaking-news',
