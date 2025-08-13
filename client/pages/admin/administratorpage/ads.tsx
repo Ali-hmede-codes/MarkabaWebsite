@@ -88,12 +88,13 @@ const AdsAdmin: React.FC = () => {
       if (filterPosition) params.append('position', filterPosition);
       if (filterStatus) params.append('status', filterStatus);
       
-      const response = await apiRequest(`/admin/administratorpage/ads?${params.toString()}`, {
+      const res = await fetch(`/api/admin/administratorpage/ads?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
+      const response = await res.json();
       
       if (response.success) {
         setAds(response.data);
@@ -112,14 +113,15 @@ const AdsAdmin: React.FC = () => {
 
   const fetchPositions = useCallback(async () => {
     try {
-      const response = await apiRequest('/admin/administratorpage/ads/positions', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.success) {
+      const res = await fetch('/api/admin/administratorpage/ads/positions', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const response = await res.json();
+    
+    if (response.success) {
         setPositions(response.data);
       }
     } catch (error) {
@@ -129,14 +131,15 @@ const AdsAdmin: React.FC = () => {
 
   const fetchAdStats = async (adId: number) => {
     try {
-      const response = await apiRequest(`/admin/administratorpage/ads/${adId}/stats`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.success) {
+      const res = await fetch(`/api/admin/administratorpage/ads/${adId}/stats`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const response = await res.json();
+    
+    if (response.success) {
         setSelectedAdStats(response.data.stats);
         setShowStatsModal(true);
       } else {
@@ -177,16 +180,17 @@ const AdsAdmin: React.FC = () => {
         formDataToSend.append('image', formData.image);
       }
       
-      const url = editingAd ? `/admin/administratorpage/ads/${editingAd.id}` : '/admin/administratorpage/ads';
+      const url = editingAd ? `/api/admin/administratorpage/ads/${editingAd.id}` : '/api/admin/administratorpage/ads';
       const method = editingAd ? 'PUT' : 'POST';
       
-      const response = await apiRequest(url, {
+      const res = await fetch(url, {
         method,
         headers: {
           'Authorization': `Bearer ${token}`
         },
         body: formDataToSend
       });
+      const response = await res.json();
       
       if (response.success) {
         toast.success(editingAd ? 'تم تحديث الإعلان بنجاح' : 'تم إنشاء الإعلان بنجاح');
@@ -208,14 +212,15 @@ const AdsAdmin: React.FC = () => {
     if (!confirm('هل أنت متأكد من حذف هذا الإعلان؟')) return;
     
     try {
-      const response = await apiRequest(`/admin/administratorpage/ads/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.success) {
+      const res = await fetch(`/api/admin/administratorpage/ads/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const response = await res.json();
+    
+    if (response.success) {
         toast.success('تم حذف الإعلان بنجاح');
         fetchAds(currentPage);
       } else {
