@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 import YouTubePlayer from '../../components/Posts/YouTubePlayer';
 import { formatPostContent } from '../../utils/textFormatter';
+import AdBanner from '../../components/UI/AdBanner';
 
 interface SinglePostPageProps {
   post: Post | null;
@@ -326,6 +327,14 @@ const PostContent: React.FC<{
               }} 
             />
 
+            {/* Post Square Ad */}
+            <div className="flex justify-center my-8">
+              <AdBanner 
+                position="post_square" 
+                className="max-w-full" 
+              />
+            </div>
+
             {/* Back to Home Button */}
             <div className="flex justify-center mt-8 mb-6">
               <a href="/">
@@ -377,6 +386,14 @@ const PostContent: React.FC<{
                 </div>
               </div>
             )}
+
+            {/* Post Banner Ad */}
+            <div className="flex justify-center my-8">
+              <AdBanner 
+                position="post_banner" 
+                className="max-w-full" 
+              />
+            </div>
           </article>
 
           {/* Sidebar */}

@@ -33,12 +33,16 @@ const weatherEnhancedRoutes = require('./routes/weather_enhanced');
 const prayerEnhancedRoutes = require('./routes/prayer_enhanced');
 const socialMediaEnhancedRoutes = require('./routes/socialMedia_enhanced');
 const footballEnhancedRoutes = require('./routes/football_enhanced');
+const adsEnhancedRoutes = require('./routes/ads_enhanced');
 
 // Import admin routes
 const adminRoutes = require('./routes/admin');
 
 // Import scheduler service
 const Scheduler = require('./utils/scheduler');
+
+// Import ads service
+const adsService = require('./utils/adsService');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -360,6 +364,7 @@ app.get('/api', (req, res) => {
       weather: '/api/weather',
       prayer: '/api/prayer',
       social_media: '/api/social-media',
+      ads: '/api/ads',
       admin: '/api/admin/administratorpage'
     },
     features: [
@@ -405,6 +410,7 @@ app.use('/api/v2/weather', weatherEnhancedRoutes);
 app.use('/api/v2/prayer', prayerEnhancedRoutes);
 app.use('/api/v2/social-media', socialMediaEnhancedRoutes);
 app.use('/api/v2/football', footballEnhancedRoutes);
+app.use('/api/v2/ads', adsEnhancedRoutes);
 app.use('/api/v2/admin/administratorpage', adminRoutes);
 
 // Legacy v1 routes removed - only enhanced routes available
@@ -422,6 +428,7 @@ app.use('/api/weather', weatherEnhancedRoutes);
 app.use('/api/prayer', prayerEnhancedRoutes);
 app.use('/api/social-media', socialMediaEnhancedRoutes);
 app.use('/api/football', footballEnhancedRoutes);
+app.use('/api/ads', adsEnhancedRoutes);
 app.use('/api/admin/administratorpage', adminRoutes);
 
 // Error handling middleware
@@ -709,8 +716,14 @@ const startServer = async () => {
     scheduler.start();
     console.log('✅ Scheduler service initialized');
 
+    // Initialize ads service
+    console.log('Initializing ads service...');
+    await adsService.initialize();
+    console.log('✅ Ads service initialized');
+
     // Store scheduler reference for graceful shutdown
     global.scheduler = scheduler;
+    global.adsService = adsService;
 
     // Ensure upload directories exist
     const uploadDirs = [
@@ -719,7 +732,8 @@ const startServer = async () => {
       path.join(__dirname, '../uploads/breaking_news'),
       path.join(__dirname, '../uploads/categories'),
       path.join(__dirname, '../uploads/avatars'),
-      path.join(__dirname, '../uploads/general')
+      path.join(__dirname, '../uploads/general'),
+      path.join(__dirname, 'public/uploads/ads')
     ];
 
     await Promise.all(uploadDirs.map(async (dir) => {
@@ -753,10 +767,13 @@ const startServer = async () => {
       console.log('   • Statistics & analytics');
       console.log('   • Automated weather updates for Lebanon');
       console.log('   • Prayer times for Lebanon with daily updates');
+      console.log('   • Custom ads system with timer-based cleanup');
       console.log(`🌤️  Weather API: http://localhost:${PORT}/api/weather`);
       console.log(`🕌 Prayer Times API: http://localhost:${PORT}/api/prayer`);
+      console.log(`📢 Ads API: http://localhost:${PORT}/api/ads`);
       console.log('⏰ Weather updates scheduled daily at 6:00 AM (Beirut time)');
       console.log('🕐 Prayer times updates scheduled daily at 5:00 AM (Beirut time)');
+      console.log('🧹 Ads cleanup scheduled every hour for expired ads');
     });
 
     // Store server reference for graceful shutdown
