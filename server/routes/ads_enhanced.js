@@ -455,7 +455,7 @@ router.delete('/:id', auth, async (req, res) => {
     // Get ad to delete image file
     const ad = await queryOne('SELECT * FROM ads WHERE id = ?', [id]);
     
-    if (!ad[0]) {
+    if (!ad) {
       return res.status(404).json({
         success: false,
         message: 'Ad not found'
@@ -464,7 +464,7 @@ router.delete('/:id', auth, async (req, res) => {
     
     // Delete image file
     try {
-      const imagePath = path.join(__dirname, '../public', ad[0].image_path);
+      const imagePath = path.join(__dirname, '../public', ad.image_path);
       await fs.unlink(imagePath);
     } catch (error) {
       console.error('Failed to delete image file:', error.message);
@@ -501,7 +501,7 @@ router.post('/:id/click', async (req, res) => {
       [id]
     );
     
-    if (!ad[0]) {
+    if (!ad) {
       return res.status(404).json({
         success: false,
         message: 'Ad not found or expired'
@@ -551,7 +551,7 @@ router.post('/:id/impression', async (req, res) => {
       [id]
     );
     
-    if (!ad[0]) {
+    if (!ad) {
       return res.status(404).json({
         success: false,
         message: 'Ad not found or expired'
@@ -596,7 +596,7 @@ router.get('/:id/stats', auth, async (req, res) => {
     // Get ad basic info
     const ad = await queryOne('SELECT * FROM ads WHERE id = ?', [id]);
     
-    if (!ad[0]) {
+    if (!ad) {
       return res.status(404).json({
         success: false,
         message: 'Ad not found'
@@ -628,25 +628,25 @@ router.get('/:id/stats', auth, async (req, res) => {
     );
     
     // Calculate CTR
-    const totalClicks = ad[0].clicks;
-    const totalImpressions = ad[0].impressions;
+    const totalClicks = ad.clicks;
+    const totalImpressions = ad.impressions;
     const ctr = totalImpressions > 0 ? ((totalClicks / totalImpressions) * 100).toFixed(2) : 0;
     
     res.json({
       success: true,
       data: {
-        ad: ad[0],
+        ad: ad,
         stats: {
           total_clicks: totalClicks,
           total_impressions: totalImpressions,
           ctr: parseFloat(ctr),
-          daily_clicks: clickStats[0],
-          daily_impressions: impressionStats[0]
+          daily_clicks: clickStats,
+          daily_impressions: impressionStats
         }
       },
       message: 'Ad statistics retrieved successfully'
     });
-  } catch (error) {
+   } catch (error) {
     console.error('Error fetching ad stats:', error);
     res.status(500).json({
       success: false,
