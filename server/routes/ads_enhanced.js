@@ -48,9 +48,9 @@ const deleteExpiredAds = async () => {
       'SELECT id, image_path FROM ads WHERE end_date < NOW() AND is_active = true'
     );
     
-    if (expiredAds[0].length > 0) {
+    if (expiredAds.length > 0) {
       // Delete image files using Promise.all to avoid await in loop
-      const deletePromises = expiredAds[0].map(async (ad) => {
+      const deletePromises = expiredAds.map(async (ad) => {
         try {
           const imagePath = path.join(__dirname, '../public', ad.image_path);
           await fs.unlink(imagePath);
@@ -65,8 +65,8 @@ const deleteExpiredAds = async () => {
       await Promise.all(deletePromises);
       
       // Mark ads as inactive
-      await query('UPDATE ads SET is_active = false WHERE end_date < NOW() AND is_active = true');
-      console.log(`Marked ${expiredAds[0].length} ads as expired`);
+      const updateResult = await query('UPDATE ads SET is_active = false WHERE end_date < NOW() AND is_active = true');
+      console.log(`Marked ${updateResult.affectedRows} ads as expired`);
     }
   } catch (error) {
     console.error('Error deleting expired ads:', error);
