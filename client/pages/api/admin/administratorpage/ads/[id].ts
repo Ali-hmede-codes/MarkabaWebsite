@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import * as formidable from 'formidable';
+import formidable from 'formidable';
 import * as fs from 'fs';
-import FormData from 'form-data';
-import jwt from 'jsonwebtoken';
+// Using native FormData for fetch requests
+import * as jwt from 'jsonwebtoken';
 
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 
@@ -129,19 +129,17 @@ export default async function handler(
       // Add image file if provided
       if (files.image && files.image[0]) {
         const file = files.image[0];
-        const fileStream = fs.createReadStream(file.filepath);
-        formData.append('image', fileStream, {
-          filename: file.originalFilename || 'image.jpg',
-          contentType: file.mimetype || 'image/jpeg'
-        });
+        const fileBuffer = await fs.promises.readFile(file.filepath);
+        const blob = new Blob([fileBuffer], { type: file.mimetype || 'image/jpeg' });
+        formData.append('image', blob, file.originalFilename || 'image.jpg');
       }
 
       // Send request to backend
       const response = await fetch(backendUrl, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          ...formData.getHeaders()
+          'Authorization': `Bearer ${token}`
+          // Note: Don't set Content-Type header when using FormData, let fetch set it automatically
         },
         body: formData
       });
