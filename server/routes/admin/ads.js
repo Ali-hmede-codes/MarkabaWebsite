@@ -5,7 +5,6 @@ const path = require('path');
 const fs = require('fs').promises;
 const db = require('../../config/database');
 const { auth: authenticateToken, requireRole } = require('../../middlewares/auth');
-const adsService = require('../../utils/adsService');
 
 const router = express.Router();
 
@@ -16,9 +15,9 @@ const storage = multer.diskStorage({
     cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = `${Date.now()  }-${  Math.round(Math.random() * 1E9)}`;
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
     const ext = path.extname(file.originalname);
-    cb(null, `ad-${  uniqueSuffix  }${ext}`);
+    cb(null, `ad-${uniqueSuffix}${ext}`);
   }
 });
 
@@ -40,67 +39,197 @@ const upload = multer({
   }
 });
 
-// GET /admin/ads - Get all ads with pagination
+// Validation middleware
+const validateAdCreation = [
+  body('title')
+    .trim()
+    .isLength({ min: 3, max: 200 })
+    .withMessage('عنوان الإعلان يجب أن يكون بين 3 و 200 حرف'),
+  body('description')
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage('وصف الإعلان يجب أن يكون أقل من 500 حرف'),
+  body('url')
+    .isURL()
+    .withMessage('رابط الإعلان يجب أن يكون رابطاً صحيحاً'),
+  body('position')
+    .notEmpty()
+    .withMessage('موضع الإعلان مطلوب')
+    .isIn(['main_top', 'main_middle', 'main_bottom', 'post_square', 'post_banner'])
+    .withMessage('موضع الإعلان غير صحيح'),
+  body('end_date')
+    .isISO8601()
+    .withMessage('تاريخ انتهاء الإعلان يجب أن يكون تاريخاً صحيحاً')
+    .custom((value) => {
+      if (new Date(value) <= new Date()) {
+        throw new Error('تاريخ انتهاء الإعلان يجب أن يكون في المستقبل');
+      }
+      return true;
+    })
+];
+
+const validateAdUpdate = [
+  param('id').isInt().withMessage('معرف الإعلان يجب أن يكون رقماً'),
+  body('title')
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 200 })
+    .withMessage('عنوان الإعلان يجب أن يكون بين 3 و 200 حرف'),
+  body('description')
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage('وصف الإعلان يجب أن يكون أقل من 500 حرف'),
+  body('url')
+    .optional()
+    .isURL()
+    .withMessage('رابط الإعلان يجب أن يكون رابطاً صحيحاً'),
+  body('position')
+    .optional()
+    .isIn(['main_top', 'main_middle', 'main_bottom', 'post_square', 'post_banner'])
+    .withMessage('موضع الإعلان غير صحيح'),
+  body('end_date')
+    .optional()
+    .isISO8601()
+    .withMessage('تاريخ انتهاء الإعلان يجب أن يكون تاريخاً صحيحاً')
+    .custom((value) => {
+      if (value && new Date(value) <= new Date()) {
+        throw new Error('تاريخ انتهاء الإعلان يجب أن يكون في المستقبل');
+      }
+      return true;
+    }),
+  body('is_active')
+    .optional()
+    .isBoolean()
+    .withMessage('حالة الإعلان يجب أن تكون true أو false')
+];
+
+// Helper function to ensure uploads directory exists
+const ensureUploadsDir = async () => {
+  const uploadsDir = path.join(__dirname, '../../public/uploads/ads');
+  try {
+    await fs.mkdir(uploadsDir, { recursive: true });
+  } catch (error) {
+    console.error('Error creating uploads directory:', error);
+  }
+};
+
+// Helper function to validate ad position limits
+const validatePositionLimits = async (position, excludeAdId = null) => {
+  try {
+    // Get position info
+    const [positionInfo] = await db.query(
+      'SELECT * FROM ads_positions WHERE position_name = ?',
+      [position]
+    );
+    
+    if (positionInfo.length === 0) {
+      return { valid: false, error: 'موضع الإعلان غير صحيح' };
+    }
+    
+    // Count active ads in this position
+    let countQuery = 'SELECT COUNT(*) as count FROM ads WHERE position = ? AND is_active = true AND end_date > NOW()';
+    const countParams = [position];
+    
+    if (excludeAdId) {
+      countQuery += ' AND id != ?';
+      countParams.push(excludeAdId);
+    }
+    
+    const [countResult] = await db.query(countQuery, countParams);
+    const currentCount = countResult[0].count;
+    
+    if (currentCount >= positionInfo[0].max_ads) {
+      return {
+        valid: false,
+        error: `موضع ${positionInfo[0].display_name} وصل للحد الأقصى من الإعلانات (${positionInfo[0].max_ads})`
+      };
+    }
+    
+    return {
+      valid: true,
+      position: positionInfo[0],
+      current_count: currentCount,
+      available_slots: positionInfo[0].max_ads - currentCount
+    };
+  } catch (error) {
+    console.error('Error validating position limits:', error);
+    throw error;
+  }
+};
+
+// GET /admin/ads - Get all ads with pagination and filtering
 router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
     const { page = 1, limit = 10, position, status } = req.query;
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 10;
-    
-    // Validate parsed values
-    if (pageNum < 1 || limitNum < 1 || limitNum > 100) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid pagination parameters'
-      });
-    }
-    
     const offset = (pageNum - 1) * limitNum;
     
-    let queryStr = `
-      SELECT a.*, 
-             ap.display_name as position_display_name,
-             ap.width as position_width,
-             ap.height as position_height
-      FROM ads a
-      LEFT JOIN ads_positions ap ON a.position = ap.position_name
-      WHERE 1=1
-    `;
-    const params = [];
+    // Build query conditions
+    const whereConditions = [];
+    const queryParams = [];
     
     if (position) {
-      queryStr += ' AND a.position = ?';
-      params.push(position);
+      whereConditions.push('a.position = ?');
+      queryParams.push(position);
     }
     
     if (status === 'active') {
-      queryStr += ' AND a.is_active = true AND a.end_date > NOW()';
+      whereConditions.push('a.is_active = true AND a.end_date > NOW()');
     } else if (status === 'expired') {
-      queryStr += ' AND (a.is_active = false OR a.end_date <= NOW())';
+      whereConditions.push('a.end_date <= NOW()');
+    } else if (status === 'inactive') {
+      whereConditions.push('a.is_active = false');
     }
     
+    const whereClause = whereConditions.length > 0 ? `WHERE ${  whereConditions.join(' AND ')}` : '';
+    
     // Get total count
-    const countQuery = queryStr.replace(
-      /SELECT\s+a\.\*,\s*ap\.display_name\s+as\s+position_display_name,\s*ap\.width\s+as\s+position_width,\s*ap\.height\s+as\s+position_height/i,
-      'SELECT COUNT(*) as total'
-    );
-    const countResult = await db.execute(countQuery, params);
-    const total = countResult && countResult[0] ? countResult[0].total : 0;
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM ads a
+      LEFT JOIN ads_positions ap ON a.position = ap.position_name
+      ${whereClause}
+    `;
     
-    // Get paginated results
-    queryStr += ' ORDER BY a.created_at DESC LIMIT ? OFFSET ?';
-    params.push(limitNum, offset);
+    const [countResult] = await db.query(countQuery, queryParams);
+    const total = countResult[0].total;
     
-    const [ads] = await db.execute(queryStr, params);
+    // Get ads with pagination
+    const adsQuery = `
+      SELECT 
+        a.*,
+        ap.display_name as position_display_name,
+        ap.width as position_width,
+        ap.height as position_height,
+        u.username as created_by_username,
+        CASE 
+          WHEN a.end_date <= NOW() THEN 'expired'
+          WHEN a.is_active = false THEN 'inactive'
+          ELSE 'active'
+        END as status
+      FROM ads a
+      LEFT JOIN ads_positions ap ON a.position = ap.position_name
+      LEFT JOIN users u ON a.created_by = u.id
+      ${whereClause}
+      ORDER BY a.created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+    
+    const [ads] = await db.query(adsQuery, [...queryParams, limitNum, offset]);
     
     res.json({
       success: true,
       data: ads,
       pagination: {
-        page: pageNum,
-        limit: limitNum,
-        total,
-        pages: Math.ceil(total / limitNum)
+        current_page: pageNum,
+        per_page: limitNum,
+        total: total,
+        total_pages: Math.ceil(total / limitNum),
+        has_next: pageNum < Math.ceil(total / limitNum),
+        has_prev: pageNum > 1
       },
       message: 'تم جلب الإعلانات بنجاح'
     });
@@ -108,7 +237,7 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
     console.error('Error fetching ads:', error);
     res.status(500).json({
       success: false,
-      message: 'فشل في جلب الإعلانات',
+      message: 'خطأ في الخادم الداخلي',
       error: error.message
     });
   }
@@ -117,7 +246,16 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
 // GET /admin/ads/positions - Get available ad positions
 router.get('/positions', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
-    const [positions] = await db.execute('SELECT * FROM ads_positions ORDER BY id');
+    const [positions] = await db.query(`
+      SELECT 
+        ap.*,
+        COUNT(a.id) as current_ads,
+        SUM(CASE WHEN a.is_active = true AND a.end_date > NOW() THEN 1 ELSE 0 END) as active_ads
+      FROM ads_positions ap
+      LEFT JOIN ads a ON ap.position_name = a.position
+      GROUP BY ap.id, ap.position_name, ap.display_name, ap.width, ap.height, ap.max_ads, ap.description
+      ORDER BY ap.id
+    `);
     
     res.json({
       success: true,
@@ -128,7 +266,7 @@ router.get('/positions', authenticateToken, requireRole(['admin']), async (req, 
     console.error('Error fetching ad positions:', error);
     res.status(500).json({
       success: false,
-      message: 'فشل في جلب مواضع الإعلانات',
+      message: 'خطأ في الخادم الداخلي',
       error: error.message
     });
   }
@@ -152,18 +290,25 @@ router.get('/:id',
       
       const { id } = req.params;
       
-      const [ad] = await db.execute(`
+      const [ads] = await db.query(`
         SELECT 
           a.*,
           ap.display_name as position_display_name,
           ap.width as position_width,
-          ap.height as position_height
+          ap.height as position_height,
+          u.username as created_by_username,
+          CASE 
+            WHEN a.end_date <= NOW() THEN 'expired'
+            WHEN a.is_active = false THEN 'inactive'
+            ELSE 'active'
+          END as status
         FROM ads a
         LEFT JOIN ads_positions ap ON a.position = ap.position_name
+        LEFT JOIN users u ON a.created_by = u.id
         WHERE a.id = ?
       `, [id]);
       
-      if (ad.length === 0) {
+      if (ads.length === 0) {
         return res.status(404).json({
           success: false,
           message: 'الإعلان غير موجود'
@@ -172,14 +317,14 @@ router.get('/:id',
       
       res.json({
         success: true,
-        data: ad[0],
+        data: ads[0],
         message: 'تم جلب الإعلان بنجاح'
       });
     } catch (error) {
       console.error('Error fetching ad:', error);
       res.status(500).json({
         success: false,
-        message: 'فشل في جلب الإعلان',
+        message: 'خطأ في الخادم الداخلي',
         error: error.message
       });
     }
@@ -191,40 +336,18 @@ router.post('/',
   authenticateToken,
   requireRole(['admin']),
   upload.single('image'),
-  [
-    body('title')
-      .trim()
-      .isLength({ min: 3, max: 200 })
-      .withMessage('عنوان الإعلان يجب أن يكون بين 3 و 200 حرف'),
-    body('description')
-      .optional()
-      .trim()
-      .isLength({ max: 500 })
-      .withMessage('وصف الإعلان يجب أن يكون أقل من 500 حرف'),
-    body('url')
-      .isURL()
-      .withMessage('رابط الإعلان يجب أن يكون رابطاً صحيحاً'),
-    body('position')
-      .notEmpty()
-      .withMessage('موضع الإعلان مطلوب'),
-    body('end_date')
-      .isISO8601()
-      .withMessage('تاريخ انتهاء الإعلان يجب أن يكون تاريخاً صحيحاً')
-      .custom((value) => {
-        const endDate = new Date(value);
-        if (endDate <= new Date()) {
-          throw new Error('تاريخ انتهاء الإعلان يجب أن يكون في المستقبل');
-        }
-        return true;
-      })
-  ],
+  validateAdCreation,
   async (req, res) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        // Delete uploaded file if validation fails
+        // Clean up uploaded file if validation fails
         if (req.file) {
-          await fs.unlink(req.file.path).catch(console.error);
+          try {
+            await fs.unlink(req.file.path);
+          } catch (unlinkError) {
+            console.error('Error deleting uploaded file:', unlinkError);
+          }
         }
         return res.status(400).json({
           success: false,
@@ -242,32 +365,54 @@ router.post('/',
       
       const { title, description, url, position, end_date } = req.body;
       
-      // Validate position and check limits
-      const validation = await adsService.validateAdPosition(position);
-      if (!validation.valid) {
-        await fs.unlink(req.file.path).catch(console.error);
+      // Validate position limits
+      const positionValidation = await validatePositionLimits(position);
+      if (!positionValidation.valid) {
+        // Clean up uploaded file
+        try {
+          await fs.unlink(req.file.path);
+        } catch (unlinkError) {
+          console.error('Error deleting uploaded file:', unlinkError);
+        }
         return res.status(400).json({
           success: false,
-          message: validation.message
+          message: positionValidation.error
         });
       }
       
+      // Ensure uploads directory exists
+      await ensureUploadsDir();
+      
+      // Create image path relative to public directory
       const imagePath = `/uploads/ads/${req.file.filename}`;
       
-      // Insert new ad
-      const [result] = await db.execute(
-        `INSERT INTO ads (title, description, image_path, url, position, width, height, end_date, is_active, created_at, updated_at) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-        [title, description || null, imagePath, url, position, validation.position.width, validation.position.height, end_date]
-      );
+      // Insert ad into database
+      const [result] = await db.query(`
+        INSERT INTO ads (
+          title, description, image_path, url, position, 
+          width, height, end_date, created_by
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        title,
+        description || null,
+        imagePath,
+        url,
+        position,
+        positionValidation.position.width,
+        positionValidation.position.height,
+        end_date,
+        req.user.id
+      ]);
       
       // Get the created ad
-      const [newAd] = await db.execute(`
+      const [newAd] = await db.query(`
         SELECT 
           a.*,
-          ap.display_name as position_display_name
+          ap.display_name as position_display_name,
+          u.username as created_by_username
         FROM ads a
         LEFT JOIN ads_positions ap ON a.position = ap.position_name
+        LEFT JOIN users u ON a.created_by = u.id
         WHERE a.id = ?
       `, [result.insertId]);
       
@@ -277,14 +422,20 @@ router.post('/',
         message: 'تم إنشاء الإعلان بنجاح'
       });
     } catch (error) {
-      // Delete uploaded file on error
-      if (req.file) {
-        await fs.unlink(req.file.path).catch(console.error);
-      }
       console.error('Error creating ad:', error);
+      
+      // Clean up uploaded file on error
+      if (req.file) {
+        try {
+          await fs.unlink(req.file.path);
+        } catch (unlinkError) {
+          console.error('Error deleting uploaded file:', unlinkError);
+        }
+      }
+      
       res.status(500).json({
         success: false,
-        message: 'فشل في إنشاء الإعلان',
+        message: 'خطأ في الخادم الداخلي',
         error: error.message
       });
     }
@@ -296,48 +447,18 @@ router.put('/:id',
   authenticateToken,
   requireRole(['admin']),
   upload.single('image'),
-  [
-    param('id').isInt().withMessage('معرف الإعلان يجب أن يكون رقماً'),
-    body('title')
-      .optional()
-      .trim()
-      .isLength({ min: 3, max: 200 })
-      .withMessage('عنوان الإعلان يجب أن يكون بين 3 و 200 حرف'),
-    body('description')
-      .optional()
-      .trim()
-      .isLength({ max: 500 })
-      .withMessage('وصف الإعلان يجب أن يكون أقل من 500 حرف'),
-    body('url')
-      .optional()
-      .isURL()
-      .withMessage('رابط الإعلان يجب أن يكون رابطاً صحيحاً'),
-    body('position')
-      .optional()
-      .notEmpty()
-      .withMessage('موضع الإعلان لا يمكن أن يكون فارغاً'),
-    body('end_date')
-      .optional()
-      .isISO8601()
-      .withMessage('تاريخ انتهاء الإعلان يجب أن يكون تاريخاً صحيحاً')
-      .custom((value) => {
-        const endDate = new Date(value);
-        if (endDate <= new Date()) {
-          throw new Error('تاريخ انتهاء الإعلان يجب أن يكون في المستقبل');
-        }
-        return true;
-      }),
-    body('is_active')
-      .optional()
-      .isBoolean()
-      .withMessage('حالة الإعلان يجب أن تكون true أو false')
-  ],
+  validateAdUpdate,
   async (req, res) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        // Clean up uploaded file if validation fails
         if (req.file) {
-          await fs.unlink(req.file.path).catch(console.error);
+          try {
+            await fs.unlink(req.file.path);
+          } catch (unlinkError) {
+            console.error('Error deleting uploaded file:', unlinkError);
+          }
         }
         return res.status(400).json({
           success: false,
@@ -350,10 +471,14 @@ router.put('/:id',
       const { title, description, url, position, end_date, is_active } = req.body;
       
       // Check if ad exists
-      const [existingAd] = await db.execute('SELECT * FROM ads WHERE id = ?', [id]);
+      const [existingAd] = await db.query('SELECT * FROM ads WHERE id = ?', [id]);
       if (existingAd.length === 0) {
         if (req.file) {
-          await fs.unlink(req.file.path).catch(console.error);
+          try {
+            await fs.unlink(req.file.path);
+          } catch (unlinkError) {
+            console.error('Error deleting uploaded file:', unlinkError);
+          }
         }
         return res.status(404).json({
           success: false,
@@ -361,90 +486,110 @@ router.put('/:id',
         });
       }
       
-      let imagePath = existingAd[0].image_path;
-      let width = existingAd[0].width;
-      let height = existingAd[0].height;
-      
-      // Handle position change
+      // Validate position limits if position is being changed
       if (position && position !== existingAd[0].position) {
-        const validation = await adsService.validateAdPosition(position, id);
-        if (!validation.valid) {
+        const positionValidation = await validatePositionLimits(position, id);
+        if (!positionValidation.valid) {
           if (req.file) {
-            await fs.unlink(req.file.path).catch(console.error);
+            try {
+              await fs.unlink(req.file.path);
+            } catch (unlinkError) {
+              console.error('Error deleting uploaded file:', unlinkError);
+            }
           }
           return res.status(400).json({
             success: false,
-            message: validation.message
+            message: positionValidation.error
           });
         }
-        width = validation.position.width;
-        height = validation.position.height;
+      }
+      
+      // Prepare update data
+      const updateData = {};
+      const updateParams = [];
+      
+      if (title !== undefined) {
+        updateData.title = title;
+        updateParams.push(title);
+      }
+      if (description !== undefined) {
+        updateData.description = description;
+        updateParams.push(description);
+      }
+      if (url !== undefined) {
+        updateData.url = url;
+        updateParams.push(url);
+      }
+      if (position !== undefined) {
+        updateData.position = position;
+        updateParams.push(position);
+        
+        // Update dimensions if position changed
+        const [positionInfo] = await db.query(
+          'SELECT width, height FROM ads_positions WHERE position_name = ?',
+          [position]
+        );
+        if (positionInfo.length > 0) {
+          updateData.width = positionInfo[0].width;
+          updateData.height = positionInfo[0].height;
+          updateParams.push(positionInfo[0].width, positionInfo[0].height);
+        }
+      }
+      if (end_date !== undefined) {
+        updateData.end_date = end_date;
+        updateParams.push(end_date);
+      }
+      if (is_active !== undefined) {
+        updateData.is_active = is_active;
+        updateParams.push(is_active);
       }
       
       // Handle image update
+      let oldImagePath = null;
       if (req.file) {
-        // Delete old image
-        const oldImagePath = path.join(__dirname, '../../public', existingAd[0].image_path);
-        await fs.unlink(oldImagePath).catch(console.error);
-        
-        imagePath = `/uploads/ads/${req.file.filename}`;
+        oldImagePath = existingAd[0].image_path;
+        const newImagePath = `/uploads/ads/${req.file.filename}`;
+        updateData.image_path = newImagePath;
+        updateParams.push(newImagePath);
       }
       
       // Build update query
-      const updates = [];
-      const params = [];
+      const updateFields = Object.keys(updateData).map(key => {
+        if (key === 'position' && updateData.width && updateData.height) {
+          return `${key} = ?, width = ?, height = ?`;
+        }
+        return `${key} = ?`;
+      }).join(', ');
       
-      if (title !== undefined) {
-        updates.push('title = ?');
-        params.push(title);
+      if (updateFields) {
+        updateParams.push(id);
+        await db.query(`UPDATE ads SET ${updateFields} WHERE id = ?`, updateParams);
+        
+        // Delete old image if new one was uploaded
+        if (oldImagePath && req.file) {
+          try {
+            const oldImageFullPath = path.join(__dirname, '../../public', oldImagePath);
+            await fs.unlink(oldImageFullPath);
+          } catch (unlinkError) {
+            console.error('Error deleting old image:', unlinkError);
+          }
+        }
       }
-      if (description !== undefined) {
-        updates.push('description = ?');
-        params.push(description);
-      }
-      if (url !== undefined) {
-        updates.push('url = ?');
-        params.push(url);
-      }
-      if (position !== undefined) {
-        updates.push('position = ?', 'width = ?', 'height = ?');
-        params.push(position, width, height);
-      }
-      if (end_date !== undefined) {
-        updates.push('end_date = ?');
-        params.push(end_date);
-      }
-      if (is_active !== undefined) {
-        updates.push('is_active = ?');
-        params.push(is_active);
-      }
-      if (req.file) {
-        updates.push('image_path = ?');
-        params.push(imagePath);
-      }
-      
-      if (updates.length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: 'لا توجد حقول للتحديث'
-        });
-      }
-      
-      updates.push('updated_at = CURRENT_TIMESTAMP');
-      params.push(id);
-      
-      await db.execute(
-        `UPDATE ads SET ${updates.join(', ')} WHERE id = ?`,
-        params
-      );
       
       // Get updated ad
-      const [updatedAd] = await db.execute(`
+      const [updatedAd] = await db.query(`
         SELECT 
           a.*,
-          ap.display_name as position_display_name
+          ap.display_name as position_display_name,
+          u.username as created_by_username,
+          CASE 
+            WHEN a.end_date <= NOW() THEN 'expired'
+            WHEN a.is_active = false THEN 'inactive'
+            ELSE 'active'
+          END as status
         FROM ads a
         LEFT JOIN ads_positions ap ON a.position = ap.position_name
+        LEFT JOIN users u ON a.created_by = u.id
         WHERE a.id = ?
       `, [id]);
       
@@ -454,13 +599,20 @@ router.put('/:id',
         message: 'تم تحديث الإعلان بنجاح'
       });
     } catch (error) {
-      if (req.file) {
-        await fs.unlink(req.file.path).catch(console.error);
-      }
       console.error('Error updating ad:', error);
+      
+      // Clean up uploaded file on error
+      if (req.file) {
+        try {
+          await fs.unlink(req.file.path);
+        } catch (unlinkError) {
+          console.error('Error deleting uploaded file:', unlinkError);
+        }
+      }
+      
       res.status(500).json({
         success: false,
-        message: 'فشل في تحديث الإعلان',
+        message: 'خطأ في الخادم الداخلي',
         error: error.message
       });
     }
@@ -486,7 +638,7 @@ router.delete('/:id',
       const { id } = req.params;
       
       // Get ad info before deletion
-      const [ad] = await db.execute('SELECT * FROM ads WHERE id = ?', [id]);
+      const [ad] = await db.query('SELECT * FROM ads WHERE id = ?', [id]);
       if (ad.length === 0) {
         return res.status(404).json({
           success: false,
@@ -495,11 +647,17 @@ router.delete('/:id',
       }
       
       // Delete ad from database
-      await db.execute('DELETE FROM ads WHERE id = ?', [id]);
+      await db.query('DELETE FROM ads WHERE id = ?', [id]);
       
       // Delete image file
-      const imagePath = path.join(__dirname, '../../public', ad[0].image_path);
-      await fs.unlink(imagePath).catch(console.error);
+      if (ad[0].image_path) {
+        try {
+          const imagePath = path.join(__dirname, '../../public', ad[0].image_path);
+          await fs.unlink(imagePath);
+        } catch (unlinkError) {
+          console.error('Error deleting image file:', unlinkError);
+        }
+      }
       
       res.json({
         success: true,
@@ -509,7 +667,7 @@ router.delete('/:id',
       console.error('Error deleting ad:', error);
       res.status(500).json({
         success: false,
-        message: 'فشل في حذف الإعلان',
+        message: 'خطأ في الخادم الداخلي',
         error: error.message
       });
     }
@@ -533,10 +691,9 @@ router.get('/:id/stats',
       }
       
       const { id } = req.params;
-      const { days = 30 } = req.query;
       
-      // Get ad basic info
-      const [ad] = await db.execute('SELECT * FROM ads WHERE id = ?', [id]);
+      // Check if ad exists
+      const [ad] = await db.query('SELECT * FROM ads WHERE id = ?', [id]);
       if (ad.length === 0) {
         return res.status(404).json({
           success: false,
@@ -544,50 +701,66 @@ router.get('/:id/stats',
         });
       }
       
-      // Get click statistics
-      const [clickStats] = await db.execute(`
+      // Get basic stats
+      const [basicStats] = await db.query(`
+        SELECT 
+          clicks,
+          impressions,
+          CASE 
+            WHEN impressions > 0 THEN ROUND((clicks / impressions) * 100, 2)
+            ELSE 0
+          END as ctr_percentage
+        FROM ads 
+        WHERE id = ?
+      `, [id]);
+      
+      // Get daily stats for the last 30 days
+      const [dailyStats] = await db.query(`
         SELECT 
           DATE(clicked_at) as date,
           COUNT(*) as clicks
         FROM ads_clicks 
-        WHERE ad_id = ? AND clicked_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+        WHERE ad_id = ? AND clicked_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
         GROUP BY DATE(clicked_at)
         ORDER BY date DESC
-      `, [id, days]);
+      `, [id]);
       
-      // Get impression statistics
-      const [impressionStats] = await db.execute(`
+      const [dailyImpressions] = await db.query(`
         SELECT 
           DATE(viewed_at) as date,
           COUNT(*) as impressions
         FROM ads_impressions 
-        WHERE ad_id = ? AND viewed_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+        WHERE ad_id = ? AND viewed_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
         GROUP BY DATE(viewed_at)
         ORDER BY date DESC
-      `, [id, days]);
+      `, [id]);
       
-      // Get total stats
-      const [totalStats] = await db.execute(`
+      // Get top referrers
+      const [topReferrers] = await db.query(`
         SELECT 
-          (SELECT COUNT(*) FROM ads_clicks WHERE ad_id = ?) as total_clicks,
-          (SELECT COUNT(*) FROM ads_impressions WHERE ad_id = ?) as total_impressions
-      `, [id, id]);
-      
-      // Calculate CTR (Click Through Rate)
-      const ctr = totalStats[0].total_impressions > 0 
-        ? (totalStats[0].total_clicks / totalStats[0].total_impressions * 100).toFixed(2)
-        : 0;
+          COALESCE(referrer, 'Direct') as referrer,
+          COUNT(*) as clicks
+        FROM ads_clicks 
+        WHERE ad_id = ?
+        GROUP BY referrer
+        ORDER BY clicks DESC
+        LIMIT 10
+      `, [id]);
       
       res.json({
         success: true,
         data: {
-          ad: ad[0],
-          stats: {
-            total_clicks: totalStats[0].total_clicks,
-            total_impressions: totalStats[0].total_impressions,
-            ctr: parseFloat(ctr),
-            daily_clicks: clickStats,
-            daily_impressions: impressionStats
+          basic: basicStats[0],
+          daily_clicks: dailyStats,
+          daily_impressions: dailyImpressions,
+          top_referrers: topReferrers,
+          ad_info: {
+            id: ad[0].id,
+            title: ad[0].title,
+            position: ad[0].position,
+            is_active: ad[0].is_active,
+            start_date: ad[0].start_date,
+            end_date: ad[0].end_date
           }
         },
         message: 'تم جلب إحصائيات الإعلان بنجاح'
@@ -596,7 +769,7 @@ router.get('/:id/stats',
       console.error('Error fetching ad stats:', error);
       res.status(500).json({
         success: false,
-        message: 'فشل في جلب إحصائيات الإعلان',
+        message: 'خطأ في الخادم الداخلي',
         error: error.message
       });
     }
@@ -606,18 +779,75 @@ router.get('/:id/stats',
 // GET /admin/ads/stats/overview - Get ads overview statistics
 router.get('/stats/overview', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
-    const summary = await adsService.getAdsSummary();
+    // Get overall stats
+    const [overallStats] = await db.query(`
+      SELECT 
+        COUNT(*) as total_ads,
+        SUM(CASE WHEN is_active = true AND end_date > NOW() THEN 1 ELSE 0 END) as active_ads,
+        SUM(CASE WHEN end_date <= NOW() THEN 1 ELSE 0 END) as expired_ads,
+        SUM(CASE WHEN is_active = false THEN 1 ELSE 0 END) as inactive_ads,
+        SUM(COALESCE(clicks, 0)) as total_clicks,
+        SUM(COALESCE(impressions, 0)) as total_impressions,
+        CASE 
+          WHEN SUM(COALESCE(impressions, 0)) > 0 THEN ROUND((SUM(COALESCE(clicks, 0)) / SUM(COALESCE(impressions, 0))) * 100, 2)
+          ELSE 0
+        END as avg_ctr
+      FROM ads
+    `);
+    
+    // Get stats by position
+    const [positionStats] = await db.query(`
+      SELECT 
+        ap.position_name,
+        ap.display_name,
+        ap.max_ads,
+        COUNT(a.id) as total_ads,
+        SUM(CASE WHEN a.is_active = true AND a.end_date > NOW() THEN 1 ELSE 0 END) as active_ads,
+        SUM(COALESCE(a.clicks, 0)) as total_clicks,
+        SUM(COALESCE(a.impressions, 0)) as total_impressions
+      FROM ads_positions ap
+      LEFT JOIN ads a ON ap.position_name = a.position
+      GROUP BY ap.position_name, ap.display_name, ap.max_ads
+      ORDER BY ap.id
+    `);
+    
+    // Get recent activity
+    const [recentActivity] = await db.query(`
+      SELECT 
+        a.id,
+        a.title,
+        a.position,
+        ap.display_name as position_display_name,
+        a.is_active,
+        a.end_date,
+        a.created_at,
+        u.username as created_by,
+        CASE 
+          WHEN a.end_date <= NOW() THEN 'expired'
+          WHEN a.is_active = false THEN 'inactive'
+          ELSE 'active'
+        END as status
+      FROM ads a
+      LEFT JOIN ads_positions ap ON a.position = ap.position_name
+      LEFT JOIN users u ON a.created_by = u.id
+      ORDER BY a.created_at DESC
+      LIMIT 10
+    `);
     
     res.json({
       success: true,
-      data: summary,
-      message: 'تم جلب ملخص الإعلانات بنجاح'
+      data: {
+        overall: overallStats[0],
+        by_position: positionStats,
+        recent_activity: recentActivity
+      },
+      message: 'تم جلب نظرة عامة على الإعلانات بنجاح'
     });
   } catch (error) {
     console.error('Error fetching ads overview:', error);
     res.status(500).json({
       success: false,
-      message: 'فشل في جلب ملخص الإعلانات',
+      message: 'خطأ في الخادم الداخلي',
       error: error.message
     });
   }
@@ -626,18 +856,68 @@ router.get('/stats/overview', authenticateToken, requireRole(['admin']), async (
 // POST /admin/ads/cleanup - Manual cleanup of expired ads
 router.post('/cleanup', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
-    const result = await adsService.cleanupExpiredAds();
+    // Get expired ads
+    const [expiredAds] = await db.query(
+      'SELECT id, title, image_path FROM ads WHERE end_date < NOW() AND is_active = true'
+    );
+    
+    if (expiredAds.length === 0) {
+      return res.json({
+        success: true,
+        data: {
+          cleaned_ads: 0,
+          deleted_images: 0,
+          errors: []
+        },
+        message: 'لا توجد إعلانات منتهية الصلاحية للتنظيف'
+      });
+    }
+    
+    const errors = [];
+    let deletedImages = 0;
+    
+    // Delete image files
+    const deletePromises = expiredAds.map(async (ad) => {
+      if (ad.image_path) {
+        try {
+          const imagePath = path.join(__dirname, '../../public', ad.image_path);
+          await fs.unlink(imagePath);
+          return { success: true };
+        } catch (error) {
+          return { success: false, error: `فشل في حذف صورة الإعلان ${ad.title}: ${error.message}` };
+        }
+      }
+      return { success: true };
+    });
+    
+    const deleteResults = await Promise.all(deletePromises);
+    deleteResults.forEach((result) => {
+      if (result.success) {
+        deletedImages += 1;
+      } else if (result.error) {
+        errors.push(result.error);
+      }
+    });
+    
+    // Mark ads as inactive
+    const [updateResult] = await db.query(
+      'UPDATE ads SET is_active = false WHERE end_date < NOW() AND is_active = true'
+    );
     
     res.json({
       success: true,
-      data: result,
-      message: 'تم تنظيف الإعلانات المنتهية الصلاحية بنجاح'
+      data: {
+        cleaned_ads: updateResult.affectedRows,
+        deleted_images: deletedImages,
+        errors: errors
+      },
+      message: `تم تنظيف ${updateResult.affectedRows} إعلان منتهي الصلاحية`
     });
   } catch (error) {
     console.error('Error during manual cleanup:', error);
     res.status(500).json({
       success: false,
-      message: 'فشل في تنظيف الإعلانات',
+      message: 'خطأ في الخادم الداخلي',
       error: error.message
     });
   }
