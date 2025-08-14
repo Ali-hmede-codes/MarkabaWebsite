@@ -74,7 +74,7 @@ export default async function handler(
 
   try {
     // Build the backend URL for admin ads
-    let backendUrl = `${BACKEND_URL}/api/v2/admin/ads`;
+    let backendUrl = `${BACKEND_URL}/api/v2/admin/administratorpage/ads`;
 
     // Handle different endpoints
     if (id && action) {
