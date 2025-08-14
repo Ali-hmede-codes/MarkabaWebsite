@@ -121,11 +121,17 @@ const AdsAdmin: React.FC = () => {
     });
     const response = await res.json();
     
-    if (response.success) {
+    if (response.success && Array.isArray(response.data)) {
         setPositions(response.data);
+      } else {
+        console.error('Invalid positions data received:', response);
+        setPositions([]);
+        toast.error('فشل في جلب مواضع الإعلانات');
       }
     } catch (error) {
       console.error('Error fetching positions:', error);
+      setPositions([]);
+      toast.error('حدث خطأ في جلب مواضع الإعلانات');
     }
   }, [token]);
 
@@ -346,7 +352,7 @@ const AdsAdmin: React.FC = () => {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
             >
               <option value="">جميع المواضع</option>
-              {positions.map(position => (
+              {(positions || []).map(position => (
                 <option key={position.position_name} value={position.position_name}>
                   {position.display_name}
                 </option>
@@ -614,7 +620,7 @@ const AdsAdmin: React.FC = () => {
                     required
                   >
                     <option value="">اختر الموضع</option>
-                    {positions.map(position => (
+                    {(positions || []).map(position => (
                       <option key={position.position_name} value={position.position_name}>
                         {position.display_name} ({position.width}x{position.height})
                       </option>
