@@ -44,7 +44,9 @@ const upload = multer({
 router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
     const { page = 1, limit = 10, position, status } = req.query;
-    const offset = (page - 1) * limit;
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const offset = (pageNum - 1) * limitNum;
     
     let queryStr = `
       SELECT 
@@ -79,7 +81,7 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
     
     // Get paginated results
     queryStr += ' ORDER BY a.created_at DESC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit, 10), parseInt(offset, 10));
+    params.push(limitNum, offset);
     
     const [ads] = await db.execute(queryStr, params);
     
@@ -87,10 +89,10 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
       success: true,
       data: ads,
       pagination: {
-        page: parseInt(page, 10),
-        limit: parseInt(limit, 10),
+        page: pageNum,
+        limit: limitNum,
         total,
-        pages: Math.ceil(total / limit)
+        pages: Math.ceil(total / limitNum)
       },
       message: 'تم جلب الإعلانات بنجاح'
     });
