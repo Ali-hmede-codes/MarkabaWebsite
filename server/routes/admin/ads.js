@@ -84,7 +84,7 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
       /SELECT\s+a\.\*,\s*ap\.display_name\s+as\s+position_display_name,\s*ap\.width\s+as\s+position_width,\s*ap\.height\s+as\s+position_height/i,
       'SELECT COUNT(*) as total'
     );
-    const [countResult] = await db.execute(countQuery, params);
+    const countResult = await db.execute(countQuery, params);
     const total = countResult && countResult[0] ? countResult[0].total : 0;
     
     // Get paginated results

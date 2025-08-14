@@ -104,11 +104,11 @@ class AdsService {
         'UPDATE ads SET is_active = false WHERE end_date < NOW() AND is_active = true'
       );
       
-      console.log(`✅ Marked ${updateResult[0].affectedRows} ads as expired`);
+      console.log(`✅ Marked ${updateResult.affectedRows} ads as expired`);
       
       return {
         deleted: deletedCount,
-        marked_inactive: updateResult[0].affectedRows,
+        marked_inactive: updateResult.affectedRows,
         errors
       };
     } catch (error) {
@@ -140,7 +140,7 @@ class AdsService {
         'SELECT DISTINCT image_path FROM ads WHERE image_path IS NOT NULL'
       );
       
-      const dbImageNames = dbImages[0].map(row => 
+      const dbImageNames = dbImages.map(row => 
         path.basename(row.image_path)
       );
       
