@@ -2,8 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import * as formidable from 'formidable';
 import * as fs from 'fs';
 import FormData from 'form-data';
+import jwt from 'jsonwebtoken';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 
 // TypeScript interfaces for Ad data
 interface AdData {
@@ -73,7 +74,7 @@ export default async function handler(
 
   try {
     // Build the backend URL for admin ads
-    let backendUrl = `${API_BASE_URL}/admin/administratorpage/ads`;
+    let backendUrl = `${BACKEND_URL}/api/v2/admin/ads`;
 
     // Handle different endpoints
     if (id && action) {
@@ -90,13 +91,23 @@ export default async function handler(
       backendUrl += `?${queryString}`;
     }
 
-    // Get auth token from cookies
-    const token = req.cookies.token;
+    // Get auth token from cookies or headers
+    const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
 
     if (!token) {
       return res.status(401).json({
         success: false,
         message: 'Unauthorized - Authentication required'
+      });
+    }
+
+    // Verify JWT token
+    try {
+      jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token'
       });
     }
 
