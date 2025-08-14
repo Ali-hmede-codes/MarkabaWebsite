@@ -44,16 +44,24 @@ const upload = multer({
 router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
     const { page = 1, limit = 10, position, status } = req.query;
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 10;
+    
+    // Validate parsed values
+    if (pageNum < 1 || limitNum < 1 || limitNum > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid pagination parameters'
+      });
+    }
+    
     const offset = (pageNum - 1) * limitNum;
     
     let queryStr = `
-      SELECT 
-        a.*,
-        ap.display_name as position_display_name,
-        ap.width as position_width,
-        ap.height as position_height
+      SELECT a.*, 
+             ap.display_name as position_display_name,
+             ap.width as position_width,
+             ap.height as position_height
       FROM ads a
       LEFT JOIN ads_positions ap ON a.position = ap.position_name
       WHERE 1=1
