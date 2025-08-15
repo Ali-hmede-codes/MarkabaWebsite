@@ -102,7 +102,7 @@ export class AdsApiService {
     if (!backendUrl) {
       throw new Error('Backend URL not configured');
     }
-    this.baseUrl = `${backendUrl}/admin/administratorpage/ads`;
+    this.baseUrl = `${backendUrl}/api/admin/administratorpage/ads`;
   }
 
   /**
