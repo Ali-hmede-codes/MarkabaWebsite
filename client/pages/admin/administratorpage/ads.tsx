@@ -49,8 +49,6 @@ const AdsManagement: React.FC = () => {
     description: '',
     url: '',
     position: 'main_top',
-    width: '',
-    height: '',
     start_date: '',
     end_date: '',
     is_active: true,
@@ -60,17 +58,11 @@ const AdsManagement: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
-  const positionOptions = [
-    { value: 'main_top', label: 'Main Top' },
-    { value: 'main_middle', label: 'Main Middle' },
-    { value: 'main_bottom', label: 'Main Bottom' },
-    { value: 'sidebar_top', label: 'Sidebar Top' },
-    { value: 'sidebar_middle', label: 'Sidebar Middle' },
-    { value: 'sidebar_bottom', label: 'Sidebar Bottom' }
-  ];
+  // Position options will be fetched from database
 
   useEffect(() => {
     fetchAds();
+    fetchPositions();
   }, []);
 
   const fetchAds = async () => {
@@ -83,14 +75,29 @@ const AdsManagement: React.FC = () => {
         setAds(result.data || []);
         setError(null);
       } else {
-        setError(result.message || 'Failed to fetch ads');
+        setError(result.message || 'فشل في جلب الإعلانات');
         console.error('Failed to fetch ads:', result.message);
       }
     } catch (error) {
-      setError('Network error occurred while fetching ads');
+      setError('حدث خطأ في الشبكة أثناء جلب الإعلانات');
       console.error('Error fetching ads:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPositions = async () => {
+    try {
+      const response = await fetch('/api/admin/ads?positions=true');
+      const result = await response.json();
+      
+      if (result.success) {
+        setPositions(result.data || []);
+      } else {
+        console.error('Failed to fetch positions:', result.message);
+      }
+    } catch (error) {
+      console.error('Error fetching positions:', error);
     }
   };
 
@@ -106,12 +113,6 @@ const AdsManagement: React.FC = () => {
       }
       formDataToSend.append('url', formData.url);
       formDataToSend.append('position', formData.position);
-      if (formData.width) {
-        formDataToSend.append('width', formData.width);
-      }
-      if (formData.height) {
-        formDataToSend.append('height', formData.height);
-      }
       if (formData.start_date) {
         formDataToSend.append('start_date', formData.start_date);
       }
@@ -161,8 +162,6 @@ const AdsManagement: React.FC = () => {
       description: ad.description || '',
       url: ad.url || '',
       position: ad.position || 'main_top',
-      width: ad.width?.toString() || '',
-      height: ad.height?.toString() || '',
       start_date: ad.start_date ? ad.start_date.split('T')[0] : '',
       end_date: ad.end_date ? ad.end_date.split('T')[0] : '',
       is_active: ad.is_active ?? true,
@@ -201,8 +200,6 @@ const AdsManagement: React.FC = () => {
       description: '',
       url: '',
       position: 'main_top',
-      width: '',
-      height: '',
       start_date: '',
       end_date: '',
       is_active: true,
@@ -221,7 +218,7 @@ const AdsManagement: React.FC = () => {
     return (
       <AdminLayout>
         <div className="flex justify-center items-center h-64">
-          <div className="text-lg">Loading ads...</div>
+          <div className="text-lg text-black">جاري تحميل الإعلانات...</div>
         </div>
       </AdminLayout>
     );
@@ -231,140 +228,116 @@ const AdsManagement: React.FC = () => {
     <AdminLayout>
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Ads Management</h1>
+          <h1 className="text-2xl font-bold text-gray-800">إدارة الإعلانات</h1>
           <button
             onClick={() => setShowForm(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
           >
-            <FiPlus /> Add New Ad
+            <FiPlus /> إضافة إعلان جديد
           </button>
         </div>
 
         {showForm && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">
-              {editingAd ? 'Edit Ad' : 'Add New Ad'}
+            <h2 className="text-xl font-semibold mb-4 text-black">
+              {editingAd ? 'تعديل الإعلان' : 'إضافة إعلان جديد'}
             </h2>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Title *
+                  <label className="block text-sm font-medium text-black mb-1">
+                    العنوان *
                   </label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    URL *
+                  <label className="block text-sm font-medium text-black mb-1">
+                    الرابط *
                   </label>
                   <input
                     type="url"
                     value={formData.url}
                     onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     required
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                <label className="block text-sm font-medium text-black mb-1">
+                  الوصف
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                   rows={3}
-                  placeholder="Optional description for the ad"
+                  placeholder="وصف اختياري للإعلان"
                 />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Position *
+                  <label className="block text-sm font-medium text-black mb-1">
+                    الموقع *
                   </label>
                   <select
                     value={formData.position}
                     onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     required
                   >
-                    {positionOptions.map((pos) => (
-                      <option key={pos.value} value={pos.value}>
-                        {pos.label}
+                    {positions.map((pos) => (
+                      <option key={pos.position_name} value={pos.position_name}>
+                        {pos.display_name} ({pos.width}x{pos.height}px)
                       </option>
                     ))}
                   </select>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Image
+                  <label className="block text-sm font-medium text-black mb-1">
+                    الصورة
                   </label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => setFormData({ ...formData, image: e.target.files?.[0] || null })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Width (px)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.width}
-                    onChange={(e) => setFormData({ ...formData, width: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Height (px)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.height}
-                    onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Date
+                  <label className="block text-sm font-medium text-black mb-1">
+                    تاريخ البداية
                   </label>
                   <input
                     type="date"
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    End Date
+                  <label className="block text-sm font-medium text-black mb-1">
+                    تاريخ النهاية
                   </label>
                   <input
                     type="date"
                     value={formData.end_date}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                   />
                 </div>
               </div>
@@ -377,8 +350,8 @@ const AdsManagement: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                   className="mr-2"
                 />
-                <label htmlFor="is_active" className="text-sm font-medium text-gray-700">
-                  Active
+                <label htmlFor="is_active" className="text-sm font-medium text-black">
+                  نشط
                 </label>
               </div>
               
@@ -388,14 +361,14 @@ const AdsManagement: React.FC = () => {
                   disabled={submitting}
                   className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
                 >
-                  {submitting ? 'Saving...' : (editingAd ? 'Update Ad' : 'Create Ad')}
+                  {submitting ? 'جاري الحفظ...' : (editingAd ? 'تحديث الإعلان' : 'إنشاء الإعلان')}
                 </button>
                 <button
                   type="button"
                   onClick={handleCancel}
                   className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
                 >
-                  Cancel
+                  إلغاء
                 </button>
               </div>
             </form>
@@ -407,23 +380,23 @@ const AdsManagement: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ad
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                    الإعلان
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Position
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                    الموقع
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                    الحالة
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stats
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                    الإحصائيات
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Dates
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                    التواريخ
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                    الإجراءات
                   </th>
                 </tr>
               </thead>
@@ -451,7 +424,7 @@ const AdsManagement: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {positionOptions.find(p => p.value === ad.position)?.label || ad.position}
+                          {positions.find((p: AdPosition) => p.position_name === ad.position)?.display_name || ad.position}
                         </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

@@ -28,27 +28,53 @@ export default async function handler(
   try {
     switch (method) {
       case "GET": {
-        // Get all ads for admin
-        const response = await fetch(`${backendUrl}/api/admin/ads`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: req.headers.authorization || "",
-          },
-        });
-
-        if (!response.ok) {
-          const errorData = await response
-            .json()
-            .catch(() => ({ message: "Failed to fetch ads" }));
-          return res.status(response.status).json({
-            success: false,
-            message: errorData.message || "Failed to fetch ads",
+        const { positions } = req.query;
+        
+        if (positions === 'true') {
+          // Get ad positions
+          const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads/positions`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: req.headers.authorization || "",
+            },
           });
-        }
 
-        const data = await response.json();
-        return res.status(200).json(data);
+          if (!response.ok) {
+            const errorData = await response
+              .json()
+              .catch(() => ({ message: "Failed to fetch positions" }));
+            return res.status(response.status).json({
+              success: false,
+              message: errorData.message || "Failed to fetch positions",
+            });
+          }
+
+          const data = await response.json();
+          return res.status(200).json(data);
+        } else {
+          // Get all ads for admin
+          const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: req.headers.authorization || "",
+            },
+          });
+
+          if (!response.ok) {
+            const errorData = await response
+              .json()
+              .catch(() => ({ message: "Failed to fetch ads" }));
+            return res.status(response.status).json({
+              success: false,
+              message: errorData.message || "Failed to fetch ads",
+            });
+          }
+
+          const data = await response.json();
+          return res.status(200).json(data);
+        }
       }
 
       case "POST": {
@@ -132,7 +158,7 @@ export default async function handler(
         );
         if (imagePath) formData.append("image_path", imagePath);
 
-        const response = await fetch(`${backendUrl}/api/admin/ads`, {
+        const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads`, {
           method: "POST",
           headers: {
             Authorization: req.headers.authorization || "",
@@ -259,7 +285,7 @@ export default async function handler(
         );
         if (imagePath) formData.append("image_path", imagePath);
 
-        const response = await fetch(`${backendUrl}/api/admin/ads/${id}`, {
+        const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads/${id}`, {
           method: "PUT",
           headers: {
             Authorization: req.headers.authorization || "",
@@ -292,7 +318,7 @@ export default async function handler(
           });
         }
 
-        const response = await fetch(`${backendUrl}/api/admin/ads/${id}`, {
+        const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads/${id}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
