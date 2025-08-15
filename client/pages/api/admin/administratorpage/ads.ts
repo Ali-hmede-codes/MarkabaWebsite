@@ -23,7 +23,7 @@ export default async function handler(
   res: NextApiResponse<ApiResponse>
 ) {
   const { method } = req;
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:5000/api/v2';
   
   // Get auth token from cookies
   const token = req.cookies.token;
