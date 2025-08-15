@@ -59,6 +59,8 @@ const validateAdCreation = [
     .isIn(['main_top', 'main_middle', 'main_bottom', 'post_square', 'post_banner'])
     .withMessage('موضع الإعلان غير صحيح'),
   body('end_date')
+    .notEmpty()
+    .withMessage('تاريخ ووقت انتهاء الإعلان مطلوب')
     .isISO8601()
     .withMessage('تاريخ انتهاء الإعلان يجب أن يكون تاريخاً صحيحاً')
     .custom((value) => {
@@ -386,12 +388,15 @@ router.post('/',
       // Create image path relative to public directory
       const imagePath = `/uploads/ads/${req.file.filename}`;
       
+      // Set start_date to current timestamp automatically
+      const start_date = new Date().toISOString();
+      
       // Insert ad into database
       const [result] = await db.query(`
         INSERT INTO ads (
           title, description, image_path, url, position, 
-          width, height, end_date, created_by
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          width, height, start_date, end_date, created_by
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `, [
         title,
         description || null,
@@ -400,6 +405,7 @@ router.post('/',
         position,
         positionValidation.position.width,
         positionValidation.position.height,
+        start_date,
         end_date,
         req.user.id
       ]);

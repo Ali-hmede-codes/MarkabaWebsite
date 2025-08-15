@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import AdminLayout from '../../../components/Layout/AdminLayout';
+import { useAuth } from '../../../context/AuthContext';
 import { FiPlus, FiEdit, FiEdit2, FiTrash2, FiEye, FiBarChart, FiImage, FiCalendar, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
 
 interface Ad {
@@ -36,6 +37,7 @@ interface AdPosition {
 
 const AdsManagement: React.FC = () => {
   const router = useRouter();
+  const { token } = useAuth();
   const [ads, setAds] = useState<Ad[]>([]);
   const [positions, setPositions] = useState<AdPosition[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,14 +63,27 @@ const AdsManagement: React.FC = () => {
   // Position options will be fetched from database
 
   useEffect(() => {
-    fetchAds();
-    fetchPositions();
-  }, []);
+    if (token) {
+      fetchAds();
+      fetchPositions();
+    }
+  }, [token]);
 
   const fetchAds = async () => {
+    if (!token) {
+      setError('غير مصرح لك بالوصول');
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/ads');
+      const response = await fetch('/api/admin/ads', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const result = await response.json();
       
       if (result.success) {
@@ -87,8 +102,17 @@ const AdsManagement: React.FC = () => {
   };
 
   const fetchPositions = async () => {
+    if (!token) {
+      return;
+    }
+
     try {
-      const response = await fetch('/api/admin/ads?positions=true');
+      const response = await fetch('/api/admin/ads?positions=true', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const result = await response.json();
       
       if (result.success) {
@@ -103,6 +127,12 @@ const AdsManagement: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!token) {
+      alert('غير مصرح لك بالوصول');
+      return;
+    }
+    
     setSubmitting(true);
 
     try {
@@ -113,9 +143,6 @@ const AdsManagement: React.FC = () => {
       }
       formDataToSend.append('url', formData.url);
       formDataToSend.append('position', formData.position);
-      if (formData.start_date) {
-        formDataToSend.append('start_date', formData.start_date);
-      }
       if (formData.end_date) {
         formDataToSend.append('end_date', formData.end_date);
       }
@@ -135,6 +162,9 @@ const AdsManagement: React.FC = () => {
 
       const response = await fetch(url, {
         method,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formDataToSend
       });
 
@@ -157,13 +187,16 @@ const AdsManagement: React.FC = () => {
 
   const handleEdit = (ad: Ad) => {
     setEditingAd(ad);
+    const now = new Date();
+    const currentDateTime = now.toISOString().slice(0, 16);
+    
     setFormData({
       title: ad.title || '',
       description: ad.description || '',
       url: ad.url || '',
       position: ad.position || 'main_top',
-      start_date: ad.start_date ? ad.start_date.split('T')[0] : '',
-      end_date: ad.end_date ? ad.end_date.split('T')[0] : '',
+      start_date: currentDateTime, // Always set to current time
+      end_date: ad.end_date ? ad.end_date.slice(0, 16) : '',
       is_active: ad.is_active ?? true,
       image: null
     });
@@ -172,13 +205,22 @@ const AdsManagement: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this ad?')) {
+    if (!token) {
+      alert('غير مصرح لك بالوصول');
+      return;
+    }
+    
+    if (!confirm('هل أنت متأكد من حذف هذا الإعلان؟')) {
       return;
     }
 
     try {
       const response = await fetch(`/api/admin/ads?id=${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       const result = await response.json();
@@ -195,12 +237,15 @@ const AdsManagement: React.FC = () => {
   };
 
   const resetForm = () => {
+    const now = new Date();
+    const currentDateTime = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+    
     setFormData({
       title: '',
       description: '',
       url: '',
       position: 'main_top',
-      start_date: '',
+      start_date: currentDateTime,
       end_date: '',
       is_active: true,
       image: null
@@ -319,26 +364,34 @@ const AdsManagement: React.FC = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-black mb-1">
-                    تاريخ البداية
+                    تاريخ ووقت النهاية *
                   </label>
                   <input
-                    type="date"
-                    value={formData.start_date}
-                    onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                    type="datetime-local"
+                    value={formData.end_date}
+                    onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                    required
                   />
+                  <p className="text-xs text-gray-600 mt-1">
+                    سيتم إيقاف الإعلان تلقائياً في هذا التاريخ والوقت
+                  </p>
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-black mb-1">
-                    تاريخ النهاية
+                    تاريخ ووقت البداية (تلقائي)
                   </label>
                   <input
-                    type="date"
-                    value={formData.end_date}
-                    onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                    type="datetime-local"
+                    value={formData.start_date}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-black"
+                    disabled
+                    readOnly
                   />
+                  <p className="text-xs text-gray-600 mt-1">
+                    يتم تعيين تاريخ البداية تلقائياً للوقت الحالي
+                  </p>
                 </div>
               </div>
               
