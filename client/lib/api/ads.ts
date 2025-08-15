@@ -74,7 +74,8 @@ export type SingleAdResponse = APIResponse<Ad>;
 
 // API Configuration
 const getApiUrl = () => {
-  return process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000/api/v2';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
+  return process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || `${siteUrl}/api/admin/administratorpage`;
 };
 
 const getAuthHeaders = (token: string) => ({
