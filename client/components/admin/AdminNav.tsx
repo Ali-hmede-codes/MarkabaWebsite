@@ -81,10 +81,10 @@ const AdminNav: React.FC<AdminNavProps> = ({ className = '' }) => {
       roles: ['admin'] // Only admin can view analytics
     },
     {
-      href: '/admin/ads',
+      href: '/admin/administratorpage/ads',
       label: 'إدارة الإعلانات',
       icon: FiTarget,
-      active: router.pathname === '/admin/ads',
+      active: router.pathname === '/admin/administratorpage/ads',
       roles: ['admin'] // Only admin can manage ads
     }
   ];
