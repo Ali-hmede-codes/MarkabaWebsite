@@ -75,7 +75,7 @@ export type SingleAdResponse = APIResponse<Ad>;
 // API Configuration
 const getApiUrl = () => {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
-  return process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || `${siteUrl}/api/admin/administratorpage`;
+  return process.env.NEXT_PUBLIC_BACKEND_URL || `${siteUrl}/api/admin/administratorpage`;
 };
 
 const getAuthHeaders = (token: string) => ({
@@ -98,10 +98,10 @@ export class AdsApiService {
 
   constructor() {
     // Use NEXT_PUBLIC_API_URL from .env which is 'https://api.markaba.news/api/v2'
-    // Then append the admin ads path
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL;
+    // Admin routes are mounted at /api/v2/admin/administratorpage/ads
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     if (apiUrl) {
-      this.baseUrl = `${apiUrl}/admin/ads`;
+      this.baseUrl = `${apiUrl}/admin/administratorpage/ads`;
     } else {
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
       this.baseUrl = `${siteUrl}/api/admin/administratorpage/ads`;
