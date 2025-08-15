@@ -60,6 +60,8 @@ const AdsManagement: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+
   // Position options will be fetched from database
 
   useEffect(() => {
@@ -78,8 +80,9 @@ const AdsManagement: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/administratorpage/ads', {
+      const response = await fetch(`${backendUrl}/api/admin/ads`, {
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -111,8 +114,9 @@ const AdsManagement: React.FC = () => {
     }
 
     try {
-      const response = await fetch('/api/admin/administratorpage/ads?positions=true', {
+      const response = await fetch(`${backendUrl}/api/admin/ads/positions`, {
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -156,15 +160,17 @@ const AdsManagement: React.FC = () => {
       }
 
       if (editingAd) {
-        formDataToSend.append('id', editingAd.id.toString());
         formDataToSend.append('current_image', editingAd.image_path || '');
       }
 
-      const url = editingAd ? '/api/admin/administratorpage/ads' : '/api/admin/administratorpage/ads';
+      const url = editingAd ? `${backendUrl}/api/admin/ads/${editingAd.id}` : `${backendUrl}/api/admin/ads`;
       const method = editingAd ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formDataToSend
       });
 
@@ -215,9 +221,10 @@ const AdsManagement: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`/api/admin/administratorpage/ads/${id}`, {
+      const response = await fetch(`${backendUrl}/api/admin/ads/${id}`, {
         method: 'DELETE',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });

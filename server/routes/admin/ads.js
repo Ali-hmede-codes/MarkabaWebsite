@@ -196,7 +196,9 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
       ${whereClause}
     `;
     
-    const [countResult] = await db.query(countQuery, queryParams);
+    console.log('Executing countQuery:', countQuery);
+console.log('With params:', queryParams);
+const [countResult] = await db.query(countQuery, queryParams);
     const total = countResult && countResult[0] ? countResult[0].total : 0;
     
     // Get ads with pagination
@@ -221,7 +223,9 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
     `;
     
     const finalParams = [...queryParams, limitNum, offset];
-    const [ads] = await db.query(adsQuery, finalParams);
+    console.log('Executing adsQuery:', adsQuery);
+console.log('With params:', finalParams);
+const [ads] = await db.query(adsQuery, finalParams);
     
     res.json({
       success: true,
