@@ -197,7 +197,7 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
     `;
     
     const [countResult] = await db.query(countQuery, queryParams);
-    const total = countResult[0].total;
+    const total = countResult && countResult[0] ? countResult[0].total : 0;
     
     // Get ads with pagination
     const adsQuery = `

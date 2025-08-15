@@ -88,8 +88,13 @@ const AdsManagement: React.FC = () => {
       if (result.success) {
         setAds(result.data || []);
         setError(null);
+      } else if (result.error === 'NO_TOKEN') {
+        setError('انتهت جلسة العمل. يرجى تسجيل الدخول مرة أخرى.');
+        // Optionally redirect to login
+        // window.location.href = '/admin/administratorpage/login';
       } else {
         setError(result.message || 'فشل في جلب الإعلانات');
+        setAds([]);
         console.error('Failed to fetch ads:', result.message);
       }
     } catch (error) {

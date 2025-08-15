@@ -24,6 +24,10 @@ export default async function handler(
 ) {
   const { method } = req;
   const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+  
+  // Debug: Log cookies
+  console.log('🍪 Cookies received:', req.cookies);
+  console.log('🔑 Token from cookies:', req.cookies.token);
 
   try {
     switch (method) {
@@ -33,6 +37,16 @@ export default async function handler(
         if (positions === 'true') {
           // Get ad positions
           const token = req.cookies.token;
+          console.log('🔍 GET positions - Token check:', token ? 'Present' : 'Missing');
+          
+          if (!token) {
+            return res.status(401).json({
+              success: false,
+              message: "Authentication required. Please log in again.",
+              error: "NO_TOKEN"
+            });
+          }
+          
           const headers: any = {
             "Content-Type": "application/json",
           };
@@ -41,7 +55,7 @@ export default async function handler(
             headers['Authorization'] = `Bearer ${token}`;
           }
           
-          const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads/positions`, {
+          const response = await fetch(`${backendUrl}/api/admin/ads/positions`, {
             method: "GET",
             headers,
           });
@@ -61,6 +75,16 @@ export default async function handler(
         } else {
           // Get all ads for admin
           const token = req.cookies.token;
+          console.log('🔍 GET ads - Token check:', token ? 'Present' : 'Missing');
+          
+          if (!token) {
+            return res.status(401).json({
+              success: false,
+              message: "Authentication required. Please log in again.",
+              error: "NO_TOKEN"
+            });
+          }
+          
           const headers: any = {
             "Content-Type": "application/json",
           };
@@ -69,23 +93,37 @@ export default async function handler(
             headers['Authorization'] = `Bearer ${token}`;
           }
           
-          const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads`, {
-            method: "GET",
-            headers,
-          });
+          try {
+            console.log('🌐 Fetching from backend:', `${backendUrl}/api/admin/administratorpage/ads`);
+            const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads`, {
+              method: "GET",
+              headers,
+            });
 
-          if (!response.ok) {
-            const errorData = await response
-              .json()
-              .catch(() => ({ message: "Failed to fetch ads" }));
-            return res.status(response.status).json({
+            console.log('📡 Backend response status:', response.status);
+            
+            if (!response.ok) {
+              const errorData = await response
+                .json()
+                .catch(() => ({ message: "Failed to fetch ads" }));
+              console.log('❌ Backend error:', errorData);
+              return res.status(response.status).json({
+                success: false,
+                message: errorData.message || "Failed to fetch ads",
+              });
+            }
+
+            const data = await response.json();
+            console.log('✅ Backend data received:', data);
+            return res.status(200).json(data);
+          } catch (fetchError) {
+            console.error('🚨 Fetch error:', fetchError);
+            return res.status(500).json({
               success: false,
-              message: errorData.message || "Failed to fetch ads",
+              message: "Network error while fetching ads",
+              error: "FETCH_ERROR"
             });
           }
-
-          const data = await response.json();
-          return res.status(200).json(data);
         }
       }
 
