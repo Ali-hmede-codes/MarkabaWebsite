@@ -97,14 +97,18 @@ export class AdsApiService {
   private baseUrl: string;
 
   constructor() {
-    // Use NEXT_PUBLIC_API_URL from .env which is 'https://api.markaba.news/api/v2'
-    // Admin routes are mounted at /api/v2/admin/administratorpage/ads
-    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    if (apiUrl) {
-      this.baseUrl = `${apiUrl}/admin/administratorpage/ads`;
+    // Use production backend URL from environment variables
+    // NEXT_PUBLIC_BACKEND_URL should be 'https://api.markaba.news'
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL;
+    
+    if (backendUrl) {
+      // Remove any existing /api/v2 suffix and add the correct admin path
+      const cleanUrl = backendUrl.replace(/\/api\/v2$/, '');
+      this.baseUrl = `${cleanUrl}/api/v2/admin/administratorpage/ads`;
     } else {
+      // Fallback to site URL
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
-      this.baseUrl = `${siteUrl}/api/admin/administratorpage/ads`;
+      this.baseUrl = `${siteUrl}/api/v2/admin/administratorpage/ads`;
     }
   }
 
