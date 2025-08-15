@@ -36,19 +36,22 @@ const AdBanner: React.FC<AdBannerProps> = ({ position, className = '' }) => {
         const response = await fetch(`/api/ads?position=${position}&active_only=true`);
         
         if (!response.ok) {
-          throw new Error('Failed to fetch ads');
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
         
-        if (data.success) {
-          setAds(data.data || []);
+        if (data.success && data.data) {
+          setAds(data.data);
+          setError(null);
         } else {
-          throw new Error(data.message || 'Failed to load ads');
+          setError('Failed to load ads');
+          setAds([]);
         }
       } catch (err) {
         console.error('Error fetching ads:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load ads');
+        setError('Failed to load ads');
+        setAds([]);
       } finally {
         setLoading(false);
       }
@@ -61,19 +64,33 @@ const AdBanner: React.FC<AdBannerProps> = ({ position, className = '' }) => {
     if (impressionTracked.has(adId)) return;
     
     try {
-      await fetch(`/api/ads?id=${adId}&action=impression`, {
+      await fetch(`/api/ads/${adId}/impression`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ip_address: null, // Will be determined by server
+          user_agent: navigator.userAgent
+        })
       });
       setImpressionTracked(prev => new Set(prev).add(adId));
     } catch (error) {
-      console.error('Failed to track impression:', error);
+      console.error('Error tracking impression:', error);
     }
   };
 
   const handleAdClick = async (adId: number, adUrl: string) => {
     try {
-      const response = await fetch(`/api/ads?id=${adId}&action=click`, {
+      const response = await fetch(`/api/ads/${adId}/click`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ip_address: null, // Will be determined by server
+          user_agent: navigator.userAgent
+        })
       });
       
       if (response.ok) {
@@ -87,7 +104,7 @@ const AdBanner: React.FC<AdBannerProps> = ({ position, className = '' }) => {
         window.open(adUrl, '_blank');
       }
     } catch (error) {
-      console.error('Failed to track click:', error);
+      console.error('Error tracking click:', error);
       window.open(adUrl, '_blank');
     }
   };

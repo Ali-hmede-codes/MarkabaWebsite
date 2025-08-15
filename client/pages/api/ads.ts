@@ -1,75 +1,150 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+interface ApiResponse {
+  success: boolean;
+  data?: any;
+  message?: string;
+  error?: string;
+}
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<ApiResponse>
 ) {
-  const { method, body, query } = req;
-  const { id, action, ...otherParams } = query;
+  const { method, query } = req;
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
 
   try {
-    let backendUrl = `${API_BASE_URL}/ads`;
+    switch (method) {
+      case 'GET': {
+        // Forward query parameters to backend
+        const queryParams = new URLSearchParams();
+        
+        if (query.position) {
+          queryParams.append('position', query.position as string);
+        }
+        
+        if (query.active_only !== undefined) {
+          queryParams.append('active_only', query.active_only as string);
+        }
 
-    // Handle different endpoints
-    if (id && action) {
-      // Handle actions like /ads/:id/click, /ads/:id/impression, /ads/:id/stats
-      backendUrl += `/${id}/${action}`;
-    } else if (id) {
-      // Handle single ad endpoint /ads/:id
-      backendUrl += `/${id}`;
-    } else if (req.url?.includes('/positions')) {
-      // Handle positions endpoint /ads/positions
-      backendUrl += '/positions';
+        const url = `${backendUrl}/api/ads${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+        
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Backend responded with status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return res.status(200).json(data);
+      }
+
+      case 'POST': {
+        // Handle ad interactions (clicks, impressions)
+        const { adId, action } = req.body;
+        
+        if (!adId || !action) {
+          return res.status(400).json({
+            success: false,
+            message: 'Ad ID and action are required'
+          });
+        }
+
+        let endpoint = '';
+        if (action === 'click') {
+          endpoint = `/api/ads/${adId}/click`;
+        } else if (action === 'impression') {
+          endpoint = `/api/ads/${adId}/impression`;
+        } else {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid action. Use "click" or "impression"'
+          });
+        }
+
+        const response = await fetch(`${backendUrl}${endpoint}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Forwarded-For': req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || '',
+            'User-Agent': req.headers['user-agent'] || '',
+            'Referer': req.headers.referer || ''
+          },
+          body: JSON.stringify({
+            ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+            user_agent: req.headers['user-agent'],
+            referrer: req.headers.referer
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Backend responded with status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return res.status(200).json(data);
+      }
+
+      default:
+        res.setHeader('Allow', ['GET', 'POST']);
+        return res.status(405).json({
+          success: false,
+          message: `Method ${method} not allowed`
+        });
     }
+  } catch (error) {
+    console.error('Ads API Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
 
-    // Add query parameters if any
-    const queryString = new URLSearchParams(otherParams as Record<string, string>).toString();
-    if (queryString) {
-      backendUrl += `?${queryString}`;
-    }
-
-    // Get auth token from cookies or headers
-    const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
-
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const fetchOptions: RequestInit = {
-      method,
-      headers,
-    };
-
-    if (method === 'POST' || method === 'PUT') {
-      fetchOptions.body = JSON.stringify(body);
-    }
-
-    console.log(`Proxying ${method} request to: ${backendUrl}`);
-
-    const response = await fetch(backendUrl, fetchOptions);
+// Handle individual ad actions
+export async function handleAdAction(
+  req: NextApiRequest,
+  res: NextApiResponse<ApiResponse>,
+  adId: string,
+  action: 'click' | 'impression'
+) {
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+  
+  try {
+    const response = await fetch(`${backendUrl}/api/ads/${adId}/${action}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Forwarded-For': req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || '',
+        'User-Agent': req.headers['user-agent'] || '',
+        'Referer': req.headers.referer || ''
+      },
+      body: JSON.stringify({
+        ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+        user_agent: req.headers['user-agent'],
+        referrer: req.headers.referer
+      })
+    });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ 
-        success: false, 
-        message: `HTTP ${response.status}: ${response.statusText}` 
-      }));
-      return res.status(response.status).json(errorData);
+      throw new Error(`Backend responded with status: ${response.status}`);
     }
 
     const data = await response.json();
-    res.status(200).json(data);
+    return res.status(200).json(data);
   } catch (error) {
-    console.error('Ads API proxy error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    res.status(500).json({
+    console.error(`Ad ${action} tracking error:`, error);
+    return res.status(500).json({
       success: false,
-      message: errorMessage
+      message: 'Failed to track ad interaction',
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 }
