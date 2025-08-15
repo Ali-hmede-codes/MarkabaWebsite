@@ -220,7 +220,8 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
       LIMIT ? OFFSET ?
     `;
     
-    const [ads] = await db.query(adsQuery, [...queryParams, limitNum, offset]);
+    const finalParams = [...queryParams, limitNum, offset];
+    const [ads] = await db.query(adsQuery, finalParams);
     
     res.json({
       success: true,

@@ -23,7 +23,7 @@ export default async function handler(
   res: NextApiResponse<ApiResponse>,
 ) {
   const { method } = req;
-  const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
   
   // Debug: Log cookies
   console.log('🍪 Cookies received:', req.cookies);
@@ -55,7 +55,7 @@ export default async function handler(
             headers['Authorization'] = `Bearer ${token}`;
           }
           
-          const response = await fetch(`${backendUrl}/api/admin/ads/positions`, {
+          const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads/positions`, {
             method: "GET",
             headers,
           });
