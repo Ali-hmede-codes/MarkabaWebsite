@@ -80,7 +80,6 @@ const AdsManagement: React.FC = () => {
       setLoading(true);
       const response = await fetch('/api/admin/ads', {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -109,7 +108,6 @@ const AdsManagement: React.FC = () => {
     try {
       const response = await fetch('/api/admin/ads?positions=true', {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -162,9 +160,6 @@ const AdsManagement: React.FC = () => {
 
       const response = await fetch(url, {
         method,
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
         body: formDataToSend
       });
 
@@ -218,7 +213,6 @@ const AdsManagement: React.FC = () => {
       const response = await fetch(`/api/admin/ads?id=${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });

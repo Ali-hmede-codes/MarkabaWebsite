@@ -32,12 +32,18 @@ export default async function handler(
         
         if (positions === 'true') {
           // Get ad positions
+          const token = req.cookies.token;
+          const headers: any = {
+            "Content-Type": "application/json",
+          };
+          
+          if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+          }
+          
           const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads/positions`, {
             method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: req.headers.authorization || "",
-            },
+            headers,
           });
 
           if (!response.ok) {
@@ -54,12 +60,18 @@ export default async function handler(
           return res.status(200).json(data);
         } else {
           // Get all ads for admin
+          const token = req.cookies.token;
+          const headers: any = {
+            "Content-Type": "application/json",
+          };
+          
+          if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+          }
+          
           const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads`, {
             method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: req.headers.authorization || "",
-            },
+            headers,
           });
 
           if (!response.ok) {
@@ -158,11 +170,16 @@ export default async function handler(
         );
         if (imagePath) formData.append("image_path", imagePath);
 
+        const token = req.cookies.token;
+        const headers: any = {};
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
         const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads`, {
           method: "POST",
-          headers: {
-            Authorization: req.headers.authorization || "",
-          },
+          headers,
           body: formData,
         });
 
@@ -285,11 +302,16 @@ export default async function handler(
         );
         if (imagePath) formData.append("image_path", imagePath);
 
+        const token = req.cookies.token;
+        const headers: any = {};
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
         const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads/${id}`, {
           method: "PUT",
-          headers: {
-            Authorization: req.headers.authorization || "",
-          },
+          headers,
           body: formData,
         });
 
@@ -318,12 +340,18 @@ export default async function handler(
           });
         }
 
+        const token = req.cookies.token;
+        const headers: any = {
+          "Content-Type": "application/json",
+        };
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
         const response = await fetch(`${backendUrl}/api/admin/administratorpage/ads/${id}`, {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: req.headers.authorization || "",
-          },
+          headers,
         });
 
         if (!response.ok) {
