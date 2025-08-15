@@ -101,7 +101,7 @@ export class AdsApiService {
     // Admin routes are mounted at /api/v2/admin/administratorpage/ads
     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     if (apiUrl) {
-      this.baseUrl = `${apiUrl}/admin/administratorpage/ads`;
+      this.baseUrl = `${apiUrl}/api/admin/administratorpage/ads`;
     } else {
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
       this.baseUrl = `${siteUrl}/api/admin/administratorpage/ads`;
