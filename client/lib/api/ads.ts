@@ -97,12 +97,19 @@ export class AdsApiService {
   private baseUrl: string;
 
   constructor() {
-    // Use production API URLs from environment variables
+    // Use production backend URL from environment variables
+    // NEXT_PUBLIC_BACKEND_URL should be 'https://api.markaba.news'
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL;
-    if (!backendUrl) {
-      throw new Error('Backend URL not configured');
+    
+    if (backendUrl) {
+      // Remove any existing /api/v2 suffix and add the correct admin path
+      const cleanUrl = backendUrl.replace(/\/api\/v2$/, '');
+      this.baseUrl = `${cleanUrl}/api/admin/administratorpage/ads`;
+    } else {
+      // Fallback to site URL
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
+      this.baseUrl = `${siteUrl}/api/admin/administratorpage/ads`;
     }
-    this.baseUrl = `${backendUrl}/api/admin/administratorpage/ads`;
   }
 
   /**
@@ -320,8 +327,8 @@ export class AdsApiService {
   async getAdAnalytics(token: string, id?: number): Promise<APIResponse> {
     try {
       const url = id 
-        ? `${this.baseUrl}/${id}/analytics`
-        : `${this.baseUrl}/analytics`;
+        ? `${this.baseUrl}/${id}/stats`
+        : `${this.baseUrl}/stats/overview`;
       
       const response = await fetch(url, {
         method: 'GET',
