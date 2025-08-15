@@ -60,7 +60,7 @@ const AdsManagement: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+  const backendUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:5000';
 
   // Position options will be fetched from database
 
