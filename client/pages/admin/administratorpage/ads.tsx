@@ -78,7 +78,7 @@ const AdsManagement: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/ads', {
+      const response = await fetch('/api/admin/administratorpage/ads', {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -111,7 +111,7 @@ const AdsManagement: React.FC = () => {
     }
 
     try {
-      const response = await fetch('/api/admin/ads?positions=true', {
+      const response = await fetch('/api/admin/administratorpage/ads?positions=true', {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -160,7 +160,7 @@ const AdsManagement: React.FC = () => {
         formDataToSend.append('current_image', editingAd.image_path || '');
       }
 
-      const url = editingAd ? '/api/admin/ads' : '/api/admin/ads';
+      const url = editingAd ? '/api/admin/administratorpage/ads' : '/api/admin/administratorpage/ads';
       const method = editingAd ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -215,7 +215,7 @@ const AdsManagement: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`/api/admin/ads?id=${id}`, {
+      const response = await fetch(`/api/admin/administratorpage/ads/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
