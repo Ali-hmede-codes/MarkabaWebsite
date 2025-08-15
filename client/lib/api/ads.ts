@@ -98,7 +98,7 @@ export class AdsApiService {
 
   constructor() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || `${siteUrl}/api/admin/administratorpage`;
+    this.baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${siteUrl}/api/admin/administratorpage`;
   }
 
   /**
