@@ -104,11 +104,11 @@ export class AdsApiService {
     if (backendUrl) {
       // Remove any existing /api/v2 suffix and add the correct admin path
       const cleanUrl = backendUrl.replace(/\/api\/v2$/, '');
-      this.baseUrl = `${cleanUrl}/api/v2/admin/administratorpage/ads`;
+      this.baseUrl = `${cleanUrl}/api/admin/administratorpage/ads`;
     } else {
       // Fallback to site URL
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
-      this.baseUrl = `${siteUrl}/api/v2/admin/administratorpage/ads`;
+      this.baseUrl = `${siteUrl}/api/admin/administratorpage/ads`;
     }
   }
 
