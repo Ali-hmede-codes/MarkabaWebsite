@@ -98,7 +98,7 @@ export class AdsApiService {
 
   constructor() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
-    this.baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${siteUrl}/api/admin/administratorpage`;
+    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || `${siteUrl}/api/admin/administratorpage/ads`;
   }
 
   /**
@@ -113,7 +113,7 @@ export class AdsApiService {
       if (filters.position) queryParams.append('position', filters.position);
       if (filters.status) queryParams.append('status', filters.status);
 
-      const url = `${this.baseUrl}/admin/ads${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const url = `${this.baseUrl}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
       
       const response = await fetch(url, {
         method: 'GET',
@@ -137,7 +137,7 @@ export class AdsApiService {
    */
   async getAdPositions(token: string): Promise<AdPositionsResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/admin/ads/positions`, {
+      const response = await fetch(`${this.baseUrl}/positions`, {
         method: 'GET',
         headers: getJsonHeaders(token),
       });
@@ -159,7 +159,7 @@ export class AdsApiService {
    */
   async getAd(token: string, id: number): Promise<SingleAdResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/admin/ads/${id}`, {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
         method: 'GET',
         headers: getJsonHeaders(token),
       });
@@ -196,7 +196,7 @@ export class AdsApiService {
         formData.append('image', adData.image);
       }
 
-      const response = await fetch(`${this.baseUrl}/admin/ads`, {
+      const response = await fetch(`${this.baseUrl}`, {
         method: 'POST',
         headers: getFormDataHeaders(token),
         body: formData,
@@ -249,7 +249,7 @@ export class AdsApiService {
         formData.append('current_image', currentImagePath);
       }
 
-      const response = await fetch(`${this.baseUrl}/admin/ads/${id}`, {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
         method: 'PUT',
         headers: getFormDataHeaders(token),
         body: formData,
@@ -273,7 +273,7 @@ export class AdsApiService {
    */
   async deleteAd(token: string, id: number): Promise<APIResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/admin/ads/${id}`, {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
         method: 'DELETE',
         headers: getJsonHeaders(token),
       });
@@ -316,8 +316,8 @@ export class AdsApiService {
   async getAdAnalytics(token: string, id?: number): Promise<APIResponse> {
     try {
       const url = id 
-        ? `${this.baseUrl}/admin/ads/${id}/analytics`
-        : `${this.baseUrl}/admin/ads/analytics`;
+        ? `${this.baseUrl}/${id}/analytics`
+        : `${this.baseUrl}/analytics`;
       
       const response = await fetch(url, {
         method: 'GET',
