@@ -97,8 +97,15 @@ export class AdsApiService {
   private baseUrl: string;
 
   constructor() {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || `${siteUrl}/api/admin/administratorpage/ads`;
+    // Use NEXT_PUBLIC_API_URL from .env which is 'https://api.markaba.news/api/v2'
+    // Then append the admin ads path
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (apiUrl) {
+      this.baseUrl = `${apiUrl}/admin/ads`;
+    } else {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
+      this.baseUrl = `${siteUrl}/api/admin/administratorpage/ads`;
+    }
   }
 
   /**
