@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
-import AdminLayout from '../../components/admin/AdminLayout';
-import { FiPlus, FiEdit, FiEdit2, FiTrash2, FiEye, FiBarChart3, FiImage, FiCalendar, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
+import AdminLayout from '../../../components/Layout/AdminLayout';
+import { FiPlus, FiEdit, FiEdit2, FiTrash2, FiEye, FiBarChart, FiImage, FiCalendar, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
 
 interface Ad {
   id: number;
@@ -48,7 +48,7 @@ const AdsManagement: React.FC = () => {
     title: '',
     description: '',
     url: '',
-    position: '',
+    position: 'main_top',
     width: '',
     height: '',
     start_date: '',
@@ -60,7 +60,7 @@ const AdsManagement: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
-  const positions = [
+  const positionOptions = [
     { value: 'main_top', label: 'Main Top' },
     { value: 'main_middle', label: 'Main Middle' },
     { value: 'main_bottom', label: 'Main Bottom' },
@@ -75,15 +75,19 @@ const AdsManagement: React.FC = () => {
 
   const fetchAds = async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/admin/ads');
       const result = await response.json();
       
       if (result.success) {
-        setAds(result.data);
+        setAds(result.data || []);
+        setError(null);
       } else {
+        setError(result.message || 'Failed to fetch ads');
         console.error('Failed to fetch ads:', result.message);
       }
     } catch (error) {
+      setError('Network error occurred while fetching ads');
       console.error('Error fetching ads:', error);
     } finally {
       setLoading(false);
@@ -97,12 +101,23 @@ const AdsManagement: React.FC = () => {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
+      if (formData.description) {
+        formDataToSend.append('description', formData.description);
+      }
       formDataToSend.append('url', formData.url);
       formDataToSend.append('position', formData.position);
-      formDataToSend.append('width', formData.width);
-      formDataToSend.append('height', formData.height);
-      formDataToSend.append('start_date', formData.start_date);
-      formDataToSend.append('end_date', formData.end_date);
+      if (formData.width) {
+        formDataToSend.append('width', formData.width);
+      }
+      if (formData.height) {
+        formDataToSend.append('height', formData.height);
+      }
+      if (formData.start_date) {
+        formDataToSend.append('start_date', formData.start_date);
+      }
+      if (formData.end_date) {
+        formDataToSend.append('end_date', formData.end_date);
+      }
       formDataToSend.append('is_active', formData.is_active.toString());
       
       if (formData.image) {
@@ -142,17 +157,18 @@ const AdsManagement: React.FC = () => {
   const handleEdit = (ad: Ad) => {
     setEditingAd(ad);
     setFormData({
-      title: ad.title,
+      title: ad.title || '',
       description: ad.description || '',
-      url: ad.url,
-      position: ad.position,
+      url: ad.url || '',
+      position: ad.position || 'main_top',
       width: ad.width?.toString() || '',
       height: ad.height?.toString() || '',
       start_date: ad.start_date ? ad.start_date.split('T')[0] : '',
       end_date: ad.end_date ? ad.end_date.split('T')[0] : '',
-      is_active: ad.is_active,
+      is_active: ad.is_active ?? true,
       image: null
     });
+    setImageFile(null);
     setShowForm(true);
   };
 
@@ -192,6 +208,7 @@ const AdsManagement: React.FC = () => {
       is_active: true,
       image: null
     });
+    setImageFile(null);
     setEditingAd(null);
   };
 
@@ -256,6 +273,22 @@ const AdsManagement: React.FC = () => {
                     required
                   />
                 </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                  placeholder="Optional description for the ad"
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -267,7 +300,7 @@ const AdsManagement: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   >
-                    {positions.map((pos) => (
+                    {positionOptions.map((pos) => (
                       <option key={pos.value} value={pos.value}>
                         {pos.label}
                       </option>
@@ -418,8 +451,8 @@ const AdsManagement: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {positions.find(p => p.value === ad.position)?.label || ad.position}
-                      </span>
+                          {positionOptions.find(p => p.value === ad.position)?.label || ad.position}
+                        </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${

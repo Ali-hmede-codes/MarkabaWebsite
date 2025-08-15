@@ -554,16 +554,50 @@ router.put('/:id',
       }
       
       // Build update query
-      const updateFields = Object.keys(updateData).map(key => {
-        if (key === 'position' && updateData.width && updateData.height) {
-          return `${key} = ?, width = ?, height = ?`;
-        }
-        return `${key} = ?`;
-      }).join(', ');
+      const updateFields = [];
+      const finalParams = [];
       
-      if (updateFields) {
-        updateParams.push(id);
-        await db.query(`UPDATE ads SET ${updateFields} WHERE id = ?`, updateParams);
+      if (title !== undefined) {
+        updateFields.push('title = ?');
+        finalParams.push(title);
+      }
+      if (description !== undefined) {
+        updateFields.push('description = ?');
+        finalParams.push(description);
+      }
+      if (url !== undefined) {
+        updateFields.push('url = ?');
+        finalParams.push(url);
+      }
+      if (position !== undefined) {
+        updateFields.push('position = ?', 'width = ?', 'height = ?');
+        finalParams.push(position);
+        
+        // Get dimensions for the new position
+        const [positionInfo] = await db.query(
+          'SELECT width, height FROM ads_positions WHERE position_name = ?',
+          [position]
+        );
+        if (positionInfo.length > 0) {
+          finalParams.push(positionInfo[0].width, positionInfo[0].height);
+        }
+      }
+      if (end_date !== undefined) {
+        updateFields.push('end_date = ?');
+        finalParams.push(end_date);
+      }
+      if (is_active !== undefined) {
+        updateFields.push('is_active = ?');
+        finalParams.push(is_active);
+      }
+      if (req.file) {
+        updateFields.push('image_path = ?');
+        finalParams.push(`/uploads/ads/${req.file.filename}`);
+      }
+      
+      if (updateFields.length > 0) {
+        finalParams.push(id);
+        await db.query(`UPDATE ads SET ${updateFields.join(', ')} WHERE id = ?`, finalParams);
         
         // Delete old image if new one was uploaded
         if (oldImagePath && req.file) {
@@ -638,8 +672,8 @@ router.delete('/:id',
       const { id } = req.params;
       
       // Get ad info before deletion
-      const [ad] = await db.query('SELECT * FROM ads WHERE id = ?', [id]);
-      if (ad.length === 0) {
+      const [adResult] = await db.query('SELECT * FROM ads WHERE id = ?', [id]);
+      if (adResult.length === 0) {
         return res.status(404).json({
           success: false,
           message: 'الإعلان غير موجود'
@@ -650,9 +684,9 @@ router.delete('/:id',
       await db.query('DELETE FROM ads WHERE id = ?', [id]);
       
       // Delete image file
-      if (ad[0].image_path) {
+      if (adResult[0].image_path) {
         try {
-          const imagePath = path.join(__dirname, '../../public', ad[0].image_path);
+          const imagePath = path.join(__dirname, '../../public', adResult[0].image_path);
           await fs.unlink(imagePath);
         } catch (unlinkError) {
           console.error('Error deleting image file:', unlinkError);
