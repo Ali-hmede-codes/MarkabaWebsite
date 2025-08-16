@@ -114,7 +114,7 @@ const AdminAds: React.FC = () => {
   const fetchAds = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/ads', {
+      const response = await fetch('/api/admin/administratorpage/ads', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -135,7 +135,7 @@ const AdminAds: React.FC = () => {
 
   const fetchStats = useCallback(async () => {
     try {
-      const response = await fetch('/api/admin/ads/stats', {
+      const response = await fetch('/api/admin/administratorpage/ads/stats', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -230,7 +230,7 @@ const AdminAds: React.FC = () => {
     }
 
     try {
-      const url = editingAd ? `/api/admin/ads/${editingAd.id}` : '/api/admin/ads';
+      const url = editingAd ? `/api/admin/administratorpage/ads/${editingAd.id}` : '/api/admin/administratorpage/ads';
       const method = editingAd ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
@@ -279,7 +279,7 @@ const AdminAds: React.FC = () => {
 
   const handleDelete = async (adId: number) => {
     try {
-      const response = await fetch(`/api/admin/ads/${adId}`, {
+      const response = await fetch(`/api/admin/administratorpage/ads/${adId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -367,7 +367,7 @@ const AdminAds: React.FC = () => {
     if (!bulkAction || selectedAds.size === 0) return;
 
     try {
-      const response = await fetch('/api/admin/ads/bulk', {
+      const response = await fetch('/api/admin/administratorpage/ads/bulk', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

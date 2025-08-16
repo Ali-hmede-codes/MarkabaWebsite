@@ -8,8 +8,8 @@ export default async function handler(
   
   try {
     // Build the backend URL for admin ads
-    const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
-    let backendUrl = `${BACKEND_URL}/admin/administratorpage/ads`;
+    const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    let backendUrl = `${BACKEND_URL}/api/admin/administratorpage/ads`;
     
     // Add query parameters
     const searchParams = new URLSearchParams();
