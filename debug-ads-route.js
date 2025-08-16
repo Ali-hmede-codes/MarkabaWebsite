@@ -107,11 +107,11 @@ app.get('/test-ads', authenticateToken, requireRole(['admin', 'editor']), async 
       LEFT JOIN users u ON a.created_by = u.id
       ${whereClause}
       ORDER BY a.${finalSortBy} ${finalSortOrder}
-      LIMIT ? OFFSET ?
+      LIMIT ${parseInt(limit, 10)} OFFSET ${offset}
     `;
     
     console.log('Data query:', dataQuery);
-    const finalParams = [...queryParams, parseInt(limit, 10), offset];
+    const finalParams = [...queryParams];
     console.log('Final params:', finalParams);
     
     const [ads] = await db.execute(dataQuery, finalParams);

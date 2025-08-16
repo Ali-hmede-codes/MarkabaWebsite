@@ -122,12 +122,12 @@ router.get('/', async (req, res) => {
       LEFT JOIN users u ON a.created_by = u.id
       WHERE ${whereClause}
       ORDER BY a.created_at DESC
-      LIMIT ? OFFSET ?
+      LIMIT ${limitNum} OFFSET ${offset}
     `;
     console.log('🔍 Ads query:', adsQuery);
     console.log('🔍 Final query params:', [...queryParams, limitNum, offset]);
 
-    const [ads] = await db.execute(adsQuery, [...queryParams, limitNum, offset]);
+    const [ads] = await db.execute(adsQuery, queryParams);
     console.log('🔍 Ads result:', ads);
     
     res.json({
