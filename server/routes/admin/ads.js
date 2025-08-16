@@ -50,11 +50,16 @@ const upload = multer({
 // Get all ads with pagination and filtering
 router.get('/', async (req, res) => {
   try {
+    console.log('🔍 Ads route started, query params:', req.query);
     const { page = 1, limit = 10, search = '', position_id = '', status = '' } = req.query;
-    const offset = (page - 1) * limit;
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 10;
+    const offset = (pageNum - 1) * limitNum;
+    console.log('🔍 Parsed params:', { pageNum, limitNum, offset });
     
     let whereClause = '1=1';
     const queryParams = [];
+    console.log('🔍 Initial whereClause and params set');
     
     // Add search filter
     if (search) {
@@ -114,17 +119,17 @@ router.get('/', async (req, res) => {
       LIMIT ? OFFSET ?
     `;
     
-    const [ads] = await db.execute(adsQuery, [...queryParams, parseInt(limit, 10), offset]);
+    const [ads] = await db.execute(adsQuery, [...queryParams, limitNum, offset]);
     
     res.json({
       success: true,
       data: {
         ads,
         pagination: {
-          page: parseInt(page, 10),
-          limit: parseInt(limit, 10),
+          page: pageNum,
+          limit: limitNum,
           total,
-          pages: Math.ceil(total / limit)
+          pages: Math.ceil(total / limitNum)
         }
       }
     });

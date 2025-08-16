@@ -1,130 +1,134 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+require('dotenv').config({ path: './server/.env' });
 
 async function checkAdsTable() {
-  let connection;
-  
-  try {
-    console.log('🔍 Checking ads table structure...');
+    console.log('🔍 Checking ads table structure on production...');
     
-    // Create database connection
-    connection = await mysql.createConnection({
-      host: process.env.DB_HOST || '127.0.0.1',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'markabadatabase',
-      ssl: process.env.DB_SSL === 'true' ? {
-        rejectUnauthorized: false
-      } : false
-    });
-    
-    console.log('✅ Connected to database');
-    
-    // Check if ads table exists
-    const [tables] = await connection.execute(
-      "SHOW TABLES LIKE 'ads'"
-    );
-    
-    if (tables.length === 0) {
-      console.log('❌ ads table does not exist');
-      return;
-    }
-    
-    console.log('✅ ads table exists');
-    
-    // Check ads table structure
-    const [adsColumns] = await connection.execute('DESCRIBE ads');
-    console.log('\n📋 ads table structure:');
-    adsColumns.forEach(col => {
-      console.log(`   - ${col.Field}: ${col.Type} ${col.Null === 'NO' ? 'NOT NULL' : 'NULL'} ${col.Key ? `(${col.Key})` : ''}`);
-    });
-    
-    // Check ad_positions table
-    const [positionTables] = await connection.execute(
-      "SHOW TABLES LIKE 'ad_positions'"
-    );
-    
-    if (positionTables.length === 0) {
-      console.log('\n❌ ad_positions table does not exist');
-      return;
-    }
-    
-    console.log('\n✅ ad_positions table exists');
-    
-    // Check ad_positions table structure
-    const [positionsColumns] = await connection.execute('DESCRIBE ad_positions');
-    console.log('\n📋 ad_positions table structure:');
-    positionsColumns.forEach(col => {
-      console.log(`   - ${col.Field}: ${col.Type} ${col.Null === 'NO' ? 'NOT NULL' : 'NULL'} ${col.Key ? `(${col.Key})` : ''}`);
-    });
-    
-    // Check users table for foreign key
-    const [userTables] = await connection.execute(
-      "SHOW TABLES LIKE 'users'"
-    );
-    
-    if (userTables.length === 0) {
-      console.log('\n❌ users table does not exist');
-      return;
-    }
-    
-    console.log('\n✅ users table exists');
-    
-    // Test a simple query on ads table
-    console.log('\n🧪 Testing ads query...');
     try {
-      const [testResult] = await connection.execute(
-        'SELECT COUNT(*) as count FROM ads'
-      );
-      console.log(`✅ ads table query successful - ${testResult[0].count} records found`);
-    } catch (queryError) {
-      console.log('❌ ads table query failed:', queryError.message);
-    }
-    
-    // Test the exact query from the route
-    console.log('\n🧪 Testing complex ads query...');
-    try {
-      const [complexResult] = await connection.execute(`
-        SELECT 
-          a.id, a.title, a.image_path, a.link_url, a.start_date, a.expire_date,
-          a.is_active, a.clicks, a.created_at, a.updated_at,
-          ap.name as position_name, ap.name_ar as position_name_ar,
-          ap.width, ap.height,
-          u.username as created_by_username, u.display_name as created_by_name,
-          CASE 
-            WHEN a.expire_date <= NOW() THEN 'expired'
-            WHEN a.is_active = 1 THEN 'active'
-            ELSE 'inactive'
-          END as status
-        FROM ads a
-        LEFT JOIN ad_positions ap ON a.position_id = ap.id
-        LEFT JOIN users u ON a.created_by = u.id
-        ORDER BY a.created_at DESC
-        LIMIT 10 OFFSET 0
-      `);
-      console.log(`✅ Complex ads query successful - ${complexResult.length} records found`);
-      
-      if (complexResult.length > 0) {
-        console.log('\n📋 Sample ad record:');
-        const sample = complexResult[0];
-        Object.keys(sample).forEach(key => {
-          console.log(`   - ${key}: ${sample[key]}`);
+        // Create connection to production database
+        const connection = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT || 3306
         });
-      }
-    } catch (complexError) {
-      console.log('❌ Complex ads query failed:', complexError.message);
-      console.log('📋 Error details:', complexError);
+        
+        console.log('✅ Connected to production database');
+        
+        // Check if ads table exists
+        console.log('\n1️⃣ Checking if ads table exists...');
+        const [tables] = await connection.execute(
+            "SHOW TABLES LIKE 'ads'"
+        );
+        
+        if (tables.length === 0) {
+            console.log('❌ ads table does not exist!');
+            await connection.end();
+            return;
+        }
+        
+        console.log('✅ ads table exists');
+        
+        // Check ads table structure
+        console.log('\n2️⃣ Checking ads table structure...');
+        const [columns] = await connection.execute('DESCRIBE ads');
+        console.log('Ads table columns:');
+        columns.forEach(col => {
+            console.log(`  - ${col.Field}: ${col.Type} ${col.Null === 'NO' ? 'NOT NULL' : 'NULL'} ${col.Key ? `(${col.Key})` : ''}`);
+        });
+        
+        // Check if ad_positions table exists
+        console.log('\n3️⃣ Checking if ad_positions table exists...');
+        const [positionTables] = await connection.execute(
+            "SHOW TABLES LIKE 'ad_positions'"
+        );
+        
+        if (positionTables.length === 0) {
+            console.log('❌ ad_positions table does not exist!');
+        } else {
+            console.log('✅ ad_positions table exists');
+            
+            // Check ad_positions table structure
+            const [posColumns] = await connection.execute('DESCRIBE ad_positions');
+            console.log('Ad_positions table columns:');
+            posColumns.forEach(col => {
+                console.log(`  - ${col.Field}: ${col.Type} ${col.Null === 'NO' ? 'NOT NULL' : 'NULL'} ${col.Key ? `(${col.Key})` : ''}`);
+            });
+        }
+        
+        // Check if users table exists (for the JOIN)
+        console.log('\n4️⃣ Checking if users table exists...');
+        const [userTables] = await connection.execute(
+            "SHOW TABLES LIKE 'users'"
+        );
+        
+        if (userTables.length === 0) {
+            console.log('❌ users table does not exist!');
+        } else {
+            console.log('✅ users table exists');
+        }
+        
+        // Try to run a simple query on ads table
+        console.log('\n5️⃣ Testing simple ads query...');
+        try {
+            const [adsCount] = await connection.execute('SELECT COUNT(*) as count FROM ads');
+            console.log(`✅ Ads table query successful. Total ads: ${adsCount[0].count}`);
+        } catch (queryError) {
+            console.log('❌ Error querying ads table:', queryError.message);
+        }
+        
+        // Try the exact query from the route
+        console.log('\n6️⃣ Testing the exact route query...');
+        try {
+            const testQuery = `
+                SELECT 
+                    a.id,
+                    a.title,
+                    a.image_path,
+                    a.link_url,
+                    a.position_id,
+                    a.start_date,
+                    a.expire_date,
+                    a.is_active,
+                    a.clicks,
+                    a.created_by,
+                    a.created_at,
+                    a.updated_at,
+                    ap.name as position_name,
+                    ap.name_ar as position_name_ar,
+                    u.username as created_by_username
+                FROM ads a
+                LEFT JOIN ad_positions ap ON a.position_id = ap.id
+                LEFT JOIN users u ON a.created_by = u.id
+                WHERE 1=1
+                ORDER BY a.created_at DESC
+                LIMIT 10 OFFSET 0
+            `;
+            
+            const [testResult] = await connection.execute(testQuery);
+            console.log(`✅ Route query successful. Returned ${testResult.length} ads`);
+            
+            if (testResult.length > 0) {
+                console.log('Sample ad:', {
+                    id: testResult[0].id,
+                    title: testResult[0].title,
+                    position_name: testResult[0].position_name
+                });
+            }
+            
+        } catch (routeError) {
+            console.log('❌ Error with route query:', routeError.message);
+            console.log('SQL State:', routeError.sqlState);
+            console.log('Error Code:', routeError.code);
+        }
+        
+        await connection.end();
+        console.log('\n🔍 Database check completed');
+        
+    } catch (error) {
+        console.log('❌ Database connection error:', error.message);
     }
-    
-  } catch (error) {
-    console.error('❌ Database check failed:', error.message);
-    console.error('📋 Full error:', error);
-  } finally {
-    if (connection) {
-      await connection.end();
-      console.log('\n🔌 Database connection closed');
-    }
-  }
 }
 
 checkAdsTable();
