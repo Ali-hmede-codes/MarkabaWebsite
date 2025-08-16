@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS ads (
   start_date DATETIME DEFAULT CURRENT_TIMESTAMP,
   end_date DATETIME NOT NULL,
   clicks INT DEFAULT 0,
-  impressions INT DEFAULT 0,
   created_by INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -52,17 +51,5 @@ CREATE TABLE IF NOT EXISTS ads_clicks (
   clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_ad_id (ad_id),
   INDEX idx_clicked_at (clicked_at),
-  FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE
-);
-
--- Create ads_impressions table for tracking
-CREATE TABLE IF NOT EXISTS ads_impressions (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  ad_id INT NOT NULL,
-  ip_address VARCHAR(45),
-  user_agent TEXT,
-  viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_ad_id (ad_id),
-  INDEX idx_viewed_at (viewed_at),
   FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE
 );

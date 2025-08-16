@@ -1,79 +1,21 @@
 const express = require('express');
-
+const { validationResult, param } = require('express-validator');
 const path = require('path');
-const db = require('../config/database');
+const { query, queryOne, getConnection } = require('../db');
 
 const router = express.Router();
 
-// GET /api/ads - Get active ads by position
-router.get('/', async (req, res) => {
-  try {
-    const { position, active_only = 'true' } = req.query;
-    
-    let query = `
-      SELECT 
-        a.id, a.title, a.description, a.image_path, a.url, a.position,
-        a.width, a.height, a.is_active, a.start_date, a.end_date,
-        a.clicks, a.impressions, a.created_at, a.updated_at,
-        ap.display_name as position_display_name
-      FROM ads a
-      LEFT JOIN ads_positions ap ON a.position = ap.position_name
-      WHERE 1=1
-    `;
-    
-    const params = [];
-    
-    // Filter by position if specified
-    if (position) {
-      query += ' AND a.position = ?';
-      params.push(position);
-    }
-    
-    // Filter active ads only
-    if (active_only === 'true') {
-      query += ' AND a.is_active = true';
-      query += ' AND (a.start_date IS NULL OR a.start_date <= NOW())';
-      query += ' AND (a.end_date IS NULL OR a.end_date >= NOW())';
-    }
-    
-    query += ' ORDER BY a.created_at DESC';
-    
-    const [ads] = await db.query(query, params);
-    
-    // Process image paths to be absolute URLs
-    const processedAds = ads.map(ad => {
-      let imagePath = null;
-      if (ad.image_path) {
-        imagePath = ad.image_path.startsWith('http') ? ad.image_path : `/uploads/ads/${path.basename(ad.image_path)}`;
-      }
-      return {
-        ...ad,
-        image_path: imagePath,
-        is_active: Boolean(ad.is_active)
-      };
-    });
-    
-    res.json({
-      success: true,
-      data: processedAds,
-      count: processedAds.length
-    });
-    
-  } catch (error) {
-    console.error('Error fetching ads:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch ads',
-      error: error.message
-    });
-  }
-});
-
-// GET /api/ads/positions - Get all ad positions
+// GET /api/ads/positions - Get all available ad positions
 router.get('/positions', async (req, res) => {
   try {
-    const [positions] = await db.query(`
-      SELECT position_name, display_name, width, height, max_ads, description
+    const positions = await query(`
+      SELECT 
+        position_name,
+        display_name,
+        width,
+        height,
+        max_ads,
+        description
       FROM ads_positions
       ORDER BY position_name
     `);
@@ -87,188 +29,337 @@ router.get('/positions', async (req, res) => {
     console.error('Error fetching ad positions:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch ad positions',
-      error: error.message
+      error: 'Failed to fetch ad positions',
+      message: error.message
     });
   }
 });
 
-// POST /api/ads/:id/impression - Track ad impression
-router.post('/:id/impression', async (req, res) => {
+// GET /api/ads/position/:position - Get ads for a specific position
+router.get('/position/:position', [
+  param('position').isIn(['main_top', 'main_middle', 'main_bottom', 'post_square', 'post_banner'])
+    .withMessage('Invalid ad position')
+], async (req, res) => {
   try {
-    const adId = parseInt(req.params.id, 10);
-    const { ip_address, user_agent } = req.body;
-    
-    if (!adId || Number.isNaN(adId)) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Valid ad ID is required'
+        error: 'Validation error',
+        errors: errors.array()
       });
     }
     
-    // Check if ad exists and is active
-    const [ad] = await db.query(
-      'SELECT id FROM ads WHERE id = ? AND is_active = true AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW())',
-      [adId]
-    );
+    const { position } = req.params;
+    const { limit = 1 } = req.query;
     
-    if (ad.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'Ad not found or not active'
-      });
-    }
+    // Get active ads for the position
+    const ads = await query(`
+      SELECT 
+        id,
+        title,
+        description,
+        image_path,
+        url,
+        position,
+        width,
+        height,
+        clicks,
+        start_date,
+        end_date
+      FROM ads
+      WHERE position = ? 
+        AND is_active = 1 
+        AND start_date <= NOW() 
+        AND end_date > NOW()
+      ORDER BY RAND()
+      LIMIT ?
+    `, [position, parseInt(limit, 10)]);
     
-    // Get client IP and user agent
-    const clientIP = ip_address || req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
-    const clientUserAgent = user_agent || req.headers['user-agent'] || 'unknown';
-    
-    // Check for duplicate impression (same IP within last hour)
-    const [recentImpression] = await db.query(
-      'SELECT id FROM ads_impressions WHERE ad_id = ? AND ip_address = ? AND viewed_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)',
-      [adId, clientIP]
-    );
-    
-    if (recentImpression.length === 0) {
-      // Record impression
-      await db.query(
-        'INSERT INTO ads_impressions (ad_id, ip_address, user_agent) VALUES (?, ?, ?)',
-        [adId, clientIP, clientUserAgent]
-      );
-      
-      // Update impression count
-      await db.query(
-        'UPDATE ads SET impressions = impressions + 1 WHERE id = ?',
-        [adId]
-      );
-    }
+    // Process ads to include full image URLs
+    const processedAds = ads.map(ad => ({
+      ...ad,
+      image_url: ad.image_path ? `/uploads/ads/${path.basename(ad.image_path)}` : null,
+      // Remove sensitive data
+      image_path: undefined
+    }));
     
     res.json({
       success: true,
-      message: 'Impression tracked successfully'
+      data: processedAds,
+      position,
+      count: processedAds.length
     });
     
   } catch (error) {
-    console.error('Error tracking impression:', error);
+    console.error('Error fetching ads for position:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to track impression',
-      error: error.message
+      error: 'Failed to fetch ads',
+      message: error.message
+    });
+  }
+});
+
+// GET /api/ads/active - Get all currently active ads
+router.get('/active', async (req, res) => {
+  try {
+    const { position, limit = 10 } = req.query;
+    
+    let queryStr = `
+      SELECT 
+        id,
+        title,
+        description,
+        image_path,
+        url,
+        position,
+        width,
+        height,
+        clicks,
+        start_date,
+        end_date
+      FROM ads
+      WHERE is_active = 1 
+        AND start_date <= NOW() 
+        AND end_date > NOW()
+    `;
+    
+    const params = [];
+    
+    if (position) {
+      queryStr += ' AND position = ?';
+      params.push(position);
+    }
+    
+    queryStr += ' ORDER BY position, RAND() LIMIT ?';
+    params.push(parseInt(limit, 10));
+    
+    const ads = await query(queryStr, params);
+    
+    // Process ads to include full image URLs
+    const processedAds = ads.map(ad => ({
+      ...ad,
+      image_url: ad.image_path ? `/uploads/ads/${path.basename(ad.image_path)}` : null,
+      // Remove sensitive data
+      image_path: undefined
+    }));
+    
+    // Group by position
+    const groupedAds = {};
+    processedAds.forEach(ad => {
+      if (!groupedAds[ad.position]) {
+        groupedAds[ad.position] = [];
+      }
+      groupedAds[ad.position].push(ad);
+    });
+    
+    res.json({
+      success: true,
+      data: processedAds,
+      grouped: groupedAds,
+      count: processedAds.length
+    });
+    
+  } catch (error) {
+    console.error('Error fetching active ads:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch active ads',
+      message: error.message
     });
   }
 });
 
 // POST /api/ads/:id/click - Track ad click
-router.post('/:id/click', async (req, res) => {
+router.post('/:id/click', [
+  param('id').isInt({ min: 1 }).withMessage('Invalid ad ID')
+], async (req, res) => {
   try {
-    const adId = parseInt(req.params.id, 10);
-    const { ip_address, user_agent, referrer } = req.body;
-    
-    if (!adId || Number.isNaN(adId)) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Valid ad ID is required'
+        error: 'Validation error',
+        errors: errors.array()
       });
     }
     
-    // Get ad details
-    const [ad] = await db.query(
-      'SELECT id, url FROM ads WHERE id = ? AND is_active = true AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW())',
-      [adId]
-    );
+    const adId = parseInt(req.params.id, 10);
+    const { referrer } = req.body;
     
-    if (ad.length === 0) {
+    // Get client IP and user agent
+    const ipAddress = req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 
+                     (req.connection.socket ? req.connection.socket.remoteAddress : null);
+    const userAgent = req.get('User-Agent') || '';
+    
+    // Verify ad exists and is active
+    const ad = await queryOne(`
+      SELECT id, url, clicks
+      FROM ads 
+      WHERE id = ? 
+        AND is_active = 1 
+        AND start_date <= NOW() 
+        AND end_date > NOW()
+    `, [adId]);
+    
+    if (!ad) {
       return res.status(404).json({
         success: false,
-        message: 'Ad not found or not active'
+        error: 'Ad not found or inactive'
       });
     }
     
-    // Get client information
-    const clientIP = ip_address || req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
-    const clientUserAgent = user_agent || req.headers['user-agent'] || 'unknown';
-    const clientReferrer = referrer || req.headers.referer || 'unknown';
+    // Start transaction
+    const connection = await getConnection();
+    await connection.beginTransaction();
     
-    // Record click
-    await db.query(
-      'INSERT INTO ads_clicks (ad_id, ip_address, user_agent, referrer) VALUES (?, ?, ?, ?)',
-      [adId, clientIP, clientUserAgent, clientReferrer]
-    );
-    
-    // Update click count
-    await db.query(
-      'UPDATE ads SET clicks = clicks + 1 WHERE id = ?',
-      [adId]
-    );
-    
-    res.json({
-      success: true,
-      message: 'Click tracked successfully',
-      redirect_url: ad[0].url
-    });
+    try {
+      // Insert click record
+      await connection.execute(`
+        INSERT INTO ads_clicks (ad_id, ip_address, user_agent, referrer)
+        VALUES (?, ?, ?, ?)
+      `, [adId, ipAddress, userAgent, referrer || null]);
+      
+      // Update ad clicks count
+      await connection.execute(`
+        UPDATE ads 
+        SET clicks = clicks + 1 
+        WHERE id = ?
+      `, [adId]);
+      
+      await connection.commit();
+      
+      res.json({
+        success: true,
+        message: 'Click tracked successfully',
+        data: {
+          ad_id: adId,
+          redirect_url: ad.url,
+          total_clicks: ad.clicks + 1
+        }
+      });
+      
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
     
   } catch (error) {
-    console.error('Error tracking click:', error);
+    console.error('Error tracking ad click:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to track click',
-      error: error.message
+      error: 'Failed to track click',
+      message: error.message
     });
   }
 });
 
-// GET /api/ads/:id - Get specific ad
-router.get('/:id', async (req, res) => {
+// GET /api/ads/:id/stats - Get ad statistics (public, limited info)
+router.get('/:id/stats', [
+  param('id').isInt({ min: 1 }).withMessage('Invalid ad ID')
+], async (req, res) => {
   try {
-    const adId = parseInt(req.params.id, 10);
-    
-    if (!adId || Number.isNaN(adId)) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Valid ad ID is required'
+        error: 'Validation error',
+        errors: errors.array()
       });
     }
     
-    const [ad] = await db.query(`
-      SELECT 
-        a.id, a.title, a.description, a.image_path, a.url, a.position,
-        a.width, a.height, a.is_active, a.start_date, a.end_date,
-        a.clicks, a.impressions, a.created_at, a.updated_at,
-        ap.display_name as position_display_name
-      FROM ads a
-      LEFT JOIN ads_positions ap ON a.position = ap.position_name
-      WHERE a.id = ?
+    const adId = parseInt(req.params.id, 10);
+    
+    // Verify ad exists and is active
+    const ad = await queryOne(`
+      SELECT id, title, clicks, start_date, end_date
+      FROM ads 
+      WHERE id = ? 
+        AND is_active = 1 
+        AND start_date <= NOW() 
+        AND end_date > NOW()
     `, [adId]);
     
-    if (ad.length === 0) {
+    if (!ad) {
       return res.status(404).json({
         success: false,
-        message: 'Ad not found'
+        error: 'Ad not found or inactive'
       });
     }
     
-    let imagePath = null;
-    if (ad[0].image_path) {
-      imagePath = ad[0].image_path.startsWith('http') ? ad[0].image_path : `/uploads/ads/${path.basename(ad[0].image_path)}`;
-    }
-    
-    const processedAd = {
-      ...ad[0],
-      image_path: imagePath,
-      is_active: Boolean(ad[0].is_active)
-    };
+    // Get basic click statistics
+    const clickStats = await queryOne(`
+      SELECT 
+        COUNT(*) as total_clicks,
+        COUNT(DISTINCT ip_address) as unique_clicks,
+        COUNT(DISTINCT DATE(clicked_at)) as active_days
+      FROM ads_clicks 
+      WHERE ad_id = ?
+    `, [adId]);
     
     res.json({
       success: true,
-      data: processedAd
+      data: {
+        ad_id: adId,
+        title: ad.title,
+        total_clicks: ad.clicks,
+        unique_clicks: clickStats.unique_clicks || 0,
+        active_days: clickStats.active_days || 0,
+        start_date: ad.start_date,
+        end_date: ad.end_date,
+        days_remaining: Math.ceil((new Date(ad.end_date) - new Date()) / (1000 * 60 * 60 * 24))
+      }
     });
     
   } catch (error) {
-    console.error('Error fetching ad:', error);
+    console.error('Error fetching ad stats:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch ad',
-      error: error.message
+      error: 'Failed to fetch ad statistics',
+      message: error.message
+    });
+  }
+});
+
+// GET /api/ads/health - Health check for ads system
+router.get('/health', async (req, res) => {
+  try {
+    // Check if ads tables exist and are accessible
+    const [adsCount] = await query('SELECT COUNT(*) as count FROM ads');
+    const [positionsCount] = await query('SELECT COUNT(*) as count FROM ads_positions');
+    const [clicksCount] = await query('SELECT COUNT(*) as count FROM ads_clicks');
+    
+    // Get active ads count
+    const [activeAdsCount] = await query(`
+      SELECT COUNT(*) as count 
+      FROM ads 
+      WHERE is_active = 1 
+        AND start_date <= NOW() 
+        AND end_date > NOW()
+    `);
+    
+    res.json({
+      success: true,
+      status: 'healthy',
+      data: {
+        total_ads: adsCount[0].count,
+        active_ads: activeAdsCount[0].count,
+        positions: positionsCount[0].count,
+        total_clicks: clicksCount[0].count,
+        timestamp: new Date().toISOString()
+      }
+    });
+    
+  } catch (error) {
+    console.error('Ads system health check failed:', error);
+    res.status(503).json({
+      success: false,
+      status: 'unhealthy',
+      error: 'Ads system health check failed',
+      message: error.message
     });
   }
 });
