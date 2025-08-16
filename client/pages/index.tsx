@@ -18,7 +18,7 @@ import LastNewsBanner from "../components/LastNews/LastNewsBanner";
 import LatestArticles from "../components/LatestArticles/LatestArticles";
 import BreakingNewsBanner from "../components/BreakingNews/BreakingNewsBanner";
 import { PrayerTimes, Weather } from "../components/PrayerWeather";
-import { HeaderBannerAd, SidebarAd, FooterBannerAd } from "../components/ads";
+import { MainTopAd, SidebarTopAd, BottomMainAd } from "../components/ads";
 
 
 interface HomePageProps {
@@ -163,7 +163,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
           <div className="container mx-auto responsive-padding">
             {/* Header Banner Ad */}
-            <HeaderBannerAd />
+            <MainTopAd />
             {/* Latest Articles and Last News Section */}
             <section className="mb-8 lg:mb-16">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6">
@@ -176,7 +176,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 <div className="lg:col-span-4 order-2 lg:order-3 space-y-6">
                   <LastNewsBanner className="h-full" />
                   {/* Sidebar Ad */}
-                  <SidebarAd />
+                  <SidebarTopAd />
                 </div>
               </div>
             </section>
@@ -451,7 +451,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             </section>
 
             {/* Footer Banner Ad */}
-            <FooterBannerAd />
+            <BottomMainAd />
 
           </div>
         </div>
