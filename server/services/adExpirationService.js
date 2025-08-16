@@ -95,8 +95,8 @@ class AdExpirationService {
         a.link_url,
         a.position_id,
         a.start_date,
-        a.expiration_date,
-        a.click_count,
+        a.expire_date,
+        a.clicks,
         a.is_active,
         a.created_by,
         a.created_at,
@@ -105,8 +105,8 @@ class AdExpirationService {
       FROM ads a
       LEFT JOIN ad_positions ap ON a.position_id = ap.id
       WHERE a.is_active = 1 
-        AND a.expiration_date <= NOW()
-      ORDER BY a.expiration_date ASC
+        AND a.expire_date <= NOW()
+      ORDER BY a.expire_date ASC
     `;
     
     const results = await db.query(query);
@@ -154,7 +154,7 @@ class AdExpirationService {
     const query = `
       INSERT INTO ads_inactive (
         original_ad_id, title, image_path, link_url, position_id,
-        start_date, expiration_date, click_count, created_by,
+        start_date, expire_date, clicks, created_by,
         created_at, updated_at, expired_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
     `;
@@ -166,8 +166,8 @@ class AdExpirationService {
       ad.link_url,
       ad.position_id,
       ad.start_date,
-      ad.expiration_date,
-      ad.click_count,
+      ad.expire_date,
+      ad.clicks,
       ad.created_by,
       ad.created_at,
       ad.updated_at
