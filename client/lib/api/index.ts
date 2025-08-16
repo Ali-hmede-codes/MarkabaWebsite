@@ -6,16 +6,20 @@ import { LoginCredentials, AuthResponse, User } from '../../components/API/types
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
 
 // Enhanced API request helper with automatic token refresh
-export const apiRequest = async (endpoint: string, options: RequestInit = {}, retryCount = 0): Promise<any> => {
+export const apiRequest = async (endpoint: string, options: RequestInit & { isFormData?: boolean } = {}, retryCount = 0): Promise<any> => {
   const url = `${API_BASE_URL}${endpoint}`;
+  
+  // Extract isFormData from options
+  const { isFormData, ...requestOptions } = options;
   
   const defaultOptions: RequestInit = {
     headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
+      // Only set Content-Type for non-FormData requests
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...requestOptions.headers,
     },
     credentials: 'include', // Include cookies for refresh token
-    ...options,
+    ...requestOptions,
   };
 
   // Add auth token if available (from cookies or localStorage)

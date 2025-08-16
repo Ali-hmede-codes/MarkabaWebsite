@@ -33,6 +33,10 @@ const weatherEnhancedRoutes = require('./routes/weather_enhanced');
 const prayerEnhancedRoutes = require('./routes/prayer_enhanced');
 const socialMediaEnhancedRoutes = require('./routes/socialMedia_enhanced');
 const footballEnhancedRoutes = require('./routes/football_enhanced');
+const adsEnhancedRoutes = require('./routes/ads_enhanced');
+const adsPublicRoutes = require('./routes/ads_public');
+// Import ad expiration service
+const adExpirationService = require('./services/adExpirationService');
 // Import admin routes
 const adminRoutes = require('./routes/admin');
 
@@ -359,7 +363,8 @@ app.get('/api', (req, res) => {
       weather: '/api/weather',
       prayer: '/api/prayer',
       social_media: '/api/social-media',
-
+      ads: '/api/ads',
+      ads_admin: '/api/admin/ads',
       admin: '/api/admin/administratorpage'
     },
     features: [
@@ -405,6 +410,8 @@ app.use('/api/v2/weather', weatherEnhancedRoutes);
 app.use('/api/v2/prayer', prayerEnhancedRoutes);
 app.use('/api/v2/social-media', socialMediaEnhancedRoutes);
 app.use('/api/v2/football', footballEnhancedRoutes);
+app.use('/api/v2/ads', adsPublicRoutes);
+app.use('/api/v2/admin/ads', adsEnhancedRoutes);
 
 app.use('/api/v2/admin/administratorpage', adminRoutes);
 
@@ -423,6 +430,8 @@ app.use('/api/weather', weatherEnhancedRoutes);
 app.use('/api/prayer', prayerEnhancedRoutes);
 app.use('/api/social-media', socialMediaEnhancedRoutes);
 app.use('/api/football', footballEnhancedRoutes);
+app.use('/api/ads', adsPublicRoutes);
+app.use('/api/admin/ads', adsEnhancedRoutes);
 
 app.use('/api/admin/administratorpage', adminRoutes);
 
@@ -760,6 +769,14 @@ const startServer = async () => {
       console.log(`🕌 Prayer Times API: http://localhost:${PORT}/api/prayer`);
       console.log('⏰ Weather updates scheduled daily at 6:00 AM (Beirut time)');
       console.log('🕐 Prayer times updates scheduled daily at 5:00 AM (Beirut time)');
+      
+      // Start ad expiration service
+      try {
+        adExpirationService.start();
+        console.log('🔄 Ad expiration service started successfully');
+      } catch (error) {
+        console.error('❌ Failed to start ad expiration service:', error);
+      }
     });
 
     // Store server reference for graceful shutdown

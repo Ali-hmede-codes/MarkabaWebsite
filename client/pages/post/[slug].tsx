@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 import YouTubePlayer from '../../components/Posts/YouTubePlayer';
 import { formatPostContent } from '../../utils/textFormatter';
+import { PostContentAd, PostSidebarAd } from '../../components/ads';
 
 
 interface SinglePostPageProps {
@@ -327,7 +328,8 @@ const PostContent: React.FC<{
               }} 
             />
 
-
+            {/* Post Content Ad */}
+            <PostContentAd />
 
             {/* Back to Home Button */}
             <div className="flex justify-center mt-8 mb-6">
@@ -419,6 +421,9 @@ const PostContent: React.FC<{
                 ))}
               </div>
             </div>
+
+            {/* Post Sidebar Ad */}
+            <PostSidebarAd />
 
             {/* Breaking News Section */}
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
