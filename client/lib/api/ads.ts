@@ -88,8 +88,8 @@ export class AdsApiService {
   constructor() {
     // Use the same pattern as breaking-news.ts
     this.baseUrl = `${API_SITE_URL}/admin/administratorpage/ads`;
-    // API URL for backend requests - correct path
-    this.apiUrl = `${API_BASE_URL}/api/admin/ads`;
+    // API URL for backend requests - correct path based on server routing
+    this.apiUrl = `${API_BASE_URL}/api/admin/administratorpage/ads`;
   }
 
   /**
