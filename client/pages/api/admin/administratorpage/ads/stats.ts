@@ -21,7 +21,7 @@ export default async function handler(
     const authorization = authHeader || `Bearer ${token}`;
 
     // Forward request to backend stats endpoint
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.markaba.news';
+    const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
     const response = await fetch(`${BACKEND_URL}/api/v2/admin/administratorpage/ads/stats/overview`, {
       method: 'GET',
       headers: {

@@ -8,7 +8,7 @@ export default async function handler(
   
   try {
     // Build the backend URL for admin ads
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.markaba.news';
+    const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
     let backendUrl = `${BACKEND_URL}/api/v2/admin/administratorpage/ads`;
     
     // Add query parameters
