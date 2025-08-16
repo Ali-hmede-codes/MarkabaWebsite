@@ -68,7 +68,7 @@ export type AdPositionsResponse = APIResponse<AdPosition[]>;
 export type SingleAdResponse = APIResponse<Ad>;
 
 // API Configuration - Following the same pattern as breaking-news.ts
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 const API_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 const getAuthHeaders = (token: string) => ({
   'Authorization': `Bearer ${token}`,
