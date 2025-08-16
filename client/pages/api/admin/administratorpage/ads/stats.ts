@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { API_BASE_URL } from '../../../../lib/api/config';
+import { API_BASE_URL } from '../../../../../lib/api/config';
 
 export default async function handler(
   req: NextApiRequest,

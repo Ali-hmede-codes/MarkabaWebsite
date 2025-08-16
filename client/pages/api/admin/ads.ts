@@ -9,7 +9,7 @@ export default async function handler(
   
   try {
     // Build the backend URL for admin ads
-    let backendUrl = `${API_BASE_URL}/admin/administratorpage/ads`;
+    let backendUrl = `${API_BASE_URL}/admin/ads`;
     
     // Add query parameters
     const searchParams = new URLSearchParams();
