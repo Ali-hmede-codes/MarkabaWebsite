@@ -45,7 +45,23 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
       }
       
       const data = await response.json();
-      setAd(data.ad);
+      if (data.success && data.data) {
+        // Transform backend response to match frontend interface
+        const backendAd = data.data;
+        const transformedAd: Ad = {
+          id: backendAd.id,
+          title: backendAd.title,
+          image_url: backendAd.image_path, // Backend uses image_path
+          link_url: backendAd.link_url,
+          position: backendAd.position_name,
+          is_active: true, // If we got it, it's active
+          expires_at: '', // Not needed for display
+          clicks: 0 // Not needed for display
+        };
+        setAd(transformedAd);
+      } else {
+        setAd(null);
+      }
     } catch (err) {
       console.error('Error fetching ad:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');

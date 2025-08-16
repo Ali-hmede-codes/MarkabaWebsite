@@ -151,7 +151,12 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor']), async (req,
       }
     });
   } catch (error) {
-    console.error('Error fetching ads:', error);
+    console.error('Error fetching ads:', {
+      message: error.message,
+      stack: error.stack,
+      query: req.query,
+      timestamp: new Date().toISOString()
+    });
     res.status(500).json({
       success: false,
       message: 'خطأ في الخادم الداخلي'
