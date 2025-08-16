@@ -1,42 +1,9 @@
 const express = require('express');
 
-const router = express.Router();
-
-
 const path = require('path');
-
-
 const db = require('../config/database');
 
-// Configure multer for file uploads (commented out as not currently used)
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     const uploadDir = path.join(__dirname, '../public/uploads/ads');
-//     if (!fs.existsSync(uploadDir)) {
-//       fs.mkdirSync(uploadDir, { recursive: true });
-//     }
-//     cb(null, uploadDir);
-//   },
-//   filename: function (req, file, cb) {
-//     const uniqueSuffix = `${Date.now()  }-${  Math.round(Math.random() * 1E9)}`;
-//     cb(null, `ad-${  uniqueSuffix  }${path.extname(file.originalname)}`);
-//   }
-// });
-
-// Multer configuration for file uploads
-// const upload = multer({
-//   storage: storage,
-//   limits: {
-//     fileSize: 5 * 1024 * 1024 // 5MB limit
-//   },
-//   fileFilter: function (req, file, cb) {
-//     if (file.mimetype.startsWith('image/')) {
-//       cb(null, true);
-//     } else {
-//       cb(new Error('Only image files are allowed!'), false);
-//     }
-//   }
-// });
+const router = express.Router();
 
 // GET /api/ads - Get active ads by position
 router.get('/', async (req, res) => {
@@ -71,7 +38,7 @@ router.get('/', async (req, res) => {
     
     query += ' ORDER BY a.created_at DESC';
     
-    const ads = await db.query(query, params);
+    const [ads] = await db.query(query, params);
     
     // Process image paths to be absolute URLs
     const processedAds = ads.map(ad => {
@@ -105,7 +72,7 @@ router.get('/', async (req, res) => {
 // GET /api/ads/positions - Get all ad positions
 router.get('/positions', async (req, res) => {
   try {
-    const positions = await db.query(`
+    const [positions] = await db.query(`
       SELECT position_name, display_name, width, height, max_ads, description
       FROM ads_positions
       ORDER BY position_name
@@ -132,15 +99,15 @@ router.post('/:id/impression', async (req, res) => {
     const adId = parseInt(req.params.id, 10);
     const { ip_address, user_agent } = req.body;
     
-    if (!adId) {
+    if (!adId || Number.isNaN(adId)) {
       return res.status(400).json({
         success: false,
-        message: 'Ad ID is required'
+        message: 'Valid ad ID is required'
       });
     }
     
     // Check if ad exists and is active
-    const ad = await db.query(
+    const [ad] = await db.query(
       'SELECT id FROM ads WHERE id = ? AND is_active = true AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW())',
       [adId]
     );
@@ -157,7 +124,7 @@ router.post('/:id/impression', async (req, res) => {
     const clientUserAgent = user_agent || req.headers['user-agent'] || 'unknown';
     
     // Check for duplicate impression (same IP within last hour)
-    const recentImpression = await db.query(
+    const [recentImpression] = await db.query(
       'SELECT id FROM ads_impressions WHERE ad_id = ? AND ip_address = ? AND viewed_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)',
       [adId, clientIP]
     );
@@ -197,15 +164,15 @@ router.post('/:id/click', async (req, res) => {
     const adId = parseInt(req.params.id, 10);
     const { ip_address, user_agent, referrer } = req.body;
     
-    if (!adId) {
+    if (!adId || Number.isNaN(adId)) {
       return res.status(400).json({
         success: false,
-        message: 'Ad ID is required'
+        message: 'Valid ad ID is required'
       });
     }
     
     // Get ad details
-    const ad = await db.query(
+    const [ad] = await db.query(
       'SELECT id, url FROM ads WHERE id = ? AND is_active = true AND (start_date IS NULL OR start_date <= NOW()) AND (end_date IS NULL OR end_date >= NOW())',
       [adId]
     );
@@ -255,14 +222,14 @@ router.get('/:id', async (req, res) => {
   try {
     const adId = parseInt(req.params.id, 10);
     
-    if (!adId) {
+    if (!adId || Number.isNaN(adId)) {
       return res.status(400).json({
         success: false,
         message: 'Valid ad ID is required'
       });
     }
     
-    const ad = await db.query(`
+    const [ad] = await db.query(`
       SELECT 
         a.id, a.title, a.description, a.image_path, a.url, a.position,
         a.width, a.height, a.is_active, a.start_date, a.end_date,

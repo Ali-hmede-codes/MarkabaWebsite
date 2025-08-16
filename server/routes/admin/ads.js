@@ -34,8 +34,7 @@ const upload = multer({
     if (mimetype && extname) {
       return cb(null, true);
     } 
-      cb(new Error('يُسمح فقط بملفات الصور (JPEG, JPG, PNG, GIF, WebP)'));
-    
+    cb(new Error('يُسمح فقط بملفات الصور (JPEG, JPG, PNG, GIF, WebP)'));
   }
 });
 
@@ -186,7 +185,7 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
       whereConditions.push('a.is_active = false');
     }
     
-    const whereClause = whereConditions.length > 0 ? `WHERE ${  whereConditions.join(' AND ')}` : '';
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
     
     // Get total count
     const countQuery = `
@@ -196,9 +195,7 @@ router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
       ${whereClause}
     `;
     
-    console.log('Executing countQuery:', countQuery);
-console.log('With params:', queryParams);
-const [countResult] = await db.query(countQuery, queryParams);
+    const [countResult] = await db.query(countQuery, queryParams);
     const total = countResult && countResult[0] ? countResult[0].total : 0;
     
     // Get ads with pagination
@@ -223,9 +220,7 @@ const [countResult] = await db.query(countQuery, queryParams);
     `;
     
     const finalParams = [...queryParams, limitNum, offset];
-    console.log('Executing adsQuery:', adsQuery);
-console.log('With params:', finalParams);
-const [ads] = await db.query(adsQuery, finalParams);
+    const [ads] = await db.query(adsQuery, finalParams);
     
     res.json({
       success: true,
@@ -515,55 +510,6 @@ router.put('/:id',
         }
       }
       
-      // Prepare update data
-      const updateData = {};
-      const updateParams = [];
-      
-      if (title !== undefined) {
-        updateData.title = title;
-        updateParams.push(title);
-      }
-      if (description !== undefined) {
-        updateData.description = description;
-        updateParams.push(description);
-      }
-      if (url !== undefined) {
-        updateData.url = url;
-        updateParams.push(url);
-      }
-      if (position !== undefined) {
-        updateData.position = position;
-        updateParams.push(position);
-        
-        // Update dimensions if position changed
-        const [positionInfo] = await db.query(
-          'SELECT width, height FROM ads_positions WHERE position_name = ?',
-          [position]
-        );
-        if (positionInfo.length > 0) {
-          updateData.width = positionInfo[0].width;
-          updateData.height = positionInfo[0].height;
-          updateParams.push(positionInfo[0].width, positionInfo[0].height);
-        }
-      }
-      if (end_date !== undefined) {
-        updateData.end_date = end_date;
-        updateParams.push(end_date);
-      }
-      if (is_active !== undefined) {
-        updateData.is_active = is_active;
-        updateParams.push(is_active);
-      }
-      
-      // Handle image update
-      let oldImagePath = null;
-      if (req.file) {
-        oldImagePath = existingAd[0].image_path;
-        const newImagePath = `/uploads/ads/${req.file.filename}`;
-        updateData.image_path = newImagePath;
-        updateParams.push(newImagePath);
-      }
-      
       // Build update query
       const updateFields = [];
       const finalParams = [];
@@ -601,7 +547,11 @@ router.put('/:id',
         updateFields.push('is_active = ?');
         finalParams.push(is_active);
       }
+      
+      // Handle image update
+      let oldImagePath = null;
       if (req.file) {
+        oldImagePath = existingAd[0].image_path;
         updateFields.push('image_path = ?');
         finalParams.push(`/uploads/ads/${req.file.filename}`);
       }
@@ -682,22 +632,22 @@ router.delete('/:id',
       
       const { id } = req.params;
       
-      // Get ad info before deletion
-      const [adResult] = await db.query('SELECT * FROM ads WHERE id = ?', [id]);
-      if (adResult.length === 0) {
+      // Get ad details before deletion
+      const [ad] = await db.query('SELECT * FROM ads WHERE id = ?', [id]);
+      if (ad.length === 0) {
         return res.status(404).json({
           success: false,
           message: 'الإعلان غير موجود'
         });
       }
       
-      // Delete ad from database
+      // Delete the ad (this will cascade delete clicks and impressions)
       await db.query('DELETE FROM ads WHERE id = ?', [id]);
       
-      // Delete image file
-      if (adResult[0].image_path) {
+      // Delete the image file
+      if (ad[0].image_path) {
         try {
-          const imagePath = path.join(__dirname, '../../public', adResult[0].image_path);
+          const imagePath = path.join(__dirname, '../../public', ad[0].image_path);
           await fs.unlink(imagePath);
         } catch (unlinkError) {
           console.error('Error deleting image file:', unlinkError);
@@ -736,6 +686,7 @@ router.get('/:id/stats',
       }
       
       const { id } = req.params;
+      const { period = '7d' } = req.query;
       
       // Check if ad exists
       const [ad] = await db.query('SELECT * FROM ads WHERE id = ?', [id]);
@@ -746,66 +697,68 @@ router.get('/:id/stats',
         });
       }
       
-      // Get basic stats
-      const [basicStats] = await db.query(`
-        SELECT 
-          clicks,
-          impressions,
-          CASE 
-            WHEN impressions > 0 THEN ROUND((clicks / impressions) * 100, 2)
-            ELSE 0
-          END as ctr_percentage
-        FROM ads 
-        WHERE id = ?
-      `, [id]);
+      // Determine date range based on period
+      let dateCondition = '';
+      switch (period) {
+        case '1d':
+          dateCondition = 'AND DATE(created_at) = CURDATE()';
+          break;
+        case '7d':
+          dateCondition = 'AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)';
+          break;
+        case '30d':
+          dateCondition = 'AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)';
+          break;
+        case 'all':
+        default:
+          dateCondition = '';
+          break;
+      }
       
-      // Get daily stats for the last 30 days
-      const [dailyStats] = await db.query(`
+      // Get click statistics
+      const [clickStats] = await db.query(`
         SELECT 
-          DATE(clicked_at) as date,
-          COUNT(*) as clicks
+          COUNT(*) as total_clicks,
+          COUNT(DISTINCT ip_address) as unique_clicks,
+          DATE(clicked_at) as click_date,
+          COUNT(*) as daily_clicks
         FROM ads_clicks 
-        WHERE ad_id = ? AND clicked_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        WHERE ad_id = ? ${dateCondition.replace('created_at', 'clicked_at')}
         GROUP BY DATE(clicked_at)
-        ORDER BY date DESC
+        ORDER BY click_date DESC
       `, [id]);
       
-      const [dailyImpressions] = await db.query(`
+      // Get impression statistics
+      const [impressionStats] = await db.query(`
         SELECT 
-          DATE(viewed_at) as date,
-          COUNT(*) as impressions
+          COUNT(*) as total_impressions,
+          COUNT(DISTINCT ip_address) as unique_impressions,
+          DATE(viewed_at) as impression_date,
+          COUNT(*) as daily_impressions
         FROM ads_impressions 
-        WHERE ad_id = ? AND viewed_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        WHERE ad_id = ? ${dateCondition.replace('created_at', 'viewed_at')}
         GROUP BY DATE(viewed_at)
-        ORDER BY date DESC
+        ORDER BY impression_date DESC
       `, [id]);
       
-      // Get top referrers
-      const [topReferrers] = await db.query(`
-        SELECT 
-          COALESCE(referrer, 'Direct') as referrer,
-          COUNT(*) as clicks
-        FROM ads_clicks 
-        WHERE ad_id = ?
-        GROUP BY referrer
-        ORDER BY clicks DESC
-        LIMIT 10
-      `, [id]);
+      // Calculate totals
+      const totalClicks = clickStats.reduce((sum, stat) => sum + stat.daily_clicks, 0);
+      const totalImpressions = impressionStats.reduce((sum, stat) => sum + stat.daily_impressions, 0);
+      const ctr = totalImpressions > 0 ? (totalClicks / totalImpressions * 100).toFixed(2) : 0;
       
       res.json({
         success: true,
         data: {
-          basic: basicStats[0],
-          daily_clicks: dailyStats,
-          daily_impressions: dailyImpressions,
-          top_referrers: topReferrers,
-          ad_info: {
-            id: ad[0].id,
-            title: ad[0].title,
-            position: ad[0].position,
-            is_active: ad[0].is_active,
-            start_date: ad[0].start_date,
-            end_date: ad[0].end_date
+          ad_info: ad[0],
+          summary: {
+            total_clicks: totalClicks,
+            total_impressions: totalImpressions,
+            click_through_rate: parseFloat(ctr),
+            period: period
+          },
+          daily_stats: {
+            clicks: clickStats,
+            impressions: impressionStats
           }
         },
         message: 'تم جلب إحصائيات الإعلان بنجاح'
@@ -821,75 +774,74 @@ router.get('/:id/stats',
   }
 );
 
-// GET /admin/ads/stats/overview - Get ads overview statistics
+// GET /admin/ads/stats/overview - Get overview statistics
 router.get('/stats/overview', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
-    // Get overall stats
-    const [overallStats] = await db.query(`
+    const { period = '7d' } = req.query;
+    
+    // Determine date condition
+    let dateCondition = '';
+    switch (period) {
+      case '1d':
+        dateCondition = 'AND DATE(a.created_at) = CURDATE()';
+        break;
+      case '7d':
+        dateCondition = 'AND a.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)';
+        break;
+      case '30d':
+        dateCondition = 'AND a.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)';
+        break;
+      case 'all':
+      default:
+        dateCondition = '';
+        break;
+    }
+    
+    // Get general statistics
+    const [generalStats] = await db.query(`
       SELECT 
         COUNT(*) as total_ads,
         SUM(CASE WHEN is_active = true AND end_date > NOW() THEN 1 ELSE 0 END) as active_ads,
         SUM(CASE WHEN end_date <= NOW() THEN 1 ELSE 0 END) as expired_ads,
         SUM(CASE WHEN is_active = false THEN 1 ELSE 0 END) as inactive_ads,
-        SUM(COALESCE(clicks, 0)) as total_clicks,
-        SUM(COALESCE(impressions, 0)) as total_impressions,
-        CASE 
-          WHEN SUM(COALESCE(impressions, 0)) > 0 THEN ROUND((SUM(COALESCE(clicks, 0)) / SUM(COALESCE(impressions, 0))) * 100, 2)
-          ELSE 0
-        END as avg_ctr
-      FROM ads
+        SUM(clicks) as total_clicks,
+        SUM(impressions) as total_impressions
+      FROM ads a
+      WHERE 1=1 ${dateCondition}
     `);
     
-    // Get stats by position
+    // Get position statistics
     const [positionStats] = await db.query(`
       SELECT 
-        ap.position_name,
-        ap.display_name,
-        ap.max_ads,
-        COUNT(a.id) as total_ads,
-        SUM(CASE WHEN a.is_active = true AND a.end_date > NOW() THEN 1 ELSE 0 END) as active_ads,
-        SUM(COALESCE(a.clicks, 0)) as total_clicks,
-        SUM(COALESCE(a.impressions, 0)) as total_impressions
-      FROM ads_positions ap
-      LEFT JOIN ads a ON ap.position_name = a.position
-      GROUP BY ap.position_name, ap.display_name, ap.max_ads
-      ORDER BY ap.id
-    `);
-    
-    // Get recent activity
-    const [recentActivity] = await db.query(`
-      SELECT 
-        a.id,
-        a.title,
         a.position,
-        ap.display_name as position_display_name,
-        a.is_active,
-        a.end_date,
-        a.created_at,
-        u.username as created_by,
-        CASE 
-          WHEN a.end_date <= NOW() THEN 'expired'
-          WHEN a.is_active = false THEN 'inactive'
-          ELSE 'active'
-        END as status
+        ap.display_name,
+        COUNT(*) as ad_count,
+        SUM(a.clicks) as total_clicks,
+        SUM(a.impressions) as total_impressions
       FROM ads a
       LEFT JOIN ads_positions ap ON a.position = ap.position_name
-      LEFT JOIN users u ON a.created_by = u.id
-      ORDER BY a.created_at DESC
-      LIMIT 10
+      WHERE 1=1 ${dateCondition}
+      GROUP BY a.position, ap.display_name
+      ORDER BY ad_count DESC
     `);
+    
+    const stats = generalStats[0];
+    const ctr = stats.total_impressions > 0 ? (stats.total_clicks / stats.total_impressions * 100).toFixed(2) : 0;
     
     res.json({
       success: true,
       data: {
-        overall: overallStats[0],
-        by_position: positionStats,
-        recent_activity: recentActivity
+        summary: {
+          ...stats,
+          click_through_rate: parseFloat(ctr),
+          period: period
+        },
+        by_position: positionStats
       },
-      message: 'تم جلب نظرة عامة على الإعلانات بنجاح'
+      message: 'تم جلب الإحصائيات العامة بنجاح'
     });
   } catch (error) {
-    console.error('Error fetching ads overview:', error);
+    console.error('Error fetching overview stats:', error);
     res.status(500).json({
       success: false,
       message: 'خطأ في الخادم الداخلي',
@@ -898,68 +850,56 @@ router.get('/stats/overview', authenticateToken, requireRole(['admin']), async (
   }
 });
 
-// POST /admin/ads/cleanup - Manual cleanup of expired ads
+// POST /admin/ads/cleanup - Clean up expired ads
 router.post('/cleanup', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
+    const { delete_files = false } = req.body;
+    
     // Get expired ads
     const [expiredAds] = await db.query(
-      'SELECT id, title, image_path FROM ads WHERE end_date < NOW() AND is_active = true'
+      'SELECT id, image_path FROM ads WHERE end_date <= NOW()'
     );
     
     if (expiredAds.length === 0) {
       return res.json({
         success: true,
-        data: {
-          cleaned_ads: 0,
-          deleted_images: 0,
-          errors: []
-        },
-        message: 'لا توجد إعلانات منتهية الصلاحية للتنظيف'
+        message: 'لا توجد إعلانات منتهية الصلاحية للحذف',
+        deleted_count: 0
       });
     }
     
-    const errors = [];
-    let deletedImages = 0;
+    // Delete expired ads
+    await db.query('DELETE FROM ads WHERE end_date <= NOW()');
     
-    // Delete image files
-    const deletePromises = expiredAds.map(async (ad) => {
-      if (ad.image_path) {
-        try {
-          const imagePath = path.join(__dirname, '../../public', ad.image_path);
-          await fs.unlink(imagePath);
-          return { success: true };
-        } catch (error) {
-          return { success: false, error: `فشل في حذف صورة الإعلان ${ad.title}: ${error.message}` };
-        }
-      }
-      return { success: true };
-    });
-    
-    const deleteResults = await Promise.all(deletePromises);
-    deleteResults.forEach((result) => {
-      if (result.success) {
-        deletedImages += 1;
-      } else if (result.error) {
-        errors.push(result.error);
-      }
-    });
-    
-    // Mark ads as inactive
-    const [updateResult] = await db.query(
-      'UPDATE ads SET is_active = false WHERE end_date < NOW() AND is_active = true'
-    );
+    // Delete image files if requested
+     let deletedFiles = 0;
+     if (delete_files) {
+       const deletePromises = expiredAds.map(async (ad) => {
+         if (ad.image_path) {
+           try {
+             const imagePath = path.join(__dirname, '../../public', ad.image_path);
+             await fs.unlink(imagePath);
+             return true;
+           } catch (unlinkError) {
+             console.error('Error deleting image file:', unlinkError);
+             return false;
+           }
+         }
+         return false;
+       });
+       
+       const results = await Promise.all(deletePromises);
+       deletedFiles = results.filter(Boolean).length;
+     }
     
     res.json({
       success: true,
-      data: {
-        cleaned_ads: updateResult.affectedRows,
-        deleted_images: deletedImages,
-        errors: errors
-      },
-      message: `تم تنظيف ${updateResult.affectedRows} إعلان منتهي الصلاحية`
+      message: `تم حذف ${expiredAds.length} إعلان منتهي الصلاحية`,
+      deleted_count: expiredAds.length,
+      deleted_files: deletedFiles
     });
   } catch (error) {
-    console.error('Error during manual cleanup:', error);
+    console.error('Error cleaning up expired ads:', error);
     res.status(500).json({
       success: false,
       message: 'خطأ في الخادم الداخلي',
