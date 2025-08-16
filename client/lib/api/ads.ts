@@ -67,8 +67,8 @@ export interface AdsResponse extends APIResponse<Ad[]> {
 export type AdPositionsResponse = APIResponse<AdPosition[]>;
 export type SingleAdResponse = APIResponse<Ad>;
 
-// API Configuration - Following the same pattern as breaking-news.ts
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+// API Configuration - Using direct backend URL without /api/v2 prefix
+const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'https://api.markaba.news';
 const API_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 const getAuthHeaders = (token: string) => ({
   'Authorization': `Bearer ${token}`,
@@ -88,8 +88,8 @@ export class AdsApiService {
   constructor() {
     // Use the same pattern as breaking-news.ts
     this.baseUrl = `${API_SITE_URL}/admin/administratorpage/ads`;
-    // API URL for backend requests
-    this.apiUrl = `${API_BASE_URL}/admin/ads`;
+    // API URL for backend requests - correct path
+    this.apiUrl = `${API_BASE_URL}/api/admin/ads`;
   }
 
   /**
