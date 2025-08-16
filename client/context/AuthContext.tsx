@@ -229,13 +229,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCookie('token', userToken, {
           maxAge: cookieMaxAge,
           secure: window.location.protocol === 'https:',
-          sameSite: 'strict',
+          sameSite: window.location.protocol === 'https:' ? 'none' : 'lax',
           httpOnly: false, // Allow client-side access for API calls
         });
         setCookie('user', JSON.stringify(userData), {
           maxAge: cookieMaxAge,
           secure: window.location.protocol === 'https:',
-          sameSite: 'strict',
+          sameSite: window.location.protocol === 'https:' ? 'none' : 'lax',
           httpOnly: false, // Allow client-side access
         });
         
@@ -243,7 +243,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCookie('remember_me', credentials.remember_me ? 'true' : 'false', {
           maxAge: cookieMaxAge,
           secure: window.location.protocol === 'https:',
-          sameSite: 'strict',
+          sameSite: window.location.protocol === 'https:' ? 'none' : 'lax',
           httpOnly: false, // Allow client-side access
         });
 
