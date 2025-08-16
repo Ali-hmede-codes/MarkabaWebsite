@@ -287,3 +287,60 @@ export interface PostFilters {
   page?: number;
   limit?: number;
 }
+
+// Ad Types
+export interface Ad {
+  id: number;
+  title: string;
+  description?: string;
+  image_path: string;
+  image_url?: string;
+  url: string;
+  position: 'main_top' | 'main_middle' | 'main_bottom' | 'post_square' | 'post_banner';
+  width: number;
+  height: number;
+  is_active: boolean;
+  start_date: string;
+  end_date: string;
+  clicks: number;
+  created_at?: string;
+  updated_at?: string;
+  created_by?: number;
+}
+
+export interface AdPosition {
+  position_name: string;
+  display_name: string;
+  width: number;
+  height: number;
+  max_ads: number;
+  description?: string;
+}
+
+export interface AdStats {
+  ad_id: number;
+  title: string;
+  total_clicks: number;
+  unique_clicks: number;
+  active_days: number;
+  start_date: string;
+  end_date: string;
+  days_remaining: number;
+}
+
+export interface AdsResponse {
+  success: boolean;
+  data: Ad[];
+  grouped?: Record<string, Ad[]>;
+  position?: string;
+  count: number;
+}
+
+export interface AdFilters {
+  position?: string;
+  is_active?: boolean;
+  limit?: number;
+  search?: string;
+  start_date?: string;
+  end_date?: string;
+}

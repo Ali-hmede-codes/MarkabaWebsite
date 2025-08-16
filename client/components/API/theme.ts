@@ -261,22 +261,31 @@ export const generateThemeStyles = (theme: ThemeConfig) => ({
   }
 });
 
-// Tailwind CSS classes generator
+// Generate Tailwind CSS classes based on theme
 export const generateTailwindClasses = (theme: ThemeConfig) => ({
-  // Base component classes
+  // Base component styles
   apiComponent: 'bg-white text-gray-900 border border-gray-200 rounded-lg shadow-md p-4',
+  container: 'w-full max-w-full',
   
-  // Button classes
+  // Button styles
   buttonPrimary: 'bg-blue-600 text-white border-0 rounded px-4 py-2 cursor-pointer hover:bg-blue-700 transition-all duration-200',
   buttonSecondary: 'bg-transparent text-blue-600 border border-blue-600 rounded px-4 py-2 cursor-pointer hover:bg-blue-50 transition-all duration-200',
   
-  // Card classes
+  // Layout styles
   card: 'bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-4',
+  grid: 'w-full',
+  item: 'w-full',
   
-  // Input classes
+  // Form styles
   input: 'bg-white text-gray-900 border border-gray-300 rounded px-3 py-2 text-base focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200',
+  filters: 'w-full',
   
-  // Status classes
+  // State styles
+  loading: 'w-full animate-pulse',
+  error: 'bg-red-50 text-red-700 border border-red-200 rounded p-4',
+  empty: 'text-center py-8',
+  
+  // Status styles
   statusSuccess: 'bg-green-50 text-green-700 border border-green-200 rounded p-2',
   statusError: 'bg-red-50 text-red-700 border border-red-200 rounded p-2',
   statusWarning: 'bg-yellow-50 text-yellow-700 border border-yellow-200 rounded p-2',

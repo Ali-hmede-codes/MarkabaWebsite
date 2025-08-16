@@ -141,6 +141,39 @@ export function useSettings() {
   });
 }
 
+export function useAds(filters?: Record<string, unknown>) {
+  return useAPI<import('./types').AdsResponse>('/ads/active', {
+    immediate: true,
+    params: filters,
+  });
+}
+
+export function useAdsByPosition(position: string, limit?: number) {
+  return useAPI<import('./types').AdsResponse>(`/ads/position/${position}`, {
+    immediate: true,
+    params: limit ? { limit } : undefined,
+  });
+}
+
+export function useAdPositions() {
+  return useAPI<import('./types').AdPosition[]>('/ads/positions', {
+    immediate: true,
+  });
+}
+
+export function useAdStats(id: string | number) {
+  return useAPI<import('./types').AdStats>(`/ads/${id}/stats`, {
+    immediate: false,
+  });
+}
+
+export function useAdClick(id: string | number) {
+  return useAPI(`/ads/${id}/click`, {
+    method: 'POST',
+    immediate: false,
+  });
+}
+
 export function useSocialMedia() {
   return useAPI<import('./types').SocialMediaResponse>('/social-media', {
     immediate: true,

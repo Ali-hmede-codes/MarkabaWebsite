@@ -10,6 +10,7 @@ export { default as BreakingNewsAPI } from './BreakingNewsAPI';
 export { default as UsersAPI } from './UsersAPI';
 export { default as MediaAPI } from './MediaAPI';
 export { default as SettingsAPI } from './SettingsAPI';
+export { default as AdsAPI } from './AdsAPI';
 
 // Export types and hooks
 export * from './types';
