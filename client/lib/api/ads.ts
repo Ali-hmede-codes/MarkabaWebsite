@@ -69,7 +69,7 @@ export type SingleAdResponse = APIResponse<Ad>;
 
 // API Configuration - Following the same pattern as breaking-news.ts
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
-
+const API_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 const getAuthHeaders = (token: string) => ({
   'Authorization': `Bearer ${token}`,
   'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export class AdsApiService {
 
   constructor() {
     // Use the same pattern as breaking-news.ts
-    this.baseUrl = `${API_BASE_URL}/admin/administratorpage/ads`;
+    this.baseUrl = `${API_SITE_URL}/admin/administratorpage/ads`;
   }
 
   /**
