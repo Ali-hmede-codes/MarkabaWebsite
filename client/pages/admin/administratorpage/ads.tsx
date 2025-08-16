@@ -67,8 +67,8 @@ const AdsManagement: React.FC = () => {
     try {
       setLoading(true);
       const [adsResponse, positionsResponse] = await Promise.all([
-        apiRequest('/api/admin/ads', { method: 'GET' }),
-        apiRequest('/api/admin/ads/positions/list', { method: 'GET' })
+        apiRequest('/admin/ads', { method: 'GET' }),
+        apiRequest('/admin/ads/positions/list', { method: 'GET' })
       ]);
 
       if (adsResponse.success) {
@@ -155,7 +155,7 @@ const AdsManagement: React.FC = () => {
           isFormData: true
         });
       } else {
-        response = await apiRequest('/api/admin/ads', {
+        response = await apiRequest('/admin/ads', {
           method: 'POST',
           body: formDataToSend,
           isFormData: true
@@ -184,7 +184,7 @@ const AdsManagement: React.FC = () => {
     }
 
     try {
-      const response = await apiRequest(`/api/admin/ads/${id}`, {
+      const response = await apiRequest(`/admin/ads/${id}`, {
         method: 'DELETE'
       });
 
@@ -232,7 +232,7 @@ const AdsManagement: React.FC = () => {
   // Manual cleanup
   const handleManualCleanup = async () => {
     try {
-      const response = await apiRequest('/api/admin/ads/cleanup/expired', {
+      const response = await apiRequest('/admin/ads/cleanup/expired', {
         method: 'POST'
       });
 
