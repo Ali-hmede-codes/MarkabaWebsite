@@ -200,14 +200,7 @@ export interface DashboardStats {
     total: number;
     active: number;
   };
-  ads: {
-    total: number;
-    active: number;
-    expired: number;
-    inactive: number;
-    total_clicks: number;
-    total_impressions: number;
-  };
+
   uploads: {
     total_files: number;
     total_size: number;
@@ -551,90 +544,4 @@ export interface SocialMedia {
   is_active: number;
   created_at: string;
   updated_at?: string;
-}
-
-// Ad types
-export interface Ad {
-  id: number;
-  title: string;
-  description?: string;
-  image_path?: string;
-  url: string;
-  position: string;
-  width: number;
-  height: number;
-  is_active: boolean;
-  start_date?: string;
-  end_date?: string;
-  clicks: number;
-  impressions: number;
-  created_at: string;
-  updated_at: string;
-  position_display_name?: string;
-  created_by_username?: string;
-  status?: 'active' | 'inactive' | 'expired';
-}
-
-export interface AdPosition {
-  id: number;
-  position_name: string;
-  display_name: string;
-  width: number;
-  height: number;
-  max_ads: number;
-  description?: string;
-  current_ads?: number;
-  active_ads?: number;
-}
-
-export interface AdFormData {
-  title: string;
-  description?: string;
-  url: string;
-  position: string;
-  end_date: string;
-  is_active: boolean;
-  image?: File | null;
-}
-
-export interface AdFilters {
-  page?: number;
-  limit?: number;
-  position?: string;
-  status?: 'active' | 'inactive' | 'expired';
-}
-
-export interface AdsPaginationResponse {
-  current_page: number;
-  per_page: number;
-  total: number;
-  total_pages: number;
-  has_next: boolean;
-  has_prev: boolean;
-}
-
-export interface AdsResponse extends ApiResponse<Ad[]> {
-  pagination?: AdsPaginationResponse;
-}
-
-export type AdPositionsResponse = ApiResponse<AdPosition[]>;
-export type SingleAdResponse = ApiResponse<Ad>;
-
-export interface AdStats {
-  total_ads: number;
-  active_ads: number;
-  expired_ads: number;
-  inactive_ads: number;
-  total_clicks: number;
-  total_impressions: number;
-  overall_ctr: number;
-  positions: Array<{
-    position_name: string;
-    display_name: string;
-    total_ads: number;
-    active_ads: number;
-    total_clicks: number;
-    total_impressions: number;
-    ctr: number;
-  }>;
 }

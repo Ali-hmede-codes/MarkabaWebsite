@@ -12,7 +12,7 @@ const settingsRoutes = require('./settings');
 const lastNewsRoutes = require('./lastNews');
 const breakingNewsRoutes = require('./breakingNews');
 const dashboardRoutes = require('./dashboard');
-const adsRoutes = require('./ads');
+
 
 // Mount admin routes
 router.use('/users', usersRoutes);
@@ -22,7 +22,7 @@ router.use('/settings', settingsRoutes);
 router.use('/last-news', lastNewsRoutes);
 router.use('/breaking-news', breakingNewsRoutes);
 router.use('/dashboard', dashboardRoutes);
-router.use('/ads', adsRoutes);
+
 
 // Admin dashboard stats endpoint (fallback - main endpoint is in dashboard.js)
 router.get('/dashboard/stats', authenticateToken, requireRole(['admin']), async (req, res) => {

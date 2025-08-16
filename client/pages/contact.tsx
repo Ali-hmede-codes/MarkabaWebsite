@@ -110,7 +110,7 @@ const ContactPage: React.FC = () => {
     },
     {
       name: theme.language === 'ar' ? 'الإعلانات' : 'Advertising',
-      email: 'ads@newswebsite.com',
+      email: 'contact@newswebsite.com',
       description: theme.language === 'ar' 
         ? 'للاستفسارات حول الإعلانات والشراكات'
         : 'For advertising inquiries and partnerships'

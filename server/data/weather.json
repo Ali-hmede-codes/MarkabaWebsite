@@ -1,11 +1,11 @@
 {
-  "temperature": 31.3,
+  "temperature": 30,
   "condition": "Partly cloudy",
   "humidity": 66,
-  "wind_speed": 10.4,
+  "wind_speed": 16.2,
   "pressure": 1007,
   "visibility": 8,
-  "lastUpdated": "2025-08-08T11:50:28.218Z",
+  "lastUpdated": "2025-08-16T13:48:49.419Z",
   "location": {
     "country": "Lebanon",
     "city": "Beirut",

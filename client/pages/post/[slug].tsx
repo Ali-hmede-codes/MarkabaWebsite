@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 import YouTubePlayer from '../../components/Posts/YouTubePlayer';
 import { formatPostContent } from '../../utils/textFormatter';
-import AdBanner from '../../components/UI/AdBanner';
+
 
 interface SinglePostPageProps {
   post: Post | null;
@@ -201,14 +201,6 @@ const PostContent: React.FC<{
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Main Content */}
         <article className="lg:col-span-3">
-          {/* Top Ad */}
-          <div className="mb-8">
-            <AdBanner 
-              position="post_top" 
-              className="max-w-full" 
-            />
-          </div>
-
           {/* Post Title */}
           <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">
             {post.title_ar || post.title}
@@ -335,13 +327,7 @@ const PostContent: React.FC<{
               }} 
             />
 
-            {/* Post Middle Ad */}
-            <div className="flex justify-center my-8">
-              <AdBanner 
-                position="post_middle" 
-                className="max-w-full" 
-              />
-            </div>
+
 
             {/* Back to Home Button */}
             <div className="flex justify-center mt-8 mb-6">
@@ -395,25 +381,11 @@ const PostContent: React.FC<{
               </div>
             )}
 
-            {/* Post Bottom Ad */}
-            <div className="flex justify-center my-8">
-              <AdBanner 
-                position="post_bottom" 
-                className="max-w-full" 
-              />
-            </div>
+
           </article>
 
           {/* Sidebar */}
           <aside className="lg:col-span-1 space-y-6">
-            {/* Sidebar Ad */}
-            <div className="hidden lg:block">
-              <AdBanner 
-                position="sidebar_square" 
-                className="max-w-full" 
-              />
-            </div>
-
             {/* Latest Posts Section */}
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">

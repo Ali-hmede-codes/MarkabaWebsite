@@ -18,7 +18,7 @@ import LastNewsBanner from "../components/LastNews/LastNewsBanner";
 import LatestArticles from "../components/LatestArticles/LatestArticles";
 import BreakingNewsBanner from "../components/BreakingNews/BreakingNewsBanner";
 import { PrayerTimes, Weather } from "../components/PrayerWeather";
-import AdBanner from "../components/UI/AdBanner";
+
 
 interface HomePageProps {
   posts: Post[];
@@ -170,37 +170,13 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 <div className="hidden lg:flex lg:col-span-1 order-3 lg:order-2 items-center justify-center">
                   <div className="w-px h-full bg-gray-300 min-h-[400px]"></div>
                 </div>
-                <div className="lg:col-span-4 order-2 lg:order-3 space-y-6">
+                <div className="lg:col-span-4 order-2 lg:order-3">
                   <LastNewsBanner className="h-full" />
-                  {/* Sidebar Ad */}
-                  <div className="hidden lg:block">
-                    <AdBanner 
-                      position="sidebar_square" 
-                      className="max-w-full" 
-                    />
-                  </div>
                 </div>
               </div>
             </section>
 
-            {/* Ad Section - Responsive positioning */}
-            <section className="mb-16 lg:mb-32">
-              {/* Mobile: Ad under Last News only */}
-              <div className="block lg:hidden">
-                <AdBanner 
-                  position="header_banner" 
-                  className="max-w-full" 
-                />
-              </div>
-              
-              {/* Desktop: Ad under both Latest Articles and Last News */}
-              <div className="hidden lg:block">
-                <AdBanner 
-                  position="header_banner" 
-                  className="max-w-full" 
-                />
-              </div>
-            </section>
+
 
             {/* مقالات Section */}
             <section id="articles-section" className="mb-24">
@@ -456,13 +432,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
               )}
             </section>
 
-            {/* Middle Ad Section */}
-            <section className="mb-16">
-              <AdBanner 
-                position="post_top" 
-                className="max-w-full" 
-              />
-            </section>
+
 
             {/* Prayer and Weather Section */}
             <section className="mb-16">
@@ -475,13 +445,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
               </div>
             </section>
 
-            {/* Bottom Ad Section */}
-            <section className="mb-16">
-              <AdBanner 
-                position="footer_banner" 
-                className="max-w-full" 
-              />
-            </section>
+
           </div>
         </div>
       </Layout>
