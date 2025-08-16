@@ -1,7 +1,7 @@
 const express = require('express');
 const { validationResult, param } = require('express-validator');
 const path = require('path');
-const { query, queryOne, getConnection } = require('../db');
+const { query, queryOne, pool } = require('../db');
 
 const router = express.Router();
 
@@ -211,7 +211,7 @@ router.post('/:id/click', [
     }
     
     // Start transaction
-    const connection = await getConnection();
+    const connection = await pool.getConnection();
     await connection.beginTransaction();
     
     try {
@@ -319,6 +319,29 @@ router.get('/:id/stats', [
     res.status(500).json({
       success: false,
       error: 'Failed to fetch ad statistics',
+      message: error.message
+    });
+  }
+});
+
+// GET /api/ads/server-time - Get current server time for frontend
+router.get('/server-time', (req, res) => {
+  try {
+    const now = new Date();
+    res.json({
+      success: true,
+      data: {
+        current_time: now.toISOString(),
+        local_time: now.toLocaleString('ar-EG', { timeZone: 'Asia/Beirut' }),
+        timestamp: now.getTime(),
+        timezone: 'Asia/Beirut'
+      }
+    });
+  } catch (error) {
+    console.error('Error getting server time:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get server time',
       message: error.message
     });
   }

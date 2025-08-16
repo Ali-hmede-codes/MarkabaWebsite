@@ -152,6 +152,28 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/admin/administratorpage/ads/server-time - Get current server time
+router.get('/server-time', async (req, res) => {
+  try {
+    const now = new Date();
+    res.json({
+      success: true,
+      data: {
+        current_time: now.toISOString(),
+        local_time: now.toLocaleString('ar-EG', { timeZone: 'Asia/Beirut' }),
+        timestamp: now.getTime(),
+        timezone: 'Asia/Beirut'
+      }
+    });
+  } catch (error) {
+    console.error('Error getting server time:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في جلب وقت الخادم'
+    });
+  }
+});
+
 // GET /api/admin/administratorpage/ads/positions - Get all ad positions
 router.get('/positions', async (req, res) => {
   try {
@@ -330,12 +352,25 @@ router.post('/', upload.single('image'), [
       });
     }
     
+    // Auto-set start_date to current Lebanon time (Asia/Beirut timezone)
+    const lebanonTime = `${new Date().toLocaleString('en-CA', { 
+      timeZone: 'Asia/Beirut',
+      year: 'numeric',
+      month: '2-digit', 
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }).replace(', ', 'T')}.000Z`;
+    const start_date = lebanonTime;
+    
     // Insert new ad
     const [result] = await db.execute(`
       INSERT INTO ads (
         title, description, image_path, url, position, width, height,
-        is_active, end_date, created_by
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        is_active, start_date, end_date, created_by
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       title.trim(),
       description ? description.trim() : null,
@@ -345,6 +380,7 @@ router.post('/', upload.single('image'), [
       parseInt(width, 10),
       parseInt(height, 10),
       is_active,
+      start_date,
       end_date,
       req.user.id
     ]);
