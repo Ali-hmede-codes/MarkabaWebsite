@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { API_BASE_URL } from '../../../lib/api/config';
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,7 +8,8 @@ export default async function handler(
   
   try {
     // Build the backend URL for admin ads
-    let backendUrl = `${API_BASE_URL}/admin/administratorpage/ads`;
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.markaba.news';
+    let backendUrl = `${BACKEND_URL}/api/v2/admin/administratorpage/ads`;
     
     // Add query parameters
     const searchParams = new URLSearchParams();

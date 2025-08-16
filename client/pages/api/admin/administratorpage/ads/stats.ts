@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { API_BASE_URL } from '../../../../../lib/api/config';
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,7 +21,8 @@ export default async function handler(
     const authorization = authHeader || `Bearer ${token}`;
 
     // Forward request to backend stats endpoint
-    const response = await fetch(`${API_BASE_URL}/admin/administratorpage/ads/stats/overview`, {
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.markaba.news';
+    const response = await fetch(`${BACKEND_URL}/api/v2/admin/administratorpage/ads/stats/overview`, {
       method: 'GET',
       headers: {
         'Authorization': authorization,
