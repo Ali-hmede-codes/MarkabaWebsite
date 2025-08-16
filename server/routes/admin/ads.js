@@ -122,7 +122,7 @@ router.get('/', async (req, res) => {
       LEFT JOIN users u ON a.created_by = u.id
       WHERE ${whereClause}
       ORDER BY a.created_at DESC
-      LIMIT CAST(? AS UNSIGNED) OFFSET CAST(? AS UNSIGNED)
+      LIMIT ? OFFSET ?
     `;
     console.log('🔍 Ads query:', adsQuery);
     console.log('🔍 Final query params:', [...queryParams, limitNum, offset]);

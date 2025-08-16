@@ -132,7 +132,7 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor']), async (req,
       LEFT JOIN users u ON a.created_by = u.id
       ${whereClause}
       ORDER BY a.${finalSortBy} ${finalSortOrder}
-      LIMIT CAST(? AS UNSIGNED) OFFSET CAST(? AS UNSIGNED)
+      LIMIT ? OFFSET ?
     `;
     
     const finalQueryParams = [...queryParams, parseInt(limit, 10), offset];
