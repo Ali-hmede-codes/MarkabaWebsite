@@ -83,17 +83,23 @@ router.get('/', async (req, res) => {
     }
     
     // Get total count
+    console.log('🔍 About to execute count query');
     const countQuery = `
       SELECT COUNT(*) as total
       FROM ads a
       LEFT JOIN ad_positions ap ON a.position_id = ap.id
       WHERE ${whereClause}
     `;
-    
+    console.log('🔍 Count query:', countQuery);
+    console.log('🔍 Query params:', queryParams);
+
     const [countResult] = await db.execute(countQuery, queryParams);
+    console.log('🔍 Count result:', countResult);
     const total = countResult[0].total;
+    console.log('🔍 Total count:', total);
     
     // Get ads with pagination
+    console.log('🔍 About to execute ads query');
     const adsQuery = `
       SELECT 
         a.id,
@@ -118,8 +124,11 @@ router.get('/', async (req, res) => {
       ORDER BY a.created_at DESC
       LIMIT ? OFFSET ?
     `;
-    
+    console.log('🔍 Ads query:', adsQuery);
+    console.log('🔍 Final query params:', [...queryParams, limitNum, offset]);
+
     const [ads] = await db.execute(adsQuery, [...queryParams, limitNum, offset]);
+    console.log('🔍 Ads result:', ads);
     
     res.json({
       success: true,
