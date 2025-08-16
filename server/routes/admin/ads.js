@@ -45,7 +45,7 @@ const upload = multer({
 
 // Apply authentication middleware to all routes
 router.use(authenticateToken);
-router.use(requireRole(['admin']));
+router.use(requireRole(['admin', 'editor', 'author']));
 
 // GET /api/admin/administratorpage/ads - Get all ads with pagination and filtering
 router.get('/', async (req, res) => {
