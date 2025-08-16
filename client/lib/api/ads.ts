@@ -68,7 +68,7 @@ export type AdPositionsResponse = APIResponse<AdPosition[]>;
 export type SingleAdResponse = APIResponse<Ad>;
 
 // API Configuration - Following the same pattern as breaking-news.ts
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 const getAuthHeaders = (token: string) => ({
   'Authorization': `Bearer ${token}`,
@@ -83,10 +83,13 @@ const getFormDataHeaders = (token: string) => ({
 // Ads API Service
 export class AdsApiService {
   private baseUrl: string;
+  private apiUrl: string;
 
   constructor() {
     // Use the same pattern as breaking-news.ts
     this.baseUrl = `${API_SITE_URL}/admin/administratorpage/ads`;
+    // API URL for backend requests
+    this.apiUrl = `${API_BASE_URL}/admin/ads`;
   }
 
   /**
@@ -101,7 +104,7 @@ export class AdsApiService {
       if (filters.position) queryParams.append('position', filters.position);
       if (filters.status) queryParams.append('status', filters.status);
 
-      const url = `${this.baseUrl}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const url = `${this.apiUrl}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
       
       const response = await fetch(url, {
         method: 'GET',
@@ -125,7 +128,7 @@ export class AdsApiService {
    */
   async getAdPositions(token: string): Promise<AdPositionsResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/positions`, {
+      const response = await fetch(`${this.apiUrl}/positions`, {
         method: 'GET',
         headers: getAuthHeaders(token),
       });
@@ -147,7 +150,7 @@ export class AdsApiService {
    */
   async getAd(token: string, id: number): Promise<SingleAdResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/${id}`, {
+      const response = await fetch(`${this.apiUrl}/${id}`, {
         method: 'GET',
         headers: getAuthHeaders(token),
       });
@@ -184,7 +187,7 @@ export class AdsApiService {
         formData.append('image', adData.image);
       }
 
-      const response = await fetch(`${this.baseUrl}`, {
+      const response = await fetch(`${this.apiUrl}`, {
         method: 'POST',
         headers: getFormDataHeaders(token),
         body: formData,
@@ -237,7 +240,7 @@ export class AdsApiService {
         formData.append('current_image', currentImagePath);
       }
 
-      const response = await fetch(`${this.baseUrl}/${id}`, {
+      const response = await fetch(`${this.apiUrl}/${id}`, {
         method: 'PUT',
         headers: getFormDataHeaders(token),
         body: formData,
@@ -261,7 +264,7 @@ export class AdsApiService {
    */
   async deleteAd(token: string, id: number): Promise<APIResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/${id}`, {
+      const response = await fetch(`${this.apiUrl}/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders(token),
       });
@@ -304,8 +307,8 @@ export class AdsApiService {
   async getAdAnalytics(token: string, id?: number): Promise<APIResponse> {
     try {
       const url = id 
-        ? `${this.baseUrl}/${id}/stats`
-        : `${this.baseUrl}/stats/overview`;
+        ? `${this.apiUrl}/${id}/stats`
+        : `${this.apiUrl}/stats/overview`;
       
       const response = await fetch(url, {
         method: 'GET',
