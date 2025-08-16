@@ -135,8 +135,14 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor']), async (req,
       LIMIT ? OFFSET ?
     `;
     
-    queryParams.push(parseInt(limit, 10), offset);
-    const [ads] = await db.execute(dataQuery, queryParams);
+    const finalQueryParams = [...queryParams, parseInt(limit, 10), offset];
+    
+    console.log('🔍 Debug info:');
+    console.log('whereClause:', whereClause);
+    console.log('dataQuery:', dataQuery);
+    console.log('finalQueryParams:', finalQueryParams);
+    
+    const [ads] = await db.execute(dataQuery, finalQueryParams);
     
     res.json({
       success: true,
