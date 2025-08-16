@@ -53,6 +53,9 @@ router.get('/position/:position', [
     const { position } = req.params;
     const { limit = 1 } = req.query;
     
+    // Validate and sanitize limit parameter
+    const limitValue = Math.min(Math.max(parseInt(limit, 10) || 1, 1), 50);
+    
     // Get active ads for the position
     const ads = await query(`
       SELECT 
@@ -73,8 +76,8 @@ router.get('/position/:position', [
         AND start_date <= NOW() 
         AND end_date > NOW()
       ORDER BY RAND()
-      LIMIT ?
-    `, [position, parseInt(limit, 10)]);
+      LIMIT ${limitValue}
+    `, [position]);
     
     // Process ads to include full image URLs
     const processedAds = ads.map(ad => ({
@@ -106,6 +109,9 @@ router.get('/active', async (req, res) => {
   try {
     const { position, limit = 10 } = req.query;
     
+    // Validate and sanitize limit parameter
+    const limitValue = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
+    
     let queryStr = `
       SELECT 
         id,
@@ -132,8 +138,8 @@ router.get('/active', async (req, res) => {
       params.push(position);
     }
     
-    queryStr += ' ORDER BY position, RAND() LIMIT ?';
-    params.push(parseInt(limit, 10));
+    // Use string interpolation for LIMIT to avoid parameter binding issues
+    queryStr += ` ORDER BY position, RAND() LIMIT ${limitValue}`;
     
     const ads = await query(queryStr, params);
     
