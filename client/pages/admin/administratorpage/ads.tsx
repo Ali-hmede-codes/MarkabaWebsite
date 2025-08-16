@@ -26,7 +26,7 @@ interface Ad {
   position_id: number;
   position_name?: string;
   start_date: string;
-  expiration_date: string;
+  expire_date: string;
   click_count: number;
   is_active: boolean;
   created_by: number;
@@ -38,7 +38,7 @@ interface AdForm {
   title: string;
   link_url: string;
   position_id: number;
-  expiration_date: string;
+  expire_date: string;
   is_active: boolean;
 }
 
@@ -55,7 +55,7 @@ const AdsManagement: React.FC = () => {
     title: '',
     link_url: '',
     position_id: 0,
-    expiration_date: '',
+    expire_date: '',
     is_active: true
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -123,7 +123,7 @@ const AdsManagement: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     
-    if (!formData.title.trim() || !formData.link_url.trim() || !formData.position_id || !formData.expiration_date) {
+    if (!formData.title.trim() || !formData.link_url.trim() || !formData.position_id || !formData.expire_date) {
       toast.error('يرجى ملء جميع الحقول المطلوبة');
       return;
     }
@@ -140,7 +140,7 @@ const AdsManagement: React.FC = () => {
       formDataToSend.append('title', formData.title);
       formDataToSend.append('link_url', formData.link_url);
       formDataToSend.append('position_id', formData.position_id.toString());
-      formDataToSend.append('expiration_date', formData.expiration_date);
+      formDataToSend.append('expire_date', formData.expire_date);
       formDataToSend.append('is_active', formData.is_active.toString());
       
       if (selectedFile) {
@@ -207,7 +207,7 @@ const AdsManagement: React.FC = () => {
       title: ad.title,
       link_url: ad.link_url,
       position_id: ad.position_id,
-      expiration_date: ad.expiration_date.split('T')[0], // Format for date input
+      expire_date: ad.expire_date.split('T')[0], // Format for date input
       is_active: ad.is_active
     });
     setShowCreateForm(true);
@@ -220,7 +220,7 @@ const AdsManagement: React.FC = () => {
       title: '',
       link_url: '',
       position_id: 0,
-      expiration_date: '',
+      expire_date: '',
       is_active: true
     });
     setSelectedFile(null);
@@ -262,8 +262,8 @@ const AdsManagement: React.FC = () => {
   };
 
   // Check if ad is expired
-  const isExpired = (expirationDate: string) => {
-    return new Date(expirationDate) < new Date();
+  const isExpired = (expireDate: string) => {
+    return new Date(expireDate) < new Date();
   };
 
   // Permission check
@@ -420,8 +420,8 @@ const AdsManagement: React.FC = () => {
                     </label>
                     <input
                       type="date"
-                      value={formData.expiration_date}
-                      onChange={(e) => setFormData({ ...formData, expiration_date: e.target.value })}
+                      value={formData.expire_date}
+                  onChange={(e) => setFormData({ ...formData, expire_date: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       min={new Date().toISOString().split('T')[0]}
                       required
@@ -553,7 +553,7 @@ const AdsManagement: React.FC = () => {
                             }`}>
                               {ad.is_active ? 'نشط' : 'غير نشط'}
                             </span>
-                            {isExpired(ad.expiration_date) && (
+                            {isExpired(ad.expire_date) && (
                               <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
                                 منتهي الصلاحية
                               </span>
@@ -564,7 +564,7 @@ const AdsManagement: React.FC = () => {
                           {ad.click_count.toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {new Date(ad.expiration_date).toLocaleDateString('ar-SA')}
+                          {new Date(ad.expire_date).toLocaleDateString('ar-SA')}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex gap-2">
