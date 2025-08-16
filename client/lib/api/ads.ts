@@ -65,21 +65,14 @@ export interface AdsResponse extends APIResponse<Ad[]> {
 }
 
 export type AdPositionsResponse = APIResponse<AdPosition[]>;
- 
-
-
 export type SingleAdResponse = APIResponse<Ad>;
 
-
-
-// API Configuration
-const getApiUrl = () => {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
-  return process.env.NEXT_PUBLIC_BACKEND_URL || `${siteUrl}/api/admin/administratorpage`;
-};
+// API Configuration - Following the same pattern as breaking-news.ts
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
 
 const getAuthHeaders = (token: string) => ({
   'Authorization': `Bearer ${token}`,
+  'Content-Type': 'application/json',
 });
 
 const getFormDataHeaders = (token: string) => ({
@@ -87,34 +80,13 @@ const getFormDataHeaders = (token: string) => ({
   // Don't set Content-Type for FormData, let browser set it with boundary
 });
 
-const getJsonHeaders = (token: string) => ({
-  'Authorization': `Bearer ${token}`,
-  'Content-Type': 'application/json',
-});
-
 // Ads API Service
 export class AdsApiService {
   private baseUrl: string;
 
   constructor() {
-    // Use backend URL from environment variables
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    
-    if (backendUrl) {
-      // NEXT_PUBLIC_BACKEND_URL should be 'https://api.markaba.news/api/v2'
-      // We need to replace /api/v2 with /api/admin/administratorpage/ads
-      const cleanUrl = backendUrl.replace(/\/api\/v2$/, '');
-      this.baseUrl = `${cleanUrl}/api/admin/administratorpage/ads`;
-    } else {
-      // Fallback for development or production
-      const isDevelopment = process.env.NODE_ENV === 'development';
-      if (isDevelopment) {
-        this.baseUrl = 'http://localhost:5000/api/admin/administratorpage/ads';
-      } else {
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://markaba.news';
-        this.baseUrl = `${siteUrl}/api/admin/administratorpage/ads`;
-      }
-    }
+    // Use the same pattern as breaking-news.ts
+    this.baseUrl = `${API_BASE_URL}/admin/administratorpage/ads`;
   }
 
   /**
@@ -133,7 +105,7 @@ export class AdsApiService {
       
       const response = await fetch(url, {
         method: 'GET',
-        headers: getJsonHeaders(token),
+        headers: getAuthHeaders(token),
       });
 
       if (!response.ok) {
@@ -155,7 +127,7 @@ export class AdsApiService {
     try {
       const response = await fetch(`${this.baseUrl}/positions`, {
         method: 'GET',
-        headers: getJsonHeaders(token),
+        headers: getAuthHeaders(token),
       });
 
       if (!response.ok) {
@@ -177,7 +149,7 @@ export class AdsApiService {
     try {
       const response = await fetch(`${this.baseUrl}/${id}`, {
         method: 'GET',
-        headers: getJsonHeaders(token),
+        headers: getAuthHeaders(token),
       });
 
       if (!response.ok) {
@@ -291,7 +263,7 @@ export class AdsApiService {
     try {
       const response = await fetch(`${this.baseUrl}/${id}`, {
         method: 'DELETE',
-        headers: getJsonHeaders(token),
+        headers: getAuthHeaders(token),
       });
 
       if (!response.ok) {
@@ -337,7 +309,7 @@ export class AdsApiService {
       
       const response = await fetch(url, {
         method: 'GET',
-        headers: getJsonHeaders(token),
+        headers: getAuthHeaders(token),
       });
 
       if (!response.ok) {
