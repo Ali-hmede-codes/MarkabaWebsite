@@ -97,16 +97,16 @@ export class AdsApiService {
   private baseUrl: string;
 
   constructor() {
-    // Use production backend URL from environment variables
-    // NEXT_PUBLIC_BACKEND_URL should be 'https://api.markaba.news'
+    // Use backend URL from environment variables
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     
     if (backendUrl) {
-      // Remove any existing /api/v2 suffix and add the correct admin path
+      // NEXT_PUBLIC_BACKEND_URL should be 'https://api.markaba.news/api/v2'
+      // We need to replace /api/v2 with /api/admin/administratorpage/ads
       const cleanUrl = backendUrl.replace(/\/api\/v2$/, '');
       this.baseUrl = `${cleanUrl}/api/admin/administratorpage/ads`;
     } else {
-      // Fallback to localhost for development or site URL for production
+      // Fallback for development or production
       const isDevelopment = process.env.NODE_ENV === 'development';
       if (isDevelopment) {
         this.baseUrl = 'http://localhost:5000/api/admin/administratorpage/ads';
