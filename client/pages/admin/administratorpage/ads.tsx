@@ -561,10 +561,10 @@ const AdsManagement: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {ad.click_count.toLocaleString()}
+                          {ad.click_count?.toLocaleString() ?? '0'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {new Date(ad.expire_date).toLocaleDateString('ar-SA')}
+                          {ad.expire_date ? new Date(ad.expire_date).toLocaleDateString('ar-SA') : 'غير محدد'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex gap-2">
