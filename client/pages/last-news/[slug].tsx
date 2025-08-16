@@ -4,6 +4,7 @@ import { FiCalendar, FiClock } from 'react-icons/fi';
 import Image from 'next/image';
 import Layout from '../../components/Layout/Layout';
 import Link from 'next/link';
+import AdBanner from '../../components/UI/AdBanner';
 
 interface LastNews {
   id: number;
@@ -188,6 +189,14 @@ const SingleLastNewsPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Main Content */}
             <article className="lg:col-span-3">
+              {/* Top Ad */}
+              <div className="mb-8">
+                <AdBanner 
+                  position="post_top" 
+                  className="max-w-full" 
+                />
+              </div>
+
               {/* Last News Title */}
               <h1 className="text-3xl font-bold mb-6 text-gray-900 leading-tight">{lastNews.title || lastNews.title_ar}</h1>
               
@@ -237,6 +246,14 @@ const SingleLastNewsPage: React.FC = () => {
                 dangerouslySetInnerHTML={{ __html: (lastNews.content || lastNews.content_ar || '').replace(/\n/g, '<br>') }} 
               />
 
+              {/* Middle Ad */}
+              <div className="flex justify-center my-8">
+                <AdBanner 
+                  position="post_middle" 
+                  className="max-w-full" 
+                />
+              </div>
+
               {/* Back to Home Button */}
               <div className="flex justify-center mt-8 mb-6">
                 <Link href="/">
@@ -252,6 +269,14 @@ const SingleLastNewsPage: React.FC = () => {
 
             {/* Sidebar */}
             <aside className="lg:col-span-1 space-y-6">
+              {/* Sidebar Ad */}
+              <div className="hidden lg:block">
+                <AdBanner 
+                  position="sidebar_square" 
+                  className="max-w-full" 
+                />
+              </div>
+
               {/* Latest Last News Section */}
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">

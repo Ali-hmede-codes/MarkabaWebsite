@@ -37,8 +37,13 @@ router.get('/positions', async (req, res) => {
 
 // GET /api/ads/position/:position - Get ads for a specific position
 router.get('/position/:position', [
-  param('position').isIn(['main_top', 'main_middle', 'main_bottom', 'post_square', 'post_banner'])
-    .withMessage('Invalid ad position')
+  param('position').custom(async (value) => {
+    const positions = await query('SELECT position_name FROM ads_positions WHERE position_name = ?', [value]);
+    if (positions.length === 0) {
+      throw new Error('Invalid ad position');
+    }
+    return true;
+  })
 ], async (req, res) => {
   try {
     const errors = validationResult(req);

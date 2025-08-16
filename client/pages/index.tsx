@@ -170,8 +170,15 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 <div className="hidden lg:flex lg:col-span-1 order-3 lg:order-2 items-center justify-center">
                   <div className="w-px h-full bg-gray-300 min-h-[400px]"></div>
                 </div>
-                <div className="lg:col-span-4 order-2 lg:order-3">
+                <div className="lg:col-span-4 order-2 lg:order-3 space-y-6">
                   <LastNewsBanner className="h-full" />
+                  {/* Sidebar Ad */}
+                  <div className="hidden lg:block">
+                    <AdBanner 
+                      position="sidebar_square" 
+                      className="max-w-full" 
+                    />
+                  </div>
                 </div>
               </div>
             </section>
@@ -181,7 +188,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
               {/* Mobile: Ad under Last News only */}
               <div className="block lg:hidden">
                 <AdBanner 
-                  position="main_top" 
+                  position="header_banner" 
                   className="max-w-full" 
                 />
               </div>
@@ -189,7 +196,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
               {/* Desktop: Ad under both Latest Articles and Last News */}
               <div className="hidden lg:block">
                 <AdBanner 
-                  position="main_top" 
+                  position="header_banner" 
                   className="max-w-full" 
                 />
               </div>
@@ -452,7 +459,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             {/* Middle Ad Section */}
             <section className="mb-16">
               <AdBanner 
-                position="main_middle" 
+                position="post_top" 
                 className="max-w-full" 
               />
             </section>
@@ -471,7 +478,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             {/* Bottom Ad Section */}
             <section className="mb-16">
               <AdBanner 
-                position="main_bottom" 
+                position="footer_banner" 
                 className="max-w-full" 
               />
             </section>
