@@ -123,7 +123,8 @@ class FootballService {
       for (let i = 0; i < leagueIds.length; i += 1) {
         const leagueId = leagueIds[i];
         try {
-          const endpoint = `/v3/fixtures?league=${leagueId}&date=${today}`;
+          const currentSeason = new Date().getFullYear();
+          const endpoint = `/v3/fixtures?league=${leagueId}&date=${today}&season=${currentSeason}`;
           const data = await this.makeRequest(endpoint);
           
           if (data && data.response && data.response.length > 0) {
