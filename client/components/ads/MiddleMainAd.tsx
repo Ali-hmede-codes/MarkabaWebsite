@@ -7,11 +7,15 @@ interface MiddleMainAdProps {
 
 const MiddleMainAd: React.FC<MiddleMainAdProps> = ({ className = '' }) => {
   return (
-    <div className={`middle-main-ad ${className}`}>
+    <div className={`middle-main-ad ${className} w-full max-w-6xl mx-auto`}>
       <AdDisplay 
         position="middle_main" 
-        className="w-full max-w-4xl mx-auto"
-        style={{ minHeight: '120px' }}
+        className="w-full"
+        style={{ 
+          height: '300px',
+          maxWidth: '1280px',
+          margin: '0 auto'
+        }}
       />
     </div>
   );

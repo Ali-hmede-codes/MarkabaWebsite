@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getImageUrl } from '../../utils/imageUtils';
+import { API_BASE_URL } from '../../lib/api/config';
 
 interface Ad {
   id: number;
@@ -33,7 +34,7 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`/api/ads/position/${position}`);
+      const response = await fetch(`${API_BASE_URL}/ads/position/${position}`);
       
       if (!response.ok) {
         if (response.status === 404) {
@@ -76,7 +77,7 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
     
     try {
       // Track the click
-      await fetch(`/api/ads/${ad.id}/click`, {
+      await fetch(`${API_BASE_URL}/ads/${ad.id}/click`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -122,7 +123,7 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
           src={getImageUrl(ad.image_url)}
           alt={ad.title}
           fill
-          className="object-cover"
+          className="object-contain"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         

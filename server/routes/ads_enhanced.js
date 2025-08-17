@@ -14,7 +14,7 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 
 // Process ad image function
-async function processAdImage(file, adId) {
+async function processAdImage(file, adId, width, height) {
   // Save images to server/public/uploads/general
   const uploadPath = path.join(__dirname, '../public/uploads/general');
   if (!fs.existsSync(uploadPath)) {
@@ -33,7 +33,7 @@ async function processAdImage(file, adId) {
   }
 
   await sharp(file.buffer)
-    .resize({ width: 1280, withoutEnlargement: true })
+    .resize({ width, height, fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 }, withoutEnlargement: true })
     .toFormat('jpeg', { quality: 85 })
     .toFile(filePath);
 
@@ -284,7 +284,7 @@ router.post('/',
       const adId = result.insertId;
       
       // Process and save image
-      const imagePath = await processAdImage(req.file, adId);
+      const imagePath = await processAdImage(req.file, adId, positions[0].width, positions[0].height);
       
       // Update ad with actual image path
       await db.execute(
@@ -380,7 +380,18 @@ router.put('/:id',
             fs.unlinkSync(oldImagePath);
           }
         }
-        updateData.image_path = await processAdImage(req.file, id);
+        const positionId = updateData.position_id || existingAd[0].position_id;
+        const [positions] = await db.execute(
+          'SELECT width, height FROM ad_positions WHERE id = ? AND is_active = 1',
+          [positionId]
+        );
+        if (positions.length === 0) {
+          return res.status(400).json({
+            success: false,
+            message: 'موقع الإعلان غير موجود أو غير نشط'
+          });
+        }
+        updateData.image_path = await processAdImage(req.file, id, positions[0].width, positions[0].height);
       }
       
       // Prepare update fields

@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 import YouTubePlayer from '../../components/Posts/YouTubePlayer';
 import { formatPostContent } from '../../utils/textFormatter';
-import { PostBottomAd, SidebarTopAd } from '../../components/ads';
+import { PostBottomAd, SidebarTopAd, SquarePostMiddleAd } from '../../components/ads';
 
 
 interface SinglePostPageProps {
@@ -328,8 +328,8 @@ const PostContent: React.FC<{
               }} 
             />
 
-            {/* Post Content Ad */}
-            <PostBottomAd />
+            {/* Square Ad Under Post Content */}
+            <SquarePostMiddleAd />
 
             {/* Back to Home Button */}
             <div className="flex justify-center mt-8 mb-6">
@@ -380,6 +380,9 @@ const PostContent: React.FC<{
                     </Link>
                   ))}
                 </div>
+                
+                {/* Horizontal Ad After Related Articles */}
+                <PostBottomAd />
               </div>
             )}
 
