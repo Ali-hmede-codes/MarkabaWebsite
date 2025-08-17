@@ -15,8 +15,8 @@ const storage = multer.memoryStorage();
 
 // Process ad image function
 async function processAdImage(file, adId) {
-  // Save images to server/public/uploads/ads
-  const uploadPath = path.join(__dirname, '../public/uploads/ads');
+  // Save images to server/public/uploads/general
+  const uploadPath = path.join(__dirname, '../public/uploads/general');
   if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
   }
@@ -37,7 +37,7 @@ async function processAdImage(file, adId) {
     .toFormat('jpeg', { quality: 85 })
     .toFile(filePath);
 
-  return `/uploads/ads/${filename}`;
+  return `/uploads/general/${filename}`;
 }
 
 const upload = multer({

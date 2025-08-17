@@ -7,6 +7,7 @@ import { FiPlus, FiEdit, FiTrash2, FiSearch, FiSave, FiX, FiEye, FiClock, FiImag
 import toast from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
 import { apiRequest } from '../../../lib/api';
+import { getImageUrl } from '../../../utils/imageUtils';
 
 interface AdPosition {
   id: number;
@@ -211,7 +212,7 @@ const AdsManagement: React.FC = () => {
       is_active: ad.is_active
     });
     setShowCreateForm(true);
-    setImagePreview(ad.image_path ? `/uploads/ads/${ad.image_path.split('/').pop()}` : null);
+    setImagePreview(ad.image_path ? getImageUrl(ad.image_path) : null);
   };
 
   // Reset form
@@ -258,7 +259,7 @@ const AdsManagement: React.FC = () => {
   // Get position name
   const getPositionName = (positionId: number) => {
     const position = positions.find(p => p.id === positionId);
-    return position ? position.display_name_ar : 'غير محدد';
+    return position ? `${position.display_name_ar} (${position.width}x${position.height})` : 'غير محدد';
   };
 
   // Check if ad is expired
@@ -283,7 +284,7 @@ const AdsManagement: React.FC = () => {
         <div className="flex justify-center items-center min-h-screen">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-red-600 mb-4">ليس لديك صلاحية للوصول إلى هذه الصفحة</h1>
-            <p className="text-gray-600">هذه الصفحة مخصصة للمديرين فقط</p>
+            <p className="text-red">هذه الصفحة مخصصة للمديرين فقط</p>
           </div>
         </div>
       </AdminLayout>
@@ -302,7 +303,7 @@ const AdsManagement: React.FC = () => {
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">إدارة الإعلانات</h1>
+              <h1 className="text-2xl font-bold text-black">إدارة الإعلانات</h1>
               <p className="text-gray-600 mt-1">إدارة الإعلانات في مواضع مختلفة من الموقع</p>
             </div>
             <div className="flex gap-3">
@@ -333,7 +334,7 @@ const AdsManagement: React.FC = () => {
                   placeholder="البحث في الإعلانات..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pr-10 pl-4 py-2 border border-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <select
@@ -369,27 +370,27 @@ const AdsManagement: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-black mb-1">
                       عنوان الإعلان *
                     </label>
                     <input
                       type="text"
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-black mb-1">
                       رابط الإعلان *
                     </label>
                     <input
                       type="url"
                       value={formData.link_url}
                       onChange={(e) => setFormData({ ...formData, link_url: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       placeholder="https://example.com"
                       required
                     />
@@ -439,7 +440,7 @@ const AdsManagement: React.FC = () => {
                     onChange={handleFileSelect}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-black mt-1">
                     الأنواع المدعومة: JPEG, PNG, GIF, WebP. الحد الأقصى: 5 ميجابايت
                   </p>
                   
@@ -532,7 +533,7 @@ const AdsManagement: React.FC = () => {
                           <div className="flex items-center">
                             {ad.image_path && (
                               <img
-                                src={`/uploads/ads/${ad.image_path.split('/').pop()}`}
+                                src={getImageUrl(ad.image_path)}
                                 alt={ad.title}
                                 className="w-16 h-12 object-cover rounded-lg ml-4"
                               />
