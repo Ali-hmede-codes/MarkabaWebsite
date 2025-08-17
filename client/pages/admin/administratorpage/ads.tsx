@@ -12,11 +12,10 @@ import { getImageUrl } from '../../../utils/imageUtils';
 interface AdPosition {
   id: number;
   name: string;
-  display_name_ar: string;
-  display_name_en: string;
+  name_ar: string;
   width: number;
   height: number;
-  is_active: boolean;
+  is_active?: boolean;
 }
 
 interface Ad {
@@ -259,7 +258,7 @@ const AdsManagement: React.FC = () => {
   // Get position name
   const getPositionName = (positionId: number) => {
     const position = positions.find(p => p.id === positionId);
-    return position ? `${position.display_name_ar} (${position.width}x${position.height})` : 'غير محدد';
+    return position ? `${position.name} (${position.width}x${position.height})` : 'غير محدد';
   };
 
   // Check if ad is expired
@@ -345,7 +344,7 @@ const AdsManagement: React.FC = () => {
                 <option value="">جميع المواضع</option>
                 {positions.map(position => (
                   <option key={position.id} value={position.id}>
-                    {position.display_name_ar} ({position.width}x{position.height})
+                    {position.name_ar}
                   </option>
                 ))}
               </select>
@@ -409,7 +408,7 @@ const AdsManagement: React.FC = () => {
                       <option value={0}>اختر الموضع</option>
                       {positions.map(position => (
                         <option key={position.id} value={position.id}>
-                          {position.display_name_ar} ({position.width}x{position.height})
+                          {position.name_ar}
                         </option>
                       ))}
                     </select>

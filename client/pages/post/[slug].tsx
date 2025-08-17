@@ -382,7 +382,9 @@ const PostContent: React.FC<{
                 </div>
                 
                 {/* Horizontal Ad After Related Articles */}
-                <PostBottomAd />
+                <div className="mt-8">
+                  <PostBottomAd />
+                </div>
               </div>
             )}
 

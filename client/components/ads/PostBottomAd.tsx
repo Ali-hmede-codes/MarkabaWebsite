@@ -12,9 +12,10 @@ const PostBottomAd: React.FC<PostBottomAdProps> = ({ className = '' }) => {
         position="post_bottom" 
         className="w-full"
         style={{ 
-          height: '300px',
+          height: 'clamp(100px, 12vw, 150px)',
           maxWidth: '1280px',
-          margin: '0 auto'
+          margin: '0 auto',
+          aspectRatio: '1280/150'
         }}
       />
     </div>
