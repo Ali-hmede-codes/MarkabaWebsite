@@ -81,11 +81,7 @@ router.get('/active', async (req, res) => {
 });
 
 // ✅ Track ad click (safe version)
-router.all('/:id/click', async (req, res) => {
-  if (req.method !== 'POST' && req.method !== 'GET') {
-    return res.status(405).json({ success: false, message: 'Method not allowed' });
-  }
-
+router.post('/:id/click', async (req, res) => {
   try {
     const { id } = req.params;
     console.log('Tracking click for ad id:', id);
@@ -110,8 +106,13 @@ router.all('/:id/click', async (req, res) => {
       [id]
     );
     console.log('DB update result:', result);
-
-    return res.json({ success: true, message: 'تم تسجيل النقرة بنجاح' });
+    console.log(`About to send success response, headersSent: ${res.headersSent}`);
+    if (!res.headersSent) {
+      return res.json({ success: true, message: 'تم تسجيل النقرة بنجاح' });
+    } 
+      console.error('Skipped sending success response: headers already sent');
+      
+    
   } catch (error) {
     console.error('Error tracking ad click:', error);
     // Only send error if headers not sent
