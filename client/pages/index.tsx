@@ -173,12 +173,16 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 </div>
                 <div className="lg:col-span-4 order-2 lg:order-3 space-y-6">
                   <LastNewsBanner className="h-full" />
-                  {/* Mobile Ad - Show under LastNewsBanner on mobile only */}
-                  <MainTopAd showOnMobile={true} showOnDesktop={false} className="mt-6" />
                   {/* Sidebar Ad */}
                   <SidebarTopAd />
                 </div>
               </div>
+              
+              {/* Mobile Ad - Show under LastNewsBanner on mobile only with proper spacing */}
+              <div className="lg:hidden mt-6 mb-6">
+                <MainTopAd showOnMobile={true} showOnDesktop={false} />
+              </div>
+              
               {/* Desktop Ad - Show under both LastNewsBanner and LatestArticles on desktop only */}
               <MainTopAd showOnMobile={false} showOnDesktop={true} className="mt-8" />
             </section>
