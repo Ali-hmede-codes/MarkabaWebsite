@@ -128,11 +128,13 @@ router.all('/:id/click', async (req, res) => {
     });
   } catch (error) {
     console.error('Error tracking ad click:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'خطأ في تسجيل النقرة',
-      error: error.message
-    });
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        message: 'خطأ في تسجيل النقرة',
+        error: error.message
+      });
+    }
   }
 });
 

@@ -45,7 +45,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
         <Toaster
           position="top-left"
           toastOptions={{
-            duration: 4000,
+            duration: 1000,
             style: {
               background: '#ffffff',
               color: '#111827',
