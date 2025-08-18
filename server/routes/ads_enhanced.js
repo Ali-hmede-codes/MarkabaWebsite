@@ -238,6 +238,18 @@ router.post('/',
 
       const { title, link_url, position_id, expire_date, start_date } = req.body;
       
+      // Process dates to ensure expire_date has the same time as start_date
+      const processedStartDate = start_date ? new Date(start_date) : new Date();
+      const processedExpireDate = new Date(expire_date);
+      
+      // Set expire_date time to match start_date time
+      processedExpireDate.setHours(
+        processedStartDate.getHours(),
+        processedStartDate.getMinutes(),
+        processedStartDate.getSeconds(),
+        processedStartDate.getMilliseconds()
+      );
+      
       // Check if position exists and is active
       const [positions] = await db.execute(
         'SELECT id, width, height FROM ad_positions WHERE id = ? AND is_active = 1',
@@ -274,8 +286,8 @@ router.post('/',
           title,
           link_url,
           position_id,
-          start_date || new Date(),
-          expire_date,
+          processedStartDate,
+          processedExpireDate,
           req.user.id,
           'temp' // Temporary path
         ]
@@ -392,6 +404,36 @@ router.put('/:id',
           });
         }
         updateData.image_path = await processAdImage(req.file, id, positions[0].width, positions[0].height);
+      }
+      
+      // Process dates if both start_date and expire_date are being updated
+      if (updateData.start_date && updateData.expire_date) {
+        const processedStartDate = new Date(updateData.start_date);
+        const processedExpireDate = new Date(updateData.expire_date);
+        
+        // Set expire_date time to match start_date time
+        processedExpireDate.setHours(
+          processedStartDate.getHours(),
+          processedStartDate.getMinutes(),
+          processedStartDate.getSeconds(),
+          processedStartDate.getMilliseconds()
+        );
+        
+        updateData.expire_date = processedExpireDate;
+      } else if (updateData.start_date && !updateData.expire_date) {
+        // If only start_date is updated, update expire_date to match the time
+        const processedStartDate = new Date(updateData.start_date);
+        const currentExpireDate = new Date(existingAd[0].expire_date);
+        
+        // Set expire_date time to match new start_date time
+        currentExpireDate.setHours(
+          processedStartDate.getHours(),
+          processedStartDate.getMinutes(),
+          processedStartDate.getSeconds(),
+          processedStartDate.getMilliseconds()
+        );
+        
+        updateData.expire_date = currentExpireDate;
       }
       
       // Prepare update fields
