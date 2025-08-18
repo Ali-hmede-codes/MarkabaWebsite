@@ -44,7 +44,7 @@ router.get('/position/:positionName', async (req, res) => {
   }
 });
 
-// ✅ Get all active ads (for homepage or general display)
+// ✅ Get all active ads
 router.get('/active', async (req, res) => {
   try {
     const [ads] = await db.execute(`
@@ -60,7 +60,6 @@ router.get('/active', async (req, res) => {
       ORDER BY ap.name, a.created_at DESC
     `);
 
-    // Group ads by position
     const adsByPosition = {};
     ads.forEach(ad => {
       if (!adsByPosition[ad.position_name]) {
@@ -81,7 +80,7 @@ router.get('/active', async (req, res) => {
   }
 });
 
-// ✅ Track ad click (public endpoint)
+// ✅ Track ad click (safe version)
 router.all('/:id/click', async (req, res) => {
   if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
@@ -91,63 +90,45 @@ router.all('/:id/click', async (req, res) => {
     const { id } = req.params;
     console.log('Tracking click for ad id:', id);
 
-    // Get ad info
     const [ads] = await db.execute(
       'SELECT id, clicks, expire_date FROM ads WHERE id = ? AND is_active = 1',
       [id]
     );
 
     if (ads.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'الإعلان غير موجود أو غير نشط'
-      });
+      return res.status(404).json({ success: false, message: 'الإعلان غير موجود أو غير نشط' });
     }
 
     const ad = ads[0];
 
-    // Check if ad is still active
     if (new Date(ad.expire_date) <= new Date()) {
-      return res.status(400).json({
-        success: false,
-        message: 'الإعلان منتهي الصلاحية'
-      });
+      return res.status(400).json({ success: false, message: 'الإعلان منتهي الصلاحية' });
     }
 
-    // Update click count
-    console.log('Updating click count for ad id:', id);
     const [result] = await db.execute(
       'UPDATE ads SET clicks = clicks + 1 WHERE id = ?',
       [id]
     );
     console.log('DB update result:', result);
 
-    return res.json({
-      success: true,
-      message: 'تم تسجيل النقرة بنجاح'
-    });
+    return res.json({ success: true, message: 'تم تسجيل النقرة بنجاح' });
   } catch (error) {
     console.error('Error tracking ad click:', error);
+    // Only send error if headers not sent
     if (!res.headersSent) {
-      return res.status(500).json({
-        success: false,
-        message: 'خطأ في تسجيل النقرة'
-      });
+      res.status(500).json({ success: false, message: 'خطأ في تسجيل النقرة' });
     }
   }
 });
 
-// ✅ Get ad positions (public - for frontend reference)
+// ✅ Get ad positions
 router.get('/positions', async (req, res) => {
   try {
     const [positions] = await db.execute(
       'SELECT name, name_ar, width, height FROM ad_positions WHERE is_active = 1 ORDER BY name'
     );
 
-    return res.json({
-      success: true,
-      data: positions
-    });
+    return res.json({ success: true, data: positions });
   } catch (error) {
     console.error('Error fetching ad positions:', error);
     return res.status(500).json({
