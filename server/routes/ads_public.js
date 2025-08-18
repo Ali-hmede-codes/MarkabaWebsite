@@ -87,7 +87,7 @@ router.all('/:id/click', async (req, res) => {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
   try {
-    const { id } = req.params;
+    const { id } = req.params.id;
     console.log('Tracking click for ad id:', id);
     
     // Get ad info first
