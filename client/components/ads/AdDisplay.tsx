@@ -122,7 +122,11 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
           src={`https://api.markaba.news${ad.image_url}`}
           alt={ad.title}
           fill
-          className="object-cover"
+          className={`${
+            position === 'main_top' || position === 'middle_main' || position === 'bottom_main' || position === 'post_bottom' 
+              ? 'object-contain' 
+              : 'object-cover'
+          }`}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         

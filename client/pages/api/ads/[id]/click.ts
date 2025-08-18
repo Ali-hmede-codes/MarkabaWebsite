@@ -51,13 +51,26 @@ export default async function handler(
     return res.status(200).json({
       success: true,
       message: 'Click tracked successfully',
-      clicks: data.clicks
+      clicks: data.clicks || 0
     });
   } catch (error) {
     console.error('Error tracking ad click:', error);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Internal server error';
+    if (error instanceof Error) {
+      if (error.message.includes('fetch')) {
+        errorMessage = 'Failed to connect to backend server';
+      } else if (error.message.includes('CORS')) {
+        errorMessage = 'Cross-origin request blocked';
+      } else if (error.message.includes('timeout')) {
+        errorMessage = 'Request timeout';
+      }
+    }
+    
     return res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: errorMessage
     });
   }
 }

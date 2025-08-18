@@ -105,13 +105,26 @@ router.post('/:id/click', async (req, res) => {
       'UPDATE ads SET clicks = clicks + 1 WHERE id = ?',
       [id]
     );
+    
+    // Get the updated clicks count
+    const [updatedAd] = await db.execute(
+      'SELECT clicks FROM ads WHERE id = ?',
+      [id]
+    );
+    
+    const clicks = updatedAd[0] && updatedAd[0].clicks ? updatedAd[0].clicks : 0;
     console.log('DB update result:', result);
     console.log(`About to send success response, headersSent: ${res.headersSent}`);
+    
     if (!res.headersSent) {
-      return res.json({ success: true, message: 'تم تسجيل النقرة بنجاح' });
+      return res.json({ 
+        success: true, 
+        message: 'تم تسجيل النقرة بنجاح',
+        clicks: clicks
+      });
     } 
-      console.error('Skipped sending success response: headers already sent');
-      
+       console.error('Skipped sending success response: headers already sent');
+     
     
   } catch (error) {
     console.error('Error tracking ad click:', error);
