@@ -31,13 +31,13 @@ router.get('/position/:positionName', async (req, res) => {
       });
     }
     
-    res.json({
+    return res.json({
       success: true,
       data: ads[0]
     });
   } catch (error) {
     console.error('Error fetching ad by position:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'خطأ في الخادم الداخلي'
     });
@@ -68,13 +68,13 @@ router.get('/active', async (req, res) => {
       }
     });
     
-    res.json({
+    return res.json({
       success: true,
       data: adsByPosition
     });
   } catch (error) {
     console.error('Error fetching active ads:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'خطأ في الخادم الداخلي'
     });
@@ -115,13 +115,13 @@ router.post('/:id/click', async (req, res) => {
       [id]
     );
     
-    res.json({
+    return res.json({
       success: true,
       message: 'تم تسجيل النقرة بنجاح'
     });
   } catch (error) {
     console.error('Error tracking ad click:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'خطأ في تسجيل النقرة'
     });
@@ -135,13 +135,13 @@ router.get('/positions', async (req, res) => {
       'SELECT name, name_ar, width, height FROM ad_positions WHERE is_active = 1 ORDER BY name'
     );
     
-    res.json({
+    return res.json({
       success: true,
       data: positions
     });
   } catch (error) {
     console.error('Error fetching ad positions:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'خطأ في الخادم الداخلي'
     });
