@@ -162,8 +162,6 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
           <BreakingNewsBanner />
 
           <div className="container mx-auto responsive-padding">
-            {/* Header Banner Ad */}
-            <MainTopAd />
             {/* Latest Articles and Last News Section */}
             <section className="mb-8 lg:mb-16">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6">
@@ -175,10 +173,14 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 </div>
                 <div className="lg:col-span-4 order-2 lg:order-3 space-y-6">
                   <LastNewsBanner className="h-full" />
+                  {/* Mobile Ad - Show under LastNewsBanner on mobile only */}
+                  <MainTopAd showOnMobile={true} showOnDesktop={false} className="mt-6" />
                   {/* Sidebar Ad */}
                   <SidebarTopAd />
                 </div>
               </div>
+              {/* Desktop Ad - Show under both LastNewsBanner and LatestArticles on desktop only */}
+              <MainTopAd showOnMobile={false} showOnDesktop={true} className="mt-8" />
             </section>
 
 
