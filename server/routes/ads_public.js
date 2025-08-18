@@ -88,6 +88,7 @@ router.all('/:id/click', async (req, res) => {
   }
   try {
     const { id } = req.params;
+    console.log('Tracking click for ad id:', id);
     
     // Get ad info first
     const [ads] = await db.execute(
@@ -103,6 +104,7 @@ router.all('/:id/click', async (req, res) => {
     }
     
     const ad = ads[0];
+    console.log('Found ad:', ad);
     
     // Check if ad is still active
     if (new Date(ad.expire_date) <= new Date()) {
@@ -113,10 +115,12 @@ router.all('/:id/click', async (req, res) => {
     }
     
     // Update click count
-    await db.execute(
+    console.log('Updating click count for ad id:', id);
+    const [result] = await db.execute(
       'UPDATE ads SET clicks = clicks + 1 WHERE id = ?',
       [id]
     );
+    console.log('DB update result:', result);
     
     return res.json({
       success: true,
@@ -126,7 +130,8 @@ router.all('/:id/click', async (req, res) => {
     console.error('Error tracking ad click:', error);
     return res.status(500).json({
       success: false,
-      message: 'خطأ في تسجيل النقرة'
+      message: 'خطأ في تسجيل النقرة',
+      error: error.message
     });
   }
 });
