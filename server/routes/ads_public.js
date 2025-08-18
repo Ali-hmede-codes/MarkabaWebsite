@@ -81,8 +81,11 @@ router.get('/active', async (req, res) => {
   }
 });
 
-// Track ad click (public endpoint)
-router.post('/:id/click', async (req, res) => {
+// Track ad click (public endpoint) - Allow both GET and POST
+router.all('/:id/click', async (req, res) => {
+  if (req.method !== 'POST' && req.method !== 'GET') {
+    return res.status(405).json({ success: false, message: 'Method not allowed' });
+  }
   try {
     const { id } = req.params;
     
