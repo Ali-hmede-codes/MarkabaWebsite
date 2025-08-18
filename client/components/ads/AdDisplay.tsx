@@ -71,7 +71,7 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
     }
   };
 
-  const handleAdClick = async () => {
+  const handleAdClick = async (e: React.MouseEvent) => {
     if (!ad) return;
     
     try {
@@ -82,13 +82,9 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
           'Content-Type': 'application/json',
         },
       });
-      
-      // Open the link
-      window.open(ad.link_url, '_blank', 'noopener,noreferrer');
     } catch (err) {
       console.error('Error tracking ad click:', err);
-      // Still open the link even if tracking fails
-      window.open(ad.link_url, '_blank', 'noopener,noreferrer');
+      // Continue with navigation even if tracking fails
     }
   };
 
@@ -104,18 +100,13 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
   }
 
   return (
-    <div 
-      className={`ad-container cursor-pointer transition-all duration-300 hover:opacity-90 ${className}`}
+    <a 
+      href={ad.link_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`ad-container cursor-pointer transition-all duration-300 hover:opacity-90 block ${className}`}
       style={style}
       onClick={handleAdClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleAdClick();
-        }
-      }}
     >
       <div className="relative w-full h-full overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
         <Image
@@ -144,7 +135,7 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
       <span className="sr-only">
         إعلان: {ad.title}
       </span>
-    </div>
+    </a>
   );
 };
 
