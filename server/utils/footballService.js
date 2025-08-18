@@ -19,9 +19,26 @@ class FootballService {
       2: 'UEFA Champions League',
       3: 'UEFA Europa League'
     };
+    
+    // Daily API request management
+    this.maxDailyRequests = 100;
+    this.dailyRequestCount = 0;
+    this.lastRequestReset = null;
+    this.refreshIntervals = [
+      { hour: 0, minute: 0 },   // Midnight - start of day
+      { hour: 6, minute: 0 },   // Morning
+      { hour: 12, minute: 0 },  // Noon
+      { hour: 18, minute: 0 },  // Evening
+      { hour: 21, minute: 0 }   // Night
+    ];
   }
 
   async makeRequest(endpoint) {
+    // Check if we can make the request
+    if (!this.canMakeRequest()) {
+      throw new Error(`Daily API request limit reached (${this.maxDailyRequests}). Try again tomorrow.`);
+    }
+
     return new Promise((resolve, reject) => {
       const options = {
         method: 'GET',
@@ -43,6 +60,8 @@ class FootballService {
 
         res.on('end', () => {
           try {
+            // Increment request count on successful request
+            this.incrementRequestCount();
             const body = Buffer.concat(chunks);
             const data = JSON.parse(body.toString());
             resolve(data);
@@ -74,6 +93,50 @@ class FootballService {
     }
   }
 
+  /**
+   * Check if we can make more API requests today
+   */
+  canMakeRequest() {
+    this.resetDailyCountIfNeeded();
+    return this.dailyRequestCount < this.maxDailyRequests;
+  }
+
+  /**
+   * Reset daily request count if it's a new day
+   */
+  resetDailyCountIfNeeded() {
+    const today = new Date().toDateString();
+    const lastReset = this.lastRequestReset ? new Date(this.lastRequestReset).toDateString() : null;
+    
+    if (today !== lastReset) {
+      this.dailyRequestCount = 0;
+      this.lastRequestReset = new Date().toISOString();
+      console.log('Daily API request count reset for football service');
+    }
+  }
+
+  /**
+   * Increment daily request count
+   */
+  incrementRequestCount() {
+    this.resetDailyCountIfNeeded();
+    this.dailyRequestCount += 1;
+    console.log(`Football API requests today: ${this.dailyRequestCount}/${this.maxDailyRequests}`);
+  }
+
+  /**
+   * Check if it's time for a scheduled refresh
+   */
+  isScheduledRefreshTime() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    return this.refreshIntervals.some(interval => 
+      interval.hour === currentHour && Math.abs(interval.minute - currentMinute) <= 5
+    );
+  }
+
   async updateLastFetch() {
     const footballData = await this.getFootballData();
     footballData.lastFetch = new Date().toISOString();
@@ -102,6 +165,87 @@ class FootballService {
     await fs.writeFile(this.footballDataFile, JSON.stringify(data, null, 2));
   }
 
+  /**
+   * Distributed daily refresh - fetches data multiple times per day
+   */
+  async distributedDailyRefresh() {
+    try {
+      console.log('Starting distributed daily football refresh...');
+      
+      if (!this.canMakeRequest()) {
+        console.log('Daily API request limit reached, skipping refresh');
+        return await this.getStoredMatches();
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      const allMatches = [];
+      const leagueIds = Object.keys(this.importantLeagues);
+      
+      // Calculate how many requests we can make this refresh
+      const remainingRequests = this.maxDailyRequests - this.dailyRequestCount;
+      const requestsPerRefresh = Math.min(Math.floor(remainingRequests / 2), leagueIds.length);
+      
+      console.log(`Making up to ${requestsPerRefresh} requests this refresh`);
+      
+      // Process a subset of leagues to distribute requests throughout the day
+      const currentHour = new Date().getHours();
+      const startIndex = (currentHour % leagueIds.length);
+      
+      const processDistributedLeague = async (leagueId) => {
+        try {
+          const currentSeason = new Date().getFullYear();
+          const endpoint = `/v3/fixtures?league=${leagueId}&date=${today}&season=${currentSeason}`;
+          const data = await this.makeRequest(endpoint);
+          
+          if (data && data.response && data.response.length > 0) {
+            console.log(`Fetched ${data.response.length} matches for ${this.importantLeagues[leagueId]}`);
+            return data.response;
+          }
+          
+          return [];
+        } catch (error) {
+          console.error(`Error fetching data for league ${leagueId}:`, error.message);
+          return [];
+        }
+      };
+      
+      /* eslint-disable no-await-in-loop */
+      for (let i = 0; i < requestsPerRefresh && i < leagueIds.length; i += 1) {
+        const leagueIndex = (startIndex + i) % leagueIds.length;
+        const leagueId = leagueIds[leagueIndex];
+        
+        const matches = await processDistributedLeague(leagueId);
+        allMatches.push(...matches);
+        
+        // Delay between requests
+        await new Promise((resolve) => {
+          setTimeout(resolve, 1000);
+        });
+      }
+      /* eslint-enable no-await-in-loop */
+
+      // Update stored data
+      const footballData = await this.getFootballData();
+      
+      // Merge new matches with existing ones, avoiding duplicates
+      const existingMatchIds = new Set(footballData.matches.map(match => match.fixture.id));
+      const newMatches = allMatches.filter(match => !existingMatchIds.has(match.fixture.id));
+      
+      footballData.matches = [...footballData.matches, ...newMatches];
+      footballData.lastFetch = new Date().toISOString();
+      footballData.timestamp = Date.now();
+      
+      await this.saveFootballData(footballData);
+      
+      console.log(`Distributed refresh completed. Added ${newMatches.length} new matches. Total: ${footballData.matches.length}`);
+      return footballData.matches;
+      
+    } catch (error) {
+      console.error('Error in distributed daily refresh:', error.message);
+      return await this.getStoredMatches();
+    }
+  }
+
   async fetchTodayMatches() {
     try {
       const shouldFetch = await this.shouldFetchToday();
@@ -119,27 +263,33 @@ class FootballService {
       const leagueIds = Object.keys(this.importantLeagues);
       
       // Process leagues sequentially to avoid rate limiting
-      /* eslint-disable no-await-in-loop */
-      for (let i = 0; i < leagueIds.length; i += 1) {
-        const leagueId = leagueIds[i];
+      const processLeague = async (leagueId) => {
         try {
           const currentSeason = new Date().getFullYear();
           const endpoint = `/v3/fixtures?league=${leagueId}&date=${today}&season=${currentSeason}`;
           const data = await this.makeRequest(endpoint);
           
           if (data && data.response && data.response.length > 0) {
-            allMatches.push(...data.response);
+            return data.response;
           }
           
-          // Small delay between requests to avoid rate limiting
-          await new Promise((resolve) => {
-            setTimeout(resolve, 500);
-          });
-          
+          return [];
         } catch (error) {
-          // Continue with other leagues even if one fails
           console.error(`Failed to fetch matches for league ${leagueId}:`, error.message);
+          return [];
         }
+      };
+      
+      /* eslint-disable no-await-in-loop */
+      for (let i = 0; i < leagueIds.length; i += 1) {
+        const leagueId = leagueIds[i];
+        const matches = await processLeague(leagueId);
+        allMatches.push(...matches);
+        
+        // Small delay between requests to avoid rate limiting
+        await new Promise((resolve) => {
+          setTimeout(resolve, 500);
+        });
       }
       /* eslint-enable no-await-in-loop */
       
@@ -223,18 +373,15 @@ class FootballService {
       const leagueEntries = Object.entries(this.importantLeagues);
       
       // Process leagues sequentially to avoid rate limiting
-      /* eslint-disable no-await-in-loop */
-      for (let i = 0; i < leagueEntries.length; i += 1) {
-        const [leagueId, leagueName] = leagueEntries[i];
+      const processLeagueData = async (leagueId, leagueName) => {
         try {
-          // Fetching data for league
-          
           // Fetch league standings
           const standingsEndpoint = `/v3/standings?league=${leagueId}&season=2024`;
           const standingsResponse = await this.makeRequest(standingsEndpoint);
           
+          let standings = null;
           if (standingsResponse && standingsResponse.response && standingsResponse.response.length > 0) {
-            standingsData[leagueId] = {
+            standings = {
               league: standingsResponse.response[0].league,
               standings: standingsResponse.response[0].league.standings[0] || []
             };
@@ -251,8 +398,9 @@ class FootballService {
           const fixturesEndpoint = `/v3/fixtures?league=${leagueId}&from=${today.toISOString().split('T')[0]}&to=${nextWeek.toISOString().split('T')[0]}`;
           const fixturesResponse = await this.makeRequest(fixturesEndpoint);
           
+          let fixtures = null;
           if (fixturesResponse && fixturesResponse.response) {
-            leaguesData[leagueId] = {
+            fixtures = {
               id: parseInt(leagueId, 10),
               name: leagueName,
               fixtures: fixturesResponse.response,
@@ -260,15 +408,30 @@ class FootballService {
             };
           }
           
-          // Another delay between requests
-          await new Promise((resolve) => {
-            setTimeout(resolve, 1000);
-          });
-          
+          return { standings, fixtures };
         } catch (error) {
-          // Error fetching league data - continuing with next league
-          // Continue with other leagues even if one fails
+          console.error(`Error fetching league data for ${leagueId}:`, error.message);
+          return { standings: null, fixtures: null };
         }
+      };
+      
+      /* eslint-disable no-await-in-loop */
+      for (let i = 0; i < leagueEntries.length; i += 1) {
+        const [leagueId, leagueName] = leagueEntries[i];
+        const { standings, fixtures } = await processLeagueData(leagueId, leagueName);
+        
+        if (standings) {
+          standingsData[leagueId] = standings;
+        }
+        
+        if (fixtures) {
+          leaguesData[leagueId] = fixtures;
+        }
+        
+        // Another delay between requests
+        await new Promise((resolve) => {
+          setTimeout(resolve, 1000);
+        });
       }
       /* eslint-enable no-await-in-loop */
       

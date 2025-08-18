@@ -87,31 +87,53 @@ router.get('/matches/team/:teamId', async (req, res) => {
   }
 });
 
-// Force refresh matches (admin only - bypasses daily limit)
+// Force refresh matches using distributed refresh system
 router.post('/matches/refresh', async (req, res) => {
   try {
-    // Remove the last fetch record to force a new fetch
-    const lastFetchFile = path.join(__dirname, '../data/football_last_fetch.json');
+    // Use the new distributed refresh method
+    const matches = await footballService.distributedDailyRefresh();
     
-    try {
-      await fs.unlink(lastFetchFile);
-    } catch (error) {
-      // File might not exist, that's okay
-    }
-    
-    const matches = await footballService.fetchTodayMatches();
-    res.json({
+    return res.json({
       success: true,
-      message: 'Matches refreshed successfully',
+      message: 'Matches refreshed successfully using distributed system',
+      data: matches,
+      apiRequestsUsed: footballService.dailyRequestCount,
+      maxDailyRequests: footballService.maxDailyRequests
+    });
+  } catch (error) {
+    console.error('Error in refresh endpoint:', error.message);
+    
+    // Only send response if headers haven't been sent
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to refresh matches',
+        error: error.message
+      });
+    }
+  }
+});
+
+// Legacy refresh endpoint (fallback)
+router.post('/matches/refresh/legacy', async (req, res) => {
+  try {
+    const matches = await footballService.fetchTodayMatches();
+    
+    return res.json({
+      success: true,
+      message: 'Matches refreshed successfully (legacy method)',
       data: matches
     });
   } catch (error) {
-    // Error refreshing matches
-    res.status(500).json({
-      success: false,
-      message: 'Failed to refresh matches',
-      error: error.message
-    });
+    console.error('Error in legacy refresh endpoint:', error.message);
+    
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to refresh matches',
+        error: error.message
+      });
+    }
   }
 });
 

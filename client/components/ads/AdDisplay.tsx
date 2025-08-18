@@ -75,8 +75,8 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
     if (!ad) return;
     
     try {
-      // Track the click
-      await fetch(`${API_BASE_URL}/ads/${ad.id}/click`, {
+      // Track the click using Next.js API route
+      await fetch(`/api/ads/${ad.id}/click`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

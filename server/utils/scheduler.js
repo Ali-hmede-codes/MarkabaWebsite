@@ -95,25 +95,69 @@ class Scheduler {
    * Start football data update scheduler
    */
   startFootballUpdates() {
-    const schedule = process.env.FOOTBALL_UPDATE_SCHEDULE || '0 7 * * *'; // Default: 7:00 AM daily
+    const timezone = process.env.TIMEZONE || 'Asia/Beirut';
     
-    console.log(`Scheduling football updates with cron: ${schedule}`);
-    
-    const task = cron.schedule(schedule, async () => {
+    // Main daily refresh at midnight (00:00)
+    console.log('Scheduling football midnight refresh: 0 0 * * * (Asia/Beirut)');
+    const midnightTask = cron.schedule('0 0 * * *', async () => {
+      console.log('Running midnight football data refresh...');
       try {
-        console.log('Running scheduled football update...');
-        await this.triggerFootballUpdate();
-        console.log('Scheduled football update completed');
+        // Reset daily request count at midnight
+        this.footballService.resetDailyCountIfNeeded();
+        await this.footballService.distributedDailyRefresh();
+        console.log('Midnight football refresh completed successfully');
       } catch (error) {
-        console.error('Error in scheduled football update:', error);
+        console.error('Midnight football refresh failed:', error.message);
       }
     }, {
       scheduled: true,
-      timezone: 'Asia/Beirut' // Lebanon timezone
+      timezone: timezone
+    });
+
+    // Distributed refreshes throughout the day
+    const refreshTimes = ['0 6 * * *', '0 12 * * *', '0 18 * * *', '0 21 * * *'];
+    const refreshNames = ['morning', 'noon', 'evening', 'night'];
+    
+    refreshTimes.forEach((schedule, index) => {
+      const name = refreshNames[index];
+      console.log(`Scheduling football ${name} refresh: ${schedule} (${timezone})`);
+      
+      const task = cron.schedule(schedule, async () => {
+        console.log(`Running ${name} football data refresh...`);
+        try {
+          await this.footballService.distributedDailyRefresh();
+          console.log(`${name} football refresh completed successfully`);
+        } catch (error) {
+          console.error(`${name} football refresh failed:`, error.message);
+        }
+      }, {
+        scheduled: true,
+        timezone: timezone
+      });
+      
+      this.tasks.set(`football${name.charAt(0).toUpperCase() + name.slice(1)}Update`, task);
+    });
+
+    // Keep the original schedule as backup (7:00 AM)
+    const footballSchedule = process.env.FOOTBALL_UPDATE_SCHEDULE || '0 7 * * *';
+    console.log(`Scheduling backup football update: ${footballSchedule} (${timezone})`);
+    
+    const backupTask = cron.schedule(footballSchedule, async () => {
+      console.log('Running backup scheduled football data update...');
+      try {
+        await this.triggerFootballUpdate();
+        console.log('Backup scheduled football update completed successfully');
+      } catch (error) {
+        console.error('Backup scheduled football update failed:', error.message);
+      }
+    }, {
+      scheduled: true,
+      timezone: timezone
     });
     
-    this.tasks.set('footballUpdate', task);
-    console.log('Football update scheduler started');
+    this.tasks.set('footballMidnightUpdate', midnightTask);
+    this.tasks.set('footballBackupUpdate', backupTask);
+    console.log('Football update scheduler started with distributed refreshes');
   }
 
   /**
@@ -165,13 +209,34 @@ class Scheduler {
    * Get scheduler status
    */
   getStatus() {
-    const tasks = Array.from(this.tasks.keys());
+    const activeTasks = [];
+    
+    this.tasks.forEach((task, name) => {
+      activeTasks.push({
+        name,
+        running: task.running || false,
+        scheduled: true
+      });
+    });
+    
     return {
-      isRunning: tasks.length > 0,
-      activeTasks: tasks,
-      weatherSchedule: process.env.WEATHER_UPDATE_SCHEDULE || '0 6 * * *',
-      prayerSchedule: process.env.PRAYER_UPDATE_SCHEDULE || '0 5 * * *',
-      footballSchedule: process.env.FOOTBALL_UPDATE_SCHEDULE || '0 7 * * *'
+      activeTasks,
+      totalTasks: this.tasks.size,
+      schedules: {
+        weather: process.env.WEATHER_UPDATE_SCHEDULE || '0 6 * * *',
+        prayer: process.env.PRAYER_UPDATE_SCHEDULE || '0 5 * * *',
+        footballMidnight: '0 0 * * *',
+        footballMorning: '0 6 * * *',
+        footballNoon: '0 12 * * *',
+        footballEvening: '0 18 * * *',
+        footballNight: '0 21 * * *',
+        footballBackup: process.env.FOOTBALL_UPDATE_SCHEDULE || '0 7 * * *'
+      },
+      footballApiLimits: {
+        maxDailyRequests: (this.footballService && this.footballService.maxDailyRequests) || 100,
+        currentDailyCount: (this.footballService && this.footballService.dailyRequestCount) || 0,
+        lastReset: (this.footballService && this.footballService.lastRequestReset) || null
+      }
     };
   }
 
