@@ -84,7 +84,6 @@ router.get('/active', async (req, res) => {
 router.post('/:id/click', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log('Tracking click for ad id:', id);
 
     const [ads] = await db.execute(
       'SELECT id, clicks, expire_date FROM ads WHERE id = ? AND is_active = 1',
@@ -101,7 +100,7 @@ router.post('/:id/click', async (req, res) => {
       return res.status(400).json({ success: false, message: 'الإعلان منتهي الصلاحية' });
     }
 
-    const [result] = await db.execute(
+    await db.execute(
       'UPDATE ads SET clicks = clicks + 1 WHERE id = ?',
       [id]
     );
@@ -113,25 +112,15 @@ router.post('/:id/click', async (req, res) => {
     );
     
     const clicks = updatedAd[0] && updatedAd[0].clicks ? updatedAd[0].clicks : 0;
-    console.log('DB update result:', result);
-    console.log(`About to send success response, headersSent: ${res.headersSent}`);
     
-    if (!res.headersSent) {
-      return res.json({ 
-        success: true, 
-        message: 'تم تسجيل النقرة بنجاح',
-        clicks: clicks
-      });
-    } 
-       console.error('Skipped sending success response: headers already sent');
-     
+    return res.json({ 
+      success: true, 
+      message: 'تم تسجيل النقرة بنجاح',
+      clicks: clicks
+    });
     
   } catch (error) {
-    console.error('Error tracking ad click:', error);
-    // Only send error if headers not sent
-    if (!res.headersSent) {
-      res.status(500).json({ success: false, message: 'خطأ في تسجيل النقرة' });
-    }
+    return res.status(500).json({ success: false, message: 'خطأ في تسجيل النقرة' });
   }
 });
 

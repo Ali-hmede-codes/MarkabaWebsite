@@ -27,7 +27,7 @@ interface Ad {
   position_name?: string;
   start_date: string;
   expire_date: string;
-  click_count: number;
+  clicks: number;
   is_active: boolean;
   created_by: number;
   created_at: string;
@@ -561,7 +561,7 @@ const AdsManagement: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {ad.click_count?.toLocaleString() ?? '0'}
+                          <span className="font-semibold text-blue-600">{ad.clicks?.toLocaleString() ?? '0'}</span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {ad.expire_date ? new Date(ad.expire_date).toLocaleDateString('ar-SA') : 'غير محدد'}
