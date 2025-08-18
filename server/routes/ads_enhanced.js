@@ -34,7 +34,7 @@ async function processAdImage(file, adId, width, height) {
 
   await sharp(file.buffer)
     .resize({ width, height, fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 }, withoutEnlargement: true })
-    .toFormat('jpeg', { quality: 85 })
+    .toFormat('jpeg', { quality: 100 })
     .toFile(filePath);
 
   return `/uploads/general/${filename}`;
