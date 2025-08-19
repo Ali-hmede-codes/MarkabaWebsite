@@ -56,10 +56,9 @@ const AboutPage: React.FC = () => {
         const response = await fetch('/api/team');
         if (response.ok) {
           const data = await response.json();
-          // Handle team members response structure and filter out admin users
+          // Handle team members response structure - show all team members including admins
           const teamArray = data.data || data.team || data || [];
-          const filteredTeam = Array.isArray(teamArray) ? teamArray.filter(user => user.role !== 'admin') : [];
-          setUsers(filteredTeam);
+          setUsers(Array.isArray(teamArray) ? teamArray : []);
         }
       } catch (error) {
         console.error('Error fetching team members:', error);
@@ -114,7 +113,7 @@ const AboutPage: React.FC = () => {
     };
   };
 
-  // Transform users (admin already filtered out in fetch)
+  // Transform all users to display format
   const teamMembers = users.map(transformUserToAdmin);
 
   // Arabic-only stats data
