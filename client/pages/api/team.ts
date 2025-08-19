@@ -16,8 +16,8 @@ export default async function handler(
   }
   
   try {
-    // Build the backend URL for public team endpoint
-    const backendUrl = `${API_BASE_URL}/team`;
+    // Use the production backend URL for team endpoint
+    const backendUrl = 'https://api.markaba.news/api/team';
     
     // Make request to backend (no authentication required)
     const response = await fetch(backendUrl, {
