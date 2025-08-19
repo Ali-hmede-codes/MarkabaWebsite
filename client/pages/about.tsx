@@ -51,25 +51,25 @@ const AboutPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch users from API
+  // Fetch team members from API
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchTeamMembers = async () => {
       try {
-        const response = await fetch('/api/users');
+        const response = await fetch('/api/team');
         if (response.ok) {
           const data = await response.json();
-          // Handle different response structures
-          const usersArray = data.data || data.users || data || [];
-          setUsers(Array.isArray(usersArray) ? usersArray : []);
+          // Handle team members response structure
+          const teamArray = data.data || data.team || data || [];
+          setUsers(Array.isArray(teamArray) ? teamArray : []);
         }
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching team members:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUsers();
+    fetchTeamMembers();
   }, []);
 
   // Editable Content - Easy to modify without database
@@ -110,7 +110,7 @@ const AboutPage: React.FC = () => {
       isActive: user.is_active,
       permissions: permissions[user.role] || [],
       gradient: gradients[index % gradients.length],
-      joinDate: new Date(user.created_at).toLocaleDateString('ar-SA')
+      joinDate: new Date(user.created_at).toLocaleDateString('en-GB')
     };
   };
 
@@ -231,7 +231,7 @@ const AboutPage: React.FC = () => {
 
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 bg-clip-text text-transparent break-words">
             {aboutContent.title}
           </h1>
           <p className="text-xl md:text-2xl text-black dark:text-black max-w-4xl mx-auto leading-relaxed">
@@ -328,7 +328,7 @@ const AboutPage: React.FC = () => {
               <p className="mt-4 text-black dark:text-black">جاري تحميل بيانات الفريق...</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {activeAdmins.map((admin, index) => (
                 <div key={admin.id} className="text-center group">
                   <div className={`relative mb-4 mx-auto w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br ${admin.gradient} group-hover:scale-105 transition-all duration-300 shadow-lg group-hover:shadow-xl`}>
@@ -360,12 +360,12 @@ const AboutPage: React.FC = () => {
         </div>
 
         {/* Contact CTA */}
-        <div className="text-center bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-3xl p-8 md:p-12 border border-blue-100 dark:border-blue-800/30">
+        <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-900 rounded-3xl p-8 md:p-12 border border-blue-200 dark:border-blue-700 shadow-xl">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
               تواصل معنا
             </h2>
-            <p className="text-lg text-black dark:text-black mb-8 leading-relaxed">
+            <p className="text-lg text-gray-700 dark:text-gray-300 mb-8 leading-relaxed">
               {aboutContent.contactDescription}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -377,7 +377,7 @@ const AboutPage: React.FC = () => {
               </Link>
               <Link
                 href="mailto:info@newsmarkaba.com"
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-black dark:text-black bg-white dark:bg-gray-300 border-2 border-blue-200 dark:border-blue-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-blue-700 dark:text-blue-300 bg-white dark:bg-gray-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 راسلنا عبر البريد
               </Link>

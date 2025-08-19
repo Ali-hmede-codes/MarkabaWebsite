@@ -35,6 +35,7 @@ const socialMediaEnhancedRoutes = require('./routes/socialMedia_enhanced');
 const footballEnhancedRoutes = require('./routes/football_enhanced');
 const adsEnhancedRoutes = require('./routes/ads_enhanced');
 const adsPublicRoutes = require('./routes/ads_public');
+const teamPublicRoutes = require('./routes/team_public');
 // Import ad expiration service
 const adExpirationService = require('./services/adExpirationService');
 // Import admin routes
@@ -432,6 +433,7 @@ app.use('/api/social-media', socialMediaEnhancedRoutes);
 app.use('/api/football', footballEnhancedRoutes);
 app.use('/api/ads', adsPublicRoutes);
 app.use('/api/admin/ads', adsEnhancedRoutes);
+app.use('/api/team', teamPublicRoutes);
 
 app.use('/api/admin/administratorpage', adminRoutes);
 
