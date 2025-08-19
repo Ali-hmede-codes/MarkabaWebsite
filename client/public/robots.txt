@@ -24,8 +24,7 @@ Disallow: /search?*
 Crawl-delay: 1
 
 # Sitemap locations
-Sitemap: https://markaba.news/sitemap.xml
-Sitemap: https://markaba.news/sitemap-main.xml
+Sitemap: https://markaba.news/api/sitemap-index.xml
 
 # Block malicious bots
 User-agent: AhrefsBot

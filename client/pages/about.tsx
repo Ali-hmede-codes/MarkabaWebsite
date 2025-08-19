@@ -1,6 +1,17 @@
 'use client';
 
-import React from 'react';
+/**
+ * About Us Page - Dynamic Content Management
+ * 
+ * To edit content, modify the following objects in this file:
+ * 1. aboutContent - Main page content (title, description, mission, etc.)
+ * 2. stats - Statistics displayed on the page
+ * 3. values - Company values section
+ * 
+ * Admin users are now fetched dynamically from the database.
+ */
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -9,107 +20,161 @@ import {
   ClockIcon,
   ShieldCheckIcon,
   HeartIcon,
-  StarIcon
+  StarIcon,
+  SparklesIcon,
+  TrophyIcon,
+  EyeIcon,
+  CheckBadgeIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 import { useTheme } from '@/context/ThemeContext';
 import { useSettingsContext } from '@/context/SettingsContext';
 import Layout from '../components/Layout/Layout';
 
+// User interface for API data
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  display_name: string;
+  role: 'admin' | 'editor' | 'author';
+  is_active: boolean;
+  last_login: string | null;
+  posts_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
 const AboutPage: React.FC = () => {
   const { theme } = useTheme();
   const { getSetting } = useSettingsContext();
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const aboutTitle = getSetting('about_us_title', theme.language);
-  const aboutContent = getSetting('about_us_content', theme.language);
+  // Fetch users from API
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/users');
+        if (response.ok) {
+          const data = await response.json();
+          setUsers(data.users || []);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchUsers();
+  }, []);
+
+  // Editable Content - Easy to modify without database
+  const aboutContent = {
+    title: 'من نحن',
+    description: 'نحن فريق من الصحفيين المتخصصين والمحررين المحترفين نسعى لتقديم أحدث الأخبار والتحليلات العميقة بمصداقية وشفافية عالية، مع التزامنا بالمعايير المهنية والأخلاقية في الصحافة',
+    mission: 'نسعى إلى أن نكون المصدر الأول والأكثر موثوقية للأخبار في المنطقة، من خلال تقديم تغطية شاملة ومتوازنة للأحداث المحلية والعالمية، مع الحفاظ على أعلى معايير الجودة والمهنية في العمل الصحفي والالتزام بالحقيقة والشفافية',
+    teamDescription: 'تعرف على الفريق المتخصص والمحترف الذي يعمل بجد وإخلاص لتقديم أفضل المحتوى الإخباري والتحليلات العميقة',
+    contactDescription: 'نحن نقدر آراءكم واقتراحاتكم ونرحب بتواصلكم معنا. شاركونا أفكاركم وملاحظاتكم لنستمر في تطوير خدماتنا الإخبارية'
+  };
+
+  // Transform API users to display format
+  const transformUserToAdmin = (user: User, index: number) => {
+    const gradients = [
+      'from-blue-600 to-purple-600',
+      'from-green-600 to-teal-600',
+      'from-orange-600 to-red-600',
+      'from-purple-600 to-pink-600',
+      'from-indigo-600 to-blue-600'
+    ];
+
+    const roleTranslations = {
+      admin: 'مدير الموقع',
+      editor: 'محرر',
+      author: 'كاتب'
+    };
+
+    const permissions = {
+      admin: ['إدارة المحتوى', 'إدارة المستخدمين', 'النشر والتحرير'],
+      editor: ['تحرير المقالات', 'مراجعة المحتوى', 'إدارة الكتاب'],
+      author: ['كتابة المقالات', 'إنشاء المحتوى']
+    };
+
+    return {
+      id: user.id,
+      name: user.display_name || user.username,
+      role: roleTranslations[user.role] || user.role,
+      isActive: user.is_active,
+      permissions: permissions[user.role] || [],
+      gradient: gradients[index % gradients.length],
+      joinDate: new Date(user.created_at).toLocaleDateString('ar-SA')
+    };
+  };
+
+  // Filter active users and transform them
+  const activeAdmins = users
+    .filter(user => user.is_active)
+    .map(transformUserToAdmin);
+
+  // Arabic-only stats data
   const stats = [
     {
       icon: UserGroupIcon,
       value: '50K+',
-      label: theme.language === 'ar' ? 'قارئ يومي' : 'Daily Readers'
+      label: 'قارئ يومي',
+      color: 'from-blue-500 to-cyan-500'
     },
     {
       icon: GlobeAltIcon,
       value: '25+',
-      label: theme.language === 'ar' ? 'دولة' : 'Countries'
+      label: 'دولة',
+      color: 'from-green-500 to-emerald-500'
     },
     {
       icon: ClockIcon,
       value: '24/7',
-      label: theme.language === 'ar' ? 'تغطية مستمرة' : 'Continuous Coverage'
+      label: 'تغطية مستمرة',
+      color: 'from-purple-500 to-violet-500'
     },
     {
-      icon: StarIcon,
+      icon: TrophyIcon,
       value: '1000+',
-      label: theme.language === 'ar' ? 'مقال شهرياً' : 'Articles Monthly'
+      label: 'مقال شهرياً',
+      color: 'from-orange-500 to-red-500'
     }
   ];
+
+
 
   const values = [
     {
-      icon: ShieldCheckIcon,
-      title: theme.language === 'ar' ? 'المصداقية' : 'Credibility',
-      description: theme.language === 'ar' 
-        ? 'نلتزم بتقديم أخبار موثوقة ومدققة من مصادر معتمدة'
-        : 'We are committed to providing reliable and verified news from trusted sources'
+      icon: CheckBadgeIcon,
+      title: 'المصداقية والثقة',
+      description: 'نلتزم بتقديم أخبار موثوقة ومدققة من مصادر معتمدة مع الحفاظ على أعلى معايير الصحافة المهنية',
+      color: 'from-emerald-500 to-teal-500'
     },
     {
-      icon: ClockIcon,
-      title: theme.language === 'ar' ? 'السرعة' : 'Speed',
-      description: theme.language === 'ar' 
-        ? 'نحرص على تقديم الأخبار العاجلة بأسرع وقت ممكن'
-        : 'We strive to deliver breaking news as quickly as possible'
+      icon: SparklesIcon,
+      title: 'السرعة والدقة',
+      description: 'نحرص على تقديم الأخبار العاجلة بأسرع وقت ممكن مع ضمان دقة المعلومات وصحتها',
+      color: 'from-blue-500 to-indigo-500'
     },
     {
-      icon: GlobeAltIcon,
-      title: theme.language === 'ar' ? 'الشمولية' : 'Comprehensive Coverage',
-      description: theme.language === 'ar' 
-        ? 'نغطي جميع المجالات من السياسة إلى الرياضة والتكنولوجيا'
-        : 'We cover all areas from politics to sports and technology'
+      icon: EyeIcon,
+      title: 'الشمولية والتنوع',
+      description: 'نغطي جميع المجالات من السياسة والاقتصاد إلى الرياضة والتكنولوجيا والثقافة',
+      color: 'from-purple-500 to-pink-500'
     },
     {
       icon: HeartIcon,
-      title: theme.language === 'ar' ? 'خدمة المجتمع' : 'Community Service',
-      description: theme.language === 'ar' 
-        ? 'نهدف إلى خدمة المجتمع وتوعيته بأهم الأحداث والقضايا'
-        : 'We aim to serve the community and raise awareness of important events and issues'
+      title: 'خدمة المجتمع',
+      description: 'نهدف إلى خدمة المجتمع وتوعيته بأهم الأحداث والقضايا المعاصرة بموضوعية تامة',
+      color: 'from-rose-500 to-orange-500'
     }
   ];
 
-  const team = [
-    {
-      name: theme.language === 'ar' ? 'أحمد محمد' : 'Ahmed Mohammed',
-      role: theme.language === 'ar' ? 'رئيس التحرير' : 'Editor-in-Chief',
-      image: '/images/team/editor-chief.jpg',
-      bio: theme.language === 'ar' 
-        ? 'صحفي متخصص بخبرة تزيد عن 15 عاماً في مجال الإعلام'
-        : 'Specialized journalist with over 15 years of experience in media'
-    },
-    {
-      name: theme.language === 'ar' ? 'فاطمة علي' : 'Fatima Ali',
-      role: theme.language === 'ar' ? 'محررة الأخبار السياسية' : 'Political News Editor',
-      image: '/images/team/political-editor.jpg',
-      bio: theme.language === 'ar' 
-        ? 'متخصصة في الشؤون السياسية والدولية'
-        : 'Specialist in political and international affairs'
-    },
-    {
-      name: theme.language === 'ar' ? 'محمد حسن' : 'Mohammed Hassan',
-      role: theme.language === 'ar' ? 'محرر الأخبار الرياضية' : 'Sports News Editor',
-      image: '/images/team/sports-editor.jpg',
-      bio: theme.language === 'ar' 
-        ? 'خبير في الأخبار الرياضية المحلية والعالمية'
-        : 'Expert in local and international sports news'
-    },
-    {
-      name: theme.language === 'ar' ? 'سارة أحمد' : 'Sara Ahmed',
-      role: theme.language === 'ar' ? 'محررة التكنولوجيا' : 'Technology Editor',
-      image: '/images/team/tech-editor.jpg',
-      bio: theme.language === 'ar' 
-        ? 'متخصصة في أخبار التكنولوجيا والابتكار'
-        : 'Specialist in technology and innovation news'
-    }
-  ];
+
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -121,15 +186,15 @@ const AboutPage: React.FC = () => {
     url: typeof window !== 'undefined' ? window.location.href : '',
     mainEntity: {
       '@type': 'Organization',
-      name: theme.language === 'ar' ? 'موقع الأخبار' : 'News Website',
-      description: theme.language === 'ar' 
-        ? 'موقع إخباري شامل يقدم أحدث الأخبار المحلية والعالمية'
-        : 'Comprehensive news website providing the latest local and international news',
+      name: 'نيوز مركبا',
+      url: 'https://newsmarkaba.com',
+      logo: 'https://newsmarkaba.com/logo.png',
+      description: 'موقع إخباري يقدم آخر الأخبار المحلية والعالمية',
       foundingDate: '2020',
-      employee: team.map(member => ({
+      employee: activeAdmins.map(admin => ({
         '@type': 'Person',
-        name: member.name,
-        jobTitle: member.role
+        name: admin.name,
+        jobTitle: admin.role
       }))
     }
   };
@@ -168,15 +233,17 @@ const AboutPage: React.FC = () => {
 
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            {aboutTitle || (theme.language === 'ar' ? 'عن موقع الأخبار' : 'About News Website')}
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 bg-clip-text text-transparent">
+            {aboutContent.title}
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            {aboutContent || (theme.language === 'ar' 
-              ? 'نحن موقع إخباري شامل يهدف إلى تقديم أحدث الأخبار المحلية والعالمية بمصداقية وموضوعية عالية، مع التركيز على خدمة المجتمع وتوعيته بأهم الأحداث والقضايا المعاصرة'
-              : 'We are a comprehensive news website that aims to provide the latest local and international news with high credibility and objectivity, focusing on serving the community and raising awareness of the most important contemporary events and issues'
-            )}
+          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            {aboutContent.description}
           </p>
+          <div className="mt-8 flex justify-center space-x-4 rtl:space-x-reverse">
+            <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+            <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-teal-500 rounded-full"></div>
+            <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full"></div>
+          </div>
         </div>
 
         {/* Stats Section */}
@@ -200,42 +267,17 @@ const AboutPage: React.FC = () => {
         </div>
 
         {/* Mission Section */}
-        <div className="mb-16">
-          <div className="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-2xl p-8 md:p-12">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-                {theme.language === 'ar' ? 'مهمتنا' : 'Our Mission'}
+        <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-teal-600 dark:from-blue-800 dark:via-purple-800 dark:to-teal-800 rounded-3xl p-8 md:p-12 text-white mb-16 shadow-2xl">
+          <div className="text-center relative">
+            <div className="absolute inset-0 bg-white/10 rounded-3xl backdrop-blur-sm"></div>
+            <div className="relative z-10">
+              <SparklesIcon className="w-16 h-16 mx-auto mb-6 text-yellow-300" />
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                رسالتنا
               </h2>
-              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
-                {theme.language === 'ar' 
-                  ? 'مهمتنا هي تقديم أخبار موثوقة ومتوازنة تساعد القراء على فهم العالم من حولهم واتخاذ قرارات مدروسة. نسعى لأن نكون المصدر الأول للأخبار في المنطقة من خلال الالتزام بأعلى معايير الصحافة المهنية والأخلاقية'
-                  : 'Our mission is to provide reliable and balanced news that helps readers understand the world around them and make informed decisions. We strive to be the primary source of news in the region by adhering to the highest standards of professional and ethical journalism'
-                }
+              <p className="text-lg md:text-xl leading-relaxed max-w-4xl mx-auto">
+                {aboutContent.mission}
               </p>
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="text-center">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                    {theme.language === 'ar' ? 'رؤيتنا' : 'Our Vision'}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {theme.language === 'ar' 
-                      ? 'أن نكون المنصة الإخبارية الرائدة في المنطقة'
-                      : 'To be the leading news platform in the region'
-                    }
-                  </p>
-                </div>
-                <div className="text-center">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                    {theme.language === 'ar' ? 'هدفنا' : 'Our Goal'}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {theme.language === 'ar' 
-                      ? 'تقديم محتوى إخباري عالي الجودة يخدم المجتمع'
-                      : 'Providing high-quality news content that serves the community'
-                    }
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -277,63 +319,74 @@ const AboutPage: React.FC = () => {
         {/* Team Section */}
         <div className="mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              {theme.language === 'ar' ? 'فريق العمل' : 'Our Team'}
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              فريق العمل
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              {theme.language === 'ar' 
-                ? 'فريق من الصحفيين والمحررين المتخصصين يعملون بجد لتقديم أفضل المحتوى الإخباري'
-                : 'A team of specialized journalists and editors working hard to deliver the best news content'
-              }
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              {aboutContent.teamDescription}
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <div key={index} className="text-center">
-                <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <UserGroupIcon className="w-16 h-16 text-gray-400" />
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">جاري تحميل بيانات الفريق...</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {activeAdmins.map((admin, index) => (
+                <div key={admin.id} className="text-center group">
+                  <div className={`relative mb-4 mx-auto w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br ${admin.gradient} group-hover:scale-105 transition-all duration-300 shadow-lg group-hover:shadow-xl`}>
+                    <div className="absolute inset-2 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      <UserIcon className="w-12 h-12 text-white" />
+                    </div>
                   </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    {admin.name}
+                  </h3>
+                  <p className={`bg-gradient-to-r ${admin.gradient} bg-clip-text text-transparent font-medium mb-3 text-lg`}>
+                    {admin.role}
+                  </p>
+                  <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-3">
+                    <p className="mb-2">الصلاحيات:</p>
+                    <div className="flex flex-wrap gap-1 justify-center">
+                      {admin.permissions.map((permission, idx) => (
+                        <span key={idx} className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full text-xs">
+                          {permission}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-500 dark:text-gray-500 text-xs">انضم في: {admin.joinDate}</p>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  {member.name}
-                </h3>
-                <p className="text-primary-600 dark:text-primary-400 font-medium mb-3">
-                  {member.role}
-                </p>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  {member.bio}
-                </p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Contact CTA Section */}
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8 md:p-12 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            {theme.language === 'ar' ? 'تواصل معنا' : 'Get in Touch'}
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-            {theme.language === 'ar' 
-              ? 'هل لديك خبر أو اقتراح؟ نحن نرحب بتواصلكم ونقدر آراءكم ومساهماتكم'
-              : 'Do you have news or suggestions? We welcome your contact and appreciate your opinions and contributions'
-            }
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
-            >
-              {theme.language === 'ar' ? 'تواصل معنا' : 'Contact Us'}
-            </Link>
-            <Link
-              href="/"
-              className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 dark:border-gray-600 text-base font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
-            >
-              {theme.language === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
-            </Link>
+        {/* Contact CTA */}
+        <div className="text-center bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-3xl p-8 md:p-12 border border-blue-100 dark:border-blue-800/30">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+              تواصل معنا
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+              {aboutContent.contactDescription}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/contact"
+                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                تواصل معنا
+              </Link>
+              <Link
+                href="mailto:info@newsmarkaba.com"
+                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border-2 border-blue-200 dark:border-blue-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                راسلنا عبر البريد
+              </Link>
+            </div>
           </div>
         </div>
       </div>
