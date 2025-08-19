@@ -35,14 +35,12 @@ import Layout from '../components/Layout/Layout';
 interface User {
   id: number;
   username: string;
-  email: string;
   display_name: string;
   role: 'admin' | 'editor' | 'author';
-  is_active: boolean;
-  last_login: string | null;
+  avatar: string | null;
+  bio: string | null;
   posts_count: number;
-  created_at: string;
-  updated_at: string;
+  joined_date: string;
 }
 
 const AboutPage: React.FC = () => {
@@ -58,9 +56,10 @@ const AboutPage: React.FC = () => {
         const response = await fetch('/api/team');
         if (response.ok) {
           const data = await response.json();
-          // Handle team members response structure
+          // Handle team members response structure and filter out admin users
           const teamArray = data.data || data.team || data || [];
-          setUsers(Array.isArray(teamArray) ? teamArray : []);
+          const filteredTeam = Array.isArray(teamArray) ? teamArray.filter(user => user.role !== 'admin') : [];
+          setUsers(filteredTeam);
         }
       } catch (error) {
         console.error('Error fetching team members:', error);
@@ -105,19 +104,18 @@ const AboutPage: React.FC = () => {
 
     return {
       id: user.id,
-      name: user.display_name || user.username,
+      name: user.display_name,
       role: roleTranslations[user.role] || user.role,
-      isActive: user.is_active,
+      bio: user.bio,
+      postsCount: user.posts_count,
       permissions: permissions[user.role] || [],
       gradient: gradients[index % gradients.length],
-      joinDate: new Date(user.created_at).toLocaleDateString('en-GB')
+      joinDate: new Date(user.joined_date).toLocaleDateString('en-GB')
     };
   };
 
-  // Filter active users and transform them
-  const activeAdmins = users
-    .filter(user => user.is_active)
-    .map(transformUserToAdmin);
+  // Transform users (admin already filtered out in fetch)
+  const teamMembers = users.map(transformUserToAdmin);
 
   // Arabic-only stats data
   const stats = [
@@ -188,15 +186,15 @@ const AboutPage: React.FC = () => {
     url: typeof window !== 'undefined' ? window.location.href : '',
     mainEntity: {
       '@type': 'Organization',
-      name: 'نيوز مركبا',
-      url: 'https://newsmarkaba.com',
-      logo: 'https://newsmarkaba.com/logo.png',
+      name: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+      url: 'https://markaba.news',
+      logo: 'https://www.markaba.news/images/logo_new.png',
       description: 'موقع إخباري يقدم آخر الأخبار المحلية والعالمية',
       foundingDate: '2020',
-      employee: activeAdmins.map(admin => ({
+      employee: teamMembers.map((member: any) => ({
         '@type': 'Person',
-        name: admin.name,
-        jobTitle: admin.role
+        name: member.name,
+        jobTitle: member.role
       }))
     }
   };
@@ -329,30 +327,38 @@ const AboutPage: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {activeAdmins.map((admin, index) => (
-                <div key={admin.id} className="text-center group">
-                  <div className={`relative mb-4 mx-auto w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br ${admin.gradient} group-hover:scale-105 transition-all duration-300 shadow-lg group-hover:shadow-xl`}>
+              {teamMembers.map((member, index) => (
+                <div key={member.id} className="text-center group">
+                  <div className={`relative mb-4 mx-auto w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br ${member.gradient} group-hover:scale-105 transition-all duration-300 shadow-lg group-hover:shadow-xl`}>
                     <div className="absolute inset-2 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                       <UserIcon className="w-12 h-12 text-white" />
                     </div>
                   </div>
                   <h3 className="text-xl font-semibold text-black dark:text-black mb-2">
-                    {admin.name}
+                    {member.name}
                   </h3>
-                  <p className={`bg-gradient-to-r ${admin.gradient} bg-clip-text text-transparent font-medium mb-3 text-lg`}>
-                    {admin.role}
+                  <p className={`bg-gradient-to-r ${member.gradient} bg-clip-text text-transparent font-medium mb-2 text-lg`}>
+                    {member.role}
                   </p>
+                  {member.bio && (
+                    <p className="text-black dark:text-black text-sm mb-2 italic">
+                      {member.bio}
+                    </p>
+                  )}
                   <div className="text-black dark:text-black text-sm leading-relaxed mb-3">
                     <p className="mb-2">الصلاحيات:</p>
                     <div className="flex flex-wrap gap-1 justify-center">
-                      {admin.permissions.map((permission, idx) => (
+                      {member.permissions.map((permission, idx) => (
                         <span key={idx} className="bg-gray-100 dark:bg-gray-300 px-2 py-1 rounded-full text-xs text-black">
                           {permission}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <p className="text-black dark:text-black text-xs">انضم في: {admin.joinDate}</p>
+                  <div className="text-black dark:text-black text-xs space-y-1">
+                    <p>المقالات: {member.postsCount}</p>
+                    <p>انضم في: {member.joinDate}</p>
+                  </div>
                 </div>
               ))}
             </div>
