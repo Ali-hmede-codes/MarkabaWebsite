@@ -58,7 +58,9 @@ const AboutPage: React.FC = () => {
         const response = await fetch('/api/users');
         if (response.ok) {
           const data = await response.json();
-          setUsers(data.users || []);
+          // Handle different response structures
+          const usersArray = data.data || data.users || data || [];
+          setUsers(Array.isArray(usersArray) ? usersArray : []);
         }
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -203,13 +205,9 @@ const AboutPage: React.FC = () => {
     <Layout 
       pageType="about"
       seo={{
-        title: theme.language === 'ar' ? 'عن الموقع - موقع الأخبار' : 'About Us - News Website',
-        description: theme.language === 'ar' 
-          ? 'تعرف على موقع الأخبار، مهمتنا في تقديم أحدث الأخبار الموثوقة، قيمنا، وفريق العمل المتخصص'
-          : 'Learn about News Website, our mission to deliver the latest reliable news, our values, and our specialized team',
-        keywords: theme.language === 'ar' 
-          ? ['عن الموقع', 'مهمتنا', 'قيمنا', 'فريق العمل', 'موقع الأخبار']
-          : ['about us', 'our mission', 'our values', 'our team', 'news website'],
+        title: 'عن الموقع - نيوز مركبا',
+        description: 'تعرف على موقع نيوز مركبا، مهمتنا في تقديم أحدث الأخبار الموثوقة، قيمنا، وفريق العمل المتخصص',
+        keywords: ['عن الموقع', 'مهمتنا', 'قيمنا', 'فريق العمل', 'نيوز مركبا', 'أخبار مركبا'],
         type: 'website',
         structuredData: structuredData
       }}
@@ -221,12 +219,12 @@ const AboutPage: React.FC = () => {
           <ol className="flex items-center space-x-2 rtl:space-x-reverse text-sm text-gray-500 dark:text-gray-400">
             <li>
               <Link href="/" className="hover:text-primary-600 dark:hover:text-primary-400">
-                {theme.language === 'ar' ? 'الرئيسية' : 'Home'}
+                الرئيسية
               </Link>
             </li>
             <li>/</li>
-            <li className="text-gray-900 dark:text-white">
-              {theme.language === 'ar' ? 'عن الموقع' : 'About Us'}
+            <li className="text-black dark:text-black">
+              عن الموقع
             </li>
           </ol>
         </nav>
@@ -236,7 +234,7 @@ const AboutPage: React.FC = () => {
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 bg-clip-text text-transparent">
             {aboutContent.title}
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-black dark:text-black max-w-4xl mx-auto leading-relaxed">
             {aboutContent.description}
           </p>
           <div className="mt-8 flex justify-center space-x-4 rtl:space-x-reverse">
@@ -255,10 +253,10 @@ const AboutPage: React.FC = () => {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full mb-4">
                   <IconComponent className="w-8 h-8 text-primary-600 dark:text-primary-400" />
                 </div>
-                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <div className="text-3xl font-bold text-black dark:text-black mb-2">
                   {stat.value}
                 </div>
-                <div className="text-gray-600 dark:text-gray-400">
+                <div className="text-black dark:text-black">
                   {stat.label}
                 </div>
               </div>
@@ -285,14 +283,11 @@ const AboutPage: React.FC = () => {
         {/* Values Section */}
         <div className="mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              {theme.language === 'ar' ? 'قيمنا' : 'Our Values'}
+            <h2 className="text-3xl font-bold text-black dark:text-black mb-4">
+              قيمنا
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              {theme.language === 'ar' 
-                ? 'نؤمن بمجموعة من القيم الأساسية التي توجه عملنا وتحدد هويتنا'
-                : 'We believe in a set of core values that guide our work and define our identity'
-              }
+            <p className="text-lg text-black dark:text-black max-w-2xl mx-auto">
+              نؤمن بمجموعة من القيم الأساسية التي توجه عملنا وتحدد هويتنا
             </p>
           </div>
           
@@ -304,10 +299,10 @@ const AboutPage: React.FC = () => {
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full mb-4">
                     <IconComponent className="w-8 h-8 text-primary-600 dark:text-primary-400" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                  <h3 className="text-xl font-semibold text-black dark:text-black mb-3">
                     {value.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  <p className="text-black dark:text-black leading-relaxed">
                     {value.description}
                   </p>
                 </div>
@@ -319,10 +314,10 @@ const AboutPage: React.FC = () => {
         {/* Team Section */}
         <div className="mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-black mb-4">
               فريق العمل
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-lg text-black dark:text-black max-w-3xl mx-auto">
               {aboutContent.teamDescription}
             </p>
           </div>
@@ -330,7 +325,7 @@ const AboutPage: React.FC = () => {
           {loading ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-              <p className="mt-4 text-gray-600 dark:text-gray-400">جاري تحميل بيانات الفريق...</p>
+              <p className="mt-4 text-black dark:text-black">جاري تحميل بيانات الفريق...</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -341,23 +336,23 @@ const AboutPage: React.FC = () => {
                       <UserIcon className="w-12 h-12 text-white" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-xl font-semibold text-black dark:text-black mb-2">
                     {admin.name}
                   </h3>
                   <p className={`bg-gradient-to-r ${admin.gradient} bg-clip-text text-transparent font-medium mb-3 text-lg`}>
                     {admin.role}
                   </p>
-                  <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-3">
+                  <div className="text-black dark:text-black text-sm leading-relaxed mb-3">
                     <p className="mb-2">الصلاحيات:</p>
                     <div className="flex flex-wrap gap-1 justify-center">
                       {admin.permissions.map((permission, idx) => (
-                        <span key={idx} className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full text-xs">
+                        <span key={idx} className="bg-gray-100 dark:bg-gray-300 px-2 py-1 rounded-full text-xs text-black">
                           {permission}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <p className="text-gray-500 dark:text-gray-500 text-xs">انضم في: {admin.joinDate}</p>
+                  <p className="text-black dark:text-black text-xs">انضم في: {admin.joinDate}</p>
                 </div>
               ))}
             </div>
@@ -370,7 +365,7 @@ const AboutPage: React.FC = () => {
             <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
               تواصل معنا
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+            <p className="text-lg text-black dark:text-black mb-8 leading-relaxed">
               {aboutContent.contactDescription}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -382,7 +377,7 @@ const AboutPage: React.FC = () => {
               </Link>
               <Link
                 href="mailto:info@newsmarkaba.com"
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border-2 border-blue-200 dark:border-blue-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-black dark:text-black bg-white dark:bg-gray-300 border-2 border-blue-200 dark:border-blue-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 راسلنا عبر البريد
               </Link>
