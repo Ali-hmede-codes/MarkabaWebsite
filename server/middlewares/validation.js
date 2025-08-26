@@ -80,7 +80,7 @@ const breakingNewsSchema = Joi.object({
   title_ar: Joi.string().min(3).max(255).required(),
   content_ar: Joi.string().min(10).max(1000).required(),
   link: Joi.string().uri().allow(''),
-  priority: Joi.number().integer().min(1).max(10).default(1),
+  priority: Joi.number().integer().min(1).max(10).default(3),
   is_active: Joi.boolean().default(true),
   expires_at: Joi.date().allow(null)
 });

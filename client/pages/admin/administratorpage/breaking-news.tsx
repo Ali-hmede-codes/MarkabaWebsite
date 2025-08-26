@@ -43,7 +43,7 @@ const BreakingNewsManagement: React.FC = () => {
     title_ar: '',
     content_ar: '',
     link: '',
-    priority: 1,
+    priority: 3,
     is_active: true
   });
 
@@ -192,7 +192,7 @@ const BreakingNewsManagement: React.FC = () => {
       title_ar: '',
       content_ar: '',
       link: '',
-      priority: 1,
+      priority: 3,
       is_active: true
     });
     setEditingItem(null);

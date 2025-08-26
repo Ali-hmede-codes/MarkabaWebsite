@@ -69,7 +69,7 @@ router.post('/', async (req, res) => {
       content_ar ? content_ar.trim() : '',
       slug,
       link || null,
-      priority || 1,
+      priority || 3,
       is_active !== undefined ? is_active : true
     ]);
     
