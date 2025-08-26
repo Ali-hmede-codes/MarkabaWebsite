@@ -352,21 +352,8 @@ router.post('/', auth, requireAdmin, validate(breakingNewsSchema), async (req, r
       });
     }
     
-    // Generate slug
-    const baseSlug = generateBreakingNewsSlug(null, title_ar);
-    let slug = baseSlug;
-    
-    // Ensure slug uniqueness
-    const existingSlugs = await query('SELECT slug FROM breaking_news WHERE slug LIKE ?', [`${baseSlug}%`]);
-    const slugSet = new Set(existingSlugs.map(row => row.slug));
-    
-    let finalSlug = slug;
-    let slugCounter = 1;
-    while (slugSet.has(finalSlug)) {
-      finalSlug = `${baseSlug}-${slugCounter}`;
-      slugCounter += 1;
-    }
-    slug = finalSlug;
+    // Generate slug (allow duplicates for breaking news)
+    const slug = generateBreakingNewsSlug(null, title_ar);
     
     // If setting as active, deactivate all other breaking news
     if (is_active) {
@@ -433,23 +420,10 @@ router.put('/:id', auth, requireAdmin, validate(breakingNewsSchema), async (req,
       is_active
     } = req.body;
     
-    // Handle slug regeneration if title changed
+    // Handle slug regeneration if title changed (allow duplicates)
     let slug = existingNews.slug;
     if (title_ar && title_ar !== existingNews.title_ar) {
-      const baseSlug = generateBreakingNewsSlug(null, title_ar);
-      slug = baseSlug;
-      
-      // Ensure slug uniqueness (excluding current news)
-      const existingSlugs = await query('SELECT slug FROM breaking_news WHERE slug LIKE ? AND id != ?', [`${baseSlug}%`, newsId]);
-      const slugSet = new Set(existingSlugs.map(row => row.slug));
-      
-      let finalSlug = slug;
-      let slugCounter = 1;
-      while (slugSet.has(finalSlug)) {
-        finalSlug = `${baseSlug}-${slugCounter}`;
-        slugCounter += 1;
-      }
-      slug = finalSlug;
+      slug = generateBreakingNewsSlug(null, title_ar);
     }
     
     // If setting as active, deactivate all other breaking news
