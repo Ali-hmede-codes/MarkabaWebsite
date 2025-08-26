@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { NextPage, GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import Layout from '../../components/Layout/Layout';
 import { Post, Category } from '../../components/API/types';
-import { FiPlay, FiCalendar, FiEye, FiSearch, FiFilter, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiPlay, FiCalendar, FiEye, FiChevronLeft, FiChevronRight, FiHome } from 'react-icons/fi';
 import { getImageUrl } from '../../utils/imageUtils';
 import { useContent } from '../../hooks/useContent';
 
@@ -26,13 +26,7 @@ const VideosPage: NextPage<VideosPageProps> = ({
   totalPosts 
 }) => {
   const { content } = useContent();
-  const [posts, setPosts] = useState<Post[]>(initialPosts);
-  const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [sortBy, setSortBy] = useState('created_at');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [showFilters, setShowFilters] = useState(false);
+  const posts = initialPosts;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -75,41 +69,8 @@ const VideosPage: NextPage<VideosPageProps> = ({
     return category ? category.name_ar : 'عام';
   };
 
-  const handleSearch = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: '1',
-        limit: '12',
-        ...(searchTerm && { search: searchTerm }),
-        ...(selectedCategory && { category: selectedCategory }),
-        sort_by: sortBy,
-        sort_order: sortOrder
-      });
-
-      const response = await fetch(`/api/posts/videos?${params}`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setPosts(data.data.posts);
-      }
-    } catch (error) {
-      console.error('Error searching videos:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handlePageChange = (page: number) => {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      ...(searchTerm && { search: searchTerm }),
-      ...(selectedCategory && { category: selectedCategory }),
-      sort_by: sortBy,
-      sort_order: sortOrder
-    });
-    
-    window.location.href = `/videos?${params}`;
+    window.location.href = `/videos?page=${page}`;
   };
 
   return (
@@ -134,91 +95,15 @@ const VideosPage: NextPage<VideosPageProps> = ({
                   بالفيديو
                 </h1>
               </div>
-              <p className="text-lg text-gray-600 mb-6">
-                شاهد جميع الأخبار والتقارير المصورة
-              </p>
-              <div className="w-24 h-1 bg-gradient-to-r from-green-500 to-green-600 mx-auto rounded-full"></div>
+              <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                <FiHome />
+                العودة للقائمة الرئيسية
+              </Link>
             </div>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Search and Filters */}
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-            <div className="flex flex-col lg:flex-row gap-4">
-              {/* Search Input */}
-              <div className="flex-1">
-                <div className="relative">
-                  <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="البحث في الفيديوهات..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-right"
-                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                </div>
-              </div>
-
-              {/* Category Filter */}
-              <div className="lg:w-48">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-right"
-                >
-                  <option value="">جميع الأقسام</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.slug}>
-                      {category.name_ar}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Sort Options */}
-              <div className="lg:w-48">
-                <select
-                  value={`${sortBy}_${sortOrder}`}
-                  onChange={(e) => {
-                    const [field, order] = e.target.value.split('_');
-                    setSortBy(field);
-                    setSortOrder(order);
-                  }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-right"
-                >
-                  <option value="created_at_desc">الأحدث أولاً</option>
-                  <option value="created_at_asc">الأقدم أولاً</option>
-                  <option value="views_desc">الأكثر مشاهدة</option>
-                  <option value="title_ar_asc">ترتيب أبجدي</option>
-                </select>
-              </div>
-
-              {/* Search Button */}
-              <button
-                onClick={handleSearch}
-                disabled={loading}
-                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {loading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                ) : (
-                  <>
-                    <FiSearch />
-                    بحث
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Results Info */}
-          <div className="mb-6">
-            <p className="text-gray-600">
-              عرض {posts.length} من أصل {totalPosts} فيديو
-            </p>
-          </div>
 
           {/* Videos Grid */}
           {posts.length > 0 ? (

@@ -97,6 +97,10 @@ router.get('/', async (req, res) => {
     const limit = Math.min(parseInt(req.query.limit, 10) || 10, 50);
     const offset = (page - 1) * limit;
     
+    // Ensure limit and offset are integers
+    const finalLimit = parseInt(limit, 10);
+    const finalOffset = parseInt(offset, 10);
+    
     // Enhanced filtering parameters
     const {
       status = 'published',
@@ -341,7 +345,7 @@ router.get('/', async (req, res) => {
     const total = totalResult[0].total;
     
     // Add ordering and pagination
-    queryStr += ` ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ${parseInt(limit, 10)} OFFSET ${parseInt(offset, 10)}`;
+    queryStr += ` ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ${finalLimit} OFFSET ${finalOffset}`;
     
     const posts = await query(queryStr, params);
     
@@ -372,9 +376,9 @@ router.get('/', async (req, res) => {
         posts: processedPosts,
         pagination: {
           page,
-          limit,
+          limit: finalLimit,
           total,
-          pages: Math.ceil(total / limit)
+          pages: Math.ceil(total / finalLimit)
         },
         filters: {
           status,
@@ -539,6 +543,10 @@ router.get('/videos', async (req, res) => {
     const limit = Math.min(parseInt(req.query.limit, 10) || 10, 20);
     const offset = (page - 1) * limit;
     
+    // Ensure limit and offset are integers
+    const finalLimit = parseInt(limit, 10);
+    const finalOffset = parseInt(offset, 10);
+    
     // Additional filtering parameters
     const {
       category,
@@ -605,7 +613,7 @@ router.get('/videos', async (req, res) => {
     
     // Add ordering and pagination
     queryStr += ` ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
-    params.push(limit, offset);
+    params.push(finalLimit, finalOffset);
     
     const posts = await query(queryStr, params);
     

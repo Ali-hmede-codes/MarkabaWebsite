@@ -279,17 +279,13 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             {/* بالفيديو Section */}
             <section className="mb-24">
               <div className="mb-6 sm:mb-8">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-center mb-4">
                   <div className="responsive-flex justify-center">
                     <FiPlay className="text-green-500 text-2xl sm:text-3xl ml-2 sm:ml-3" />
                     <h2 className="section-title font-bold text-gray-800">
                       بالفيديو
                     </h2>
                   </div>
-                  <Link href="/videos" className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base transition-colors duration-200 flex items-center gap-1">
-                    عرض الكل
-                    <FiPlay className="text-xs" />
-                  </Link>
                 </div>
                 <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-green-500 to-green-600 mx-auto mt-2 rounded-full"></div>
               </div>
