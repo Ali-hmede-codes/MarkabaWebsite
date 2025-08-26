@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../config/database');
 const { auth: authenticateToken, requireRole } = require('../../middlewares/auth');
+const oneSignalService = require('../../services/oneSignalService');
 
 // Apply authentication middleware to all routes
 router.use(authenticateToken);
@@ -89,6 +90,19 @@ router.post('/', async (req, res) => {
       'SELECT * FROM last_news WHERE id = ?',
       [result.insertId]
     );
+    
+    // Send OneSignal push notification for last news
+    try {
+      await oneSignalService.sendNotification({
+        headings: { ar: title_ar },
+        contents: { ar: content_ar || title_ar },
+        url: `https://www.markaba.news/last-news/${newItem[0].id}/${newItem[0].slug}`
+      });
+      console.log('OneSignal notification sent for last news:', title_ar);
+    } catch (notificationError) {
+      console.error('Failed to send OneSignal notification:', notificationError);
+      // Don't fail the request if notification fails
+    }
     
     res.status(201).json({
       success: true,

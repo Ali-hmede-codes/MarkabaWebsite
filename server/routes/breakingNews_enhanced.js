@@ -2,6 +2,7 @@ const express = require('express');
 const { query, queryOne } = require('../db');
 const { validate, breakingNewsSchema } = require('../middlewares/validation');
 const { auth, optionalAuth, requireAdmin, requireAdminOrEditor } = require('../middlewares/auth');
+const oneSignalService = require('../services/oneSignalService');
 
 const router = express.Router();
 
@@ -381,6 +382,19 @@ router.post('/', auth, requireAdmin, validate(breakingNewsSchema), async (req, r
       is_active: Boolean(createdNews.is_active),
       url: `/breaking/${createdNews.id}/${createdNews.slug}`
     };
+    
+    // Send OneSignal push notification for breaking news
+    try {
+      await oneSignalService.sendNotification({
+        headings: { ar: title_ar },
+        contents: { ar: content_ar },
+        url: `https://www.markaba.news/breaking/${createdNews.id}/${createdNews.slug}`
+      });
+      console.log('OneSignal notification sent for breaking news:', title_ar);
+    } catch (notificationError) {
+      console.error('Failed to send OneSignal notification:', notificationError);
+      // Don't fail the request if notification fails
+    }
     
     res.status(201).json({
       success: true,
