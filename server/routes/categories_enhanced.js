@@ -120,7 +120,7 @@ router.get('/:slug', async (req, res) => {
     const { slug } = req.params;
     const includePosts = req.query.include_posts !== 'false';
     const postsPage = parseInt(req.query.posts_page, 10) || 1;
-    const postsLimit = Math.min(parseInt(req.query.posts_limit, 10) || 10, 50);
+    const postsLimit = Math.min(parseInt(req.query.posts_limit, 10) || 12, 50);
     const postsOffset = (postsPage - 1) * postsLimit;
     
     // Get category

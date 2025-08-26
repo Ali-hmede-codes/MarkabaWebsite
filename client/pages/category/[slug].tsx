@@ -18,50 +18,53 @@ const CategoryPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalPosts, setTotalPosts] = useState(0);
   const postsPerPage = 12;
 
-  // Custom API call for posts with proper slug handling
-  const { execute: fetchPosts } = useAPI<import('../../components/API/types').PostsResponse>('/posts', {
-    immediate: false,
-  });
-
-  // Find current category and filter posts
-  useEffect(() => {
-    if (categories && slug) {
-      const categoriesArray = categories?.categories || [];
-      const category = categoriesArray.find((cat: Category) => cat.slug === slug);
-      setCurrentCategory(category || null);
+  // Custom API call for category with posts
+  const fetchCategoryPosts = async (page: number = 1) => {
+    if (!slug || typeof slug !== 'string') return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`/api/v2/categories/${slug}?include_posts=true&posts_page=${page}&posts_limit=${postsPerPage}`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        setCurrentCategory(data.data);
+        setFilteredPosts(data.data.posts || []);
+        setTotalPages(data.data.posts_pagination?.pages || 1);
+        setTotalPosts(data.data.posts_pagination?.total || 0);
+      } else {
+        setError(data.error || 'Failed to fetch category posts');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch category posts');
+    } finally {
+      setLoading(false);
     }
-  }, [categories, slug]);
+  };
 
-  // Fetch posts when slug is available
+  // Fetch category and posts when slug changes
   useEffect(() => {
     if (slug && typeof slug === 'string') {
-      setLoading(true);
-      setError(null);
-      fetchPosts(undefined, { category: slug })
-        .then((response) => {
-          if (response?.success && response.data) {
-            const postsArray = response.data?.posts || [];
-            setFilteredPosts(postsArray);
-          } else {
-            setError(response?.error || 'Failed to fetch posts');
-          }
-        })
-        .catch((err) => {
-          setError(err.message || 'Failed to fetch posts');
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      setCurrentPage(1); // Reset to first page when category changes
+      fetchCategoryPosts(1);
     }
-  }, [slug, fetchPosts]);
+  }, [slug]);
 
-  // Pagination
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-  const startIndex = (currentPage - 1) * postsPerPage;
-  const endIndex = startIndex + postsPerPage;
-  const currentPosts = filteredPosts.slice(startIndex, endIndex);
+  // Fetch posts when page changes
+  useEffect(() => {
+    if (slug && typeof slug === 'string' && currentPage > 1) {
+      fetchCategoryPosts(currentPage);
+    }
+  }, [currentPage]);
+
+  // Use posts directly from server (already paginated)
+  const currentPosts = filteredPosts;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ar-SA', {
@@ -171,7 +174,7 @@ const CategoryPage: React.FC = () => {
                 {pageDescription}
               </p>
               <div className="text-sm text-gray-600 bg-white px-4 py-1 rounded inline-block">
-                {filteredPosts.length} مقال متاح
+                {totalPosts} مقال متاح
               </div>
             </div>
           </div>
@@ -257,7 +260,10 @@ const CategoryPage: React.FC = () => {
                   <nav className="responsive-flex items-center space-x-2 rtl:space-x-reverse">
                     {/* Previous Button */}
                     <button
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      onClick={() => {
+                        const newPage = Math.max(currentPage - 1, 1);
+                        setCurrentPage(newPage);
+                      }}
                       disabled={currentPage === 1}
                       className={`px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target ${
                         currentPage === 1
@@ -285,7 +291,10 @@ const CategoryPage: React.FC = () => {
 
                     {/* Next Button */}
                     <button
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      onClick={() => {
+                        const newPage = Math.min(currentPage + 1, totalPages);
+                        setCurrentPage(newPage);
+                      }}
                       disabled={currentPage === totalPages}
                       className={`px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target ${
                         currentPage === totalPages
