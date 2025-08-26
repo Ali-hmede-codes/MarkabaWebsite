@@ -97,52 +97,33 @@ class Scheduler {
   startFootballUpdates() {
     const timezone = process.env.TIMEZONE || 'Asia/Beirut';
     
-    // Main daily refresh at midnight (00:00)
-    console.log('Scheduling football midnight refresh: 0 0 * * * (Asia/Beirut)');
-    const midnightTask = cron.schedule('0 0 * * *', async () => {
-      console.log('Running midnight football data refresh...');
+    // Schedule hourly updates (24 times per day)
+    console.log('Scheduling football hourly updates: 0 * * * * (every hour)');
+    const hourlyTask = cron.schedule('0 * * * *', async () => {
+      const currentHour = new Date().getHours();
+      console.log(`Running hourly football data refresh (hour ${currentHour})...`);
       try {
         // Reset daily request count at midnight
-        this.footballService.resetDailyCountIfNeeded();
+        if (currentHour === 0) {
+          this.footballService.resetDailyCountIfNeeded();
+          console.log('Daily request count reset at midnight');
+        }
+        
         await this.footballService.distributedDailyRefresh();
-        console.log('Midnight football refresh completed successfully');
+        console.log(`Hourly football refresh completed successfully (hour ${currentHour})`);
       } catch (error) {
-        console.error('Midnight football refresh failed:', error.message);
+        console.error(`Hourly football refresh failed (hour ${currentHour}):`, error.message);
       }
     }, {
       scheduled: true,
       timezone: timezone
     });
 
-    // Distributed refreshes throughout the day
-    const refreshTimes = ['0 6 * * *', '0 12 * * *', '0 18 * * *', '0 21 * * *'];
-    const refreshNames = ['morning', 'noon', 'evening', 'night'];
+    // Keep a backup daily refresh at 6 AM in case hourly updates fail
+    const backupSchedule = process.env.FOOTBALL_BACKUP_SCHEDULE || '0 6 * * *';
+    console.log(`Scheduling backup football update: ${backupSchedule} (${timezone})`);
     
-    refreshTimes.forEach((schedule, index) => {
-      const name = refreshNames[index];
-      console.log(`Scheduling football ${name} refresh: ${schedule} (${timezone})`);
-      
-      const task = cron.schedule(schedule, async () => {
-        console.log(`Running ${name} football data refresh...`);
-        try {
-          await this.footballService.distributedDailyRefresh();
-          console.log(`${name} football refresh completed successfully`);
-        } catch (error) {
-          console.error(`${name} football refresh failed:`, error.message);
-        }
-      }, {
-        scheduled: true,
-        timezone: timezone
-      });
-      
-      this.tasks.set(`football${name.charAt(0).toUpperCase() + name.slice(1)}Update`, task);
-    });
-
-    // Keep the original schedule as backup (7:00 AM)
-    const footballSchedule = process.env.FOOTBALL_UPDATE_SCHEDULE || '0 7 * * *';
-    console.log(`Scheduling backup football update: ${footballSchedule} (${timezone})`);
-    
-    const backupTask = cron.schedule(footballSchedule, async () => {
+    const backupTask = cron.schedule(backupSchedule, async () => {
       console.log('Running backup scheduled football data update...');
       try {
         await this.triggerFootballUpdate();
@@ -155,9 +136,9 @@ class Scheduler {
       timezone: timezone
     });
     
-    this.tasks.set('footballMidnightUpdate', midnightTask);
+    this.tasks.set('footballHourlyUpdate', hourlyTask);
     this.tasks.set('footballBackupUpdate', backupTask);
-    console.log('Football update scheduler started with distributed refreshes');
+    console.log('Football update scheduler started with hourly refreshes (24 times per day)');
   }
 
   /**

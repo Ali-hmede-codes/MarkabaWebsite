@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FiSearch, FiMenu, FiX } from 'react-icons/fi';
 import { MdSportsSoccer } from 'react-icons/md';
+import { FiPlay } from 'react-icons/fi';
 import { SiFacebook, SiTwitter, SiInstagram, SiYoutube, SiLinkedin, SiTelegram, SiWhatsapp, SiTiktok } from 'react-icons/si';
 import { useContent } from '../../hooks/useContent';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -87,7 +88,16 @@ const Header: React.FC = () => {
   // Split categories for dropdown system
   const visibleCategories = categories.slice(0, 6);
   const hiddenCategories = categories.slice(6);
-  const hasMoreCategories = hiddenCategories.length > 0;
+  
+  // Add custom "بالفيديو" category to hidden categories
+  const customVideoCategory = {
+    id: 'videos',
+    name_ar: 'بالفيديو',
+    slug: 'videos'
+  };
+  
+  const hiddenCategoriesWithVideo = [...hiddenCategories, customVideoCategory];
+  const hasMoreCategories = hiddenCategoriesWithVideo.length > 0;
 
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50" dir="rtl">
@@ -150,13 +160,18 @@ const Header: React.FC = () => {
                   {/* Dropdown Menu */}
                   {isDropdownOpen && (
                     <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-[200px] z-50">
-                      {hiddenCategories.map((category) => (
+                      {hiddenCategoriesWithVideo.map((category) => (
                         <Link
                           key={category.id}
-                          href={`/category/${category.slug}`}
-                          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 font-medium"
+                          href={category.slug === 'videos' ? '/videos' : `/category/${category.slug}`}
+                          className={`block px-4 py-2 transition-all duration-200 font-medium ${
+                            category.slug === 'videos' 
+                              ? 'text-green-700 hover:text-green-800 hover:bg-green-50 flex items-center gap-2'
+                              : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                          }`}
                           onClick={() => setIsDropdownOpen(false)}
                         >
+                          {category.slug === 'videos' && <FiPlay size={16} />}
                           {category.name_ar}
                         </Link>
                       ))}
@@ -190,6 +205,16 @@ const Header: React.FC = () => {
                   aria-label="كرة القدم"
                 >
                   <MdSportsSoccer size={20} />
+                </button>
+              </Link>
+
+              {/* Videos Button */}
+              <Link href="/videos">
+                <button
+                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                  aria-label="الفيديوهات"
+                >
+                  <FiPlay size={20} />
                 </button>
               </Link>
 
@@ -237,6 +262,16 @@ const Header: React.FC = () => {
                   aria-label="كرة القدم"
                 >
                   <MdSportsSoccer size={22} />
+                </button>
+              </Link>
+              
+              {/* Videos Button */}
+              <Link href="/videos">
+                <button
+                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                  aria-label="الفيديوهات"
+                >
+                  <FiPlay size={22} />
                 </button>
               </Link>
               <button

@@ -32,6 +32,23 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);
   const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
   const [videoPosts, setVideoPosts] = useState<Post[]>([]);
+  const [videoLoading, setVideoLoading] = useState(false);
+
+  // Fetch video posts from the new endpoint
+  const fetchVideoPosts = async () => {
+    try {
+      setVideoLoading(true);
+      const response = await fetch('/api/posts/videos?limit=4&sort=created_at&order=desc');
+      if (response.ok) {
+        const data = await response.json();
+        setVideoPosts(data.posts || []);
+      }
+    } catch (error) {
+      console.error('Error fetching video posts:', error);
+    } finally {
+      setVideoLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (posts.length > 0) {
@@ -51,15 +68,10 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
         .slice(0, 4);
 
       setFeaturedPosts(featuredPostsList);
-
-      // Video posts for بالفيديو - last 4 posts with video_link
-      const videoPostsList = [...posts]
-        .filter((post) => Boolean(post.video_link))
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 4);
-
-      setVideoPosts(videoPostsList);
     }
+    
+    // Fetch video posts separately
+    fetchVideoPosts();
   }, [posts]);
 
   const formatDate = (dateString: string) => {
@@ -266,17 +278,37 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
             {/* بالفيديو Section */}
             <section className="mb-24">
-              <div className="mb-6 sm:mb-8 text-center">
-                <div className="responsive-flex justify-center mb-4">
-                  <FiPlay className="text-green-500 text-2xl sm:text-3xl ml-2 sm:ml-3" />
-                  <h2 className="section-title font-bold text-gray-800">
-                    بالفيديو
-                  </h2>
+              <div className="mb-6 sm:mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="responsive-flex justify-center">
+                    <FiPlay className="text-green-500 text-2xl sm:text-3xl ml-2 sm:ml-3" />
+                    <h2 className="section-title font-bold text-gray-800">
+                      بالفيديو
+                    </h2>
+                  </div>
+                  <Link href="/videos" className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base transition-colors duration-200 flex items-center gap-1">
+                    عرض الكل
+                    <FiPlay className="text-xs" />
+                  </Link>
                 </div>
                 <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-green-500 to-green-600 mx-auto mt-2 rounded-full"></div>
               </div>
 
-              {videoPosts.length > 0 ? (
+              {videoLoading ? (
+                <div className="flex overflow-x-auto space-x-4 rtl:space-x-reverse pb-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="flex-shrink-0 w-64 sm:w-72">
+                      <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse">
+                        <div className="h-40 sm:h-48 bg-gray-300"></div>
+                        <div className="p-4">
+                          <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                          <div className="h-3 bg-gray-300 rounded w-3/4"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : videoPosts.length > 0 ? (
                 <div className="flex overflow-x-auto space-x-4 rtl:space-x-reverse pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-green-500 scrollbar-track-green-100">
                   {videoPosts.map((post, index) => (
                     <article

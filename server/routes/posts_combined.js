@@ -532,6 +532,165 @@ router.get('/trending', async (req, res) => {
   }
 });
 
+// GET /videos - Get posts that contain videos
+router.get('/videos', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = Math.min(parseInt(req.query.limit, 10) || 10, 20);
+    const offset = (page - 1) * limit;
+    
+    // Additional filtering parameters
+    const {
+      category,
+      author,
+      search,
+      sort_by = 'created_at',
+      sort_order = 'desc'
+    } = req.query;
+    
+    // Valid sort fields
+    const validSortFields = ['created_at', 'updated_at', 'title_ar', 'views'];
+    const validSortOrders = ['asc', 'desc'];
+    
+    const finalSortBy = validSortFields.includes(sort_by) ? sort_by : 'created_at';
+    const finalSortOrder = validSortOrders.includes(sort_order) ? sort_order : 'desc';
+    
+    let queryStr = `
+      SELECT p.*, 
+             c.name_ar as category_name, 
+             c.slug as category_slug,
+             u.username as author_name, u.display_name as author_display_name
+      FROM posts p
+      LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN users u ON p.author_id = u.id
+      WHERE p.is_published = 1
+        AND p.video_link IS NOT NULL 
+        AND p.video_link != ''
+    `;
+    
+    const params = [];
+    const countParams = [];
+    
+    // Apply additional filters
+    if (category) {
+      if (Number.isNaN(Number(category))) {
+        queryStr += ' AND c.slug = ?';
+        params.push(category);
+        countParams.push(category);
+      } else {
+        queryStr += ' AND p.category_id = ?';
+        params.push(parseInt(category, 10));
+        countParams.push(parseInt(category, 10));
+      }
+    }
+    
+    if (author) {
+      if (Number.isNaN(Number(author))) {
+        queryStr += ' AND u.username = ?';
+        params.push(author);
+        countParams.push(author);
+      } else {
+        queryStr += ' AND p.author_id = ?';
+        params.push(parseInt(author, 10));
+        countParams.push(parseInt(author, 10));
+      }
+    }
+    
+    if (search) {
+      queryStr += ' AND (p.title_ar LIKE ? OR p.content_ar LIKE ? OR p.excerpt_ar LIKE ?)';
+      const searchTerm = `%${search}%`;
+      params.push(searchTerm, searchTerm, searchTerm);
+      countParams.push(searchTerm, searchTerm, searchTerm);
+    }
+    
+    // Add ordering and pagination
+    queryStr += ` ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
+    params.push(limit, offset);
+    
+    const posts = await query(queryStr, params);
+    
+    // Get total count for pagination
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM posts p
+      LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN users u ON p.author_id = u.id
+      WHERE p.is_published = 1
+        AND p.video_link IS NOT NULL 
+        AND p.video_link != ''
+    `;
+    
+    // Apply same filters to count query
+    if (category) {
+      if (Number.isNaN(Number(category))) {
+        countQuery += ' AND c.slug = ?';
+      } else {
+        countQuery += ' AND p.category_id = ?';
+      }
+    }
+    
+    if (author) {
+      if (Number.isNaN(Number(author))) {
+        countQuery += ' AND u.username = ?';
+      } else {
+        countQuery += ' AND p.author_id = ?';
+      }
+    }
+    
+    if (search) {
+      countQuery += ' AND (p.title_ar LIKE ? OR p.content_ar LIKE ? OR p.excerpt_ar LIKE ?)';
+    }
+    
+    const totalResult = await query(countQuery, countParams);
+    const total = totalResult[0].total;
+    
+    const processedPosts = posts.map(post => ({
+      ...post,
+      tags: safeParseJsonTags(post.tags, post.id),
+      is_featured: Boolean(post.is_featured),
+      is_published: Boolean(post.is_published),
+      url: `/post/${post.id}/${post.slug}`,
+      category: post.category_name ? {
+        id: post.category_id,
+        name_ar: post.category_name,
+        slug: post.category_slug
+      } : null
+    }));
+
+    processedPosts.forEach(post => {
+      delete post.category_name;
+      delete post.category_slug;
+    });
+    
+    res.json({
+      success: true,
+      data: {
+        posts: processedPosts,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit)
+        },
+        filters: {
+          category,
+          author,
+          search,
+          sort_by: finalSortBy,
+          sort_order: finalSortOrder
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching video posts:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch video posts',
+      message: error.message
+    });
+  }
+});
+
 // GET /:id - Get single post by ID only (public endpoint)
 router.get('/:id', async (req, res) => {
   try {

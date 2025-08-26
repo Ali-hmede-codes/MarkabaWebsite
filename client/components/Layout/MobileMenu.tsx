@@ -14,7 +14,8 @@ import {
   InformationCircleIcon,
   UserIcon,
   Cog6ToothIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  PlayIcon
 } from '@heroicons/react/24/outline';
 import { useTheme, useThemeValues } from '../../context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
@@ -73,6 +74,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categories }) 
       title: theme.language === 'ar' ? 'آخر الأخبار' : 'Latest News',
       href: '/latest',
       icon: NewspaperIcon
+    },
+    {
+      id: 'videos',
+      title: theme.language === 'ar' ? 'الفيديوهات' : 'Videos',
+      href: '/videos',
+      icon: PlayIcon
     },
     {
       id: 'about',

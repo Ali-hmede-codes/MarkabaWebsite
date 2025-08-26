@@ -9,7 +9,7 @@ const fs = require('fs').promises;
 // Load environment variables from parent directory
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
-console.log('Environment loaded:');
+console.log('Environment loaded (updated):');
 console.log('- NODE_ENV:', process.env.NODE_ENV);
 console.log('- PORT:', process.env.PORT);
 console.log('- DB_HOST:', process.env.DB_HOST);
@@ -711,8 +711,12 @@ const startServer = async () => {
   try {
     // Test database connection before starting server
     console.log('Testing database connection...');
-    await testConnection();
-    console.log('✅ Database connection successful');
+    try {
+      await testConnection();
+      console.log('✅ Database connection successful');
+    } catch (dbError) {
+      console.warn('⚠️ Database connection failed, continuing without database:', dbError.message);
+    }
 
     // Initialize scheduler service
     console.log('Initializing scheduler service...');

@@ -24,13 +24,10 @@ class FootballService {
     this.maxDailyRequests = 100;
     this.dailyRequestCount = 0;
     this.lastRequestReset = null;
-    this.refreshIntervals = [
-      { hour: 0, minute: 0 },   // Midnight - start of day
-      { hour: 6, minute: 0 },   // Morning
-      { hour: 12, minute: 0 },  // Noon
-      { hour: 18, minute: 0 },  // Evening
-      { hour: 21, minute: 0 }   // Night
-    ];
+    // With 24 hourly updates, we can make ~4 requests per hour (96 total)
+    // This leaves some buffer for manual refreshes
+    this.requestsPerHour = 4;
+    this.maxHourlyRequests = 4;
   }
 
   async makeRequest(endpoint) {
@@ -182,8 +179,7 @@ class FootballService {
       const leagueIds = Object.keys(this.importantLeagues);
       
       // Calculate how many requests we can make this refresh
-      const remainingRequests = this.maxDailyRequests - this.dailyRequestCount;
-      const requestsPerRefresh = Math.min(Math.floor(remainingRequests / 2), leagueIds.length);
+      const requestsPerRefresh = Math.min(this.maxHourlyRequests, leagueIds.length);
       
       console.log(`Making up to ${requestsPerRefresh} requests this refresh`);
       
@@ -224,20 +220,37 @@ class FootballService {
       }
       /* eslint-enable no-await-in-loop */
 
-      // Update stored data
+      // Update stored data with daily reset logic
       const footballData = await this.getFootballData();
       
-      // Merge new matches with existing ones, avoiding duplicates
-      const existingMatchIds = new Set(footballData.matches.map(match => match.fixture.id));
-      const newMatches = allMatches.filter(match => !existingMatchIds.has(match.fixture.id));
+      // Check if we need to clear old data (new day)
+      const lastFetchDate = footballData.lastFetch ? new Date(footballData.lastFetch).toISOString().split('T')[0] : null;
+      const isNewDay = !lastFetchDate || lastFetchDate !== today;
       
-      footballData.matches = [...footballData.matches, ...newMatches];
+      if (isNewDay) {
+        console.log('New day detected - clearing old matches data');
+        // Clear old matches and start fresh for the new day
+        footballData.matches = allMatches;
+      } else {
+        // Same day - filter out old matches and merge with new ones
+        const todayMatches = footballData.matches.filter(match => {
+          const matchDate = new Date(match.fixture.date).toISOString().split('T')[0];
+          return matchDate === today;
+        });
+        
+        // Merge new matches with today's existing ones, avoiding duplicates
+        const existingMatchIds = new Set(todayMatches.map(match => match.fixture.id));
+        const newMatches = allMatches.filter(match => !existingMatchIds.has(match.fixture.id));
+        
+        footballData.matches = [...todayMatches, ...newMatches];
+      }
+      
       footballData.lastFetch = new Date().toISOString();
       footballData.timestamp = Date.now();
       
       await this.saveFootballData(footballData);
       
-      console.log(`Distributed refresh completed. Added ${newMatches.length} new matches. Total: ${footballData.matches.length}`);
+      console.log(`Distributed refresh completed. Total today's matches: ${footballData.matches.length}`);
       return footballData.matches;
       
     } catch (error) {
@@ -293,22 +306,40 @@ class FootballService {
       }
       /* eslint-enable no-await-in-loop */
       
-      const matchesData = {
-        date: today,
-        fetchedAt: new Date().toISOString(),
-        matches: allMatches,
-        total: allMatches.length
+      // Get existing data and implement daily reset logic
+      const existingData = await this.getFootballData();
+      const lastFetchDate = existingData.lastFetch ? new Date(existingData.lastFetch).toISOString().split('T')[0] : null;
+      const isNewDay = !lastFetchDate || lastFetchDate !== today;
+      
+      let finalMatches;
+      if (isNewDay) {
+        console.log('New day detected in fetchTodayMatches - starting fresh');
+        finalMatches = allMatches;
+      } else {
+        // Same day - merge with existing today's matches
+        const todayMatches = existingData.matches.filter(match => {
+          const matchDate = new Date(match.fixture.date).toISOString().split('T')[0];
+          return matchDate === today;
+        });
+        
+        const existingMatchIds = new Set(todayMatches.map(match => match.fixture.id));
+        const newMatches = allMatches.filter(match => !existingMatchIds.has(match.fixture.id));
+        finalMatches = [...todayMatches, ...newMatches];
+      }
+      
+      // Store the updated data
+      const footballData = {
+        lastFetch: new Date().toISOString(),
+        timestamp: Date.now(),
+        matches: finalMatches,
+        leagues: existingData.leagues || {},
+        standings: existingData.standings || {}
       };
       
-      // Save to consolidated file
-      const footballData = await this.getFootballData();
-      footballData.matches = allMatches;
       await this.saveFootballData(footballData);
       
-      await this.updateLastFetch();
-      
-      // Successfully fetched matches for today
-      return matchesData;
+      console.log(`Fetched and stored ${finalMatches.length} matches for today from ${leagueIds.length} leagues`);
+      return finalMatches;
       
     } catch (error) {
       throw new Error(`Failed to fetch football matches: ${error.message}`);

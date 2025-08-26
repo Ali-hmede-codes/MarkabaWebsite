@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiCalendar, FiEye, FiClock, FiChevronLeft, FiChevronRight, FiZap } from 'react-icons/fi';
+import { FiCalendar, FiClock, FiChevronLeft, FiChevronRight, FiZap } from 'react-icons/fi';
 import Link from 'next/link';
 import Layout from '../../components/Layout/Layout';
 
@@ -261,14 +261,10 @@ const LastNewsPage: React.FC = () => {
                       </h2>
                       
                       {/* Footer */}
-                      <div className="flex items-center justify-between text-xs text-gray-500 mt-auto pt-4 border-t border-gray-100">
+                      <div className="flex items-center justify-start text-xs text-gray-500 mt-auto pt-4 border-t border-gray-100">
                         <div className="flex items-center gap-1">
                           <FiCalendar size={12} />
                           <span>{formatTime(news.created_at)}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <FiEye size={12} />
-                          <span>{news.views || 0}</span>
                         </div>
                       </div>
                     </div>
