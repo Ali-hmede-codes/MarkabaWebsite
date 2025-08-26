@@ -5,6 +5,7 @@ const { query, queryOne } = require('../db');
 const { validate, postSchema, postUpdateSchema } = require('../middlewares/validation');
 const { auth, requireAuthorOrEditor, canEditContent, requireAdminOrEditor } = require('../middlewares/auth');
 const { generateArabicSlug, calculateReadingTime, createPostFiles, deletePostFiles } = require('../utils/postUtils');
+const { sendPostNotification } = require('../services/oneSignalService');
 
 
 const router = express.Router();
@@ -1135,6 +1136,17 @@ router.post('/', auth, requireAuthorOrEditor, validate(postSchema), async (req, 
     createdPost.is_featured = Boolean(createdPost.is_featured);
     createdPost.is_published = Boolean(createdPost.is_published);
     createdPost.url = `/post/${createdPost.id}/${createdPost.slug}`;
+    
+    // Send OneSignal notification if post is published
+    if (finalIsPublished) {
+      try {
+        await sendPostNotification(createdPost);
+        console.log(`OneSignal notification sent for post: ${createdPost.title_ar}`);
+      } catch (notificationError) {
+        console.error('Failed to send post notification:', notificationError);
+        // Continue without failing the request
+      }
+    }
     
     res.status(201).json({
       success: true,

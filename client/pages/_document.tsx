@@ -169,6 +169,22 @@ class MyDocument extends Document<MyDocumentProps> {
           <meta name="apple-mobile-web-app-status-bar-style" content="default" />
           
           {/* Global Twitter Tags removed - handled by SimpleMeta component */}
+          
+          {/* OneSignal Push Notifications */}
+          <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+          <script
+            nonce={nonce}
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.OneSignalDeferred = window.OneSignalDeferred || [];
+                OneSignalDeferred.push(async function(OneSignal) {
+                  await OneSignal.init({
+                    appId: "02e93d78-0cea-455a-82c1-cfef034fbf18",
+                  });
+                });
+              `,
+            }}
+          />
         </Head>
         <body className="antialiased">
         {/* No-script fallback */}
