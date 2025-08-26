@@ -208,15 +208,7 @@ const Header: React.FC = () => {
                 </button>
               </Link>
 
-              {/* Videos Button */}
-              <Link href="/videos">
-                <button
-                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                  aria-label="الفيديوهات"
-                >
-                  <FiPlay size={20} />
-                </button>
-              </Link>
+
 
               {/* Social Media Icons */}
               <div className="flex items-center space-x-2 rtl:space-x-reverse">
@@ -265,15 +257,7 @@ const Header: React.FC = () => {
                 </button>
               </Link>
               
-              {/* Videos Button */}
-              <Link href="/videos">
-                <button
-                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                  aria-label="الفيديوهات"
-                >
-                  <FiPlay size={22} />
-                </button>
-              </Link>
+
               <button
                 onClick={toggleMenu}
                 className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
@@ -306,6 +290,16 @@ const Header: React.FC = () => {
                     {category.name_ar}
                   </Link>
                 ))}
+                
+                {/* Video Category */}
+                <Link
+                  href="/videos"
+                  className="flex items-center justify-center px-3 py-2 rounded-lg text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-200 text-sm font-medium border border-green-200 hover:border-green-300"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FiPlay size={14} className="ml-1" />
+                  بالفيديو
+                </Link>
                 
 
                 {categoriesLoading && (
