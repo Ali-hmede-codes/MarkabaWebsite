@@ -612,8 +612,8 @@ router.get('/videos', async (req, res) => {
     }
     
     // Add ordering and pagination
-    queryStr += ` ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
-    params.push(finalLimit, finalOffset);
+    // Use direct interpolation for LIMIT and OFFSET to avoid MySQL prepared statement issues
+    queryStr += ` ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ${finalLimit} OFFSET ${finalOffset}`;
     
     const posts = await query(queryStr, params);
     
