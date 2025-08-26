@@ -41,7 +41,8 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
       const response = await fetch('/api/posts/videos?limit=4&sort=created_at&order=desc');
       if (response.ok) {
         const data = await response.json();
-        setVideoPosts(data.posts || []);
+        // API returns {success: true, data: {posts: [...]}}
+        setVideoPosts(data.data?.posts || []);
       }
     } catch (error) {
       console.error('Error fetching video posts:', error);
