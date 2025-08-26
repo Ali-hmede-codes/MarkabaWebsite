@@ -53,6 +53,8 @@ const PostsManagement: React.FC = () => {
   const [postsPerPage, setPostsPerPage] = useState(20); // Changed from hardcoded 8 to 20
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPosts();
@@ -402,6 +404,20 @@ const PostsManagement: React.FC = () => {
                             {post.is_published ? <FiEye size={16} /> : <FiEyeOff size={16} />}
                           </button>
 
+                          {/* View Image */}
+                          {post.featured_image && (
+                            <button
+                              onClick={() => {
+                                setSelectedImage(post.featured_image);
+                                setShowImageModal(true);
+                              }}
+                              className="p-2 text-purple-600 hover:bg-purple-100 rounded-lg transition-colors"
+                              title="عرض الصورة"
+                            >
+                              <FiImage size={16} />
+                            </button>
+                          )}
+
                           {/* Toggle Featured */}
                           <button
                             onClick={() => toggleFeaturedStatus(post)}
@@ -497,6 +513,44 @@ const PostsManagement: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Image View Modal */}
+      {showImageModal && selectedImage && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-black opacity-75"></div>
+            </div>
+            <div className="inline-block align-middle bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-4xl w-full">
+              <div className="bg-white px-4 pt-5 pb-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    عرض الصورة المميزة
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setShowImageModal(false);
+                      setSelectedImage(null);
+                    }}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="text-center">
+                  <img
+                    src={getImageUrl(selectedImage)}
+                    alt="صورة المقال"
+                    className="max-w-full max-h-96 mx-auto rounded-lg shadow-lg"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && postToDelete && (
