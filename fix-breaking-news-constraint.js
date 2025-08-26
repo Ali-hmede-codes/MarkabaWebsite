@@ -42,8 +42,16 @@ async function fixBreakingNewsConstraint() {
     
     // Ensure we have a regular index for performance
     console.log('📊 Creating regular index for performance...');
-    await execute(`CREATE INDEX IF NOT EXISTS idx_breaking_news_slug ON breaking_news(slug)`);
-    console.log('✅ Regular index created successfully!');
+    try {
+      await execute(`CREATE INDEX idx_breaking_news_slug ON breaking_news(slug)`);
+      console.log('✅ Regular index created successfully!');
+    } catch (error) {
+      if (error.code === 'ER_DUP_KEYNAME') {
+        console.log('ℹ️ Index already exists, skipping creation');
+      } else {
+        throw error;
+      }
+    }
     
     // Verify the changes
     console.log('🔍 Verifying changes...');
