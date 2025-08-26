@@ -50,20 +50,21 @@ const PostsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
+  const [postsPerPage, setPostsPerPage] = useState(20); // Changed from hardcoded 8 to 20
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
   useEffect(() => {
     fetchPosts();
     fetchCategories();
-  }, [currentPage, searchTerm, selectedCategory, statusFilter]);
+  }, [currentPage, searchTerm, selectedCategory, statusFilter, postsPerPage]);
 
   const fetchPosts = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: '8',
+        limit: postsPerPage.toString(),
         status: 'all', // Show all posts (published and drafts)
         ...(searchTerm && { search: searchTerm }),
         ...(selectedCategory && { category: selectedCategory }),
@@ -76,7 +77,7 @@ const PostsManagement: React.FC = () => {
       if (data.success) {
         setPosts(data.data.posts || []);
         setTotalPosts(data.data.total || 0);
-        setTotalPages(Math.ceil((data.data.total || 0) / 8));
+        setTotalPages(Math.ceil((data.data.total || 0) / postsPerPage));
       } else {
         toast.error('فشل في تحميل المقالات');
       }
@@ -229,7 +230,7 @@ const PostsManagement: React.FC = () => {
 
         {/* Filters */}
         <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* Search */}
             <div className="relative">
               <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
@@ -269,10 +270,25 @@ const PostsManagement: React.FC = () => {
               <option value="featured">مميز</option>
             </select>
 
+            {/* Posts Per Page */}
+            <select
+              value={postsPerPage}
+              onChange={(e) => {
+                setPostsPerPage(Number(e.target.value));
+                setCurrentPage(1); // Reset to first page when changing posts per page
+              }}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+            >
+              <option value={10}>10 مقالات</option>
+              <option value={20}>20 مقال</option>
+              <option value={50}>50 مقال</option>
+              <option value={100}>100 مقال</option>
+            </select>
+
             {/* Results Count */}
             <div className="flex items-center text-sm text-gray-600">
               <FiFilter className="ml-2" size={16} />
-              <span>{filteredPosts.length} مقال</span>
+              <span>{totalPosts} مقال إجمالي</span>
             </div>
           </div>
         </div>
@@ -431,7 +447,7 @@ const PostsManagement: React.FC = () => {
         {totalPages > 1 && (
           <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg">
             <div className="text-sm text-gray-700">
-              صفحة {currentPage} من {totalPages} - عرض {posts.length} من {totalPosts} مقال
+              صفحة {currentPage} من {totalPages} - عرض {((currentPage - 1) * postsPerPage) + 1} إلى {Math.min(currentPage * postsPerPage, totalPosts)} من {totalPosts} مقال
             </div>
             <div className="flex space-x-2 rtl:space-x-reverse">
               <button
