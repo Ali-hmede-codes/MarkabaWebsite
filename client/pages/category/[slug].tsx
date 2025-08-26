@@ -56,7 +56,7 @@ const CategoryPage: React.FC = () => {
       setError(null);
       
       const response = await fetch(
-        `/api/v2/categories/${slug}?include_posts=true&posts_page=${pageNum}&posts_limit=${postsPerPage}`
+        `/api/categories/${slug}?include_posts=true&posts_page=${pageNum}&posts_limit=${postsPerPage}`
       );
       
       if (!response.ok) {

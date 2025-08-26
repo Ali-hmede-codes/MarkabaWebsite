@@ -611,9 +611,9 @@ router.get('/videos', async (req, res) => {
       countParams.push(searchTerm, searchTerm, searchTerm);
     }
     
-    // Add ordering and pagination
-    queryStr += ` ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
-    params.push(finalLimit, finalOffset);
+    // Add ordering and pagination (column names and sort order cannot be parameterized)
+    queryStr += ` ORDER BY p.${finalSortBy} ${finalSortOrder.toUpperCase()}`;
+    queryStr += ` LIMIT ${finalLimit} OFFSET ${finalOffset}`;
     
     const posts = await query(queryStr, params);
     
