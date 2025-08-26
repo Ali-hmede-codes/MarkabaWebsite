@@ -24,7 +24,7 @@ interface LayoutProps {
   description?: string;
   keywords?: string;
   seo?: SEOData;
-  pageType?: 'home' | 'category' | 'search' | 'about' | 'contact' | 'custom';
+  pageType?: 'home' | 'category' | 'search' | 'about' | 'contact' | 'advertise' | 'custom';
   pageData?: Record<string, any>;
   showHeader?: boolean;
   showFooter?: boolean;

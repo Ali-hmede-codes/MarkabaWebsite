@@ -179,7 +179,7 @@ const Footer: React.FC = () => {
                <Link href="/" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
                  الرئيسية
                </Link>
-               <Link href="/" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
+               <Link href="/advertise" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
                  للإعلان معنا
                </Link>
                <Link href="/contact" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
