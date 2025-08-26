@@ -3,114 +3,65 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Layout from '../../components/Layout/Layout';
 import { useContent } from '../../hooks/useContent';
-import { useCategories } from '../../components/API/hooks';
+import { usePosts, useCategories, useAPI } from '../../components/API/hooks';
 import { Post, Category } from '../../components/API/types';
 import { FiCalendar, FiUser, FiArrowRight } from 'react-icons/fi';
 import { getImageUrl } from '../../utils/imageUtils';
 
-interface CategoryPostsResponse {
-  success: boolean;
-  data: {
-    id: number;
-    name_ar: string;
-    slug: string;
-    description_ar?: string;
-    color: string;
-    post_count: number;
-    posts: Post[];
-    posts_pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      pages: number;
-    };
-  };
-  error?: string;
-}
-
 const CategoryPage: React.FC = () => {
   const router = useRouter();
-  const { slug, page } = router.query;
+  const { slug } = router.query;
   const { content } = useContent();
   const { data: categories } = useCategories();
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [pagination, setPagination] = useState<{
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  } | null>(null);
+  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [pageLoading, setPageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const postsPerPage = 12;
-  const currentPage = parseInt(page as string) || 1;
 
-  // Fetch category data with posts using server-side pagination
-  const fetchCategoryPosts = async (pageNum: number) => {
-    if (!slug || typeof slug !== 'string') return;
-    
-    try {
-      setPageLoading(true);
-      setError(null);
-      
-      const response = await fetch(
-        `/api/categories/${slug}?include_posts=true&posts_page=${pageNum}&posts_limit=${postsPerPage}`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch category data');
-      }
-      
-      const data: CategoryPostsResponse = await response.json();
-      
-      if (data.success && data.data) {
-        // Create a proper Category object with required properties
-        const categoryData: Category = {
-          id: data.data.id,
-          name_ar: data.data.name_ar,
-          slug: data.data.slug,
-          description_ar: data.data.description_ar,
-          color: data.data.color,
-          is_active: true, // Default value
-          sort_order: 0, // Default value
-          posts_count: data.data.post_count,
-          created_at: new Date().toISOString(), // Default value
-          updated_at: new Date().toISOString() // Default value
-        };
-        setCurrentCategory(categoryData);
-        setPosts(data.data.posts || []);
-        setPagination(data.data.posts_pagination);
-      } else {
-        setError(data.error || 'Failed to fetch category data');
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch category data');
-    } finally {
-      setLoading(false);
-      setPageLoading(false);
-    }
-  };
+  // Custom API call for posts with proper slug handling
+  const { execute: fetchPosts } = useAPI<import('../../components/API/types').PostsResponse>('/posts', {
+    immediate: false,
+  });
 
-  // Initial load
+  // Find current category and filter posts
   useEffect(() => {
-    if (slug) {
-      setLoading(true);
-      fetchCategoryPosts(currentPage);
+    if (categories && slug) {
+      const categoriesArray = categories?.categories || [];
+      const category = categoriesArray.find((cat: Category) => cat.slug === slug);
+      setCurrentCategory(category || null);
     }
-  }, [slug, currentPage]);
+  }, [categories, slug]);
 
-  // Handle page navigation
-  const handlePageChange = (newPage: number) => {
-    if (newPage === currentPage || !pagination) return;
-    
-    // Update URL with new page parameter
-    router.push({
-      pathname: router.pathname,
-      query: { ...router.query, page: newPage }
-    }, undefined, { shallow: true });
-  };
+  // Fetch posts when slug is available
+  useEffect(() => {
+    if (slug && typeof slug === 'string') {
+      setLoading(true);
+      setError(null);
+      fetchPosts(undefined, { category: slug })
+        .then((response) => {
+          if (response?.success && response.data) {
+            const postsArray = response.data?.posts || [];
+            setFilteredPosts(postsArray);
+          } else {
+            setError(response?.error || 'Failed to fetch posts');
+          }
+        })
+        .catch((err) => {
+          setError(err.message || 'Failed to fetch posts');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [slug, fetchPosts]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const startIndex = (currentPage - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const currentPosts = filteredPosts.slice(startIndex, endIndex);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ar-SA', {
@@ -220,7 +171,7 @@ const CategoryPage: React.FC = () => {
                 {pageDescription}
               </p>
               <div className="text-sm text-gray-600 bg-white px-4 py-1 rounded inline-block">
-                {pagination?.total || 0} مقال متاح
+                {filteredPosts.length} مقال متاح
               </div>
             </div>
           </div>
@@ -228,14 +179,7 @@ const CategoryPage: React.FC = () => {
 
         {/* Posts Grid */}
         <div className="container mx-auto responsive-padding py-6 sm:py-8">
-          {pageLoading && (
-            <div className="flex justify-center items-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="mr-3 text-gray-600">جاري تحميل المقالات...</span>
-            </div>
-          )}
-          
-          {!pageLoading && posts.length === 0 ? (
+          {currentPosts.length === 0 ? (
             <div className="text-center py-8 sm:py-12">
               <div className="text-gray-400 mb-4">
                 <svg className="w-12 h-12 sm:w-16 sm:h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,7 +203,7 @@ const CategoryPage: React.FC = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map((post) => (
+                {currentPosts.map((post) => (
                   <Link key={post.id} href={`/post/${post.slug}`}>
                     <article className="group cursor-pointer">
                       <div className="relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
@@ -308,15 +252,15 @@ const CategoryPage: React.FC = () => {
               </div>
 
               {/* Pagination */}
-              {pagination && pagination.pages > 1 && (
+              {totalPages > 1 && (
                 <div className="mt-8 sm:mt-12 responsive-flex justify-center">
                   <nav className="responsive-flex items-center space-x-2 rtl:space-x-reverse">
                     {/* Previous Button */}
                     <button
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1 || pageLoading}
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
                       className={`px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target ${
-                        currentPage === 1 || pageLoading
+                        currentPage === 1
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                       }`}
@@ -325,83 +269,26 @@ const CategoryPage: React.FC = () => {
                     </button>
 
                     {/* Page Numbers */}
-                    {(() => {
-                      const totalPages = pagination.pages;
-                      const maxVisiblePages = 5;
-                      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-                      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-                      
-                      if (endPage - startPage + 1 < maxVisiblePages) {
-                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-                      }
-                      
-                      const pages = [];
-                      
-                      // First page
-                      if (startPage > 1) {
-                        pages.push(
-                          <button
-                            key={1}
-                            onClick={() => handlePageChange(1)}
-                            disabled={pageLoading}
-                            className="px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 disabled:opacity-50"
-                          >
-                            1
-                          </button>
-                        );
-                        if (startPage > 2) {
-                          pages.push(
-                            <span key="ellipsis1" className="px-2 text-gray-500">...</span>
-                          );
-                        }
-                      }
-                      
-                      // Visible pages
-                      for (let i = startPage; i <= endPage; i++) {
-                        pages.push(
-                          <button
-                            key={i}
-                            onClick={() => handlePageChange(i)}
-                            disabled={pageLoading}
-                            className={`px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target disabled:opacity-50 ${
-                              currentPage === i
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                            }`}
-                          >
-                            {i}
-                          </button>
-                        );
-                      }
-                      
-                      // Last page
-                      if (endPage < totalPages) {
-                        if (endPage < totalPages - 1) {
-                          pages.push(
-                            <span key="ellipsis2" className="px-2 text-gray-500">...</span>
-                          );
-                        }
-                        pages.push(
-                          <button
-                            key={totalPages}
-                            onClick={() => handlePageChange(totalPages)}
-                            disabled={pageLoading}
-                            className="px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 disabled:opacity-50"
-                          >
-                            {totalPages}
-                          </button>
-                        );
-                      }
-                      
-                      return pages;
-                    })()}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target ${
+                          currentPage === page
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
 
                     {/* Next Button */}
                     <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === pagination.pages || pageLoading}
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
                       className={`px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target ${
-                        currentPage === pagination.pages || pageLoading
+                        currentPage === totalPages
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                       }`}
@@ -409,11 +296,6 @@ const CategoryPage: React.FC = () => {
                       التالي
                     </button>
                   </nav>
-                  
-                  {/* Pagination Info */}
-                  <div className="mt-4 text-center text-sm text-gray-600">
-                    صفحة {currentPage} من {pagination.pages} ({pagination.total} مقال)
-                  </div>
                 </div>
               )}
             </>
