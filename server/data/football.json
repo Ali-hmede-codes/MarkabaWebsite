@@ -1,582 +1,22 @@
 {
-  "lastFetch": "2025-08-17T15:00:42.817Z",
-  "timestamp": 1755442842817,
+  "lastFetch": "2025-08-26T10:00:25.800Z",
+  "timestamp": 1756202425800,
   "matches": [
     {
       "fixture": {
-        "id": 1378976,
-        "referee": "Darren England, England",
+        "id": 1435551,
+        "referee": "{0}",
         "timezone": "UTC",
-        "date": "2025-08-17T13:00:00+00:00",
-        "timestamp": 1755435600,
-        "periods": {
-          "first": 1755435600,
-          "second": 1755439200
-        },
-        "venue": {
-          "id": 519,
-          "name": "Stamford Bridge",
-          "city": "London"
-        },
-        "status": {
-          "long": "Match Finished",
-          "short": "FT",
-          "elapsed": 90,
-          "extra": 7
-        }
-      },
-      "league": {
-        "id": 39,
-        "name": "Premier League",
-        "country": "England",
-        "logo": "https://media.api-sports.io/football/leagues/39.png",
-        "flag": "https://media.api-sports.io/flags/gb-eng.svg",
-        "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
-      },
-      "teams": {
-        "home": {
-          "id": 49,
-          "name": "Chelsea",
-          "logo": "https://media.api-sports.io/football/teams/49.png",
-          "winner": null
-        },
-        "away": {
-          "id": 52,
-          "name": "Crystal Palace",
-          "logo": "https://media.api-sports.io/football/teams/52.png",
-          "winner": null
-        }
-      },
-      "goals": {
-        "home": 0,
-        "away": 0
-      },
-      "score": {
-        "halftime": {
-          "home": 0,
-          "away": 0
-        },
-        "fulltime": {
-          "home": 0,
-          "away": 0
-        },
-        "extratime": {
-          "home": null,
-          "away": null
-        },
-        "penalty": {
-          "home": null,
-          "away": null
-        }
-      }
-    },
-    {
-      "fixture": {
-        "id": 1378972,
-        "referee": "Peter Bankes, England",
-        "timezone": "UTC",
-        "date": "2025-08-17T13:00:00+00:00",
-        "timestamp": 1755435600,
-        "periods": {
-          "first": 1755435600,
-          "second": 1755439200
-        },
-        "venue": {
-          "id": 566,
-          "name": "The City Ground",
-          "city": "Nottingham, Nottinghamshire"
-        },
-        "status": {
-          "long": "Match Finished",
-          "short": "FT",
-          "elapsed": 90,
-          "extra": 6
-        }
-      },
-      "league": {
-        "id": 39,
-        "name": "Premier League",
-        "country": "England",
-        "logo": "https://media.api-sports.io/football/leagues/39.png",
-        "flag": "https://media.api-sports.io/flags/gb-eng.svg",
-        "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
-      },
-      "teams": {
-        "home": {
-          "id": 65,
-          "name": "Nottingham Forest",
-          "logo": "https://media.api-sports.io/football/teams/65.png",
-          "winner": true
-        },
-        "away": {
-          "id": 55,
-          "name": "Brentford",
-          "logo": "https://media.api-sports.io/football/teams/55.png",
-          "winner": false
-        }
-      },
-      "goals": {
-        "home": 3,
-        "away": 1
-      },
-      "score": {
-        "halftime": {
-          "home": 3,
-          "away": 0
-        },
-        "fulltime": {
-          "home": 3,
-          "away": 1
-        },
-        "extratime": {
-          "home": null,
-          "away": null
-        },
-        "penalty": {
-          "home": null,
-          "away": null
-        }
-      }
-    },
-    {
-      "fixture": {
-        "id": 1378977,
-        "referee": "Simon Hooper, England",
-        "timezone": "UTC",
-        "date": "2025-08-17T15:30:00+00:00",
-        "timestamp": 1755444600,
-        "periods": {
-          "first": null,
-          "second": null
-        },
-        "venue": {
-          "id": 556,
-          "name": "Old Trafford",
-          "city": "Manchester"
-        },
-        "status": {
-          "long": "Not Started",
-          "short": "NS",
-          "elapsed": null,
-          "extra": null
-        }
-      },
-      "league": {
-        "id": 39,
-        "name": "Premier League",
-        "country": "England",
-        "logo": "https://media.api-sports.io/football/leagues/39.png",
-        "flag": "https://media.api-sports.io/flags/gb-eng.svg",
-        "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
-      },
-      "teams": {
-        "home": {
-          "id": 33,
-          "name": "Manchester United",
-          "logo": "https://media.api-sports.io/football/teams/33.png",
-          "winner": null
-        },
-        "away": {
-          "id": 42,
-          "name": "Arsenal",
-          "logo": "https://media.api-sports.io/football/teams/42.png",
-          "winner": null
-        }
-      },
-      "goals": {
-        "home": null,
-        "away": null
-      },
-      "score": {
-        "halftime": {
-          "home": null,
-          "away": null
-        },
-        "fulltime": {
-          "home": null,
-          "away": null
-        },
-        "extratime": {
-          "home": null,
-          "away": null
-        },
-        "penalty": {
-          "home": null,
-          "away": null
-        }
-      }
-    },
-    {
-      "fixture": {
-        "id": 1387700,
-        "referee": "Clement Turpin, France",
-        "timezone": "UTC",
-        "date": "2025-08-17T13:00:00+00:00",
-        "timestamp": 1755435600,
-        "periods": {
-          "first": 1755435600,
-          "second": 1755439200
-        },
-        "venue": {
-          "id": 641,
-          "name": "Stade Francis-Le Blé",
-          "city": "Brest"
-        },
-        "status": {
-          "long": "Second Half",
-          "short": "2H",
-          "elapsed": 90,
-          "extra": 9
-        }
-      },
-      "league": {
-        "id": 61,
-        "name": "Ligue 1",
-        "country": "France",
-        "logo": "https://media.api-sports.io/football/leagues/61.png",
-        "flag": "https://media.api-sports.io/flags/fr.svg",
-        "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
-      },
-      "teams": {
-        "home": {
-          "id": 106,
-          "name": "Stade Brestois 29",
-          "logo": "https://media.api-sports.io/football/teams/106.png",
-          "winner": null
-        },
-        "away": {
-          "id": 79,
-          "name": "Lille",
-          "logo": "https://media.api-sports.io/football/teams/79.png",
-          "winner": null
-        }
-      },
-      "goals": {
-        "home": 3,
-        "away": 3
-      },
-      "score": {
-        "halftime": {
-          "home": 1,
-          "away": 2
-        },
-        "fulltime": {
-          "home": null,
-          "away": null
-        },
-        "extratime": {
-          "home": null,
-          "away": null
-        },
-        "penalty": {
-          "home": null,
-          "away": null
-        }
-      }
-    },
-    {
-      "fixture": {
-        "id": 1387698,
-        "referee": "François Letexier, France",
-        "timezone": "UTC",
-        "date": "2025-08-17T15:15:00+00:00",
-        "timestamp": 1755443700,
-        "periods": {
-          "first": null,
-          "second": null
-        },
-        "venue": {
-          "id": 634,
-          "name": "Stade Raymond Kopa",
-          "city": "Angers"
-        },
-        "status": {
-          "long": "Not Started",
-          "short": "NS",
-          "elapsed": null,
-          "extra": null
-        }
-      },
-      "league": {
-        "id": 61,
-        "name": "Ligue 1",
-        "country": "France",
-        "logo": "https://media.api-sports.io/football/leagues/61.png",
-        "flag": "https://media.api-sports.io/flags/fr.svg",
-        "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
-      },
-      "teams": {
-        "home": {
-          "id": 77,
-          "name": "Angers",
-          "logo": "https://media.api-sports.io/football/teams/77.png",
-          "winner": null
-        },
-        "away": {
-          "id": 114,
-          "name": "Paris FC",
-          "logo": "https://media.api-sports.io/football/teams/114.png",
-          "winner": null
-        }
-      },
-      "goals": {
-        "home": null,
-        "away": null
-      },
-      "score": {
-        "halftime": {
-          "home": null,
-          "away": null
-        },
-        "fulltime": {
-          "home": null,
-          "away": null
-        },
-        "extratime": {
-          "home": null,
-          "away": null
-        },
-        "penalty": {
-          "home": null,
-          "away": null
-        }
-      }
-    },
-    {
-      "fixture": {
-        "id": 1387699,
-        "referee": "Abdelatif Kherradji, France",
-        "timezone": "UTC",
-        "date": "2025-08-17T15:15:00+00:00",
-        "timestamp": 1755443700,
-        "periods": {
-          "first": null,
-          "second": null
-        },
-        "venue": {
-          "id": 636,
-          "name": "Stade de l'Abbé Deschamps",
-          "city": "Auxerre"
-        },
-        "status": {
-          "long": "Not Started",
-          "short": "NS",
-          "elapsed": null,
-          "extra": null
-        }
-      },
-      "league": {
-        "id": 61,
-        "name": "Ligue 1",
-        "country": "France",
-        "logo": "https://media.api-sports.io/football/leagues/61.png",
-        "flag": "https://media.api-sports.io/flags/fr.svg",
-        "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
-      },
-      "teams": {
-        "home": {
-          "id": 108,
-          "name": "Auxerre",
-          "logo": "https://media.api-sports.io/football/teams/108.png",
-          "winner": null
-        },
-        "away": {
-          "id": 97,
-          "name": "Lorient",
-          "logo": "https://media.api-sports.io/football/teams/97.png",
-          "winner": null
-        }
-      },
-      "goals": {
-        "home": null,
-        "away": null
-      },
-      "score": {
-        "halftime": {
-          "home": null,
-          "away": null
-        },
-        "fulltime": {
-          "home": null,
-          "away": null
-        },
-        "extratime": {
-          "home": null,
-          "away": null
-        },
-        "penalty": {
-          "home": null,
-          "away": null
-        }
-      }
-    },
-    {
-      "fixture": {
-        "id": 1387702,
-        "referee": "Mathieu Vernice, France",
-        "timezone": "UTC",
-        "date": "2025-08-17T15:15:00+00:00",
-        "timestamp": 1755443700,
-        "periods": {
-          "first": null,
-          "second": null
-        },
-        "venue": {
-          "id": 658,
-          "name": "Stade Saint-Symphorien",
-          "city": "Longeville-lès-Metz"
-        },
-        "status": {
-          "long": "Not Started",
-          "short": "NS",
-          "elapsed": null,
-          "extra": null
-        }
-      },
-      "league": {
-        "id": 61,
-        "name": "Ligue 1",
-        "country": "France",
-        "logo": "https://media.api-sports.io/football/leagues/61.png",
-        "flag": "https://media.api-sports.io/flags/fr.svg",
-        "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
-      },
-      "teams": {
-        "home": {
-          "id": 112,
-          "name": "Metz",
-          "logo": "https://media.api-sports.io/football/teams/112.png",
-          "winner": null
-        },
-        "away": {
-          "id": 95,
-          "name": "Strasbourg",
-          "logo": "https://media.api-sports.io/football/teams/95.png",
-          "winner": null
-        }
-      },
-      "goals": {
-        "home": null,
-        "away": null
-      },
-      "score": {
-        "halftime": {
-          "home": null,
-          "away": null
-        },
-        "fulltime": {
-          "home": null,
-          "away": null
-        },
-        "extratime": {
-          "home": null,
-          "away": null
-        },
-        "penalty": {
-          "home": null,
-          "away": null
-        }
-      }
-    },
-    {
-      "fixture": {
-        "id": 1387704,
-        "referee": "Benoît Bastien",
-        "timezone": "UTC",
-        "date": "2025-08-17T18:45:00+00:00",
-        "timestamp": 1755456300,
-        "periods": {
-          "first": null,
-          "second": null
-        },
-        "venue": {
-          "id": 662,
-          "name": "Stade de la Beaujoire - Louis Fonteneau",
-          "city": "Nantes"
-        },
-        "status": {
-          "long": "Not Started",
-          "short": "NS",
-          "elapsed": null,
-          "extra": null
-        }
-      },
-      "league": {
-        "id": 61,
-        "name": "Ligue 1",
-        "country": "France",
-        "logo": "https://media.api-sports.io/football/leagues/61.png",
-        "flag": "https://media.api-sports.io/flags/fr.svg",
-        "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
-      },
-      "teams": {
-        "home": {
-          "id": 83,
-          "name": "Nantes",
-          "logo": "https://media.api-sports.io/football/teams/83.png",
-          "winner": null
-        },
-        "away": {
-          "id": 85,
-          "name": "Paris Saint Germain",
-          "logo": "https://media.api-sports.io/football/teams/85.png",
-          "winner": null
-        }
-      },
-      "goals": {
-        "home": null,
-        "away": null
-      },
-      "score": {
-        "halftime": {
-          "home": null,
-          "away": null
-        },
-        "fulltime": {
-          "home": null,
-          "away": null
-        },
-        "extratime": {
-          "home": null,
-          "away": null
-        },
-        "penalty": {
-          "home": null,
-          "away": null
-        }
-      }
-    },
-    {
-      "fixture": {
-        "id": 1390821,
-        "referee": "Iosu Galech Apezteguia, Spain",
-        "timezone": "UTC",
-        "date": "2025-08-17T15:00:00+00:00",
-        "timestamp": 1755442800,
+        "date": "2025-08-26T16:45:00+00:00",
+        "timestamp": 1756226700,
         "periods": {
           "first": null,
           "second": null
         },
         "venue": {
           "id": null,
-          "name": "Estadio Abanca-Balaídos",
-          "city": "Vigo"
+          "name": "Ortalyq stadion",
+          "city": "Almatı (Almaty)"
         },
         "status": {
           "long": "Not Started",
@@ -586,26 +26,26 @@
         }
       },
       "league": {
-        "id": 140,
-        "name": "La Liga",
-        "country": "Spain",
-        "logo": "https://media.api-sports.io/football/leagues/140.png",
-        "flag": "https://media.api-sports.io/flags/es.svg",
+        "id": 2,
+        "name": "UEFA Champions League",
+        "country": "World",
+        "logo": "https://media.api-sports.io/football/leagues/2.png",
+        "flag": null,
         "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
+        "round": "Play-offs",
+        "standings": false
       },
       "teams": {
         "home": {
-          "id": 538,
-          "name": "Celta Vigo",
-          "logo": "https://media.api-sports.io/football/teams/538.png",
+          "id": 664,
+          "name": "Kairat Almaty",
+          "logo": "https://media.api-sports.io/football/teams/664.png",
           "winner": null
         },
         "away": {
-          "id": 546,
-          "name": "Getafe",
-          "logo": "https://media.api-sports.io/football/teams/546.png",
+          "id": 247,
+          "name": "Celtic",
+          "logo": "https://media.api-sports.io/football/teams/247.png",
           "winner": null
         }
       },
@@ -634,19 +74,19 @@
     },
     {
       "fixture": {
-        "id": 1390820,
-        "referee": null,
+        "id": 1424398,
+        "referee": "{0}",
         "timezone": "UTC",
-        "date": "2025-08-17T17:30:00+00:00",
-        "timestamp": 1755451800,
+        "date": "2025-08-26T19:00:00+00:00",
+        "timestamp": 1756234800,
         "periods": {
           "first": null,
           "second": null
         },
         "venue": {
-          "id": null,
-          "name": "Estadio de San Mamés",
-          "city": "Bilbao"
+          "id": 150,
+          "name": "Merkur Arena",
+          "city": "Graz"
         },
         "status": {
           "long": "Not Started",
@@ -656,26 +96,26 @@
         }
       },
       "league": {
-        "id": 140,
-        "name": "La Liga",
-        "country": "Spain",
-        "logo": "https://media.api-sports.io/football/leagues/140.png",
-        "flag": "https://media.api-sports.io/flags/es.svg",
+        "id": 2,
+        "name": "UEFA Champions League",
+        "country": "World",
+        "logo": "https://media.api-sports.io/football/leagues/2.png",
+        "flag": null,
         "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
+        "round": "Play-offs",
+        "standings": false
       },
       "teams": {
         "home": {
-          "id": 531,
-          "name": "Athletic Club",
-          "logo": "https://media.api-sports.io/football/teams/531.png",
+          "id": 637,
+          "name": "Sturm Graz",
+          "logo": "https://media.api-sports.io/football/teams/637.png",
           "winner": null
         },
         "away": {
-          "id": 536,
-          "name": "Sevilla",
-          "logo": "https://media.api-sports.io/football/teams/536.png",
+          "id": 327,
+          "name": "Bodo/Glimt",
+          "logo": "https://media.api-sports.io/football/teams/327.png",
           "winner": null
         }
       },
@@ -704,19 +144,19 @@
     },
     {
       "fixture": {
-        "id": 1390823,
-        "referee": null,
+        "id": 1435552,
+        "referee": "{0}",
         "timezone": "UTC",
-        "date": "2025-08-17T19:30:00+00:00",
-        "timestamp": 1755459000,
+        "date": "2025-08-26T19:00:00+00:00",
+        "timestamp": 1756234800,
         "periods": {
           "first": null,
           "second": null
         },
         "venue": {
-          "id": 1474,
-          "name": "RCDE Stadium",
-          "city": "Cornella de Llobregat"
+          "id": 19616,
+          "name": "Alphamega Stadium",
+          "city": "Kolossi"
         },
         "status": {
           "long": "Not Started",
@@ -726,26 +166,26 @@
         }
       },
       "league": {
-        "id": 140,
-        "name": "La Liga",
-        "country": "Spain",
-        "logo": "https://media.api-sports.io/football/leagues/140.png",
-        "flag": "https://media.api-sports.io/flags/es.svg",
+        "id": 2,
+        "name": "UEFA Champions League",
+        "country": "World",
+        "logo": "https://media.api-sports.io/football/leagues/2.png",
+        "flag": null,
         "season": 2025,
-        "round": "Regular Season - 1",
-        "standings": true
+        "round": "Play-offs",
+        "standings": false
       },
       "teams": {
         "home": {
-          "id": 540,
-          "name": "Espanyol",
-          "logo": "https://media.api-sports.io/football/teams/540.png",
+          "id": 3403,
+          "name": "Pafos",
+          "logo": "https://media.api-sports.io/football/teams/3403.png",
           "winner": null
         },
         "away": {
-          "id": 530,
-          "name": "Atletico Madrid",
-          "logo": "https://media.api-sports.io/football/teams/530.png",
+          "id": 598,
+          "name": "FK Crvena Zvezda",
+          "logo": "https://media.api-sports.io/football/teams/598.png",
           "winner": null
         }
       },

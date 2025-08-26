@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Post } from '../API/types';
-import { FiCalendar, FiUser } from 'react-icons/fi';
+import { FiCalendar, FiUser, FiPlay } from 'react-icons/fi';
 import { getImageUrl } from '../../utils/imageUtils';
 
 interface PostCardProps {
@@ -49,6 +49,24 @@ const PostCard: React.FC<PostCardProps> = ({
             className="object-cover rounded-t-lg"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
+          
+          {/* Video Play Icon Overlay */}
+          {post.video_link && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white transition-all duration-300">
+                <FiPlay className="text-green-600 text-2xl" />
+              </div>
+            </div>
+          )}
+          
+          {/* Video Badge */}
+          {post.video_link && (
+            <div className="absolute top-2 left-2">
+              <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full shadow-lg">
+                فيديو
+              </span>
+            </div>
+          )}
         </div>
       )}
       
