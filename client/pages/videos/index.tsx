@@ -6,7 +6,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Layout from '../../components/Layout/Layout';
 import { Post, Category } from '../../components/API/types';
-import { FiPlay, FiCalendar, FiEye, FiChevronLeft, FiChevronRight, FiHome } from 'react-icons/fi';
+import { FiPlay, FiCalendar, FiChevronLeft, FiChevronRight, FiHome } from 'react-icons/fi';
 import { getImageUrl } from '../../utils/imageUtils';
 import { useContent } from '../../hooks/useContent';
 
@@ -164,12 +164,7 @@ const VideosPage: NextPage<VideosPageProps> = ({
                         <span>{getRelativeTime(post.created_at)}</span>
                       </div>
                       
-                      {post.views && (
-                        <div className="flex items-center">
-                          <FiEye size={14} className="ml-1 rtl:ml-0 rtl:mr-1" />
-                          <span>{post.views}</span>
-                        </div>
-                      )}
+
                     </div>
                   </div>
                 </article>
