@@ -171,7 +171,7 @@ class MyDocument extends Document<MyDocumentProps> {
           {/* Global Twitter Tags removed - handled by SimpleMeta component */}
           
           {/* OneSignal Push Notifications */}
-          <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+          <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" nonce={nonce} defer></script>
           <script
             nonce={nonce}
             dangerouslySetInnerHTML={{
