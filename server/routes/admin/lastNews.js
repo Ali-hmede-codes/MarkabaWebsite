@@ -93,10 +93,11 @@ router.post('/', async (req, res) => {
     
     // Send OneSignal push notification for last news
     try {
-      await oneSignalService.sendNotification({
-        headings: { ar: title_ar },
-        contents: { ar: content_ar || title_ar },
-        url: `https://www.markaba.news/last-news/${newItem[0].id}/${newItem[0].slug}`
+      await oneSignalService.sendLastNewsNotification({
+        id: newItem[0].id,
+        title_ar: title_ar,
+        content_ar: content_ar || title_ar,
+        slug: newItem[0].slug
       });
       console.log('OneSignal notification sent for last news:', title_ar);
     } catch (notificationError) {

@@ -385,10 +385,11 @@ router.post('/', auth, requireAdmin, validate(breakingNewsSchema), async (req, r
     
     // Send OneSignal push notification for breaking news
     try {
-      await oneSignalService.sendNotification({
-        headings: { ar: title_ar },
-        contents: { ar: content_ar },
-        url: `https://www.markaba.news/breaking/${createdNews.id}/${createdNews.slug}`
+      await oneSignalService.sendBreakingNewsNotification({
+        id: createdNews.id,
+        title_ar: title_ar,
+        content_ar: content_ar,
+        slug: createdNews.slug
       });
       console.log('OneSignal notification sent for breaking news:', title_ar);
     } catch (notificationError) {
