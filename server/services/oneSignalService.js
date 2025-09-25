@@ -1,15 +1,69 @@
-const OneSignal = require('onesignal-node');
+// const OneSignal = require('onesignal-node'); // Commented out as we're using direct HTTPS requests
+const https = require('https');
 
 require('dotenv').config();
 
-// Initialize OneSignal client
-const client = new OneSignal.Client({
-  userAuthKey: process.env.ONESIGNAL_USER_AUTH_KEY,
-  app: {
-    appAuthKey: process.env.ONESIGNAL_APP_AUTH_KEY,
-    appId: process.env.ONESIGNAL_APP_ID
+// Initialize OneSignal client with updated configuration (kept for potential future use)
+// const client = new OneSignal.Client({
+//   userAuthKey: process.env.ONESIGNAL_USER_AUTH_KEY,
+//   app: {
+//     appAuthKey: process.env.ONESIGNAL_APP_AUTH_KEY,
+//     appId: process.env.ONESIGNAL_APP_ID
+//   }
+// });
+
+// Alternative initialization method for newer versions
+const createNotification = async (notificationData) => {
+  try {
+    // Use direct HTTP request approach for better compatibility
+    const postData = JSON.stringify(notificationData);
+    
+    const options = {
+      hostname: 'onesignal.com',
+      port: 443,
+      path: '/api/v1/notifications',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': `Basic ${process.env.ONESIGNAL_APP_AUTH_KEY}`,
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    };
+
+    return new Promise((resolve, reject) => {
+      const req = https.request(options, (res) => {
+        let data = '';
+        
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+        
+        res.on('end', () => {
+          try {
+            const response = JSON.parse(data);
+            if (res.statusCode === 200) {
+              resolve({ body: response, statusCode: res.statusCode });
+            } else {
+              reject(new Error(`OneSignal API Error: ${JSON.stringify(response)}`));
+            }
+          } catch (error) {
+            reject(new Error(`Failed to parse OneSignal response: ${data}`));
+          }
+        });
+      });
+
+      req.on('error', (error) => {
+        reject(error);
+      });
+
+      req.write(postData);
+      req.end();
+    });
+  } catch (error) {
+    console.error('OneSignal notification error:', error);
+    throw error;
   }
-});
+};
 
 /**
  * Send notification for new post
@@ -22,7 +76,8 @@ const sendPostNotification = async (post) => {
       return;
     }
 
-    const notification = {
+    const notificationData = {
+      app_id: process.env.ONESIGNAL_APP_ID,
       contents: {
         ar: `منشور جديد: ${post.title_ar}`,
         en: `New Post: ${post.title_ar}`
@@ -42,8 +97,8 @@ const sendPostNotification = async (post) => {
       big_picture: post.featured_image ? `${process.env.CLIENT_URL || 'http://localhost:3000'}${post.featured_image}` : null
     };
 
-    const response = await client.createNotification(notification);
-    console.log('Post notification sent successfully:', response.body.id);
+    const response = await createNotification(notificationData);
+    console.log('Post notification sent successfully:', response.body && response.body.id ? response.body.id : response.id);
     return response;
   } catch (error) {
     console.error('Error sending post notification:', error);
@@ -62,7 +117,8 @@ const sendBreakingNewsNotification = async (breakingNews) => {
       return;
     }
 
-    const notification = {
+    const notificationData = {
+      app_id: process.env.ONESIGNAL_APP_ID,
       contents: {
         ar: `عاجل: ${breakingNews.title_ar}`,
         en: `Breaking: ${breakingNews.title_ar}`
@@ -85,8 +141,8 @@ const sendBreakingNewsNotification = async (breakingNews) => {
       ios_badgeCount: 1
     };
 
-    const response = await client.createNotification(notification);
-    console.log('Breaking news notification sent successfully:', response.body.id);
+    const response = await createNotification(notificationData);
+    console.log('Breaking news notification sent successfully:', response.body && response.body.id ? response.body.id : response.id);
     return response;
   } catch (error) {
     console.error('Error sending breaking news notification:', error);
@@ -105,7 +161,8 @@ const sendLastNewsNotification = async (lastNews) => {
       return;
     }
 
-    const notification = {
+    const notificationData = {
+      app_id: process.env.ONESIGNAL_APP_ID,
       contents: {
         ar: `آخر الأخبار: ${lastNews.title_ar}`,
         en: `Latest News: ${lastNews.title_ar}`
@@ -125,8 +182,8 @@ const sendLastNewsNotification = async (lastNews) => {
       android_accent_color: '0066CC' // Blue color for regular news
     };
 
-    const response = await client.createNotification(notification);
-    console.log('Last news notification sent successfully:', response.body.id);
+    const response = await createNotification(notificationData);
+    console.log('Last news notification sent successfully:', response.body && response.body.id ? response.body.id : response.id);
     return response;
   } catch (error) {
     console.error('Error sending last news notification:', error);
@@ -139,7 +196,8 @@ const sendLastNewsNotification = async (lastNews) => {
  */
 const testConnection = async () => {
   try {
-    const notification = {
+    const notificationData = {
+      app_id: process.env.ONESIGNAL_APP_ID,
       contents: {
         ar: 'اختبار الإشعارات',
         en: 'Test Notification'
@@ -151,8 +209,8 @@ const testConnection = async () => {
       included_segments: ['Test Users'] // Only send to test segment
     };
 
-    const response = await client.createNotification(notification);
-    console.log('Test notification sent successfully:', response.body.id);
+    const response = await createNotification(notificationData);
+    console.log('Test notification sent successfully:', response.body && response.body.id ? response.body.id : response.id);
     return response;
   } catch (error) {
     console.error('Error testing OneSignal connection:', error);
