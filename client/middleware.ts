@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
     img-src 'self' blob: data: https: http:;
     media-src 'self' https:;
     frame-src 'self' https://youtube.com https://www.youtube.com https://*.youtube.com https://onesignal.com;
-    connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000 https://www.youtube.com https://youtube.com https://cdn.onesignal.com https://api.onesignal.com https://onesignal.com https://*.onesignal.com;
+    connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000 https://www.youtube.com https://youtube.com https://cdn.onesignal.com https://api.onesignal.com https://onesignal.com https://*.onesignal.com https://api.onesignal.com/apps/;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
