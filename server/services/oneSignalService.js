@@ -68,7 +68,7 @@ const sendPostNotification = async (post) => {
 
     // Include app_id when using direct HTTPS requests
     const notificationData = {
-      app_id: process.env.ONESIGNAL_APP_ID,
+      app_id: '02e93d78-0cea-455a-82c1-cfef034fbf18',
       contents: {
         ar: `منشور جديد: ${post.title_ar}`,
         en: `New Post: ${post.title_ar}`
@@ -115,7 +115,7 @@ const sendBreakingNewsNotification = async (breakingNews) => {
 
     // Include app_id when using direct HTTPS requests
     const notificationData = {
-      app_id: process.env.ONESIGNAL_APP_ID,
+      app_id: '02e93d78-0cea-455a-82c1-cfef034fbf18',
       contents: {
         ar: `عاجل: ${breakingNews.title_ar}`,
         en: `Breaking: ${breakingNews.title_ar}`
@@ -164,7 +164,7 @@ const sendLastNewsNotification = async (lastNews) => {
 
     // Include app_id when using direct HTTPS requests
     const notificationData = {
-      app_id: process.env.ONESIGNAL_APP_ID,
+      app_id: '02e93d78-0cea-455a-82c1-cfef034fbf18',
       contents: {
         ar: `آخر الأخبار: ${lastNews.title_ar}`,
         en: `Latest News: ${lastNews.title_ar}`
@@ -205,7 +205,7 @@ const testConnection = async () => {
 
     // Include app_id when using direct HTTPS requests
     const notificationData = {
-      app_id: process.env.ONESIGNAL_APP_ID,
+      app_id: '02e93d78-0cea-455a-82c1-cfef034fbf18',
       contents: {
         ar: 'اختبار الإشعارات',
         en: 'Test Notification'
