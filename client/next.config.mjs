@@ -61,10 +61,7 @@ const nextConfig = {
   
   // Redirects for SEO
   async redirects() {
-    return [
-      // Removed robots.txt and sitemap.xml redirects to fix Google Search Console indexing
-      // These files should be served directly from /public folder
-    ];
+    return [];
   },
   
   // Rewrites for clean URLs
@@ -137,19 +134,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: `
-              default-src 'self';
-              script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://s.ytimg.com https://cdn.onesignal.com https://onesignal.com;
-              connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000 https://www.youtube.com https://youtube.com https://cdn.onesignal.com https://api.onesignal.com https://onesignal.com https://*.onesignal.com https://firebase.googleapis.com https://firestore.googleapis.com https://securetoken.googleapis.com;
-              img-src 'self' data: blob: https: http: https://www.google-analytics.com https://www.googletagmanager.com https://www.youtube.com https://s.ytimg.com;
-              style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-              font-src 'self' https://fonts.gstatic.com;
-              frame-src https://www.youtube.com https://youtube.com https://onesignal.com;
-              media-src 'self' https:;
-              object-src 'none';
-              base-uri 'self';
-              form-action 'self';
-            `.replace(/\s{2,}/g, ' ').trim(),
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://s.ytimg.com https://cdn.onesignal.com https://onesignal.com; connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000 https://www.youtube.com https://youtube.com https://cdn.onesignal.com https://api.onesignal.com https://onesignal.com https://*.onesignal.com https://firebase.googleapis.com https://firestore.googleapis.com https://securetoken.googleapis.com; img-src 'self' data: blob: https: http: https://www.google-analytics.com https://www.googletagmanager.com https://www.youtube.com https://s.ytimg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://www.youtube.com https://youtube.com https://onesignal.com; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self';",
           },
           {
             key: 'X-Frame-Options',
@@ -176,7 +161,6 @@ const nextConfig = {
   
   // Experimental features for better performance
   experimental: {
-    optimizeCss: false, // Disabled to prevent HTML attributes in XML responses
     scrollRestoration: true,
   },
   
@@ -191,6 +175,9 @@ const nextConfig = {
   
   // Trailing slash
   trailingSlash: false,
+  
+  // Output configuration for VPS compatibility
+  output: 'standalone',
 };
 
 export default nextConfig;
