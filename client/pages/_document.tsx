@@ -107,7 +107,7 @@ class MyDocument extends Document<MyDocumentProps> {
           {/* Essential charset - MUST be first */}
           <meta charSet="UTF-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-          
+          <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.onesignal.com;"></meta>
           {/* Dynamic meta tags from page props */}
           {metaData?.description && <meta name="description" content={metaData.description} />}
           {metaData?.keywords && <meta name="keywords" content={metaData.keywords} />}
