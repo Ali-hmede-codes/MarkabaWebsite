@@ -5,7 +5,8 @@ import Document, {
   NextScript, 
   DocumentContext, 
   DocumentInitialProps, 
-} from 'next/document' 
+} from 'next/document'
+import Script from 'next/script' 
 
 interface MyDocumentProps extends DocumentInitialProps {
   metaData?: {
@@ -235,22 +236,18 @@ class MyDocument extends Document<MyDocumentProps> {
         <NextScript nonce={nonce} />
         {process.env.NODE_ENV === 'production' && (
           <>
-            <script
-              nonce={nonce}
-              async
+            <Script
               src="https://www.googletagmanager.com/gtag/js?id=G-XV0VQHJ2NJ"
+              strategy="afterInteractive"
             />
-            <script
-              nonce={nonce}
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', 'G-XV0VQHJ2NJ');
-                `,
-              }}
-            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-XV0VQHJ2NJ');
+              `}
+            </Script>
             <script
               nonce={nonce}
               async

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Clock, Calendar, Trophy } from 'lucide-react';
+import { FiClock, FiCalendar } from 'react-icons/fi';
+import { MdSportsSoccer } from 'react-icons/md';
 import Layout from '../components/Layout/Layout';
 
 interface Team {
@@ -180,7 +181,7 @@ const FootballPage: React.FC = () => {
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="text-center">
               <div className="text-red-500 mb-4">
-                <Trophy className="h-12 w-12 mx-auto mb-2" />
+                <MdSportsSoccer className="h-12 w-12 mx-auto mb-2" />
               </div>
               <p className="text-red-600 mb-4">خطأ في تحميل بيانات كرة القدم</p>
               <button
@@ -208,7 +209,7 @@ const FootballPage: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-blue-800 mb-2 flex items-center justify-center gap-2 sm:gap-3">
-            <Trophy className="h-6 w-6 sm:h-8 sm:w-8" />
+            <MdSportsSoccer className="h-6 w-6 sm:h-8 sm:w-8" />
             كرة القدم
           </h1>
           <p className="text-sm sm:text-base text-gray-600">متابعة أحدث مباريات الدوريات العالمية</p>
@@ -218,7 +219,7 @@ const FootballPage: React.FC = () => {
         <div className="space-y-8">
           {leagues.length === 0 ? (
             <div className="text-center py-12">
-              <Trophy className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <MdSportsSoccer className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500 text-lg">لا توجد مباريات متاحة حالياً</p>
             </div>
           ) : (
@@ -249,7 +250,7 @@ const FootballPage: React.FC = () => {
                 <div className="p-4 sm:p-6">
                   {league.matches.length === 0 ? (
                     <div className="text-center py-8">
-                      <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                      <FiCalendar className="h-12 w-12 text-gray-400 mx-auto mb-3" />
                       <p className="text-gray-500">لا توجد مباريات في هذا الدوري</p>
                     </div>
                   ) : (
@@ -284,7 +285,7 @@ const FootballPage: React.FC = () => {
                                 </div>
                               ) : (
                                 <div className="flex items-center gap-1 text-blue-600">
-                                  <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                                  <FiClock className="h-3 w-3 sm:h-4 sm:w-4" />
                                   <span className="text-xs sm:text-sm font-medium">
                                     {formatMatchTime(match.fixture.date)}
                                   </span>
