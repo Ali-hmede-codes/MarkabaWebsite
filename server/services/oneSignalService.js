@@ -78,14 +78,14 @@ const sendPostNotification = async (post) => {
         en: 'New Post'
       },
       included_segments: ['All'],
-      url: `${process.env.CLIENT_URL}/posts/${post.id}/${post.slug}`,
+      url: `https://www.markaba.news/posts/${post.id}/${post.slug}`,
       data: {
         type: 'post',
         postId: post.id,
         slug: post.slug
       },
-      large_icon: `${process.env.CLIENT_URL}/images/logo.png`,
-      big_picture: post.featured_image ? `${process.env.CLIENT_URL}${post.featured_image}` : null
+      large_icon: `https://www.markaba.news/images/logo.png`,
+      big_picture: post.featured_image ? `https://www.markaba.news${post.featured_image}` : null
     };
 
     console.log('📤 Notification payload:', JSON.stringify(notificationData, null, 2));
@@ -125,14 +125,14 @@ const sendBreakingNewsNotification = async (breakingNews) => {
         en: '🚨 Breaking News'
       },
       included_segments: ['All'],
-      url: `${process.env.CLIENT_URL}/breaking/${breakingNews.id}/${breakingNews.slug}`,
+      url: `https://www.markaba.news/breaking/${breakingNews.id}/${breakingNews.slug}`,
       data: {
         type: 'breaking_news',
         newsId: breakingNews.id,
         slug: breakingNews.slug
       },
       priority: 10, // High priority for breaking news
-      large_icon: `${process.env.CLIENT_URL}/images/breaking-news-icon.png`,
+      large_icon: `https://www.markaba.news/images/breaking-news-icon.png`,
       android_accent_color: 'FF0000', // Red color for urgency
       ios_badgeType: 'Increase',
       ios_badgeCount: 1
@@ -175,13 +175,13 @@ const sendLastNewsNotification = async (lastNews) => {
         en: 'Latest News'
       },
       included_segments: ['All'],
-      url: `${process.env.CLIENT_URL}/last-news/${lastNews.id}/${lastNews.slug}`,
+      url: `https://www.markaba.news/last-news/${lastNews.id}/${lastNews.slug}`,
       data: {
         type: 'last_news',
         newsId: lastNews.id,
         slug: lastNews.slug
       },
-      large_icon: `${process.env.CLIENT_URL}/images/news-icon.png`,
+      large_icon: `https://www.markaba.news/images/news-icon.png`,
       android_accent_color: '0066CC' // Blue color for regular news
     };
 
