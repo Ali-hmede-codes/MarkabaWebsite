@@ -185,10 +185,19 @@ class MyDocument extends Document<MyDocumentProps> {
                       serviceWorkerParam: { scope: '/' },
                       serviceWorkerPath: '/OneSignalSDKWorker.js',
                       notificationClickHandlerMatch: 'origin',
-                      notificationClickHandlerAction: 'navigate'
+                      notificationClickHandlerAction: 'navigate',
+                      autoRegister: false,
+                      autoResubscribe: false,
+                      persistNotification: false
                     });
+                    
+                    // Wait for initialization to complete before any operations
+                    await OneSignal.User.addAlias("external_id", "user_" + Date.now());
+                    console.log('OneSignal initialized successfully');
                   } catch (error) {
                     console.error('OneSignal initialization error:', error);
+                    // Prevent further OneSignal operations if initialization fails
+                    window.OneSignalInitialized = false;
                   }
                 });
               `,
