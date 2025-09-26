@@ -182,6 +182,10 @@ class MyDocument extends Document<MyDocumentProps> {
                     await OneSignal.init({
                       appId: "02e93d78-0cea-455a-82c1-cfef034fbf18",
                       allowLocalhostAsSecureOrigin: true,
+                      serviceWorkerParam: { scope: '/' },
+                      serviceWorkerPath: '/OneSignalSDKWorker.js',
+                      notificationClickHandlerMatch: 'origin',
+                      notificationClickHandlerAction: 'navigate'
                     });
                   } catch (error) {
                     console.error('OneSignal initialization error:', error);

@@ -15,14 +15,14 @@ export function middleware(request: NextRequest) {
   const isDev = process.env.NODE_ENV === 'development';
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com https://www.markaba.news https://cdn.onesignal.com ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''};
-    script-src-elem 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com https://www.markaba.news https://cdn.onesignal.com ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''};
+    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com https://www.markaba.news https://cdn.onesignal.com https://onesignal.com ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''};
+    script-src-elem 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com https://www.markaba.news https://cdn.onesignal.com https://onesignal.com ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''};
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
     img-src 'self' blob: data: https: http:;
     media-src 'self' https:;
-    frame-src 'self' https://youtube.com https://www.youtube.com https://*.youtube.com;
-    connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000 https://www.youtube.com https://youtube.com https://cdn.onesignal.com https://api.onesignal.com;
+    frame-src 'self' https://youtube.com https://www.youtube.com https://*.youtube.com https://onesignal.com;
+    connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000 https://www.youtube.com https://youtube.com https://cdn.onesignal.com https://api.onesignal.com https://onesignal.com https://*.onesignal.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
