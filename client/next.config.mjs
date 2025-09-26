@@ -41,7 +41,6 @@ const nextConfig = {
     formats: ['image/webp'],
     minimumCacheTTL: process.env.NODE_ENV === 'development' ? 0 : 60,
     dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
   // Environment variables loaded from parent .env file
@@ -137,6 +136,22 @@ const nextConfig = {
         source: '/(.*)',
         headers: [
           {
+            key: 'Content-Security-Policy',
+            value: `
+              default-src 'self';
+              script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://s.ytimg.com https://cdn.onesignal.com;
+              connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000 https://www.youtube.com https://youtube.com https://cdn.onesignal.com https://api.onesignal.com https://firebase.googleapis.com https://firestore.googleapis.com https://securetoken.googleapis.com;
+              img-src 'self' data: blob: https: http: https://www.google-analytics.com https://www.googletagmanager.com https://www.youtube.com https://s.ytimg.com;
+              style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+              font-src 'self' https://fonts.gstatic.com;
+              frame-src https://www.youtube.com https://youtube.com;
+              media-src 'self' https:;
+              object-src 'none';
+              base-uri 'self';
+              form-action 'self';
+            `.replace(/\s{2,}/g, ' ').trim(),
+          },
+          {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN',
           },
@@ -148,7 +163,6 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
           },
-          
         ],
       },
     ];
