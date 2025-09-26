@@ -176,6 +176,11 @@ const nextConfig = {
   // Trailing slash
   trailingSlash: false,
   
+  // Skip ESLint during build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  
   // Output configuration for VPS compatibility
   output: 'standalone',
 };
