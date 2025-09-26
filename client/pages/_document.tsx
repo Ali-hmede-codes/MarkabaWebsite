@@ -178,9 +178,14 @@ class MyDocument extends Document<MyDocumentProps> {
               __html: `
                 window.OneSignalDeferred = window.OneSignalDeferred || [];
                 OneSignalDeferred.push(async function(OneSignal) {
-                  await OneSignal.init({
-                    appId: "02e93d78-0cea-455a-82c1-cfef034fbf18",
-                  });
+                  try {
+                    await OneSignal.init({
+                      appId: "02e93d78-0cea-455a-82c1-cfef034fbf18",
+                      allowLocalhostAsSecureOrigin: true,
+                    });
+                  } catch (error) {
+                    console.error('OneSignal initialization error:', error);
+                  }
                 });
               `,
             }}

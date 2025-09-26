@@ -42,26 +42,23 @@ class OneSignalService {
         return;
       }
 
+      // Check if OneSignal is already initialized globally
+      if (window.OneSignal && this.isInitialized) {
+        resolve();
+        return;
+      }
+
       // Wait for OneSignal to be available
       const checkOneSignal = () => {
         if (window.OneSignal) {
-          window.OneSignal.init({
-            appId: ONESIGNAL_APP_ID,
-          }).then(() => {
+          // Don't initialize again if already done globally
+          this.isInitialized = true;
+          resolve();
+        } else if (window.OneSignalDeferred) {
+          // Use deferred initialization if available
+          window.OneSignalDeferred.push((OneSignal: any) => {
             this.isInitialized = true;
             resolve();
-          }).catch(reject);
-        } else if (window.OneSignalDeferred) {
-          window.OneSignalDeferred.push(async (OneSignal) => {
-            try {
-              await OneSignal.init({
-                appId: ONESIGNAL_APP_ID,
-              });
-              this.isInitialized = true;
-              resolve();
-            } catch (error) {
-              reject(error);
-            }
           });
         } else {
           // Retry after a short delay
