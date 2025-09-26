@@ -179,25 +179,26 @@ class MyDocument extends Document<MyDocumentProps> {
                 window.OneSignalDeferred = window.OneSignalDeferred || [];
                 OneSignalDeferred.push(async function(OneSignal) {
                   try {
+                    // Check if we're in development environment
+                    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                    
+                    if (isDevelopment) {
+                      console.log('OneSignal: Development environment detected, skipping initialization');
+                      return;
+                    }
+                    
                     await OneSignal.init({
                       appId: "02e93d78-0cea-455a-82c1-cfef034fbf18",
                       allowLocalhostAsSecureOrigin: true,
                       serviceWorkerParam: { scope: '/' },
                       serviceWorkerPath: '/OneSignalSDKWorker.js',
                       notificationClickHandlerMatch: 'origin',
-                      notificationClickHandlerAction: 'navigate',
-                      autoRegister: false,
-                      autoResubscribe: false,
-                      persistNotification: false
+                      notificationClickHandlerAction: 'navigate'
                     });
                     
-                    // Wait for initialization to complete before any operations
-                    await OneSignal.User.addAlias("external_id", "user_" + Date.now());
                     console.log('OneSignal initialized successfully');
                   } catch (error) {
                     console.error('OneSignal initialization error:', error);
-                    // Prevent further OneSignal operations if initialization fails
-                    window.OneSignalInitialized = false;
                   }
                 });
               `,
