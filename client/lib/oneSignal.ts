@@ -3,23 +3,32 @@ import { useEffect } from 'react';
 // OneSignal configuration
 const ONESIGNAL_APP_ID = '02e93d78-0cea-455a-82c1-cfef034fbf18';
 
-// Types for OneSignal
+// Types for OneSignal v16
 interface OneSignalWindow extends Window {
   OneSignal?: {
-    init: (config: { appId: string }) => Promise<void>;
-    showSlidedownPrompt: () => Promise<void>;
-    registerForPushNotifications: () => Promise<void>;
-    isPushNotificationsEnabled: () => Promise<boolean>;
-    getUserId: () => Promise<string | null>;
-    getNotificationPermission: () => Promise<NotificationPermission>;
+    init: (config: { appId: string; allowLocalhostAsSecureOrigin?: boolean }) => Promise<void>;
+    slidedown: {
+      promptPush: () => Promise<void>;
+    };
+    Notifications: {
+      requestPermission: () => Promise<NotificationPermission>;
+      permission: NotificationPermission;
+    };
+    User: {
+      addObserver: (event: string, callback: (change: any) => void) => void;
+      removeObserver: (event: string, callback: (change: any) => void) => void;
+      addTag: (key: string, value: string) => Promise<void>;
+      addTags: (tags: Record<string, string>) => Promise<void>;
+      getTags: () => Promise<Record<string, string>>;
+      removeTag: (key: string) => Promise<void>;
+      removeTags: (keys: string[]) => Promise<void>;
+      onesignalId?: string;
+    };
+    login: (externalId: string) => Promise<void>;
+    logout: () => Promise<void>;
     setDefaultNotificationUrl: (url: string) => void;
     on: (event: string, callback: (...args: any[]) => void) => void;
     off: (event: string, callback: (...args: any[]) => void) => void;
-    sendTag: (key: string, value: string) => Promise<void>;
-    sendTags: (tags: Record<string, string>) => Promise<void>;
-    getTags: () => Promise<Record<string, string>>;
-    deleteTag: (key: string) => Promise<void>;
-    deleteTags: (keys: string[]) => Promise<void>;
   };
   OneSignalDeferred?: Array<(OneSignal: any) => void>;
 }
@@ -85,31 +94,31 @@ class OneSignalService {
   // Show notification permission prompt
   async showPrompt(): Promise<void> {
     await this.ensureOneSignal();
-    return window.OneSignal!.showSlidedownPrompt();
+    return window.OneSignal!.slidedown.promptPush();
   }
 
   // Register for push notifications
-  async registerForPushNotifications(): Promise<void> {
+  async registerForPushNotifications(): Promise<NotificationPermission> {
     await this.ensureOneSignal();
-    return window.OneSignal!.registerForPushNotifications();
+    return window.OneSignal!.Notifications.requestPermission();
   }
 
   // Check if push notifications are enabled
   async isPushNotificationsEnabled(): Promise<boolean> {
     await this.ensureOneSignal();
-    return window.OneSignal!.isPushNotificationsEnabled();
+    return window.OneSignal!.Notifications.permission === 'granted';
   }
 
   // Get user ID
   async getUserId(): Promise<string | null> {
     await this.ensureOneSignal();
-    return window.OneSignal!.getUserId();
+    return window.OneSignal!.User.onesignalId || null;
   }
 
   // Get notification permission status
   async getNotificationPermission(): Promise<NotificationPermission> {
     await this.ensureOneSignal();
-    return window.OneSignal!.getNotificationPermission();
+    return window.OneSignal!.Notifications.permission;
   }
 
   // Set default notification URL
@@ -121,43 +130,51 @@ class OneSignalService {
   // Add event listener
   async addEventListener(event: string, callback: (...args: any[]) => void): Promise<void> {
     await this.ensureOneSignal();
-    window.OneSignal!.on(event, callback);
+    if (event === 'userStateChange') {
+      window.OneSignal!.User.addObserver(event, callback);
+    } else {
+      window.OneSignal!.on(event, callback);
+    }
   }
 
   // Remove event listener
   async removeEventListener(event: string, callback: (...args: any[]) => void): Promise<void> {
     await this.ensureOneSignal();
-    window.OneSignal!.off(event, callback);
+    if (event === 'userStateChange') {
+      window.OneSignal!.User.removeObserver(event, callback);
+    } else {
+      window.OneSignal!.off(event, callback);
+    }
   }
 
   // Send a tag
   async sendTag(key: string, value: string): Promise<void> {
     await this.ensureOneSignal();
-    return window.OneSignal!.sendTag(key, value);
+    return window.OneSignal!.User.addTag(key, value);
   }
 
   // Send multiple tags
   async sendTags(tags: Record<string, string>): Promise<void> {
     await this.ensureOneSignal();
-    return window.OneSignal!.sendTags(tags);
+    return window.OneSignal!.User.addTags(tags);
   }
 
   // Get user tags
   async getTags(): Promise<Record<string, string>> {
     await this.ensureOneSignal();
-    return window.OneSignal!.getTags();
+    return window.OneSignal!.User.getTags();
   }
 
   // Delete a tag
   async deleteTag(key: string): Promise<void> {
     await this.ensureOneSignal();
-    return window.OneSignal!.deleteTag(key);
+    return window.OneSignal!.User.removeTag(key);
   }
 
   // Delete multiple tags
   async deleteTags(keys: string[]): Promise<void> {
     await this.ensureOneSignal();
-    return window.OneSignal!.deleteTags(keys);
+    return window.OneSignal!.User.removeTags(keys);
   }
 }
 
