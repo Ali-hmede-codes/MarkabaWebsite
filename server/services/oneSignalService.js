@@ -1,4 +1,4 @@
-// Use direct HTTPS approach for better compatibility with OneSignal API
+// Use direct HTTPS requests with v2 keys for better compatibility
 const https = require('https');
 
 require('dotenv').config();
@@ -11,57 +11,47 @@ console.log('Environment check:', {
   CLIENT_URL: process.env.CLIENT_URL || 'NOT SET'
 });
 
-// Direct API call function for better compatibility
-const createNotification = async (notificationData) => {
-  try {
-    const postData = JSON.stringify(notificationData);
+// Direct HTTPS notification function for v2 keys
+const sendNotification = async (notificationData) => new Promise((resolve, reject) => {
+  const data = JSON.stringify(notificationData);
+  
+  const options = {
+    hostname: 'onesignal.com',
+    path: '/api/v1/notifications',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${process.env.ONESIGNAL_APP_AUTH_KEY}`,
+      'Content-Length': Buffer.byteLength(data)
+    }
+  };
+
+  const req = https.request(options, (res) => {
+    let body = '';
     
-    const options = {
-      hostname: 'onesignal.com',
-      port: 443,
-      path: '/api/v1/notifications',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': `Basic ${process.env.ONESIGNAL_APP_AUTH_KEY}`,
-        'Content-Length': Buffer.byteLength(postData)
-      }
-    };
-
-    return new Promise((resolve, reject) => {
-      const req = https.request(options, (res) => {
-        let data = '';
-        
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-        
-        res.on('end', () => {
-          try {
-            const response = JSON.parse(data);
-            if (res.statusCode === 200) {
-              resolve({ body: response, statusCode: res.statusCode });
-            } else {
-              reject(new Error(`OneSignal API Error: ${JSON.stringify(response)}`));
-            }
-          } catch (error) {
-            reject(new Error(`Failed to parse OneSignal response: ${data}`));
-          }
-        });
-      });
-
-      req.on('error', (error) => {
-        reject(error);
-      });
-
-      req.write(postData);
-      req.end();
+    res.on('data', (chunk) => {
+      body += chunk;
     });
-  } catch (error) {
-    console.error('OneSignal notification error:', error);
-    throw error;
-  }
-};
+    
+    res.on('end', () => {
+      try {
+        const response = JSON.parse(body);
+        if (res.statusCode === 200) {
+          resolve({ body: response, statusCode: res.statusCode });
+        } else {
+          reject(new Error(`OneSignal API Error: ${JSON.stringify(response)}`));
+        }
+      } catch (error) {
+        reject(new Error(`Failed to parse OneSignal response: ${body}`));
+      }
+    });
+  });
+
+  req.on('error', (error) => reject(error));
+
+  req.write(data);
+  req.end();
+});
 
 /**
  * Send notification for new post
@@ -76,6 +66,7 @@ const sendPostNotification = async (post) => {
 
     console.log('🔔 Sending post notification for:', post.title_ar);
 
+    // Include app_id when using direct HTTPS requests
     const notificationData = {
       app_id: process.env.ONESIGNAL_APP_ID,
       contents: {
@@ -99,12 +90,12 @@ const sendPostNotification = async (post) => {
 
     console.log('📤 Notification payload:', JSON.stringify(notificationData, null, 2));
 
-    const response = await createNotification(notificationData);
+    const response = await sendNotification(notificationData);
     console.log('✅ Post notification sent successfully:', response.body && response.body.id ? response.body.id : response.id);
     console.log('📊 Full response:', response.body);
     return response;
   } catch (error) {
-    console.error('❌ Error sending post notification:', error.response ? error.response.body : error);
+    console.error('❌ Error sending post notification:', error.message);
     throw error;
   }
 };
@@ -122,6 +113,7 @@ const sendBreakingNewsNotification = async (breakingNews) => {
 
     console.log('🚨 Sending breaking news notification for:', breakingNews.title_ar);
 
+    // Include app_id when using direct HTTPS requests
     const notificationData = {
       app_id: process.env.ONESIGNAL_APP_ID,
       contents: {
@@ -148,12 +140,12 @@ const sendBreakingNewsNotification = async (breakingNews) => {
 
     console.log('📤 Breaking news notification payload:', JSON.stringify(notificationData, null, 2));
 
-    const response = await createNotification(notificationData);
+    const response = await sendNotification(notificationData);
     console.log('✅ Breaking news notification sent successfully:', response.body && response.body.id ? response.body.id : response.id);
     console.log('📊 Full response:', response.body);
     return response;
   } catch (error) {
-    console.error('❌ Error sending breaking news notification:', error.response ? error.response.body : error);
+    console.error('❌ Error sending breaking news notification:', error.message);
     throw error;
   }
 };
@@ -171,6 +163,7 @@ const sendLastNewsNotification = async (lastNews) => {
 
     console.log('📰 Sending last news notification for:', lastNews.title_ar);
 
+    // Include app_id when using direct HTTPS requests
     const notificationData = {
       app_id: process.env.ONESIGNAL_APP_ID,
       contents: {
@@ -194,12 +187,12 @@ const sendLastNewsNotification = async (lastNews) => {
 
     console.log('📤 Last news notification payload:', JSON.stringify(notificationData, null, 2));
 
-    const response = await createNotification(notificationData);
+    const response = await sendNotification(notificationData);
     console.log('✅ Last news notification sent successfully:', response.body && response.body.id ? response.body.id : response.id);
     console.log('📊 Full response:', response.body);
     return response;
   } catch (error) {
-    console.error('❌ Error sending last news notification:', error.response ? error.response.body : error);
+    console.error('❌ Error sending last news notification:', error.message);
     throw error;
   }
 };
@@ -211,6 +204,7 @@ const testConnection = async () => {
   try {
     console.log('🧪 Testing OneSignal connection...');
 
+    // Include app_id when using direct HTTPS requests
     const notificationData = {
       app_id: process.env.ONESIGNAL_APP_ID,
       contents: {
@@ -226,12 +220,12 @@ const testConnection = async () => {
 
     console.log('📤 Test notification payload:', JSON.stringify(notificationData, null, 2));
 
-    const response = await createNotification(notificationData);
+    const response = await sendNotification(notificationData);
     console.log('✅ Test notification sent successfully:', response.body && response.body.id ? response.body.id : response.id);
     console.log('📊 Full response:', response.body);
     return response;
   } catch (error) {
-    console.error('❌ Error testing OneSignal connection:', error.response ? error.response.body : error);
+    console.error('❌ Error testing OneSignal connection:', error.message);
     throw error;
   }
 };
