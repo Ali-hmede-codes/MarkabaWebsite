@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ContentData } from '../types/index';
+import { ContentData } from '../types';
+
 
 /*interface ContentData {
   site: {
