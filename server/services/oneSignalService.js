@@ -78,7 +78,7 @@ const sendPostNotification = async (post) => {
         en: 'New Post'
       },
       included_segments: ['All'],
-      url: `https://www.markaba.news/posts/${post.id}/${post.slug}`,
+      url: `https://www.markaba.news/post/${post.slug}`,
       data: {
         type: 'post',
         postId: post.id,
@@ -124,9 +124,8 @@ const sendBreakingNewsNotification = async (breakingNews) => {
         ar: '🚨 خبر عاجل',
         en: '🚨 Breaking News'
       },
-      included_segments: ['All'],
-      url: `https://www.markaba.news/breaking/${breakingNews.id}/${breakingNews.slug}`,
-      data: {
+        included_segments: ['All'],
+        data: {
         type: 'breaking_news',
         newsId: breakingNews.id,
         slug: breakingNews.slug
@@ -175,7 +174,7 @@ const sendLastNewsNotification = async (lastNews) => {
         en: 'Latest News'
       },
       included_segments: ['All'],
-      url: `https://www.markaba.news/last-news/${lastNews.id}/${lastNews.slug}`,
+      url: `https://www.markaba.news/last-news/${lastNews.slug}`,
       data: {
         type: 'last_news',
         newsId: lastNews.id,
