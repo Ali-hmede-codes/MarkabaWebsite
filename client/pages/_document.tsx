@@ -210,16 +210,21 @@ class MyDocument extends Document<MyDocumentProps> {
                       }
                     });
                     
-                    // Show the notification prompt after initialization
+                    // Show the notification prompt after initialization using v16 API
                     setTimeout(async () => {
                       try {
-                        await OneSignal.showSlidedownPrompt();
+                        // Check if push notifications are supported
+                        if (OneSignal.Notifications.isPushSupported()) {
+                          // Use the correct v16 method to show slidedown prompt
+                          await OneSignal.Slidedown.promptPush();
+                        }
                       } catch (error) {
-                        console.log('Slidedown prompt not available, trying native prompt');
+                        console.log('Slidedown prompt error, trying permission request:', error);
                         try {
-                          await OneSignal.requestPermission();
-                        } catch (err) {
-                          console.log('Permission request failed:', err);
+                          // Fallback to direct permission request
+                          await OneSignal.Notifications.requestPermission();
+                        } catch (permError) {
+                          console.log('Permission request error:', permError);
                         }
                       }
                     }, 3000);
