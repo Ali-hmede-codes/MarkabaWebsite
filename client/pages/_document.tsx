@@ -184,8 +184,8 @@ class MyDocument extends Document<MyDocumentProps> {
                       safari_web_id: "web.onesignal.auto.4b99c5db-a7c9-461a-8333-facb0838095d",
                       allowLocalhostAsSecureOrigin: true,
                       serviceWorkerParam: { scope: '/' },
-                      serviceWorkerPath: 'https://www.markaba.news/OneSignalSDKWorker.js',
-                      serviceWorkerUpdaterPath: 'https://www.markaba.news/OneSignalSDKUpdaterWorker.js',
+                      serviceWorkerPath: '/OneSignalSDKWorker.js',
+                      serviceWorkerUpdaterPath: '/OneSignalSDKUpdaterWorker.js',
                       notificationClickHandlerMatch: 'origin',
                       notificationClickHandlerAction: 'navigate',
                       notifyButton: {
