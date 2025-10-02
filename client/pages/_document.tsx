@@ -211,8 +211,17 @@ class MyDocument extends Document<MyDocumentProps> {
                     });
                     
                     // Show the notification prompt after initialization
-                    setTimeout(() => {
-                      OneSignal.slidedown.promptPush();
+                    setTimeout(async () => {
+                      try {
+                        await OneSignal.showSlidedownPrompt();
+                      } catch (error) {
+                        console.log('Slidedown prompt not available, trying native prompt');
+                        try {
+                          await OneSignal.requestPermission();
+                        } catch (err) {
+                          console.log('Permission request failed:', err);
+                        }
+                      }
                     }, 3000);
                     
                   } catch (error) {
