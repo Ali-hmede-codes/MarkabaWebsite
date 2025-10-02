@@ -179,15 +179,19 @@ class MyDocument extends Document<MyDocumentProps> {
                 window.OneSignalDeferred = window.OneSignalDeferred || [];
                 OneSignalDeferred.push(async function(OneSignal) {
                   try {
-                    await OneSignal.init({
-                      appId: "02e93d78-0cea-455a-82c1-cfef034fbf18",
-                      safari_web_id: "web.onesignal.auto.4b99c5db-a7c9-461a-8333-facb0838095d",
-                      allowLocalhostAsSecureOrigin: true,
-                      serviceWorkerParam: { scope: '/' },
-                      serviceWorkerPath: '/OneSignalSDKWorker.js',
-                      serviceWorkerUpdaterPath: '/OneSignalSDKUpdaterWorker.js',
-                      notificationClickHandlerMatch: 'origin',
-                      notificationClickHandlerAction: 'navigate',
+                    // Only initialize OneSignal on production domain
+                    if (typeof window !== 'undefined' && 
+                        (window.location.hostname === 'www.markaba.news' || 
+                         window.location.hostname === 'markaba.news')) {
+                      await OneSignal.init({
+                        appId: "02e93d78-0cea-455a-82c1-cfef034fbf18",
+                        safari_web_id: "web.onesignal.auto.4b99c5db-a7c9-461a-8333-facb0838095d",
+                        allowLocalhostAsSecureOrigin: true,
+                        serviceWorkerParam: { scope: '/' },
+                        serviceWorkerPath: '/OneSignalSDKWorker.js',
+                        serviceWorkerUpdaterPath: '/OneSignalSDKUpdaterWorker.js',
+                        notificationClickHandlerMatch: 'origin',
+                        notificationClickHandlerAction: 'navigate',
                       notifyButton: {
                         enable: true,
                         size: 'medium',
@@ -229,6 +233,10 @@ class MyDocument extends Document<MyDocumentProps> {
                         }
                       }
                     }, 3000);
+                    
+                    } else {
+                      console.log('OneSignal: Not initializing on localhost/development');
+                    }
                     
                   } catch (error) {
                     console.error('OneSignal initialization error:', error);
