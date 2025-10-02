@@ -185,6 +185,7 @@ class MyDocument extends Document<MyDocumentProps> {
                       allowLocalhostAsSecureOrigin: true,
                       serviceWorkerParam: { scope: '/' },
                       serviceWorkerPath: '/OneSignalSDKWorker.js',
+                      serviceWorkerUpdaterPath: '/OneSignalSDKUpdaterWorker.js',
                       notificationClickHandlerMatch: 'origin',
                       notificationClickHandlerAction: 'navigate',
                       notifyButton: {
