@@ -181,12 +181,40 @@ class MyDocument extends Document<MyDocumentProps> {
                   try {
                     await OneSignal.init({
                       appId: "02e93d78-0cea-455a-82c1-cfef034fbf18",
+                      safari_web_id: "web.onesignal.auto.4b99c5db-a7c9-461a-8333-facb0838095d",
                       allowLocalhostAsSecureOrigin: true,
                       serviceWorkerParam: { scope: '/' },
                       serviceWorkerPath: '/OneSignalSDKWorker.js',
                       notificationClickHandlerMatch: 'origin',
-                      notificationClickHandlerAction: 'navigate'
+                      notificationClickHandlerAction: 'navigate',
+                      notifyButton: {
+                        enable: true,
+                        size: 'medium',
+                        theme: 'default',
+                        position: 'bottom-right',
+                        showCredit: false,
+                        text: {
+                          'tip.state.unsubscribed': 'اشترك في الإشعارات',
+                          'tip.state.subscribed': "أنت مشترك في الإشعارات",
+                          'tip.state.blocked': "لقد حظرت الإشعارات",
+                          'message.prenotify': 'انقر للاشتراك في الإشعارات',
+                          'message.action.subscribed': "شكراً لك! ستتلقى الإشعارات",
+                          'message.action.resubscribed': "أنت مشترك في الإشعارات",
+                          'message.action.unsubscribed': "لن تتلقى المزيد من الإشعارات",
+                          'dialog.main.title': 'إدارة إشعارات الموقع',
+                          'dialog.main.button.subscribe': 'اشتراك',
+                          'dialog.main.button.unsubscribe': 'إلغاء الاشتراك',
+                          'dialog.blocked.title': 'إلغاء حظر الإشعارات',
+                          'dialog.blocked.message': "اتبع هذه التعليمات لإلغاء حظر الإشعارات:"
+                        }
+                      }
                     });
+                    
+                    // Show the notification prompt after initialization
+                    setTimeout(() => {
+                      OneSignal.slidedown.promptPush();
+                    }, 3000);
+                    
                   } catch (error) {
                     console.error('OneSignal initialization error:', error);
                   }
