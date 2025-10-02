@@ -15,8 +15,8 @@ export function middleware(request: NextRequest) {
   const isDev = process.env.NODE_ENV === 'development';
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com https://www.markaba.news https://cdn.onesignal.com https://onesignal.com ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''};
-    script-src-elem 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com https://www.markaba.news https://cdn.onesignal.com https://onesignal.com ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''};
+    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com https://www.markaba.news https://cdn.onesignal.com https://onesignal.com https://api.onesignal.com ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''};
+    script-src-elem 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com https://www.markaba.news https://cdn.onesignal.com https://onesignal.com https://api.onesignal.com ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''};
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
     img-src 'self' blob: data: https: http:;
