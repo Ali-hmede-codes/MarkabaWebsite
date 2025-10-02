@@ -187,9 +187,6 @@ class MyDocument extends Document<MyDocumentProps> {
                         appId: "02e93d78-0cea-455a-82c1-cfef034fbf18",
                         safari_web_id: "web.onesignal.auto.4b99c5db-a7c9-461a-8333-facb0838095d",
                         allowLocalhostAsSecureOrigin: true,
-                        serviceWorkerParam: { scope: '/' },
-                        serviceWorkerPath: '/OneSignalSDKWorker.js',
-                        serviceWorkerUpdaterPath: '/OneSignalSDKUpdaterWorker.js',
                         notificationClickHandlerMatch: 'origin',
                         notificationClickHandlerAction: 'navigate',
                       notifyButton: {
