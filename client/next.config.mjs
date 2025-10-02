@@ -142,7 +142,7 @@ const nextConfig = {
               script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://s.ytimg.com https://cdn.onesignal.com https://onesignal.com https://api.onesignal.com;
               connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000 https://www.youtube.com https://youtube.com https://cdn.onesignal.com https://api.onesignal.com https://onesignal.com https://*.onesignal.com https://firebase.googleapis.com https://firestore.googleapis.com https://securetoken.googleapis.com;
               img-src 'self' data: blob: https: http: https://www.google-analytics.com https://www.googletagmanager.com https://www.youtube.com https://s.ytimg.com;
-              style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+              style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://onesignal.com;
               font-src 'self' https://fonts.gstatic.com;
               frame-src https://www.youtube.com https://youtube.com https://onesignal.com;
               media-src 'self' https:;

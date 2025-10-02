@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com https://www.markaba.news https://cdn.onesignal.com https://onesignal.com https://api.onesignal.com ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''};
     script-src-elem 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://youtube.com https://s.ytimg.com https://www.markaba.news https://cdn.onesignal.com https://onesignal.com https://api.onesignal.com ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ''};
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://onesignal.com;
     font-src 'self' https://fonts.gstatic.com;
     img-src 'self' blob: data: https: http:;
     media-src 'self' https:;
