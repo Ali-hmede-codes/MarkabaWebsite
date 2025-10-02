@@ -21,7 +21,7 @@ const sendNotification = async (notificationData) => new Promise((resolve, rejec
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.ONESIGNAL_APP_AUTH_KEY}`,
+      'Authorization': `Key ${process.env.ONESIGNAL_APP_AUTH_KEY}`,
       'Content-Length': Buffer.byteLength(data)
     }
   };
