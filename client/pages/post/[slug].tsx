@@ -300,11 +300,11 @@ const PostContent: React.FC<{
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-0 sm:px-4 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 lg:gap-8">
           {/* Main Article Content */}
           <article className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white lg:rounded-xl lg:shadow-sm lg:border lg:border-gray-200 overflow-hidden">
               {/* YouTube Video Player */}
               {post.video_link && (
                 <div className="p-6 border-b border-gray-200">
@@ -337,7 +337,7 @@ const PostContent: React.FC<{
               </div>
 
               {/* Post Content */}
-              <div className="p-6 sm:p-8 lg:p-12">
+              <div className="p-4 sm:p-6 lg:p-12">
                 <div 
                   className="prose prose-lg max-w-none text-gray-800 leading-relaxed" 
                   style={{ 
@@ -425,9 +425,9 @@ const PostContent: React.FC<{
           </article>
 
           {/* Enhanced Sidebar */}
-          <aside className="lg:col-span-1 space-y-6">
+          <aside className="lg:col-span-1 space-y-6 px-4 lg:px-0">
             {/* Latest Posts Section */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
+            <div className="bg-white lg:rounded-xl lg:shadow-sm overflow-hidden w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
               <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
                 <h3 className="text-lg font-bold text-gray-800 flex items-center gap-3">
                   <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
@@ -476,7 +476,7 @@ const PostContent: React.FC<{
             <SidebarTopAd />
 
             {/* Breaking News Section */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
+            <div className="bg-white lg:rounded-xl lg:shadow-sm overflow-hidden w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
               <div className="p-4 bg-gradient-to-r from-red-50 to-pink-50">
                 <h3 className="text-lg font-bold text-red-600 flex items-center gap-3">
                   <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center animate-pulse">
