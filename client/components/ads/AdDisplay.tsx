@@ -108,14 +108,14 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
       style={style}
       onClick={handleAdClick}
     >
-      <div className="relative w-full h-full overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 bg-gray-100 flex items-center justify-center">
+      <div className="relative w-full h-full overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 bg-gray-100">
         <Image
           src={`https://api.markaba.news${ad.image_url}`}
           alt={ad.title}
           fill
-          className="object-contain w-full h-full md:object-cover"
+          className="w-full h-full"
           style={{
-            objectFit: 'contain',
+            objectFit: 'fill',
             objectPosition: 'center'
           }}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

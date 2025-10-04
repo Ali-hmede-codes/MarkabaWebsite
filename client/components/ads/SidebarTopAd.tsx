@@ -12,8 +12,8 @@ const SidebarTopAd: React.FC<SidebarTopAdProps> = ({ className = '' }) => {
         position="sidebar_top" 
         className="w-full"
         style={{ 
-          minHeight: '200px',
-          height: 'clamp(200px, 25vw, 300px)',
+          minHeight: '250px',
+          height: 'clamp(250px, 30vw, 350px)',
           aspectRatio: '4/3'
         }}
       />

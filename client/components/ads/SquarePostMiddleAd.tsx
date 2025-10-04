@@ -10,10 +10,10 @@ const SquarePostMiddleAd: React.FC<SquarePostMiddleAdProps> = ({ className = '' 
     <div className={`square-post-middle-ad ${className} flex justify-center my-8`}>
       <AdDisplay 
         position="square_post_middle" 
-        className="w-full max-w-sm mx-auto"
+        className="w-full max-w-md mx-auto"
         style={{ 
-          width: 'clamp(250px, 80vw, 350px)', 
-          height: 'clamp(250px, 80vw, 350px)',
+          width: 'clamp(280px, 90vw, 400px)', 
+          height: 'clamp(280px, 90vw, 400px)',
           aspectRatio: '1/1'
         }}
       />
