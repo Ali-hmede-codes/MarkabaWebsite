@@ -243,9 +243,7 @@ const PostContent: React.FC<{
               </div>
               <div>
                 <div className="font-semibold text-gray-900 text-lg">
-                   {(typeof post.author === 'object' && post.author?.username) 
-                     ? post.author.username 
-                     : (typeof post.author === 'string' ? post.author : 'مـركـبـا - الـمـنـصـة الاخـبـاريـة')}
+                   {post.author_display_name || post.author_name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'}
                  </div>
                 <div className="text-sm text-gray-600 flex items-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
