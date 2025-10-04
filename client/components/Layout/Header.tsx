@@ -108,7 +108,12 @@ const Header: React.FC = () => {
           <div className="flex justify-between items-center py-2 lg:py-3">
             {/* Logo and Site Info */}
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
-              <div className="relative group">
+              <a 
+                href="https://www.markaba.news" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="relative group cursor-pointer"
+              >
                 <div className="h-16 w-20 lg:h-20 lg:w-24 flex items-center justify-center relative">
                   {logoUrl ? (
                     <Image
@@ -125,7 +130,7 @@ const Header: React.FC = () => {
                   )}
                 </div>
                 <div className="absolute -inset-1 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10"></div>
-              </div>
+              </a>
             </div>
 
             {/* Desktop Categories Navigation */}
