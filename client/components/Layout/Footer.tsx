@@ -242,7 +242,7 @@ const Footer: React.FC = () => {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-4 sm:bottom-6 lg:bottom-8 left-4 sm:left-6 lg:left-8 rtl:left-auto rtl:right-4 sm:rtl:right-6 lg:rtl:right-8 z-50 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
+          className="fixed bottom-4 sm:bottom-6 lg:bottom-8 right-4 sm:right-6 lg:right-8 rtl:right-auto rtl:left-4 sm:rtl:left-6 lg:rtl:left-8 z-50 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
           aria-label="العودة إلى الأعلى"
         >
           <FiArrowUp className="w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-5 lg:h-5" />

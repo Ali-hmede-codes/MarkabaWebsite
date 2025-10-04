@@ -33,7 +33,7 @@ type LastNewsBannerProps = {
 const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   const [lastNews, setLastNews] = useState<NewsItem[]>([]);
   const [breakingNews, setBreakingNews] = useState<NewsItem[]>([]);
-  const [combineNews, setCombineNews] = useState(false);
+  const [combineNews, setCombineNews] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);

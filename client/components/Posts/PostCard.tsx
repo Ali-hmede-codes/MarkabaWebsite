@@ -38,76 +38,73 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   return (
-    <article className={`bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow ${className}`}>
-      {/* Featured Image */}
-      {post.featured_image && (
-        <div className="relative h-48 w-full">
-          <Image
-            src={getImageUrl(post.featured_image)}
-            alt={post.title_ar || post.title}
-            fill
-            className="object-cover rounded-t-lg"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-          
-          {/* Video Play Icon Overlay */}
-          {post.video_link && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white transition-all duration-300">
-                <FiPlay className="text-green-600 text-2xl" />
+    <Link href={`/post/${post.slug}`} className="block">
+      <article className={`bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer ${className}`}>
+        {/* Featured Image */}
+        {post.featured_image && (
+          <div className="relative h-48 w-full">
+            <Image
+              src={getImageUrl(post.featured_image)}
+              alt={post.title_ar || post.title}
+              fill
+              className="object-cover rounded-t-lg"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+            
+            {/* Video Play Icon Overlay */}
+            {post.video_link && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white transition-all duration-300">
+                  <FiPlay className="text-green-600 text-2xl" />
+                </div>
               </div>
-            </div>
-          )}
-          
-          {/* Video Badge */}
-          {post.video_link && (
-            <div className="absolute top-2 left-2">
-              <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full shadow-lg">
-                فيديو
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-      
-      <div className="p-4">
-        {/* Category */}
-        {showCategory && post.category && (
-          <div className="mb-2">
-            <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded" dir="rtl">
-              {post.category.name_ar}
-            </span>
+            )}
+            
+            {/* Video Badge */}
+            {post.video_link && (
+              <div className="absolute top-2 left-2">
+                <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full shadow-lg">
+                  فيديو
+                </span>
+              </div>
+            )}
           </div>
         )}
         
-        {/* Title */}
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2" dir="rtl">
-          <Link 
-            href={`/post/${post.slug}`}
-            className="hover:text-blue-600 transition-colors"
-          >
+        <div className="p-4">
+          {/* Category */}
+          {showCategory && post.category && (
+            <div className="mb-2">
+              <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded" dir="rtl">
+                {post.category.name_ar}
+              </span>
+            </div>
+          )}
+          
+          {/* Title */}
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors" dir="rtl">
             {post.title_ar || post.title}
-          </Link>
-        </h3>
-        
-        {/* Excerpt */}
-        {showExcerpt && (post.excerpt_ar || post.excerpt) && (
-          <p className="text-gray-600 text-sm mb-3 line-clamp-3" dir="rtl">
-            {post.excerpt_ar || post.excerpt}
-          </p>
-        )}
-        
-        {/* Meta Information */}
-        <div className="flex items-center space-x-4 text-xs text-gray-500">
-          {showAuthor && post.author && (
-            <span>By {post.author.name || post.author.username}</span>
+          </h3>
+          
+          {/* Excerpt */}
+          {showExcerpt && (post.excerpt_ar || post.excerpt) && (
+            <p className="text-gray-600 text-sm mb-3 line-clamp-3" dir="rtl">
+              {post.excerpt_ar || post.excerpt}
+            </p>
           )}
-          {showDate && post.created_at && (
-            <span>{formatDate(post.created_at)}</span>
-          )}
+          
+          {/* Meta Information */}
+          <div className="flex items-center space-x-4 text-xs text-gray-500">
+            {showAuthor && post.author && (
+              <span>By {post.author.name || post.author.username}</span>
+            )}
+            {showDate && post.created_at && (
+              <span>{formatDate(post.created_at)}</span>
+            )}
+          </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </Link>
   );
 };
 
