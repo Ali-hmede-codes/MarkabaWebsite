@@ -31,10 +31,10 @@ const MainTopAd: React.FC<MainTopAdProps> = ({
         position="main_top" 
         className="w-full"
         style={{ 
-          height: 'clamp(100px, 12vw, 150px)',
-          maxWidth: '1280px',
+          height: 'clamp(80px, 10vw, 120px)',
+          maxWidth: '100%',
           margin: '0 auto',
-          aspectRatio: '1280/150'
+          aspectRatio: '16/3'
         }}
       />
     </div>
