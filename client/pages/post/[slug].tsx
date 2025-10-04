@@ -427,8 +427,8 @@ const PostContent: React.FC<{
           {/* Enhanced Sidebar */}
           <aside className="lg:col-span-1 space-y-6">
             {/* Latest Posts Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-gray-200">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
+              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
                 <h3 className="text-lg font-bold text-gray-800 flex items-center gap-3">
                   <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
                     <FiFileText className="text-white" size={16} />
@@ -440,7 +440,7 @@ const PostContent: React.FC<{
                 <div className="space-y-4">
                   {latestPosts.map((latestPost, index) => (
                     <Link key={latestPost.id} href={`/post/${latestPost.slug}`}>
-                      <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors rounded-lg cursor-pointer border border-transparent hover:border-gray-200">
+                      <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors rounded-lg cursor-pointer">
                         <div className="flex-shrink-0 w-6 h-6 bg-green-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                           {index + 1}
                         </div>
@@ -476,8 +476,8 @@ const PostContent: React.FC<{
             <SidebarTopAd />
 
             {/* Breaking News Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="p-4 bg-gradient-to-r from-red-50 to-pink-50 border-b border-gray-200">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
+              <div className="p-4 bg-gradient-to-r from-red-50 to-pink-50">
                 <h3 className="text-lg font-bold text-red-600 flex items-center gap-3">
                   <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center animate-pulse">
                     <FiAlertTriangle className="text-white" size={16} />
@@ -488,7 +488,7 @@ const PostContent: React.FC<{
               <div className="p-4">
                 <div className="space-y-4">
                   {breakingNews.map((newsPost, index) => (
-                    <div key={newsPost.id} className="flex gap-3 p-3 rounded-lg hover:bg-red-50 transition-colors border border-transparent hover:border-red-200">
+                    <div key={newsPost.id} className="flex gap-3 p-3 rounded-lg hover:bg-red-50 transition-colors">
                       <div className="flex-shrink-0 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse">
                         !
                       </div>
