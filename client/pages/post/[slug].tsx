@@ -202,14 +202,17 @@ const PostContent: React.FC<{
       {/* Hero Section */}
       <div className="relative bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Category Badge */}
-          {post.category?.name_ar && (
-            <div className="mb-4">
+          {/* Category Badge and Date - Side by Side */}
+          <div className="mb-4 flex items-center gap-4 flex-wrap">
+            {post.category?.name_ar && (
               <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-blue-600 text-white shadow-sm">
                 {typeof post.category === 'string' ? post.category : post.category?.name_ar}
               </span>
-            </div>
-          )}
+            )}
+            <span className="text-gray-600 text-sm font-['Alexandria']">
+              {formatDate(post.created_at)}
+            </span>
+          </div>
           
           {/* Post Title */}
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-8 font-['Alexandria']">
@@ -228,13 +231,6 @@ const PostContent: React.FC<{
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
           )}
-          
-          {/* Post Meta Information - Only Date */}
-          <div className="mb-8">
-            <span className="text-black text-sm font-normal">
-              {formatDate(post.created_at)}
-            </span>
-          </div>
 
           {/* Post Excerpt with Social Buttons */}
           {(post.excerpt_ar || post.excerpt) && (
