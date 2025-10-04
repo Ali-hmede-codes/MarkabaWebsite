@@ -229,29 +229,15 @@ const PostContent: React.FC<{
             </div>
           )}
           
-          {/* Post Meta Information */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200">
-            <div className="flex items-center space-x-4 rtl:space-x-reverse mb-4 sm:mb-0">
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 shadow-md">
-                <Image 
-                  src="/images/logo.png" 
-                  alt="مركبا" 
-                  width={48} 
-                  height={48} 
-                  className="object-cover"
-                />
-              </div>
-              <div>
-                <div className="font-semibold text-gray-900 text-lg">
-                   {post.author_display_name || post.author_name || 'مـركـبـا - الـمـنـصـة الاخـبـاريـة'}
-                 </div>
-                <div className="text-sm text-gray-600 flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {formatDate(post.created_at)}
-                </div>
-              </div>
+          {/* Post Meta Information - Only Date */}
+          <div className="mb-8">
+            <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+              <svg className="w-5 h-5 text-blue-600 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-blue-800 font-semibold text-lg font-['Alexandria']">
+                {formatDate(post.created_at)}
+              </span>
             </div>
           </div>
 
@@ -304,7 +290,7 @@ const PostContent: React.FC<{
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 lg:gap-8">
           {/* Main Article Content */}
           <article className="lg:col-span-3">
-            <div className="bg-white lg:rounded-xl lg:shadow-sm lg:border lg:border-gray-200 overflow-hidden">
+            <div className="bg-white lg:rounded-xl lg:shadow-sm overflow-hidden">
               {/* YouTube Video Player */}
               {post.video_link && (
                 <div className="p-6 border-b border-gray-200">
@@ -315,29 +301,26 @@ const PostContent: React.FC<{
                 </div>
               )}
 
-              {/* Font Size Controller */}
-              <div className="flex items-center justify-center p-4 bg-gray-50 border-b border-gray-200">
-                <div className="flex items-center gap-4 bg-white rounded-full px-6 py-3 shadow-sm border border-gray-200">
-                  <button 
-                    onClick={() => setFontSize(prev => Math.max(12, prev - 2))}
-                    className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-sm"
-                    title="تصغير الخط"
-                  >
-                    <span className="text-lg font-bold">-</span>
-                  </button>
-                  <span className="text-gray-700 font-medium px-2">حجم الخط</span>
+              {/* Post Content */}
+              <div className="p-4 sm:p-6 lg:p-12 relative">
+                {/* Font Size Controller - Top Left Corner */}
+                <div className="absolute top-4 left-4 z-10 flex gap-2">
                   <button 
                     onClick={() => setFontSize(prev => Math.min(28, prev + 2))}
-                    className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-sm"
+                    className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors shadow-md border border-blue-700"
                     title="تكبير الخط"
                   >
-                    <span className="text-lg font-bold">+</span>
+                    <span className="text-sm font-bold">A+</span>
+                  </button>
+                  <button 
+                    onClick={() => setFontSize(prev => Math.max(12, prev - 2))}
+                    className="w-10 h-10 bg-gray-600 text-white rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors shadow-md border border-gray-700"
+                    title="تصغير الخط"
+                  >
+                    <span className="text-sm font-bold">A-</span>
                   </button>
                 </div>
-              </div>
-
-              {/* Post Content */}
-              <div className="p-4 sm:p-6 lg:p-12">
+                
                 <div 
                   className="prose prose-lg max-w-none text-gray-800 leading-relaxed" 
                   style={{ 
