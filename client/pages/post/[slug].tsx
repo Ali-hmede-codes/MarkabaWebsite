@@ -231,14 +231,9 @@ const PostContent: React.FC<{
           
           {/* Post Meta Information - Only Date */}
           <div className="mb-8">
-            <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-              <svg className="w-5 h-5 text-blue-600 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-blue-800 font-semibold text-lg font-['Alexandria']">
-                {formatDate(post.created_at)}
-              </span>
-            </div>
+            <span className="text-black text-sm font-normal">
+              {formatDate(post.created_at)}
+            </span>
           </div>
 
           {/* Post Excerpt with Social Buttons */}
@@ -322,7 +317,7 @@ const PostContent: React.FC<{
                 </div>
                 
                 <div 
-                  className="prose prose-lg max-w-none text-gray-800 leading-relaxed" 
+                  className="prose prose-lg max-w-none text-gray-800 leading-relaxed mt-16" 
                   style={{ 
                     fontSize: `${fontSize}px`, 
                     fontFamily: 'Alexandria, sans-serif',
