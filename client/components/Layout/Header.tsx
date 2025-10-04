@@ -110,8 +110,6 @@ const Header: React.FC = () => {
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <a 
                 href="https://www.markaba.news" 
-                target="_blank" 
-                rel="noopener noreferrer"
                 className="relative group cursor-pointer"
               >
                 <div className="h-16 w-20 lg:h-20 lg:w-24 flex items-center justify-center relative">
