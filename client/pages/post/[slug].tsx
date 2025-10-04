@@ -322,7 +322,7 @@ const PostContent: React.FC<{
             {/* Post Content */}
             <div 
               className="prose max-w-none mb-8 text-gray-800 leading-relaxed" 
-              style={{ fontSize: `${fontSize}px` }}
+              style={{ fontSize: `${fontSize}px`, fontFamily: 'Alexandria, sans-serif' }}
               dangerouslySetInnerHTML={{ 
                 __html: formatPostContent(post.content_ar || post.content || '') 
               }} 

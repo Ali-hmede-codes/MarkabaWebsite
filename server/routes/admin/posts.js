@@ -367,7 +367,6 @@ router.post('/',
       }
       
       // Set default values
-      excerpt_ar = excerpt_ar || `${content_ar.substring(0, 200)}...`;
       is_featured = is_featured !== undefined ? isFeatured : false;
       meta_description_ar = meta_description_ar || excerpt_ar;
       
