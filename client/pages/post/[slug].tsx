@@ -199,53 +199,77 @@ const PostContent: React.FC<{
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section with Featured Image */}
+      {/* Hero Section */}
       <div className="relative bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 py-8">
-            {/* Main Article Header */}
-            <div className="lg:col-span-2">
-              {/* Category Badge */}
-              {post.category?.name_ar && (
-                <div className="mb-4">
-                  <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-blue-600 text-white shadow-sm">
-                    {typeof post.category === 'string' ? post.category : post.category?.name_ar}
-                  </span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Category Badge */}
+          {post.category?.name_ar && (
+            <div className="mb-4">
+              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-blue-600 text-white shadow-sm">
+                {typeof post.category === 'string' ? post.category : post.category?.name_ar}
+              </span>
+            </div>
+          )}
+          
+          {/* Post Title */}
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-8 font-['Alexandria']">
+            {post.title_ar || post.title}
+          </h1>
+
+          {/* Featured Image - Now under title */}
+          {(post.featured_image || post.image) && (
+            <div className="relative w-full h-64 sm:h-80 lg:h-96 rounded-xl overflow-hidden shadow-lg mb-8">
+              <Image 
+                src={getImageUrl(post.featured_image || post.image || '')} 
+                alt={post.title_ar || post.title} 
+                fill 
+                className="object-cover" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+          )}
+          
+          {/* Post Meta Information */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200">
+            <div className="flex items-center space-x-4 rtl:space-x-reverse mb-4 sm:mb-0">
+              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 shadow-md">
+                <Image 
+                  src="/images/logo.png" 
+                  alt="مركبا" 
+                  width={48} 
+                  height={48} 
+                  className="object-cover"
+                />
+              </div>
+              <div>
+                <div className="font-semibold text-gray-900 text-lg">
+                   {(typeof post.author === 'object' && post.author?.username) 
+                     ? post.author.username 
+                     : (typeof post.author === 'string' ? post.author : 'مـركـبـا - الـمـنـصـة الاخـبـاريـة')}
+                 </div>
+                <div className="text-sm text-gray-600 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {formatDate(post.created_at)}
                 </div>
-              )}
-              
-              {/* Post Title */}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6 font-['Alexandria']">
-                {post.title_ar || post.title}
-              </h1>
-              
-              {/* Post Meta Information */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200">
-                <div className="flex items-center space-x-4 rtl:space-x-reverse mb-4 sm:mb-0">
-                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 shadow-md">
-                    <Image 
-                      src="/images/logo.png" 
-                      alt="مركبا" 
-                      width={48} 
-                      height={48} 
-                      className="object-cover"
-                    />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900 text-lg">مـركـبـا - الـمـنـصـة الاخـبـاريـة</div>
-                    <div className="text-sm text-gray-600 flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {formatDate(post.created_at)}
-                    </div>
-                  </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Post Excerpt with Social Buttons */}
+          {(post.excerpt_ar || post.excerpt) && (
+            <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-1 h-6 bg-blue-600 rounded-full flex-shrink-0 mt-1"></div>
+                  <h2 className="text-lg font-semibold text-gray-800">ملخص المقال</h2>
                 </div>
                 
-                {/* Social Sharing */}
-                <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                {/* Social Sharing Buttons - Now in excerpt box */}
+                <div className="flex items-center space-x-3 rtl:space-x-reverse relative">
                   {copyMessage && (
-                    <div className="absolute -top-12 right-0 bg-green-500 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-lg">
+                    <div className="absolute -top-12 right-0 bg-green-500 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-lg z-10">
                       {copyMessage}
                     </div>
                   )}
@@ -254,7 +278,7 @@ const PostContent: React.FC<{
                     className={`p-3 rounded-full transition-all duration-200 shadow-md ${
                       copySuccess 
                         ? 'bg-green-500 text-white' 
-                        : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800'
+                        : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800 border border-gray-200'
                     }`}
                     title="نسخ النص"
                   >
@@ -262,43 +286,18 @@ const PostContent: React.FC<{
                   </button>
                   <button 
                     onClick={handleShare}
-                    className="p-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-md"
+                    className="p-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-md border border-blue-600"
                     title="مشاركة"
                   >
                     <FiShare2 size={18} />
                   </button>
                 </div>
               </div>
-
-              {/* Post Excerpt */}
-              {(post.excerpt_ar || post.excerpt) && (
-                <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-200">
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="w-1 h-6 bg-blue-600 rounded-full flex-shrink-0 mt-1"></div>
-                    <h2 className="text-lg font-semibold text-gray-800">ملخص المقال</h2>
-                  </div>
-                  <p className="text-gray-700 text-lg leading-relaxed font-['Alexandria']">
-                    {post.excerpt_ar || post.excerpt}
-                  </p>
-                </div>
-              )}
+              <p className="text-gray-700 text-lg leading-relaxed font-['Alexandria']">
+                {post.excerpt_ar || post.excerpt}
+              </p>
             </div>
-
-            {/* Featured Image */}
-            <div className="lg:col-span-1">
-              {(post.featured_image || post.image) && (
-                <div className="relative w-full h-64 sm:h-80 lg:h-96 rounded-xl overflow-hidden shadow-lg">
-                  <Image 
-                    src={getImageUrl(post.featured_image || post.image || '')} 
-                    alt={post.title_ar || post.title} 
-                    fill 
-                    className="object-cover" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                </div>
-              )}
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
