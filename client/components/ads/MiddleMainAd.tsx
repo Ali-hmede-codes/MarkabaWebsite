@@ -12,9 +12,10 @@ const MiddleMainAd: React.FC<MiddleMainAdProps> = ({ className = '' }) => {
         position="middle_main" 
         className="w-full"
         style={{ 
-          height: '300px',
-          maxWidth: '1280px',
-          margin: '0 auto'
+          height: 'clamp(80px, 12vw, 140px)',
+          maxWidth: '100%',
+          margin: '0 auto',
+          aspectRatio: '16/3'
         }}
       />
     </div>

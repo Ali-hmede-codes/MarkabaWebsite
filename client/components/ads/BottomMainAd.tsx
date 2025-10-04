@@ -12,10 +12,10 @@ const BottomMainAd: React.FC<BottomMainAdProps> = ({ className = '' }) => {
         position="bottom_main" 
         className="w-full"
         style={{ 
-          height: 'clamp(100px, 15vw, 180px)',
+          height: 'clamp(80px, 12vw, 140px)',
           maxWidth: '100%',
           margin: '0 auto',
-          aspectRatio: '16/4'
+          aspectRatio: '16/3'
         }}
       />
     </div>
