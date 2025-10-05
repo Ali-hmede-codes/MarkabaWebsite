@@ -129,7 +129,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
       </div>
       
       {/* News content with scrollable container */}
-      <div className="border border-transparent rounded-lg w-full" style={{height: '600px', minHeight: '600px', maxHeight: '600px'}}>
+      <div className="border border-transparent rounded-lg w-full" style={{minHeight: '400px', maxHeight: '800px', height: 'auto'}}>
         <div className="h-full flex flex-col w-full">
           <div className="flex-1 overflow-y-auto p-4 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
             <div className="space-y-4">
@@ -143,19 +143,21 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                   <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
                     {news.isBreaking ? (
                       <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div className="flex-shrink-0" style={{ width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                           <span className="text-blue-600 font-medium text-center" style={{ 
                             fontSize: '12px', 
                             fontFamily: 'Alexandria, sans-serif',
                             lineHeight: '1.2',
                             display: 'block',
-                            width: '100%'
+                            width: '100%',
+                            minWidth: '60px',
+                            maxWidth: '60px'
                           }}>
                             {timeAgo(news.created_at)}
                           </span>
                         </div>
                         <span className="text-gray-400 flex-shrink-0">|</span>
-                        <div className="flex-1">
+                        <div className="flex-1" style={{ minWidth: 0 }}>
                           <h3 className={`font-semibold text-xs sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                             wordWrap: 'break-word', 
                             whiteSpace: 'normal', 
@@ -180,19 +182,21 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                     ) : (
                       <Link href={`/last-news/${news.slug || news.id}`}>
                         <div className="flex items-start gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
-                          <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <div className="flex-shrink-0" style={{ width: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <span className="text-blue-600 font-medium text-center" style={{ 
                               fontSize: '12px', 
                               fontFamily: 'Alexandria, sans-serif',
                               lineHeight: '1.2',
                               display: 'block',
-                              width: '100%'
+                              width: '100%',
+                              minWidth: '60px',
+                              maxWidth: '60px'
                             }}>
                               {timeAgo(news.created_at)}
                             </span>
                           </div>
                           <span className="text-gray-400 flex-shrink-0">|</span>
-                          <div className="flex-1">
+                          <div className="flex-1" style={{ minWidth: 0 }}>
                             <h3 className={`font-semibold text-xs sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                               wordWrap: 'break-word', 
                               whiteSpace: 'normal', 
