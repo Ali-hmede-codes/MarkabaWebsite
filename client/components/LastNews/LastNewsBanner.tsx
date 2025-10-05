@@ -95,8 +95,9 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         <div className="flex justify-center items-center gap-4 sm:gap-6 mb-6 flex-wrap">
           {/* Title with underline */}
           <div className="relative flex-shrink-0">
-            <h2 className="font-bold text-gray-800 text-lg sm:text-xl md:text-2xl relative whitespace-nowrap" style={{ 
+            <h2 className="text-gray-800 text-lg sm:text-xl md:text-2xl relative whitespace-nowrap" style={{ 
               fontFamily: 'Alexandria, sans-serif',
+              fontWeight: '300',
               wordWrap: 'break-word',
               lineHeight: '1.2',
               minWidth: 'fit-content'
@@ -109,8 +110,9 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
           
           {/* Toggle switch for breaking news */}
           <div className="flex items-center flex-shrink-0">
-            <span className="ml-2 text-red-500 font-bold text-sm sm:text-base whitespace-nowrap" style={{ 
+            <span className="ml-2 text-red-500 text-sm sm:text-base whitespace-nowrap" style={{ 
               fontFamily: 'Alexandria, sans-serif',
+              fontWeight: '300',
               lineHeight: '1.2',
               minWidth: 'fit-content'
             }}>العاجل</span>
@@ -144,9 +146,10 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                     {news.isBreaking ? (
                       <div className="flex items-start" style={{ gap: '3px' }}>
                         <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                          <span className="text-blue-600 font-medium text-center" style={{ 
+                          <span className="text-blue-600 text-center" style={{ 
                             fontSize: '12px', 
                             fontFamily: 'Alexandria, sans-serif',
+                            fontWeight: '300',
                             lineHeight: '1.2',
                             display: 'block',
                             width: '100%'
@@ -155,11 +158,12 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                           </span>
                         </div>
                         <div className="flex-1">
-                          <h3 className={`font-semibold text-xs sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{
+                          <h3 className={`text-xs sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                             wordWrap: 'break-word', 
                             whiteSpace: 'normal', 
                             lineHeight: '1.3', 
                             fontFamily: 'Alexandria, sans-serif',
+                            fontWeight: '300',
                             overflowWrap: 'break-word',
                             hyphens: 'auto',
                             display: 'block',
@@ -167,8 +171,9 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                           }}>
                             {displayTitle}
                             {hasContent && (
-                              <span className="text-red-600 underline mr-2 font-bold" style={{ 
+                              <span className="text-red-600 underline mr-2" style={{ 
                                 fontFamily: 'Alexandria, sans-serif',
+                                fontWeight: '300',
                                 whiteSpace: 'nowrap',
                                 marginRight: '8px'
                               }}>تتمة</span>
@@ -180,9 +185,10 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                       <Link href={`/last-news/${news.slug || news.id}`}>
                         <div className="flex items-start hover:bg-gray-50 p-2 rounded-lg transition-colors" style={{ gap: '3px' }}>
                           <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <span className="text-blue-600 font-medium text-center" style={{ 
+                            <span className="text-blue-600 text-center" style={{ 
                               fontSize: '12px', 
                               fontFamily: 'Alexandria, sans-serif',
+                              fontWeight: '300',
                               lineHeight: '1.2',
                               display: 'block',
                               width: '100%'
@@ -191,11 +197,12 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                             </span>
                           </div>
                           <div className="flex-1">
-                            <h3 className={`font-semibold text-xs sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{
+                            <h3 className={`text-xs sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                               wordWrap: 'break-word', 
                               whiteSpace: 'normal', 
                               lineHeight: '1.3', 
                               fontFamily: 'Alexandria, sans-serif',
+                              fontWeight: '300',
                               overflowWrap: 'break-word',
                               hyphens: 'auto',
                               display: 'block',
@@ -203,8 +210,9 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                             }}>
                               {displayTitle}
                               {hasContent && (
-                                <span className="text-red-600 underline mr-2 font-bold" style={{ 
+                                <span className="text-red-600 underline mr-2" style={{ 
                                   fontFamily: 'Alexandria, sans-serif',
+                                  fontWeight: '300',
                                   whiteSpace: 'nowrap',
                                   marginRight: '8px'
                                 }}>تتمة</span>
@@ -231,7 +239,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                     whiteSpace: 'nowrap',
                     lineHeight: '1.2',
                     fontSize: '18px',
-                    fontWeight: 'bold'
+                    fontWeight: '300'
                   }}>المزيد</span>
                 </Link>
               </div>
