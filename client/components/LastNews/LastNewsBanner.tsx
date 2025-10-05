@@ -142,7 +142,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                 return (
                   <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
                     {news.isBreaking ? (
-                      <div className="flex items-start gap-3">
+                      <div className="flex items-start" style={{ gap: '3px' }}>
                         <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                           <span className="text-blue-600 font-medium text-center" style={{ 
                             fontSize: '12px', 
@@ -179,7 +179,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                       </div>
                     ) : (
                       <Link href={`/last-news/${news.slug || news.id}`}>
-                        <div className="flex items-start gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                        <div className="flex items-start hover:bg-gray-50 p-2 rounded-lg transition-colors" style={{ gap: '3px' }}>
                           <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <span className="text-blue-600 font-medium text-center" style={{ 
                               fontSize: '12px', 
