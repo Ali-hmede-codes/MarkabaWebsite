@@ -128,7 +128,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
             <LastNewsBanner className="h-auto" />
           </div>
           
-          {/* Last 4 articles */}
+          {/* Last 4 articles in vertical layout */}
           <div className="space-y-4">
             {latestPosts.slice(3, 7).map(post => (
               <div key={post.id}>
@@ -159,7 +159,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
             <LastNewsBanner className="h-auto" />
           </div>
           
-          {/* Last 4 articles in grid */}
+          {/* Last 4 articles in horizontal grid (2x2) */}
           <div className="grid grid-cols-2 gap-4">
             {latestPosts.slice(3, 7).map(post => (
               <div key={post.id}>
