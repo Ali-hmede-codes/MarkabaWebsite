@@ -134,8 +134,18 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                   <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
                     {news.isBreaking ? (
                       <div className="flex items-start gap-3">
-                        <span className="text-blue-600 font-medium whitespace-nowrap" style={{ fontSize: '12px', minWidth: '80px', maxWidth: '80px', textAlign: 'right' }}>{timeAgo(news.created_at)}</span>
-                        <span className="text-gray-400">|</span>
+                        <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <span className="text-blue-600 font-medium text-center" style={{ 
+                            fontSize: '12px', 
+                            fontFamily: 'Alexandria, sans-serif',
+                            lineHeight: '1.2',
+                            display: 'block',
+                            width: '100%'
+                          }}>
+                            {timeAgo(news.created_at)}
+                          </span>
+                        </div>
+                        <span className="text-gray-400 flex-shrink-0">|</span>
                         <div className="flex-1">
                           <h3 className={`font-semibold text-xs sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3', fontFamily: 'Alexandria, sans-serif'}}>
                             {displayTitle}
@@ -148,8 +158,18 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                     ) : (
                       <Link href={`/last-news/${news.slug || news.id}`}>
                         <div className="flex items-start gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
-                          <span className="text-blue-600 font-medium whitespace-nowrap" style={{ fontSize: '12px', fontFamily: 'Alexandria, sans-serif', minWidth: '80px', maxWidth: '80px', textAlign: 'right' }}>{timeAgo(news.created_at)}</span>
-                          <span className="text-gray-400">|</span>
+                          <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <span className="text-blue-600 font-medium text-center" style={{ 
+                              fontSize: '12px', 
+                              fontFamily: 'Alexandria, sans-serif',
+                              lineHeight: '1.2',
+                              display: 'block',
+                              width: '100%'
+                            }}>
+                              {timeAgo(news.created_at)}
+                            </span>
+                          </div>
+                          <span className="text-gray-400 flex-shrink-0">|</span>
                           <div className="flex-1">
                             <h3 className={`font-semibold text-xs sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3', fontFamily: 'Alexandria, sans-serif'}}>
                               {displayTitle}
@@ -192,10 +212,23 @@ function timeAgo(date: string): string {
   const past = new Date(date);
   const diff = Math.floor((now.getTime() - past.getTime()) / 1000);
 
-  if (diff < 60) return 'منذ لحظات';
-  if (diff < 3600) return `منذ ${Math.floor(diff / 60)} دقيقة`;
-  if (diff < 86400) return `منذ ${Math.floor(diff / 3600)} ساعة`;
-  if (diff < 2592000) return `منذ ${Math.floor(diff / 86400)} يوم`;
-  if (diff < 31536000) return `منذ ${Math.floor(diff / 2592000)} شهر`;
-  return `منذ ${Math.floor(diff / 31536000)} سنة`;
+  if (diff < 60) return 'الآن';
+  if (diff < 3600) {
+    const minutes = Math.floor(diff / 60);
+    return `${minutes}د`;
+  }
+  if (diff < 86400) {
+    const hours = Math.floor(diff / 3600);
+    return `${hours}س`;
+  }
+  if (diff < 2592000) {
+    const days = Math.floor(diff / 86400);
+    return `${days}ي`;
+  }
+  if (diff < 31536000) {
+    const months = Math.floor(diff / 2592000);
+    return `${months}ش`;
+  }
+  const years = Math.floor(diff / 31536000);
+  return `${years}سن`;
 }
