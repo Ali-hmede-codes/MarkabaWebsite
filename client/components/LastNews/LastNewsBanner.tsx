@@ -107,44 +107,62 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         </div>
       </div>
       
-      {/* News content with transparent background */}
-      <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-y-auto p-4">
-          <div className="space-y-4">
-            {displayedNews.map((news, index) => (
-              <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
-                {news.isBreaking ? (
-                  <div className="flex items-start gap-3">
-                    <span className="text-blue-600 text-sm font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
-                    <span className="text-gray-400">|</span>
-                    <h3 className={`font-semibold text-sm sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer flex-1`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
-                      {news.title_ar || news.title}
-                    </h3>
+      {/* News content with scrollable container */}
+      <div className="border border-transparent rounded-lg" style={{height: '600px', minHeight: '600px', maxHeight: '600px'}}>
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-4">
+              {displayedNews.map((news, index) => {
+                const title = news.title_ar || news.title || '';
+                const isLongTitle = title.length > 80; // Consider titles longer than 80 characters as long
+                const displayTitle = isLongTitle ? title.substring(0, 80) : title;
+                
+                return (
+                  <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
+                    {news.isBreaking ? (
+                      <div className="flex items-start gap-3">
+                        <span className="text-blue-600 text-sm font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
+                        <span className="text-gray-400">|</span>
+                        <div className="flex-1">
+                          <h3 className={`font-semibold text-sm sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
+                            {displayTitle}
+                            {isLongTitle && (
+                              <span className="text-red-600 underline mr-2 font-bold">تتمة</span>
+                            )}
+                          </h3>
+                        </div>
+                      </div>
+                    ) : (
+                      <Link href={`/last-news/${news.slug || news.id}`}>
+                        <div className="flex items-start gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                          <span className="text-blue-600 text-sm font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
+                          <span className="text-gray-400">|</span>
+                          <div className="flex-1">
+                            <h3 className={`font-semibold text-sm sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
+                              {displayTitle}
+                              {isLongTitle && (
+                                <span className="text-red-600 underline mr-2 font-bold">تتمة</span>
+                              )}
+                            </h3>
+                          </div>
+                        </div>
+                      </Link>
+                    )}
+                    {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-3"></div>}
                   </div>
-                ) : (
-                  <Link href={`/last-news/${news.slug || news.id}`}>
-                    <div className="flex items-start gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
-                      <span className="text-blue-600 text-sm font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
-                      <span className="text-gray-400">|</span>
-                      <h3 className={`font-semibold text-sm sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer flex-1`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
-                        {news.title_ar || news.title}
-                      </h3>
-                    </div>
-                  </Link>
-                )}
-                {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-3"></div>}
+                );
+              })}
+              
+              {/* Show More Button - Inside scroll area */}
+              <div className="pt-4 text-center">
+                <Link
+                  href="/last-news"
+                  className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg"
+                >
+                  <FiArrowLeft className="ml-3 text-blue-600" size={24} />
+                  <span className="block">المزيد</span>
+                </Link>
               </div>
-            ))}
-            
-            {/* Show More Button - Inside scroll area */}
-            <div className="pt-4 text-center">
-              <Link
-                href="/last-news"
-                className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg"
-              >
-                <FiArrowLeft className="ml-3 text-blue-600" size={24} />
-                <span className="block">المزيد</span>
-              </Link>
             </div>
           </div>
         </div>
