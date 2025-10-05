@@ -240,7 +240,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                     lineHeight: '1.2',
                     fontSize: '18px',
                     fontWeight: '300'
-                  }}>المزيد</span>
+                  }}>الـــمــزيـــد</span>
                 </Link>
               </div>
             </div>
