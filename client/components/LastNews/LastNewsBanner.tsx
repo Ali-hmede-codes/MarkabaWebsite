@@ -135,18 +135,18 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                 {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-3"></div>}
               </div>
             ))}
+            
+            {/* Show More Button - Inside scroll area */}
+            <div className="pt-4 text-center">
+              <Link
+                href="/last-news"
+                className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg"
+              >
+                <FiArrowLeft className="ml-3 text-blue-600" size={24} />
+                <span className="block">المزيد</span>
+              </Link>
+            </div>
           </div>
-        </div>
-        
-        {/* Show More Button */}
-        <div className="border-t border-gray-200 p-4 text-center bg-white">
-          <Link
-            href="/last-news"
-            className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg"
-          >
-            <FiArrowLeft className="ml-3 text-blue-600" size={24} />
-            الــــمـــزيــــد
-          </Link>
         </div>
       </div>
     </div>
