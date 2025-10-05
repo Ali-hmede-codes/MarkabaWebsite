@@ -134,7 +134,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                   <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
                     {news.isBreaking ? (
                       <div className="flex items-start gap-3">
-                        <span className="text-blue-600 text-sm font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
+                        <span className="text-blue-600 text-xs font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
                         <span className="text-gray-400">|</span>
                         <div className="flex-1">
                           <h3 className={`font-semibold text-sm sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3', fontFamily: 'Alexandria, sans-serif'}}>
@@ -148,7 +148,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                     ) : (
                       <Link href={`/last-news/${news.slug || news.id}`}>
                         <div className="flex items-start gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
-                          <span className="text-blue-600 text-sm font-medium whitespace-nowrap" style={{ fontFamily: 'Alexandria, sans-serif' }}>{timeAgo(news.created_at)}</span>
+                          <span className="text-blue-600 text-xs font-medium whitespace-nowrap" style={{ fontFamily: 'Alexandria, sans-serif' }}>{timeAgo(news.created_at)}</span>
                           <span className="text-gray-400">|</span>
                           <div className="flex-1">
                             <h3 className={`font-semibold text-sm sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3', fontFamily: 'Alexandria, sans-serif'}}>
