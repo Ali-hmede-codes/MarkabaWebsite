@@ -4,9 +4,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import Link from 'next/link';
 
-
-
-
+// Add custom CSS for hiding scrollbar
+const scrollbarHideStyle = `
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+`;
 
 type NewsItem = {
   id: number;
@@ -80,7 +87,9 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   if (displayedNews.length === 0) return null;
 
   return (
-    <div className={` ${className}`} dir="rtl">
+    <>
+      <style dangerouslySetInnerHTML={{ __html: scrollbarHideStyle }} />
+      <div className={`w-full ${className}`} dir="rtl">
       <div className="mb-4 sm:mb-6">
         {/* Title and Filter in one row */}
         <div className="flex justify-center items-center gap-6 mb-6">
@@ -111,12 +120,14 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
       </div>
       
       {/* News content with scrollable container */}
-      <div className="border border-transparent rounded-lg" style={{height: '600px', minHeight: '600px', maxHeight: '600px'}}>
-        <div className="h-full flex flex-col">
-          <div className="flex-1 overflow-y-auto p-4">
+      <div className="border border-transparent rounded-lg w-full" style={{height: '600px', minHeight: '600px', maxHeight: '600px'}}>
+        <div className="h-full flex flex-col w-full">
+          <div className="flex-1 overflow-y-auto p-4 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
             <div className="space-y-4">
               {displayedNews.map((news, index) => {
                 const title = news.title_ar || news.title || '';
+                const content = news.content_ar || news.content || '';
+                const hasContent = content.trim().length > 0; // Check if news has content
                 const isLongTitle = title.length > 80; // Consider titles longer than 80 characters as long
                 const displayTitle = isLongTitle ? title.substring(0, 80) : title;
                 
@@ -129,7 +140,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                         <div className="flex-1">
                           <h3 className={`font-semibold text-sm sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
                             {displayTitle}
-                            {isLongTitle && (
+                            {(isLongTitle || hasContent) && (
                               <span className="text-red-600 underline mr-2 font-bold">تتمة</span>
                             )}
                           </h3>
@@ -143,7 +154,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                           <div className="flex-1">
                             <h3 className={`font-semibold text-sm sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
                               {displayTitle}
-                              {isLongTitle && (
+                              {(isLongTitle || hasContent) && (
                                 <span className="text-red-600 underline mr-2 font-bold">تتمة</span>
                               )}
                             </h3>
@@ -171,6 +182,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
