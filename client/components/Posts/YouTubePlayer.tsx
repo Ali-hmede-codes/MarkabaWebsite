@@ -48,7 +48,8 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ videoUrl, title }) => {
     return null;
   }
 
-  const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+  // Safari-compatible embed URL with additional parameters
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}&rel=0&modestbranding=1`;
 
   return (
     <div className="my-6">
@@ -58,8 +59,10 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ videoUrl, title }) => {
           src={embedUrl}
           title={title || 'YouTube Video'}
           frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
         />
       </div>
     </div>

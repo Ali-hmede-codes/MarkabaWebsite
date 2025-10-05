@@ -282,15 +282,7 @@ const PostContent: React.FC<{
           {/* Main Article Content */}
           <article className="lg:col-span-3">
             <div className="bg-white lg:rounded-xl lg:shadow-sm overflow-hidden">
-              {/* YouTube Video Player */}
-              {post.video_link && (
-                <div className="p-6 border-b border-gray-200">
-                  <YouTubePlayer 
-                    videoUrl={post.video_link} 
-                    title={post.title_ar || post.title}
-                  />
-                </div>
-              )}
+
 
               {/* Post Content */}
               <div className="p-4 sm:p-6 lg:p-12 relative">
@@ -323,6 +315,16 @@ const PostContent: React.FC<{
                     __html: formatPostContent(post.content_ar || post.content || '') 
                   }} 
                 />
+
+                {/* YouTube Video Player - After Post Content */}
+                {post.video_link && (
+                  <div className="mt-8">
+                    <YouTubePlayer 
+                      videoUrl={post.video_link} 
+                      title={post.title_ar || post.title}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
