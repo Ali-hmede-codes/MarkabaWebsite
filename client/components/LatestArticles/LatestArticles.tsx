@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePosts } from '../API/hooks';
 import { Post } from '../API/types';
-import { FiCalendar, FiBook, FiTag } from 'react-icons/fi';
+import { FiCalendar, FiBook, FiTag, FiArrowLeft } from 'react-icons/fi';
 import { getOptimizedImageProps, preloadImages } from '../../utils/imageUtils';
 import Link from 'next/link';
 import LastNewsBanner from '../LastNews/LastNewsBanner';
@@ -86,18 +86,18 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
           {/* Content overlay */}
           <div className={`absolute bottom-0 left-0 right-0 p-3 ${isLarge ? 'sm:p-6' : 'sm:p-4'}`}>
             <h3 className={`font-bold text-white mb-2 leading-tight drop-shadow-lg ${
-              isLarge ? 'text-lg sm:text-2xl' : 'text-sm sm:text-lg'
+              isLarge ? 'text-base sm:text-xl' : 'text-xs sm:text-base'
             }`}>
               {post.title_ar}
             </h3>
-            <div className="flex flex-col sm:flex-row sm:justify-between gap-2 text-xs sm:text-sm text-white/90">
+            <div className="flex items-center gap-3 text-xs sm:text-sm text-white/90">
               <span className="flex items-center">
-                <FiCalendar className="inline ml-1" size={14} /> 
+                <FiCalendar className="inline ml-1" size={12} /> 
                 {getRelativeTime(post.created_at)}
               </span>
               {post.category_name && (
                 <span className="flex items-center">
-                  <FiTag className="inline ml-1" size={14} />
+                  <FiTag className="inline ml-1" size={12} />
                   {post.category_name}
                 </span>
               )}
@@ -191,10 +191,10 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
                 });
               }
             }}
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold text-sm rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            className="inline-flex items-center px-4 py-2 bg-gray-100 text-black font-medium text-sm rounded-lg hover:bg-gray-200 transition-all duration-300"
           >
-            <FiBook className="ml-2" size={16} />
-            مشاهدة المزيد
+            <FiArrowLeft className="ml-2 text-blue-600" size={16} />
+            الــــمـــزيــــد
           </Link>
         </div>
       </div>
