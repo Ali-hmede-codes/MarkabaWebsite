@@ -154,7 +154,6 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                             {timeAgo(news.created_at)}
                           </span>
                         </div>
-                        <span className="text-gray-400 flex-shrink-0">|</span>
                         <div className="flex-1">
                           <h3 className={`font-semibold text-xs sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                             wordWrap: 'break-word', 
@@ -191,7 +190,6 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                               {timeAgo(news.created_at)}
                             </span>
                           </div>
-                          <span className="text-gray-400 flex-shrink-0">|</span>
                           <div className="flex-1">
                             <h3 className={`font-semibold text-xs sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                               wordWrap: 'break-word', 
