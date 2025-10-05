@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FiClock } from 'react-icons/fi';
+import { FiArrowLeft } from 'react-icons/fi';
 import Link from 'next/link';
 
 
@@ -81,59 +81,72 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
 
   return (
     <div className={` ${className}`} dir="rtl">
-      <div className="mb-4 sm:mb-6 text-center">
-        <div className="responsive-flex justify-center mb-3 sm:mb-4 items-center">
-          <FiClock className="text-blue-500 text-xl sm:text-3xl ml-1 sm:ml-3" />
-          <h2 className="section-title font-bold text-gray-800 text-lg sm:text-xl">آخر الأخبار</h2>
-          <div className="flex items-center mr-3 sm:mr-4">
-            <span className="ml-1 sm:ml-2 text-red-500 font-bold text-sm sm:text-base">العاجل</span>
-            <label className="relative inline-flex items-center cursor-pointer mr-1 sm:mr-2">
-              <input
-                type="checkbox"
-                checked={combineNews}
-                onChange={(e) => setCombineNews(e.target.checked)}
-                className="sr-only"
-              />
-              <div className={`w-9 sm:w-11 h-5 sm:h-6 rounded-full ${combineNews ? 'bg-white' : 'bg-gray-300'}`}></div>
-              <div className={`absolute left-1 top-1 w-3 sm:w-4 h-3 sm:h-4 bg-blue-600 rounded-full transition-transform ${combineNews ? 'translate-x-4 sm:translate-x-5 bg-blue-600' : 'translate-x-0'}`}></div>
-            </label>
-          </div>
+      <div className="mb-4 sm:mb-6">
+        <div className="relative mb-6">
+          {/* Title with underline */}
+          <h2 className="font-bold text-gray-800 text-xl sm:text-2xl text-center relative">
+            آخر الأخبار
+            {/* Underline behind the text */}
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full -z-10"></div>
+          </h2>
         </div>
-        <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto mt-1 sm:mt-2 rounded-full"></div>
+        
+        {/* Toggle switch for breaking news */}
+        <div className="flex justify-center items-center mb-4">
+          <span className="ml-2 text-red-500 font-bold text-sm sm:text-base">العاجل</span>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={combineNews}
+              onChange={(e) => setCombineNews(e.target.checked)}
+              className="sr-only"
+            />
+            <div className={`w-9 sm:w-11 h-5 sm:h-6 rounded-full ${combineNews ? 'bg-white' : 'bg-gray-300'}`}></div>
+            <div className={`absolute left-1 top-1 w-3 sm:w-4 h-3 sm:h-4 bg-blue-600 rounded-full transition-transform ${combineNews ? 'translate-x-4 sm:translate-x-5 bg-blue-600' : 'translate-x-0'}`}></div>
+          </label>
+        </div>
       </div>
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm" style={{height: '500px', minHeight: '500px', maxHeight: '500px'}}>
-        <div className="h-full flex flex-col">
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="space-y-3">
-              {displayedNews.map((news, index) => (
-                <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
-                  {news.isBreaking ? (
-                    <h3 className={`font-semibold text-sm sm:text-base leading-snug text-red-600 mb-1 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
+      
+      {/* News content with transparent background */}
+      <div className="h-full flex flex-col">
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="space-y-4">
+            {displayedNews.map((news, index) => (
+              <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
+                {news.isBreaking ? (
+                  <div className="flex items-start gap-3">
+                    <span className="text-blue-600 text-sm font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
+                    <span className="text-gray-400">|</span>
+                    <h3 className={`font-semibold text-sm sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer flex-1`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
                       {news.title_ar || news.title}
                     </h3>
-                  ) : (
-                    <Link href={`/last-news/${news.slug || news.id}`}>
-                      <h3 className={`font-semibold text-sm sm:text-base leading-snug text-gray-800 mb-1 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
+                  </div>
+                ) : (
+                  <Link href={`/last-news/${news.slug || news.id}`}>
+                    <div className="flex items-start gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                      <span className="text-blue-600 text-sm font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
+                      <span className="text-gray-400">|</span>
+                      <h3 className={`font-semibold text-sm sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer flex-1`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
                         {news.title_ar || news.title}
                       </h3>
-                    </Link>
-                  )}
-                  <p className="text-xs text-gray-500 mb-2">{timeAgo(news.created_at)}</p>
-                  {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-2"></div>}
-                </div>
-              ))}
-            </div>
+                    </div>
+                  </Link>
+                )}
+                {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-3"></div>}
+              </div>
+            ))}
           </div>
-          
-          {/* Show More Button - Inside the box */}
-          <div className="border-t border-gray-200 p-3 text-center bg-gray-50 rounded-b-lg">
-            <Link
-              href="/last-news"
-              className="text-blue-600 hover:text-blue-800 transition-colors font-medium text-sm underline decoration-2 underline-offset-2"
-            >
-              عرض المزيد
-            </Link>
-          </div>
+        </div>
+        
+        {/* Show More Button */}
+        <div className="border-t border-gray-200 p-4 text-center bg-white">
+          <Link
+            href="/last-news"
+            className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg"
+          >
+            <FiArrowLeft className="ml-3 text-blue-600" size={24} />
+            الــــمـــزيــــد
+          </Link>
         </div>
       </div>
     </div>
