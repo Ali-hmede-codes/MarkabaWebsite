@@ -337,12 +337,12 @@ const PostContent: React.FC<{
                     </h2>
                   </div>
                   <div className="p-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
                       {relatedPosts.map((relatedPost) => (
                         <Link key={relatedPost.id} href={`/post/${relatedPost.slug}`}>
-                          <div className="group cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 hover:border-blue-300">
-                            {/* Image Container */}
-                            <div className="relative h-48 w-full overflow-hidden">
+                          <div className="group cursor-pointer rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+                            {/* 16:9 Image Container with Title Overlay */}
+                            <div className="relative w-full aspect-video overflow-hidden rounded-xl">
                               {relatedPost.featured_image ? (
                                 <Image
                                   src={getImageUrl(relatedPost.featured_image)}
@@ -352,17 +352,22 @@ const PostContent: React.FC<{
                                 />
                               ) : (
                                 <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                                  <FiFileText className="text-blue-400" size={48} />
+                                  <FiFileText className="text-blue-400" size={32} />
                                 </div>
                               )}
-                              {/* Gradient overlay */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                            </div>
-                            {/* Content */}
-                            <div className="p-4">
-                              <h3 className="text-gray-900 font-semibold text-sm leading-tight line-clamp-3 group-hover:text-blue-600 transition-colors">
-                                {relatedPost.title_ar || relatedPost.title}
-                              </h3>
+                              
+                              {/* Dark gradient overlay for text readability */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                              
+                              {/* Title overlay at bottom */}
+                              <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
+                                <h3 className="text-white font-bold text-sm sm:text-base leading-tight line-clamp-3 group-hover:text-blue-200 transition-colors">
+                                  {relatedPost.title_ar || relatedPost.title}
+                                </h3>
+                              </div>
+                              
+                              {/* Hover effect overlay */}
+                              <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                           </div>
                         </Link>
