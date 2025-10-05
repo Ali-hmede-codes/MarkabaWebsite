@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import AdminLayout from '../../../../../components/Layout/AdminLayout';
 import { toast } from 'react-hot-toast';
 import { FiSave, FiArrowLeft , FiEye } from 'react-icons/fi';
 import Link from 'next/link';
 import { getImageUrl } from '../../../../../utils/imageUtils';
+import TextFormattingButtons from '../../../../../components/admin/TextFormattingButtons';
 
 interface Post {
   id: number;
@@ -38,6 +39,7 @@ const EditPost: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
+  const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (id) {
@@ -526,7 +528,12 @@ const EditPost: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   المحتوى *
                 </label>
+                <TextFormattingButtons 
+                  textareaRef={contentTextareaRef}
+                  onTextChange={(newText) => handleInputChange('content_ar', newText)}
+                />
                 <textarea
+                  ref={contentTextareaRef}
                   value={post.content_ar || ''}
                   onChange={(e) => handleInputChange('content_ar', e.target.value)}
                   rows={12}

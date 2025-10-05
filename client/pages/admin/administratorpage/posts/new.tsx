@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import AdminLayout from '../../../../components/Layout/AdminLayout';
 import { toast } from 'react-hot-toast';
@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useAuth } from '../../../../context/AuthContext';
 import { getImageUrl } from '../../../../utils/imageUtils';
 import { formatPostContent } from '../../../../utils/textFormatter';
+import TextFormattingButtons from '../../../../components/admin/TextFormattingButtons';
 
 interface PostForm {
   title_ar: string;
@@ -55,6 +56,7 @@ const CreatePost: React.FC = () => {
   
   const [tagInput, setTagInput] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     fetchCategories();
@@ -485,7 +487,12 @@ const CreatePost: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   المحتوى *
                 </label>
+                <TextFormattingButtons 
+                  textareaRef={contentTextareaRef}
+                  onTextChange={(newText) => handleInputChange('content_ar', newText)}
+                />
                 <textarea
+                  ref={contentTextareaRef}
                   value={post.content_ar}
                   onChange={(e) => handleInputChange('content_ar', e.target.value)}
                   rows={15}
