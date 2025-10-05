@@ -137,7 +137,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                         <span className="text-blue-600 text-xs font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
                         <span className="text-gray-400">|</span>
                         <div className="flex-1">
-                          <h3 className={`font-semibold text-sm sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3', fontFamily: 'Alexandria, sans-serif'}}>
+                          <h3 className={`font-semibold text-xs sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3', fontFamily: 'Alexandria, sans-serif'}}>
                             {displayTitle}
                             {hasContent && (
                               <span className="text-red-600 underline mr-2 font-bold" style={{ fontFamily: 'Alexandria, sans-serif' }}>تتمة</span>
@@ -151,7 +151,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                           <span className="text-blue-600 text-xs font-medium whitespace-nowrap" style={{ fontFamily: 'Alexandria, sans-serif' }}>{timeAgo(news.created_at)}</span>
                           <span className="text-gray-400">|</span>
                           <div className="flex-1">
-                            <h3 className={`font-semibold text-sm sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3', fontFamily: 'Alexandria, sans-serif'}}>
+                            <h3 className={`font-semibold text-xs sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3', fontFamily: 'Alexandria, sans-serif'}}>
                               {displayTitle}
                               {hasContent && (
                                 <span className="text-red-600 underline mr-2 font-bold" style={{ fontFamily: 'Alexandria, sans-serif' }}>تتمة</span>
