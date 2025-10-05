@@ -95,7 +95,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         <div className="flex justify-center items-center gap-6 mb-6">
           {/* Title with underline */}
           <div className="relative">
-            <h2 className="font-bold text-gray-800 text-xl sm:text-2xl relative">
+            <h2 className="font-bold text-gray-800 text-xl sm:text-2xl relative" style={{ fontFamily: 'Alexandria, sans-serif' }}>
               آخــــر الأخــــبـــار
               {/* Blue underline behind the text */}
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full h-1 bg-blue-600 rounded-full -z-10"></div>
@@ -104,7 +104,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
           
           {/* Toggle switch for breaking news */}
           <div className="flex items-center">
-            <span className="ml-2 text-red-500 font-bold text-sm sm:text-base">العاجل</span>
+            <span className="ml-2 text-red-500 font-bold text-sm sm:text-base" style={{ fontFamily: 'Alexandria, sans-serif' }}>العاجل</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -128,8 +128,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                 const title = news.title_ar || news.title || '';
                 const content = news.content_ar || news.content || '';
                 const hasContent = content.trim().length > 0; // Check if news has content
-                const isLongTitle = title.length > 80; // Consider titles longer than 80 characters as long
-                const displayTitle = isLongTitle ? title.substring(0, 80) : title;
+                const displayTitle = title; // Show full title now
                 
                 return (
                   <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
@@ -138,10 +137,10 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                         <span className="text-blue-600 text-sm font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
                         <span className="text-gray-400">|</span>
                         <div className="flex-1">
-                          <h3 className={`font-semibold text-sm sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
+                          <h3 className={`font-semibold text-sm sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3', fontFamily: 'Alexandria, sans-serif'}}>
                             {displayTitle}
-                            {(isLongTitle || hasContent) && (
-                              <span className="text-red-600 underline mr-2 font-bold">تتمة</span>
+                            {hasContent && (
+                              <span className="text-red-600 underline mr-2 font-bold" style={{ fontFamily: 'Alexandria, sans-serif' }}>تتمة</span>
                             )}
                           </h3>
                         </div>
@@ -149,13 +148,13 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                     ) : (
                       <Link href={`/last-news/${news.slug || news.id}`}>
                         <div className="flex items-start gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
-                          <span className="text-blue-600 text-sm font-medium whitespace-nowrap">{timeAgo(news.created_at)}</span>
+                          <span className="text-blue-600 text-sm font-medium whitespace-nowrap" style={{ fontFamily: 'Alexandria, sans-serif' }}>{timeAgo(news.created_at)}</span>
                           <span className="text-gray-400">|</span>
                           <div className="flex-1">
-                            <h3 className={`font-semibold text-sm sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3'}}>
+                            <h3 className={`font-semibold text-sm sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{wordWrap: 'break-word', whiteSpace: 'normal', lineHeight: '1.3', fontFamily: 'Alexandria, sans-serif'}}>
                               {displayTitle}
-                              {(isLongTitle || hasContent) && (
-                                <span className="text-red-600 underline mr-2 font-bold">تتمة</span>
+                              {hasContent && (
+                                <span className="text-red-600 underline mr-2 font-bold" style={{ fontFamily: 'Alexandria, sans-serif' }}>تتمة</span>
                               )}
                             </h3>
                           </div>
@@ -174,7 +173,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                   className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg"
                 >
                   <FiArrowLeft className="ml-3 text-blue-600" size={24} />
-                  <span className="block">المزيد</span>
+                  <span className="block" style={{ fontFamily: 'Alexandria, sans-serif' }}>المزيد</span>
                 </Link>
               </div>
             </div>

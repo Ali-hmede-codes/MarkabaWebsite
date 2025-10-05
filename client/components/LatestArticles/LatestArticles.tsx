@@ -113,8 +113,8 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
       <div className="flex flex-col rounded-xl p-3 sm:p-6 min-h-[500px] sm:min-h-[600px] bg-gray-50/50">
         
         {/* Mobile Layout */}
-        <div className="block lg:hidden">
-          {/* First 3 articles */}
+        <div className="lg:hidden">
+          {/* First 3 articles in vertical layout */}
           <div className="space-y-4 mb-6">
             {latestPosts.slice(0, 3).map((post, index) => (
               <div key={post.id}>
@@ -123,9 +123,9 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
             ))}
           </div>
           
-          {/* آخر الأخبار section */}
-          <div className="mb-6">
-            <LastNewsBanner className="h-auto" />
+          {/* آخر الأخبار section - Full width on mobile */}
+          <div className="mb-6 w-full">
+            <LastNewsBanner className="h-auto w-full" />
           </div>
           
           {/* Last 4 articles in vertical layout */}
@@ -142,8 +142,8 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
         <div className="hidden lg:block">
           {/* Top section: First 3 articles + آخر الأخبار side by side */}
           <div className="grid grid-cols-12 gap-6 mb-6">
-            {/* First 3 articles section */}
-            <div className="col-span-8">
+            {/* First 3 articles section - Reduced from col-span-8 to col-span-7 */}
+            <div className="col-span-7">
               {/* Big article */}
               <div className="mb-6">
                 {latestPosts[0] && renderArticleCard(latestPosts[0], true)}
@@ -159,8 +159,8 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
               </div>
             </div>
             
-            {/* آخر الأخبار section on the side */}
-            <div className="col-span-4">
+            {/* آخر الأخبار section on the side - Increased from col-span-4 to col-span-5 */}
+            <div className="col-span-5">
               <LastNewsBanner className="h-full" />
             </div>
           </div>
