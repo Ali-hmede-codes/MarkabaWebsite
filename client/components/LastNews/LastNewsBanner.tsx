@@ -82,28 +82,31 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   return (
     <div className={` ${className}`} dir="rtl">
       <div className="mb-4 sm:mb-6">
-        <div className="relative mb-6">
+        {/* Title and Filter in one row */}
+        <div className="flex justify-center items-center gap-6 mb-6">
           {/* Title with underline */}
-          <h2 className="font-bold text-gray-800 text-xl sm:text-2xl text-center relative">
-            آخر الأخبار
-            {/* Underline behind the text */}
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full -z-10"></div>
-          </h2>
-        </div>
-        
-        {/* Toggle switch for breaking news */}
-        <div className="flex justify-center items-center mb-4">
-          <span className="ml-2 text-red-500 font-bold text-sm sm:text-base">العاجل</span>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={combineNews}
-              onChange={(e) => setCombineNews(e.target.checked)}
-              className="sr-only"
-            />
-            <div className={`w-9 sm:w-11 h-5 sm:h-6 rounded-full ${combineNews ? 'bg-white' : 'bg-gray-300'}`}></div>
-            <div className={`absolute left-1 top-1 w-3 sm:w-4 h-3 sm:h-4 bg-blue-600 rounded-full transition-transform ${combineNews ? 'translate-x-4 sm:translate-x-5 bg-blue-600' : 'translate-x-0'}`}></div>
-          </label>
+          <div className="relative">
+            <h2 className="font-bold text-gray-800 text-xl sm:text-2xl relative">
+              آخــــر الأخــــبـــار
+              {/* Blue underline behind the text */}
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full h-1 bg-blue-600 rounded-full -z-10"></div>
+            </h2>
+          </div>
+          
+          {/* Toggle switch for breaking news */}
+          <div className="flex items-center">
+            <span className="ml-2 text-red-500 font-bold text-sm sm:text-base">العاجل</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={combineNews}
+                onChange={(e) => setCombineNews(e.target.checked)}
+                className="sr-only"
+              />
+              <div className={`w-9 sm:w-11 h-5 sm:h-6 rounded-full transition-colors ${combineNews ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
+              <div className={`absolute left-1 top-1 w-3 sm:w-4 h-3 sm:h-4 rounded-full transition-all ${combineNews ? 'translate-x-4 sm:translate-x-5 bg-white' : 'translate-x-0 bg-white'}`}></div>
+            </label>
+          </div>
         </div>
       </div>
       
