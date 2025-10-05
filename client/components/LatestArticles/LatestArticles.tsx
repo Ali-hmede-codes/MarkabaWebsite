@@ -140,27 +140,33 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
 
         {/* Desktop Layout */}
         <div className="hidden lg:block">
-          {/* Big article */}
-          <div className="mb-6">
-            {latestPosts[0] && renderArticleCard(latestPosts[0], true)}
-          </div>
-          
-          {/* Two articles side by side */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            {latestPosts.slice(1, 3).map(post => (
-              <div key={post.id}>
-                {renderArticleCard(post, false)}
+          {/* Top section: First 3 articles + آخر الأخبار side by side */}
+          <div className="grid grid-cols-12 gap-6 mb-6">
+            {/* First 3 articles section */}
+            <div className="col-span-8">
+              {/* Big article */}
+              <div className="mb-6">
+                {latestPosts[0] && renderArticleCard(latestPosts[0], true)}
               </div>
-            ))}
+              
+              {/* Two articles side by side */}
+              <div className="grid grid-cols-2 gap-4">
+                {latestPosts.slice(1, 3).map(post => (
+                  <div key={post.id}>
+                    {renderArticleCard(post, false)}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* آخر الأخبار section on the side */}
+            <div className="col-span-4">
+              <LastNewsBanner className="h-full" />
+            </div>
           </div>
           
-          {/* آخر الأخبار section */}
-          <div className="mb-6">
-            <LastNewsBanner className="h-auto" />
-          </div>
-          
-          {/* Last 4 articles in horizontal grid (2x2) */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Last 4 articles in horizontal layout (4 columns) */}
+          <div className="grid grid-cols-4 gap-4">
             {latestPosts.slice(3, 7).map(post => (
               <div key={post.id}>
                 {renderArticleCard(post, false)}
