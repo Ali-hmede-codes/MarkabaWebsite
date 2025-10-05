@@ -129,7 +129,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
       </div>
       
       {/* News content with scrollable container */}
-      <div className="border border-transparent rounded-lg w-full" style={{minHeight: '400px', maxHeight: '600px'}}>
+      <div className="border border-transparent rounded-lg w-full" style={{height: '600px', minHeight: '600px', maxHeight: '600px'}}>
         <div className="h-full flex flex-col w-full">
           <div className="flex-1 overflow-y-auto p-4 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
             <div className="space-y-4">
@@ -140,18 +140,10 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                 const displayTitle = title; // Show full title now
                 
                 return (
-                  <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="" style={{ minHeight: 'auto' }}>
+                  <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
                     {news.isBreaking ? (
-                      <div className="flex items-start gap-3" style={{ width: '100%', minHeight: 'auto' }}>
-                        <div className="flex-shrink-0" style={{ 
-                          width: '60px', 
-                          minWidth: '60px',
-                          maxWidth: '60px',
-                          display: 'flex', 
-                          justifyContent: 'center', 
-                          alignItems: 'flex-start',
-                          paddingTop: '2px'
-                        }}>
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                           <span className="text-blue-600 font-medium text-center" style={{ 
                             fontSize: '12px', 
                             fontFamily: 'Alexandria, sans-serif',
@@ -162,31 +154,17 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                             {timeAgo(news.created_at)}
                           </span>
                         </div>
-                        <div className="flex-shrink-0" style={{ 
-                          width: '8px',
-                          minWidth: '8px',
-                          maxWidth: '8px',
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'flex-start',
-                          paddingTop: '2px'
-                        }}>
-                          <span className="text-gray-400">|</span>
-                        </div>
-                        <div className="flex-1" style={{ 
-                          minWidth: '0',
-                          width: 'calc(100% - 68px)'
-                        }}>
+                        <span className="text-gray-400 flex-shrink-0">|</span>
+                        <div className="flex-1">
                           <h3 className={`font-semibold text-xs sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                             wordWrap: 'break-word', 
                             whiteSpace: 'normal', 
-                            lineHeight: '1.4', 
+                            lineHeight: '1.3', 
                             fontFamily: 'Alexandria, sans-serif',
                             overflowWrap: 'break-word',
                             hyphens: 'auto',
                             display: 'block',
-                            width: '100%',
-                            minHeight: 'auto'
+                            width: '100%'
                           }}>
                             {displayTitle}
                             {hasContent && (
@@ -201,16 +179,8 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                       </div>
                     ) : (
                       <Link href={`/last-news/${news.slug || news.id}`}>
-                        <div className="flex items-start gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors" style={{ width: '100%', minHeight: 'auto' }}>
-                          <div className="flex-shrink-0" style={{ 
-                            width: '60px', 
-                            minWidth: '60px',
-                            maxWidth: '60px',
-                            display: 'flex', 
-                            justifyContent: 'center', 
-                            alignItems: 'flex-start',
-                            paddingTop: '2px'
-                          }}>
+                        <div className="flex items-start gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                          <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <span className="text-blue-600 font-medium text-center" style={{ 
                               fontSize: '12px', 
                               fontFamily: 'Alexandria, sans-serif',
@@ -221,35 +191,21 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                               {timeAgo(news.created_at)}
                             </span>
                           </div>
-                          <div className="flex-shrink-0" style={{ 
-                            width: '8px',
-                            minWidth: '8px',
-                            maxWidth: '8px',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'flex-start',
-                            paddingTop: '2px'
-                          }}>
-                            <span className="text-gray-400">|</span>
-                          </div>
-                          <div className="flex-1" style={{ 
-                            minWidth: '0',
-                            width: 'calc(100% - 68px)'
-                          }}>
+                          <span className="text-gray-400 flex-shrink-0">|</span>
+                          <div className="flex-1">
                             <h3 className={`font-semibold text-xs sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                               wordWrap: 'break-word', 
                               whiteSpace: 'normal', 
-                              lineHeight: '1.4', 
+                              lineHeight: '1.3', 
                               fontFamily: 'Alexandria, sans-serif',
                               overflowWrap: 'break-word',
                               hyphens: 'auto',
                               display: 'block',
-                              width: '100%',
-                              minHeight: 'auto'
+                              width: '100%'
                             }}>
                               {displayTitle}
                               {hasContent && (
-                                <span className="text-blue-600 underline mr-2 font-bold" style={{ 
+                                <span className="text-red-600 underline mr-2 font-bold" style={{ 
                                   fontFamily: 'Alexandria, sans-serif',
                                   whiteSpace: 'nowrap',
                                   marginRight: '8px'
@@ -259,7 +215,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                           </div>
                         </div>
                       </Link>
-                     )}
+                    )}
                     {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-3"></div>}
                   </div>
                 );
