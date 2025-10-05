@@ -164,16 +164,16 @@ const CategoryPage: React.FC = () => {
         </div>
 
         {/* Category Header */}
-        <div className="bg-gray-100 py-8">
+        <div className="bg-gray-100 py-6 sm:py-8">
           <div className="container mx-auto px-4">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                 أخبار {categoryName}
               </h1>
-              <p className="text-gray-700 max-w-2xl mx-auto mb-4">
+              <p className="text-gray-700 max-w-2xl mx-auto mb-4 text-sm sm:text-base px-4">
                 {pageDescription}
               </p>
-              <div className="text-sm text-gray-600 bg-white px-4 py-1 rounded inline-block">
+              <div className="text-xs sm:text-sm text-gray-600 bg-white px-3 sm:px-4 py-1 rounded inline-block">
                 {totalPosts} مقال متاح
               </div>
             </div>
@@ -181,7 +181,7 @@ const CategoryPage: React.FC = () => {
         </div>
 
         {/* Posts Grid */}
-        <div className="container mx-auto responsive-padding py-6 sm:py-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {currentPosts.length === 0 ? (
             <div className="text-center py-8 sm:py-12">
               <div className="text-gray-400 mb-4">
@@ -192,12 +192,12 @@ const CategoryPage: React.FC = () => {
               <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">
                 {content.category.no_posts_found}
               </h3>
-              <p className="text-gray-500 mb-6 responsive-text">
+              <p className="text-gray-500 mb-6 text-sm sm:text-base px-4">
                 لا توجد مقالات في قسم {categoryName} في الوقت الحالي
               </p>
               <Link
                 href="/"
-                className="inline-flex items-center px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors responsive-text touch-target"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base min-h-[44px]"
               >
                 {content.navigation.home}
                 <FiArrowRight className="mr-2 rtl:mr-0 rtl:ml-2" size={16} />
@@ -205,11 +205,11 @@ const CategoryPage: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {currentPosts.map((post) => (
                   <Link key={post.id} href={`/post/${post.slug}`}>
                     <article className="group cursor-pointer">
-                      <div className="relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                      <div className="relative w-full h-48 sm:h-56 lg:h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         {/* Background Image */}
                         <div className="absolute inset-0">
                           <img
@@ -223,23 +223,23 @@ const CategoryPage: React.FC = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                         
                         {/* Content Overlay */}
-                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                        <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-end">
                           {/* Category Badge */}
-                          <div className="mb-3">
-                            <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-600 text-white rounded-full">
+                          <div className="mb-2 sm:mb-3">
+                            <span className="inline-block px-2 sm:px-3 py-1 text-xs font-medium bg-blue-600 text-white rounded-full">
                               {categoryName}
                             </span>
                           </div>
                           
                           {/* Post Title */}
-                          <h2 className="text-white font-bold text-lg leading-tight mb-2 group-hover:text-blue-200 transition-colors duration-300">
+                          <h2 className="text-white font-bold text-sm sm:text-lg leading-tight mb-2 group-hover:text-blue-200 transition-colors duration-300">
                             {truncateText(post.title_ar || post.title, 80)}
                           </h2>
                           
                           {/* Time and Meta */}
-                          <div className="flex items-center justify-between text-white/80 text-sm">
+                          <div className="flex items-center justify-between text-white/80 text-xs sm:text-sm">
                             <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                              <FiCalendar size={14} className="flex-shrink-0" />
+                              <FiCalendar size={12} className="flex-shrink-0 sm:w-4 sm:h-4" />
                               <span>{getTimeAgo(post.created_at)}</span>
                             </div>
 
@@ -256,55 +256,75 @@ const CategoryPage: React.FC = () => {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="mt-8 sm:mt-12 responsive-flex justify-center">
-                  <nav className="responsive-flex items-center space-x-2 rtl:space-x-reverse">
-                    {/* Previous Button */}
-                    <button
-                      onClick={() => {
-                        const newPage = Math.max(currentPage - 1, 1);
-                        setCurrentPage(newPage);
-                      }}
-                      disabled={currentPage === 1}
-                      className={`px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target ${
-                        currentPage === 1
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                      }`}
-                    >
-                      السابق
-                    </button>
+                <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 rtl:space-x-reverse mt-8 sm:mt-12">
+                  {/* Previous Button */}
+                  <button
+                    onClick={() => {
+                      const newPage = Math.max(currentPage - 1, 1);
+                      setCurrentPage(newPage);
+                    }}
+                    disabled={currentPage === 1}
+                    className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 min-h-[44px] min-w-[120px] justify-center ${
+                      currentPage === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 shadow-md hover:shadow-lg'
+                    }`}
+                  >
+                    <span className="text-sm sm:text-base font-medium">السابق</span>
+                  </button>
 
-                    {/* Page Numbers */}
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target ${
-                          currentPage === page
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
+                  {/* Page Numbers - Hidden on mobile, shown on larger screens */}
+                  <div className="hidden sm:flex items-center space-x-2 rtl:space-x-reverse">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
+                      let pageNumber;
+                      if (totalPages <= 5) {
+                        pageNumber = index + 1;
+                      } else if (currentPage <= 3) {
+                        pageNumber = index + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNumber = totalPages - 4 + index;
+                      } else {
+                        pageNumber = currentPage - 2 + index;
+                      }
 
-                    {/* Next Button */}
-                    <button
-                      onClick={() => {
-                        const newPage = Math.min(currentPage + 1, totalPages);
-                        setCurrentPage(newPage);
-                      }}
-                      disabled={currentPage === totalPages}
-                      className={`px-2 sm:px-3 py-2 rounded-md responsive-text font-medium touch-target ${
-                        currentPage === totalPages
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                      }`}
-                    >
-                      التالي
-                    </button>
-                  </nav>
+                      return (
+                        <button
+                          key={pageNumber}
+                          onClick={() => setCurrentPage(pageNumber)}
+                          className={`w-10 h-10 rounded-lg transition-all duration-200 font-medium ${
+                            currentPage === pageNumber
+                              ? 'bg-blue-600 text-white shadow-lg'
+                              : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 shadow-md hover:shadow-lg'
+                          }`}
+                        >
+                          {pageNumber}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Mobile Page Indicator */}
+                  <div className="flex sm:hidden items-center px-4 py-2 bg-white rounded-lg shadow-md">
+                    <span className="text-sm font-medium text-gray-700">
+                      صفحة {currentPage} من {totalPages}
+                    </span>
+                  </div>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => {
+                      const newPage = Math.min(currentPage + 1, totalPages);
+                      setCurrentPage(newPage);
+                    }}
+                    disabled={currentPage === totalPages}
+                    className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 min-h-[44px] min-w-[120px] justify-center ${
+                      currentPage === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 shadow-md hover:shadow-lg'
+                    }`}
+                  >
+                    <span className="text-sm sm:text-base font-medium">التالي</span>
+                  </button>
                 </div>
               )}
             </>

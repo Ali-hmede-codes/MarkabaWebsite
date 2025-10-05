@@ -232,41 +232,12 @@ const PostContent: React.FC<{
             </div>
           )}
 
-          {/* Post Excerpt with Social Buttons */}
+          {/* Post Excerpt */}
           {(post.excerpt_ar || post.excerpt) && (
             <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-1 h-6 bg-blue-600 rounded-full flex-shrink-0 mt-1"></div>
-                  <h2 className="text-lg font-semibold text-gray-800">ملخص المقال</h2>
-                </div>
-                
-                {/* Social Sharing Buttons - Now in excerpt box */}
-                <div className="flex items-center space-x-3 rtl:space-x-reverse relative">
-                  {copyMessage && (
-                    <div className="absolute -top-12 right-0 bg-green-500 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-lg z-10">
-                      {copyMessage}
-                    </div>
-                  )}
-                  <button 
-                    onClick={() => handleCopyText(post.excerpt_ar || post.excerpt || '')}
-                    className={`p-3 rounded-full transition-all duration-200 shadow-md ${
-                      copySuccess 
-                        ? 'bg-green-500 text-white' 
-                        : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800 border border-gray-200'
-                    }`}
-                    title="نسخ النص"
-                  >
-                    <FiCopy size={18} />
-                  </button>
-                  <button 
-                    onClick={handleShare}
-                    className="p-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-md border border-blue-600"
-                    title="مشاركة"
-                  >
-                    <FiShare2 size={18} />
-                  </button>
-                </div>
+              <div className="flex items-start gap-3 mb-3">
+                <div className="w-1 h-6 bg-blue-600 rounded-full flex-shrink-0 mt-1"></div>
+                <h2 className="text-lg font-semibold text-gray-800">ملخص المقال</h2>
               </div>
               <p className="text-gray-700 text-lg leading-relaxed font-['Alexandria']">
                 {post.excerpt_ar || post.excerpt}
@@ -286,7 +257,7 @@ const PostContent: React.FC<{
 
               {/* Post Content */}
               <div className="p-4 sm:p-6 lg:p-12 relative">
-                {/* Font Size Controller - Top Left Corner */}
+                {/* Font Size Controller and Share Button - Top Left Corner */}
                 <div className="absolute top-4 left-4 z-10 flex gap-2">
                   <button 
                     onClick={() => setFontSize(prev => Math.min(28, prev + 2))}
@@ -301,6 +272,14 @@ const PostContent: React.FC<{
                     title="تصغير الخط"
                   >
                     <span className="text-sm font-bold">A-</span>
+                  </button>
+                  <button 
+                    onClick={handleShare}
+                    className="flex items-center gap-2 px-3 py-2 bg-white text-blue-600 border-2 border-blue-600 rounded-lg hover:bg-blue-50 transition-colors shadow-md"
+                    title="مشاركة"
+                  >
+                    <FiShare2 size={16} />
+                    <span className="text-sm font-medium">شارك</span>
                   </button>
                 </div>
                 
