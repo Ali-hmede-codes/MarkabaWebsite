@@ -253,9 +253,9 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
         {/* Desktop Layout */}
         <div className="hidden lg:block">
           {/* Top section: First 3 articles + آخر الأخبار side by side */}
-          <div className="grid grid-cols-12 gap-6 mb-6">
+          <div className="grid grid-cols-12 gap-6 mb-8">
             {/* First 3 articles section - Reduced from col-span-8 to col-span-7 */}
-            <div className="col-span-7">
+            <div className="col-span-7 h-full">
               {/* Big article */}
               <div className="mb-6">
                 {latestPosts[0] && renderArticleCard(latestPosts[0], true)}
@@ -272,7 +272,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
             </div>
             
             {/* آخر الأخبار section on the side - Increased from col-span-4 to col-span-5 */}
-            <div className="col-span-5">
+            <div className="col-span-5 h-full">
               <LastNewsBanner className="h-full" />
             </div>
           </div>
