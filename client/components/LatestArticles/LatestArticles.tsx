@@ -236,7 +236,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
           </div>
           
           {/* آخر الأخبار section - Full width on mobile with fixed height */}
-          <div className="mb-8 w-full">
+          <div className="mb-12 w-full">
             <LastNewsBanner className="w-full" />
           </div>
           
@@ -253,7 +253,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
         {/* Desktop Layout */}
         <div className="hidden lg:block">
           {/* Top section: First 3 articles + آخر الأخبار side by side */}
-          <div className="grid grid-cols-12 gap-6 mb-8">
+          <div className="grid grid-cols-12 gap-6 mb-12">
             {/* First 3 articles section - Reduced from col-span-8 to col-span-7 */}
             <div className="col-span-7 h-full">
               {/* Big article */}
