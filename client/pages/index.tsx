@@ -289,85 +289,234 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
               </div>
 
               {videoLoading ? (
-                <div className="flex overflow-x-auto space-x-4 rtl:space-x-reverse pb-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="flex-shrink-0 w-64 sm:w-72">
-                      <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse">
-                        <div className="h-40 sm:h-48 bg-gray-300"></div>
-                        <div className="p-4">
-                          <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                          <div className="h-3 bg-gray-300 rounded w-3/4"></div>
+                <div className="space-y-6">
+                  {/* Loading state for desktop */}
+                  <div className="hidden lg:block">
+                    <div className="grid grid-cols-12 gap-6">
+                      {/* Large video loading */}
+                      <div className="col-span-7">
+                        <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse aspect-video">
+                          <div className="h-full bg-gray-300"></div>
+                        </div>
+                      </div>
+                      {/* Small videos loading */}
+                      <div className="col-span-5">
+                        <div className="grid grid-cols-2 gap-4 h-full">
+                          {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
+                              <div className="aspect-[4/3] bg-gray-300"></div>
+                              <div className="p-3">
+                                <div className="h-3 bg-gray-300 rounded mb-2"></div>
+                                <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                  
+                  {/* Loading state for mobile */}
+                  <div className="lg:hidden space-y-4">
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse aspect-video">
+                      <div className="h-full bg-gray-300"></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
+                          <div className="aspect-[4/3] bg-gray-300"></div>
+                          <div className="p-3">
+                            <div className="h-3 bg-gray-300 rounded mb-2"></div>
+                            <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ) : videoPosts.length > 0 ? (
-                <div className="flex overflow-x-auto space-x-4 rtl:space-x-reverse pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-blue-100">
-                  {videoPosts.map((post, index) => (
-                    <Link key={post.id} href={`/post/${post.slug}`} className="block">
-                      <article
-                        className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 flex-shrink-0 w-64 sm:w-72 cursor-pointer"
-                        style={{ scrollSnapAlign: "start" }}
-                      >
-                        <div className="relative h-40 sm:h-48 overflow-hidden">
-                          {post.featured_image ? (
-                            <img
-                              src={getImageUrl(post.featured_image)}
-                              alt={post.title_ar || post.title}
-                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                              <span className="text-white text-4xl font-bold">
-                                {index + 1}
-                              </span>
-                            </div>
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                          
-                          {/* Video Play Icon Overlay */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg hover:bg-white transition-all duration-300">
-                              <FiPlay className="text-blue-600 text-3xl" />
-                            </div>
-                          </div>
-                          
-                          <div className="absolute top-3 right-3">
-                            <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg">
-                              {getCategoryName(post.category_id)}
-                            </span>
-                          </div>
+                <div className="space-y-6">
+                  {/* Desktop Layout */}
+                  <div className="hidden lg:block">
+                    <div className="grid grid-cols-12 gap-6">
+                      {/* Large Video Post */}
+                      <div className="col-span-7">
+                        {videoPosts[0] && (
+                          <Link href={`/post/${videoPosts[0].slug}`} className="block">
+                            <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-video">
+                              <div className="w-full h-full relative">
+                                <img
+                                  src={getImageUrl(videoPosts[0].featured_image)}
+                                  alt={videoPosts[0].title_ar || videoPosts[0].title}
+                                  className="w-full h-full object-cover"
+                                />
+                                {/* Black fade overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                                
+                                {/* Video Play Icon Overlay */}
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-6 shadow-lg hover:bg-white transition-all duration-300">
+                                    <FiPlay className="text-blue-600 text-4xl" />
+                                  </div>
+                                </div>
+                                
+                                {/* Content overlay */}
+                                <div className="absolute bottom-0 left-0 right-0 p-6">
+                                  <h3 className="font-bold text-white mb-2 leading-tight drop-shadow-lg text-xl" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                    {videoPosts[0].title_ar || videoPosts[0].title}
+                                  </h3>
+                                  <div className="flex items-center gap-3 text-sm text-white/90">
+                                    <span className="flex items-center">
+                                      <FiCalendar className="inline ml-1" size={12} /> 
+                                      {getRelativeTime(videoPosts[0].created_at)}
+                                    </span>
+                                    <span className="flex items-center text-white text-xs">
+                                      {getCategoryName(videoPosts[0].category_id)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </article>
+                          </Link>
+                        )}
+                      </div>
+                      
+                      {/* Small Videos Grid (2x2) */}
+                      <div className="col-span-5">
+                        <div className="grid grid-cols-2 gap-4 h-full">
+                          {videoPosts.slice(1, 5).map((post, index) => (
+                            <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
+                              <div className="w-full h-full flex flex-col">
+                                {/* Image */}
+                                <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
+                                  <img
+                                    src={getImageUrl(post.featured_image)}
+                                    alt={post.title_ar || post.title}
+                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                  />
+                                  {/* Video Play Icon Overlay */}
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300">
+                                      <FiPlay className="text-blue-600 text-lg" />
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Content */}
+                                <div className="p-3 flex flex-col flex-grow">
+                                  {/* Category - Black badge */}
+                                  {getCategoryName(post.category_id) && (
+                                    <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
+                                      {getCategoryName(post.category_id)}
+                                    </span>
+                                  )}
+                                  
+                                  {/* Title - Fixed height with line clamping */}
+                                  <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-3 flex-grow min-h-[3.6rem]" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                    {post.title_ar || post.title}
+                                  </h3>
+                                  
+                                  {/* Time - Always at bottom */}
+                                  <div className="flex items-center text-xs text-gray-500 mt-auto">
+                                    <FiCalendar className="inline ml-1" size={12} /> 
+                                    {getRelativeTime(post.created_at)}
+                                  </div>
+                                </div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-                        </div>
-                        <div className="p-4">
-                          <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors leading-tight">
-                            {post.title_ar || post.title}
-                          </h3>
-                          {(post.content_ar || post.content) && (
-                            <p className="text-gray-600 text-xs mb-2 line-clamp-1">
-                              {truncateText(
-                                (post.content_ar || post.content).replace(
-                                  /<[^>]*>/g,
-                                  "",
-                                ),
-                                50,
-                              )}
-                            </p>
-                          )}
-                          <div className="flex items-center justify-between text-xs text-gray-500">
-                            <div className="flex items-center">
-                              <FiCalendar
-                                size={10}
-                                className="ml-1 rtl:ml-0 rtl:mr-1"
-                              />
-                              {getRelativeTime(post.created_at)}
+                  {/* Mobile Layout */}
+                  <div className="lg:hidden space-y-4">
+                    {/* Large Video Post */}
+                    {videoPosts[0] && (
+                      <Link href={`/post/${videoPosts[0].slug}`} className="block">
+                        <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-video">
+                          <div className="w-full h-full relative">
+                            <img
+                              src={getImageUrl(videoPosts[0].featured_image)}
+                              alt={videoPosts[0].title_ar || videoPosts[0].title}
+                              className="w-full h-full object-cover"
+                            />
+                            {/* Black fade overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                            
+                            {/* Video Play Icon Overlay */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg hover:bg-white transition-all duration-300">
+                                <FiPlay className="text-blue-600 text-3xl" />
+                              </div>
+                            </div>
+                            
+                            {/* Content overlay */}
+                            <div className="absolute bottom-0 left-0 right-0 p-4">
+                              <h3 className="font-bold text-white mb-2 leading-tight drop-shadow-lg text-base" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                {videoPosts[0].title_ar || videoPosts[0].title}
+                              </h3>
+                              <div className="flex items-center gap-3 text-xs text-white/90">
+                                <span className="flex items-center">
+                                  <FiCalendar className="inline ml-1" size={12} /> 
+                                  {getRelativeTime(videoPosts[0].created_at)}
+                                </span>
+                                <span className="flex items-center text-white text-xs">
+                                  {getCategoryName(videoPosts[0].category_id)}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </article>
-                    </Link>
-                  ))}
+                        </article>
+                      </Link>
+                    )}
+                    
+                    {/* Small Videos Grid (2x2) */}
+                    <div className="grid grid-cols-2 gap-4">
+                      {videoPosts.slice(1, 5).map((post, index) => (
+                        <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
+                          <div className="w-full h-full flex flex-col">
+                            {/* Image */}
+                            <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
+                              <img
+                                src={getImageUrl(post.featured_image)}
+                                alt={post.title_ar || post.title}
+                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                              />
+                              {/* Video Play Icon Overlay */}
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300">
+                                  <FiPlay className="text-blue-600 text-lg" />
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="p-3 flex flex-col flex-grow">
+                              {/* Category - Black badge */}
+                              {getCategoryName(post.category_id) && (
+                                <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
+                                  {getCategoryName(post.category_id)}
+                                </span>
+                              )}
+                              
+                              {/* Title - Fixed height with line clamping */}
+                              <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-3 flex-grow min-h-[3.6rem]" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                {post.title_ar || post.title}
+                              </h3>
+                              
+                              {/* Time - Always at bottom */}
+                              <div className="flex items-center text-xs text-gray-500 mt-auto">
+                                <FiCalendar className="inline ml-1" size={12} /> 
+                                {getRelativeTime(post.created_at)}
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-12">
