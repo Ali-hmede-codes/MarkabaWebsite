@@ -3,7 +3,7 @@
 
 /* Default Desktop Styles (preserved from original design) */
 .responsive-padding {
-  @apply p-4 lg:p-6;
+  @apply px-5 py-6 lg:py-8;
 }
 
 .responsive-flex {

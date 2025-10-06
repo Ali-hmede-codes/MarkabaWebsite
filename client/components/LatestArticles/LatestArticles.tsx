@@ -64,8 +64,8 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
     return (
       <Link 
         href={`/post/${post.slug}`} 
-        className={`block overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer relative ${
-          isLarge ? 'aspect-video rounded-xl lg:rounded-md' : 'aspect-video rounded-xl lg:rounded-sm'
+        className={`block rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer relative ${
+          isLarge ? 'aspect-video' : 'aspect-video'
         }`}
       >
         <div className="w-full h-full relative">
@@ -85,9 +85,9 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
           {/* Content overlay */}
           <div className={`absolute bottom-0 left-0 right-0 p-3 ${isLarge ? 'sm:p-6' : 'sm:p-4'}`}>
-            <h3 className={`font-bold mb-2 leading-tight drop-shadow-lg ${
+            <h3 className={`font-bold text-white mb-2 leading-tight drop-shadow-lg ${
               isLarge ? 'text-base sm:text-xl' : 'text-xs sm:text-base'
-            } text-white lg:text-black/80`}>
+            }`}>
               {post.title_ar}
             </h3>
             <div className="flex items-center gap-3 text-xs sm:text-sm text-white/90">
@@ -110,7 +110,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
 
   return (
     <div className={`${className}`} dir="rtl">
-      <div className="flex flex-col rounded-xl p-3 sm:p-6 min-h-[500px] sm:min-h-[600px] bg-gray-50/50">
+      <div className="flex flex-col rounded-lg p-3 sm:p-6 min-h-[500px] sm:min-h-[600px] bg-gray-50/50">
         
         {/* Mobile Layout */}
         <div className="lg:hidden">
