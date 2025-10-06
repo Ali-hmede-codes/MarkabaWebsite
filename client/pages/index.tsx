@@ -292,18 +292,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 <div className="space-y-6">
                   {/* Loading state for desktop */}
                   <div className="hidden lg:block">
-                    <div className="grid grid-cols-12 gap-6">
-                      {/* Large video loading */}
-                      <div className="col-span-7">
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse aspect-video">
-                          <div className="h-full bg-gray-300"></div>
-                        </div>
-                      </div>
-                      {/* Small videos loading */}
-                      <div className="col-span-5">
+                    <div className="grid grid-cols-12 gap-6 h-96">
+                      {/* Small videos loading - Left side */}
+                      <div className="col-span-5 h-full">
                         <div className="grid grid-cols-2 gap-4 h-full">
                           {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
+                            <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse h-full">
                               <div className="aspect-[4/3] bg-gray-300"></div>
                               <div className="p-3">
                                 <div className="h-3 bg-gray-300 rounded mb-2"></div>
@@ -311,6 +305,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               </div>
                             </div>
                           ))}
+                        </div>
+                      </div>
+                      {/* Large video loading - Right side */}
+                      <div className="col-span-7 h-full">
+                        <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse h-full">
+                          <div className="h-full bg-gray-300"></div>
                         </div>
                       </div>
                     </div>
@@ -338,12 +338,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 <div className="space-y-6">
                   {/* Desktop Layout */}
                   <div className="hidden lg:block">
-                    <div className="grid grid-cols-12 gap-6">
-                      {/* Small Videos Grid (2x2) */}
-                      <div className="col-span-5">
+                    <div className="grid grid-cols-12 gap-6 h-96">
+                      {/* Small Videos Grid (2x2) - Left side */}
+                      <div className="col-span-5 h-full">
                         <div className="grid grid-cols-2 gap-4 h-full">
                           {videoPosts.slice(1, 5).map((post, index) => (
-                            <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer">
+                            <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
                               <div className="w-full flex flex-col h-full">
                                 {/* Image */}
                                 <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
@@ -370,7 +370,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                   )}
                                   
                                   {/* Title - Fixed height with line clamping */}
-                                  <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-3 flex-grow" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                  <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-2 flex-grow" style={{ fontFamily: 'Alexandria, sans-serif' }}>
                                     {post.title_ar || post.title}
                                   </h3>
                                   
@@ -386,11 +386,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                         </div>
                       </div>
                       
-                      {/* Large Video Post */}
-                      <div className="col-span-7">
+                      {/* Large Video Post - Right side */}
+                      <div className="col-span-7 h-full">
                         {videoPosts[0] && (
-                          <Link href={`/post/${videoPosts[0].slug}`} className="block">
-                            <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-video h-full">
+                          <Link href={`/post/${videoPosts[0].slug}`} className="block h-full">
+                            <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer h-full">
                               <div className="w-full h-full relative">
                                 <img
                                   src={getImageUrl(videoPosts[0].featured_image)}
