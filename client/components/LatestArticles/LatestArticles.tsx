@@ -287,7 +287,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
           </div>
         </div>
 
-        <div className="text-center mt-auto mb-2 sm:mb-4">
+        <div className="text-center mt-auto mb-2 sm:mb-4 pt-6">
           <Link 
             href="#articles-section"
             onClick={(e) => {
@@ -303,10 +303,16 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
                 });
               }
             }}
-            className="inline-flex items-center px-4 py-2 bg-gray-100 text-black font-medium text-sm rounded-lg hover:bg-gray-200 transition-all duration-300"
+            className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg hover:bg-gray-50 transition-colors rounded-lg"
           >
-            <FiArrowLeft className="ml-2 text-blue-600" size={16} />
-            الــــمـــزيــــد
+            <FiArrowLeft className="ml-3 text-blue-600" size={24} />
+            <span className="block" style={{ 
+              fontFamily: 'Alexandria, sans-serif',
+              whiteSpace: 'nowrap',
+              lineHeight: '1.2',
+              fontSize: '18px',
+              fontWeight: '300'
+            }}>الــــمـــزيــــد</span>
           </Link>
         </div>
       </div>
