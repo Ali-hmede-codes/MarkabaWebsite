@@ -235,9 +235,9 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
             ))}
           </div>
           
-          {/* آخر الأخبار section - Full width on mobile */}
-          <div className="mb-6 w-full">
-            <LastNewsBanner className="h-auto w-full" />
+          {/* آخر الأخبار section - Full width on mobile with fixed height */}
+          <div className="mb-8 w-full">
+            <LastNewsBanner className="w-full" />
           </div>
           
           {/* Last 4 articles in horizontal layout */}
