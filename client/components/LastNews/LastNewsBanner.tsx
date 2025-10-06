@@ -234,7 +234,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
           </div>
 
           {/* Desktop: Scrollable with fixed height */}
-          <div className="hidden md:block" style={{height: '550px', minHeight: '550px', maxHeight: '550px'}}>
+          <div className="hidden md:block" style={{height: '500px', minHeight: '500px', maxHeight: '500px'}}>
             <div className="h-full flex flex-col w-full">
               <div 
                 ref={scrollRef}

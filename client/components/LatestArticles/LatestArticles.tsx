@@ -206,10 +206,9 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
                 <FiCalendar className="inline ml-1" size={12} /> 
                 {getRelativeTime(post.created_at)}
               </span>
-              {/* Category - White for first 3 posts */}
+              {/* Category - White text for first 3 posts */}
               {categoryName && (
-                <span className="flex items-center bg-white text-black text-xs px-2 py-1 rounded">
-                  <FiTag className="inline ml-1" size={12} />
+                <span className="flex items-center text-white text-xs">
                   {categoryName}
                 </span>
               )}
