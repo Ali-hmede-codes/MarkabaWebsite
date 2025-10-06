@@ -198,12 +198,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             <section id="articles-section" className="mb-24">
               <div className="mb-6 sm:mb-8 text-right">
                 <h2 
-                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block"
+                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block w-full"
                   style={{
                     fontFamily: 'Alexandria, sans-serif',
                     lineHeight: '1.2',
                     minWidth: 'fit-content',
-                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #8B5CF6, #A855F7) 0% 100% / 100% 3px no-repeat'
+                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #2563EB) 0% 100% / 100% 3px no-repeat'
                   }}
                 >
                   مقالات
@@ -276,12 +276,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             <section className="mb-24">
               <div className="mb-6 sm:mb-8 text-right">
                 <h2 
-                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block"
+                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block w-full"
                   style={{
                     fontFamily: 'Alexandria, sans-serif',
                     lineHeight: '1.2',
                     minWidth: 'fit-content',
-                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #10B981, #059669) 0% 100% / 100% 3px no-repeat'
+                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #2563EB) 0% 100% / 100% 3px no-repeat'
                   }}
                 >
                   بالفيديو
@@ -387,12 +387,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             <section className="mb-24">
               <div className="mb-6 sm:mb-8 text-right">
                 <h2 
-                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block"
+                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block w-full"
                   style={{
                     fontFamily: 'Alexandria, sans-serif',
                     lineHeight: '1.2',
                     minWidth: 'fit-content',
-                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #EF4444, #DC2626) 0% 100% / 100% 3px no-repeat'
+                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #2563EB) 0% 100% / 100% 3px no-repeat'
                   }}
                 >
                   الأخبار المميزة
