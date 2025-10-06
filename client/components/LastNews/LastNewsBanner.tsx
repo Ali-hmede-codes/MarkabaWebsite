@@ -4,16 +4,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import Link from 'next/link';
 
-// Add custom CSS for hiding scrollbar on PC only
+// Add custom CSS for hiding scrollbar on all devices
 const scrollbarHideStyle = `
-  @media (min-width: 768px) {
-    .scrollbar-hide-pc::-webkit-scrollbar {
-      display: none;
-    }
-    .scrollbar-hide-pc {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 `;
 
@@ -54,7 +52,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         const response = await fetch('/api/last-news?active=true');
         if (!response.ok) throw new Error('Failed to fetch last news');
         const data = await response.json();
-        setLastNews((data.data || []).map((item: any) => ({ ...item, isBreaking: false } as NewsItem)));
+        setLastNews((data.data || []).slice(0, 12).map((item: any) => ({ ...item, isBreaking: false } as NewsItem)));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load last news');
       }
@@ -66,7 +64,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         const response = await fetch('/api/breaking-news?active=true');
         if (!response.ok) throw new Error('Failed to fetch breaking news');
         const data = await response.json();
-        setBreakingNews((data.data || []).map((item: any) => ({ ...item, isBreaking: true } as NewsItem)));
+        setBreakingNews((data.data || []).slice(0, 12).map((item: any) => ({ ...item, isBreaking: true } as NewsItem)));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load breaking news');
       }
@@ -129,66 +127,22 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
           </div>
         </div>
         
-        {/* News content with scrollable container */}
-        <div className="border border-transparent rounded-lg w-full" style={{height: '600px', minHeight: '600px', maxHeight: '600px'}}>
-          <div className="h-full flex flex-col w-full">
-            <div 
-              ref={scrollRef}
-              className="flex-1 overflow-y-auto p-4 scrollbar-hide-pc" 
-              style={{
-                WebkitOverflowScrolling: 'touch'
-              }}
-            >
-            <div className="space-y-4">
-              {displayedNews.map((news, index) => {
-                const title = news.title_ar || news.title || '';
-                const content = news.content_ar || news.content || '';
-                const hasContent = content.trim().length > 0; // Check if news has content
-                const displayTitle = title; // Show full title now
-                
-                return (
-                  <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
-                    {news.isBreaking ? (
-                      <div className="flex items-start" style={{ gap: '8px' }}>
-                        <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '2px' }}>
-                          <span className="text-blue-600 text-center" style={{ 
-                            fontSize: '12px', 
-                            fontFamily: 'Alexandria, sans-serif',
-                            fontWeight: '300',
-                            lineHeight: '1.2',
-                            display: 'block',
-                            width: '100%'
-                          }}>
-                            {timeAgo(news.created_at)}
-                          </span>
-                        </div>
-                        <div className="flex-1">
-                          <h3 className={`text-sm sm:text-base leading-relaxed text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{
-                            wordWrap: 'break-word', 
-                            whiteSpace: 'normal', 
-                            lineHeight: '1.5', 
-                            fontFamily: 'Alexandria, sans-serif',
-                            fontWeight: '400',
-                            overflowWrap: 'break-word',
-                            hyphens: 'auto',
-                            display: 'block',
-                            width: '100%'
-                          }}>
-                            {displayTitle}
-                            {hasContent && (
-                              <span className="text-red-600 underline mr-2" style={{ 
-                                fontFamily: 'Alexandria, sans-serif',
-                                fontWeight: '300',
-                                whiteSpace: 'nowrap',
-                                marginRight: '8px'
-                              }}>تتمة</span>
-                            )}
-                          </h3>
-                        </div>
-                      </div>
-                    ) : (
-                      <Link href={`/last-news/${news.slug || news.id}`}>
-                        <div className="flex items-start hover:bg-gray-50 p-2 rounded-lg transition-colors" style={{ gap: '8px' }}>
+        {/* News content with scrollable container - Mobile: No scroll, PC: Scroll */}
+        <div className="border border-transparent rounded-lg w-full">
+          {/* Mobile: Show all items without scroll */}
+          <div className="block md:hidden">
+            <div className="p-4">
+              <div className="space-y-4">
+                {displayedNews.map((news, index) => {
+                  const title = news.title_ar || news.title || '';
+                  const content = news.content_ar || news.content || '';
+                  const hasContent = content.trim().length > 0;
+                  const displayTitle = title;
+                  
+                  return (
+                    <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
+                      {news.isBreaking ? (
+                        <div className="flex items-start" style={{ gap: '8px' }}>
                           <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '2px' }}>
                             <span className="text-blue-600 text-center" style={{ 
                               fontSize: '12px', 
@@ -202,7 +156,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                             </span>
                           </div>
                           <div className="flex-1">
-                            <h3 className={`text-sm sm:text-base leading-relaxed text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{
+                            <h3 className={`text-sm sm:text-base leading-relaxed text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                               wordWrap: 'break-word', 
                               whiteSpace: 'normal', 
                               lineHeight: '1.5', 
@@ -225,33 +179,196 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                             </h3>
                           </div>
                         </div>
-                      </Link>
-                    )}
-                    {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-3"></div>}
+                      ) : (
+                        <Link href={`/last-news/${news.slug || news.id}`}>
+                          <div className="flex items-start hover:bg-gray-50 p-2 rounded-lg transition-colors" style={{ gap: '8px' }}>
+                            <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '2px' }}>
+                              <span className="text-blue-600 text-center" style={{ 
+                                fontSize: '12px', 
+                                fontFamily: 'Alexandria, sans-serif',
+                                fontWeight: '300',
+                                lineHeight: '1.2',
+                                display: 'block',
+                                width: '100%'
+                              }}>
+                                {timeAgo(news.created_at)}
+                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-sm sm:text-base leading-relaxed text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{
+                                wordWrap: 'break-word', 
+                                whiteSpace: 'normal', 
+                                lineHeight: '1.5', 
+                                fontFamily: 'Alexandria, sans-serif',
+                                fontWeight: '400',
+                                overflowWrap: 'break-word',
+                                hyphens: 'auto',
+                                display: 'block',
+                                width: '100%'
+                              }}>
+                                {displayTitle}
+                                {hasContent && (
+                                  <span className="text-red-600 underline mr-2" style={{ 
+                                    fontFamily: 'Alexandria, sans-serif',
+                                    fontWeight: '300',
+                                    whiteSpace: 'nowrap',
+                                    marginRight: '8px'
+                                  }}>تتمة</span>
+                                )}
+                              </h3>
+                            </div>
+                          </div>
+                        </Link>
+                      )}
+                      {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-3"></div>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: Scrollable with fixed height */}
+          <div className="hidden md:block" style={{height: '600px', minHeight: '600px', maxHeight: '600px'}}>
+            <div className="h-full flex flex-col w-full">
+              <div 
+                ref={scrollRef}
+                className="flex-1 overflow-y-auto p-4 scrollbar-hide" 
+                style={{
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
+                <div className="space-y-4">
+                  {displayedNews.map((news, index) => {
+                    const title = news.title_ar || news.title || '';
+                    const content = news.content_ar || news.content || '';
+                    const hasContent = content.trim().length > 0;
+                    const displayTitle = title;
+                    
+                    return (
+                      <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
+                        {news.isBreaking ? (
+                          <div className="flex items-start" style={{ gap: '8px' }}>
+                            <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '2px' }}>
+                              <span className="text-blue-600 text-center" style={{ 
+                                fontSize: '12px', 
+                                fontFamily: 'Alexandria, sans-serif',
+                                fontWeight: '300',
+                                lineHeight: '1.2',
+                                display: 'block',
+                                width: '100%'
+                              }}>
+                                {timeAgo(news.created_at)}
+                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-sm sm:text-base leading-relaxed text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{
+                                wordWrap: 'break-word', 
+                                whiteSpace: 'normal', 
+                                lineHeight: '1.5', 
+                                fontFamily: 'Alexandria, sans-serif',
+                                fontWeight: '400',
+                                overflowWrap: 'break-word',
+                                hyphens: 'auto',
+                                display: 'block',
+                                width: '100%'
+                              }}>
+                                {displayTitle}
+                                {hasContent && (
+                                  <span className="text-red-600 underline mr-2" style={{ 
+                                    fontFamily: 'Alexandria, sans-serif',
+                                    fontWeight: '300',
+                                    whiteSpace: 'nowrap',
+                                    marginRight: '8px'
+                                  }}>تتمة</span>
+                                )}
+                              </h3>
+                            </div>
+                          </div>
+                        ) : (
+                          <Link href={`/last-news/${news.slug || news.id}`}>
+                            <div className="flex items-start hover:bg-gray-50 p-2 rounded-lg transition-colors" style={{ gap: '8px' }}>
+                              <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '2px' }}>
+                                <span className="text-blue-600 text-center" style={{ 
+                                  fontSize: '12px', 
+                                  fontFamily: 'Alexandria, sans-serif',
+                                  fontWeight: '300',
+                                  lineHeight: '1.2',
+                                  display: 'block',
+                                  width: '100%'
+                                }}>
+                                  {timeAgo(news.created_at)}
+                                </span>
+                              </div>
+                              <div className="flex-1">
+                                <h3 className={`text-sm sm:text-base leading-relaxed text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{
+                                  wordWrap: 'break-word', 
+                                  whiteSpace: 'normal', 
+                                  lineHeight: '1.5', 
+                                  fontFamily: 'Alexandria, sans-serif',
+                                  fontWeight: '400',
+                                  overflowWrap: 'break-word',
+                                  hyphens: 'auto',
+                                  display: 'block',
+                                  width: '100%'
+                                }}>
+                                  {displayTitle}
+                                  {hasContent && (
+                                    <span className="text-red-600 underline mr-2" style={{ 
+                                      fontFamily: 'Alexandria, sans-serif',
+                                      fontWeight: '300',
+                                      whiteSpace: 'nowrap',
+                                      marginRight: '8px'
+                                    }}>تتمة</span>
+                                  )}
+                                </h3>
+                              </div>
+                            </div>
+                          </Link>
+                        )}
+                        {index < displayedNews.length - 1 && <div className="w-full h-px bg-gray-200 mx-auto my-3"></div>}
+                      </div>
+                    );
+                  })}
+                  
+                  {/* Show More Button - Inside scroll area for desktop only */}
+                  <div className="pt-4 text-center">
+                    <Link
+                      href="/last-news"
+                      className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg"
+                    >
+                      <FiArrowLeft className="ml-3 text-blue-600" size={24} />
+                      <span className="block" style={{ 
+                        fontFamily: 'Alexandria, sans-serif',
+                        whiteSpace: 'nowrap',
+                        lineHeight: '1.2',
+                        fontSize: '18px',
+                        fontWeight: '300'
+                      }}>الـــمــزيـــد</span>
+                    </Link>
                   </div>
-                );
-              })}
-              
-              {/* Show More Button - Inside scroll area */}
-              <div className="pt-4 text-center">
-                <Link
-                  href="/last-news"
-                  className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg"
-                >
-                  <FiArrowLeft className="ml-3 text-blue-600" size={24} />
-                  <span className="block" style={{ 
-                    fontFamily: 'Alexandria, sans-serif',
-                    whiteSpace: 'nowrap',
-                    lineHeight: '1.2',
-                    fontSize: '18px',
-                    fontWeight: '300'
-                  }}>الـــمــزيـــد</span>
-                </Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+
+        {/* Footer with More Button - Outside for mobile */}
+        <div className="flex-shrink-0 pt-4 text-center border-t border-gray-100 mt-4 block md:hidden">
+          <Link
+            href="/last-news"
+            className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg hover:bg-gray-50 transition-colors rounded-lg"
+          >
+            <FiArrowLeft className="ml-3 text-blue-600" size={20} />
+            <span className="block" style={{ 
+              fontFamily: 'Alexandria, sans-serif',
+              whiteSpace: 'nowrap',
+              lineHeight: '1.2',
+              fontSize: '16px',
+              fontWeight: '400'
+            }}>الـــمــزيـــد</span>
+          </Link>
+        </div>
       </div>
     </>
   );
