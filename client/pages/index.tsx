@@ -196,14 +196,18 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
             {/* مقالات Section */}
             <section id="articles-section" className="mb-24">
-              <div className="mb-6 sm:mb-8 text-center">
-                <div className="responsive-flex justify-center mb-4">
-                  <FiBook className="text-purple-500 text-2xl sm:text-3xl ml-2 sm:ml-3" />
-                  <h2 className="section-title font-bold text-gray-800">
-                    مقالات
-                  </h2>
-                </div>
-                <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-purple-500 to-purple-600 mx-auto mt-2 rounded-full"></div>
+              <div className="mb-6 sm:mb-8 text-right">
+                <h2 
+                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block"
+                  style={{
+                    fontFamily: 'Alexandria, sans-serif',
+                    lineHeight: '1.2',
+                    minWidth: 'fit-content',
+                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #8B5CF6, #A855F7) 0% 100% / 100% 3px no-repeat'
+                  }}
+                >
+                  مقالات
+                </h2>
               </div>
 
               {posts.length > 0 && (
@@ -270,16 +274,18 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
             {/* بالفيديو Section */}
             <section className="mb-24">
-              <div className="mb-6 sm:mb-8">
-                <div className="flex items-center justify-center mb-4">
-                  <div className="responsive-flex justify-center">
-                    <FiPlay className="text-green-500 text-2xl sm:text-3xl ml-2 sm:ml-3" />
-                    <h2 className="section-title font-bold text-gray-800">
-                      بالفيديو
-                    </h2>
-                  </div>
-                </div>
-                <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-green-500 to-green-600 mx-auto mt-2 rounded-full"></div>
+              <div className="mb-6 sm:mb-8 text-right">
+                <h2 
+                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block"
+                  style={{
+                    fontFamily: 'Alexandria, sans-serif',
+                    lineHeight: '1.2',
+                    minWidth: 'fit-content',
+                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #10B981, #059669) 0% 100% / 100% 3px no-repeat'
+                  }}
+                >
+                  بالفيديو
+                </h2>
               </div>
 
               {videoLoading ? (
@@ -379,14 +385,18 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
             {/* الأخبار المميزة Section */}
             <section className="mb-24">
-              <div className="mb-6 sm:mb-8 text-center">
-                <div className="responsive-flex justify-center mb-4">
-                  <FiTrendingUp className="text-red-500 text-2xl sm:text-3xl ml-2 sm:ml-3" />
-                  <h2 className="section-title font-bold text-gray-800">
-                    الأخبار المميزة
-                  </h2>
-                </div>
-                <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-red-500 to-red-600 mx-auto mt-2 rounded-full"></div>
+              <div className="mb-6 sm:mb-8 text-right">
+                <h2 
+                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block"
+                  style={{
+                    fontFamily: 'Alexandria, sans-serif',
+                    lineHeight: '1.2',
+                    minWidth: 'fit-content',
+                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #EF4444, #DC2626) 0% 100% / 100% 3px no-repeat'
+                  }}
+                >
+                  الأخبار المميزة
+                </h2>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6">

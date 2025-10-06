@@ -99,7 +99,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
             )}
             
             {/* Title - Fixed height with line clamping */}
-            <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-3 flex-grow min-h-[3.6rem]">
+            <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-3 flex-grow min-h-[3.6rem]" style={{ fontFamily: 'Alexandria, sans-serif' }}>
               {post.title_ar}
             </h3>
             
@@ -152,7 +152,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
               )}
               
               {/* Title - Fixed height with line clamping */}
-              <h3 className="font-bold text-gray-900 leading-tight text-sm line-clamp-2 overflow-hidden">
+              <h3 className="font-bold text-gray-900 leading-tight text-sm line-clamp-2 overflow-hidden" style={{ fontFamily: 'Alexandria, sans-serif' }}>
                 {post.title_ar}
               </h3>
             </div>
@@ -198,7 +198,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
           <div className={`absolute bottom-0 left-0 right-0 p-3 ${isLarge ? 'sm:p-6' : 'sm:p-4'}`}>
             <h3 className={`font-bold text-white mb-2 leading-tight drop-shadow-lg ${
               isLarge ? 'text-base sm:text-xl' : 'text-xs sm:text-base'
-            }`}>
+            }`} style={{ fontFamily: 'Alexandria, sans-serif' }}>
               {post.title_ar}
             </h3>
             <div className="flex items-center gap-3 text-xs sm:text-sm text-white/90">
