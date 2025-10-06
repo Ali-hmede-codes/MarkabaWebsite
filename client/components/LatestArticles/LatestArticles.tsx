@@ -71,11 +71,11 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
     return (
       <Link 
         href={`/post/${post.slug}`} 
-        className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
+        className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full"
       >
-        <div className="w-full">
+        <div className="w-full h-full flex flex-col">
           {/* Image */}
-          <div className="aspect-[4/3] w-full overflow-hidden">
+          <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0">
             <img 
               {...getOptimizedImageProps(post.featured_image, {
                 width: 300,
@@ -90,21 +90,21 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
           </div>
           
           {/* Content */}
-          <div className="p-4">
+          <div className="p-4 flex flex-col flex-grow">
             {/* Category - Black for last 4 posts */}
             {categoryName && (
-              <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2">
+              <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
                 {categoryName}
               </span>
             )}
             
-            {/* Title */}
-            <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-2">
+            {/* Title - Fixed height with line clamping */}
+            <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-3 flex-grow min-h-[3.6rem]">
               {post.title_ar}
             </h3>
             
-            {/* Time */}
-            <div className="flex items-center text-xs text-gray-500">
+            {/* Time - Always at bottom */}
+            <div className="flex items-center text-xs text-gray-500 mt-auto">
               <FiCalendar className="inline ml-1" size={12} /> 
               {getRelativeTime(post.created_at)}
             </div>
@@ -121,12 +121,12 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
     return (
       <Link 
         href={`/post/${post.slug}`} 
-        className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+        className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer h-32"
       >
-        <div className="flex">
+        <div className="flex h-full">
           {/* Image - 4:3 ratio */}
           <div className="w-32 flex-shrink-0">
-            <div className="aspect-[4/3] w-full overflow-hidden">
+            <div className="aspect-[4/3] w-full overflow-hidden h-full">
               <img 
                 {...getOptimizedImageProps(post.featured_image, {
                   width: 128,
@@ -142,23 +142,23 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
           </div>
           
           {/* Content */}
-          <div className="flex-1 p-3 flex flex-col justify-between">
-            <div>
+          <div className="flex-1 p-3 flex flex-col justify-between min-h-0">
+            <div className="flex-grow">
               {/* Category - Black for last 4 posts */}
               {categoryName && (
-                <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2">
+                <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
                   {categoryName}
                 </span>
               )}
               
-              {/* Title - No truncation */}
-              <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm">
+              {/* Title - Fixed height with line clamping */}
+              <h3 className="font-bold text-gray-900 leading-tight text-sm line-clamp-2 overflow-hidden">
                 {post.title_ar}
               </h3>
             </div>
             
-            {/* Time */}
-            <div className="flex items-center text-xs text-gray-500 mt-auto">
+            {/* Time - Always at bottom */}
+            <div className="flex items-center text-xs text-gray-500 mt-auto flex-shrink-0">
               <FiCalendar className="inline ml-1" size={12} /> 
               {getRelativeTime(post.created_at)}
             </div>
@@ -280,7 +280,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categor
           {/* Last 4 articles in postcard layout (4 columns) */}
           <div className="grid grid-cols-4 gap-4">
             {latestPosts.slice(3, 7).map((post, index) => (
-              <div key={post.id}>
+              <div key={post.id} className="h-full">
                 {renderPostcardArticle(post, index)}
               </div>
             ))}
