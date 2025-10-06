@@ -4,14 +4,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import Link from 'next/link';
 
-// Add custom CSS for hiding scrollbar
+// Add custom CSS for hiding scrollbar on PC only
 const scrollbarHideStyle = `
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  @media (min-width: 768px) {
+    .scrollbar-hide-pc::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-hide-pc {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   }
 `;
 
@@ -131,10 +133,8 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
         <div className="flex-1 border border-transparent rounded-lg overflow-hidden">
           <div 
             ref={scrollRef}
-            className="h-full overflow-y-auto p-4 scrollbar-hide" 
+            className="h-full overflow-y-auto p-4 scrollbar-hide-pc" 
             style={{
-              scrollbarWidth: 'none', 
-              msOverflowStyle: 'none',
               WebkitOverflowScrolling: 'touch'
             }}
           >
