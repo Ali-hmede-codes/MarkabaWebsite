@@ -154,7 +154,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                               display: 'block',
                               width: '100%'
                             }}>
-                              {timeAgo(news.created_at)}
+                              {formatTime24Hour(news.created_at)}
                             </span>
                           </div>
                           <div className="flex-1">
@@ -196,7 +196,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                                  display: 'block',
                                  width: '100%'
                                }}>
-                                 {timeAgo(news.created_at)}
+                                 {formatTime24Hour(news.created_at)}
                                </span>
                              </div>
                              <div className="flex-1">
@@ -263,7 +263,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                                 display: 'block',
                                 width: '100%'
                               }}>
-                                {timeAgo(news.created_at)}
+                                {formatTime24Hour(news.created_at)}
                               </span>
                             </div>
                             <div className="flex-1">
@@ -305,7 +305,7 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                                    display: 'block',
                                    width: '100%'
                                  }}>
-                                   {timeAgo(news.created_at)}
+                                   {formatTime24Hour(news.created_at)}
                                  </span>
                                </div>
                                <div className="flex-1">
@@ -384,28 +384,9 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
 
 export default LastNewsBanner;
 
-function timeAgo(date: string): string {
-  const now = new Date();
-  const past = new Date(date);
-  const diff = Math.floor((now.getTime() - past.getTime()) / 1000);
-
-  if (diff < 60) return 'الآن';
-  if (diff < 3600) {
-    const minutes = Math.floor(diff / 60);
-    return `${minutes}د`;
-  }
-  if (diff < 86400) {
-    const hours = Math.floor(diff / 3600);
-    return `${hours}س`;
-  }
-  if (diff < 2592000) {
-    const days = Math.floor(diff / 86400);
-    return `${days}ي`;
-  }
-  if (diff < 31536000) {
-    const months = Math.floor(diff / 2592000);
-    return `${months}ش`;
-  }
-  const years = Math.floor(diff / 31536000);
-  return `${years}سن`;
+function formatTime24Hour(date: string): string {
+  const newsDate = new Date(date);
+  const hours = newsDate.getHours().toString().padStart(2, '0');
+  const minutes = newsDate.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
 }
