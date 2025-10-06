@@ -537,7 +537,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             </section>
 
             {/* الأخبار المميزة Section */}
-            <section className="mb-24">
+            <section className="mb-32">
               <div className="mb-6 sm:mb-8 text-right">
                 <h2 
                   className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block w-full"
