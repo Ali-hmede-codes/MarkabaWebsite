@@ -92,12 +92,11 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
       <div className={`w-full ${className}`} dir="rtl">
       <div className="mb-4 sm:mb-6">
         {/* Title and Filter in one row */}
-        <div className="flex justify-center items-center gap-4 sm:gap-6 mb-6 flex-wrap">
-          {/* Title with underline */}
-          <div className="relative flex-shrink-0">
-            <h2 className="text-gray-800 text-lg sm:text-xl md:text-2xl relative whitespace-nowrap" style={{ 
+        <div className="flex justify-between items-center gap-4 sm:gap-6 mb-6 flex-wrap">
+          {/* Title with underline - Moved to right */}
+          <div className="relative flex-shrink-0 order-2">
+            <h2 className="text-gray-800 text-lg sm:text-xl md:text-2xl relative whitespace-nowrap font-bold" style={{ 
               fontFamily: 'Alexandria, sans-serif',
-              fontWeight: '300',
               wordWrap: 'break-word',
               lineHeight: '1.2',
               minWidth: 'fit-content'
@@ -108,11 +107,15 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
             </h2>
           </div>
           
+          {/* Blue line design on the left */}
+          <div className="flex-1 order-1 flex items-center">
+            <div className="h-0.5 bg-blue-600 flex-1 mr-4"></div>
+          </div>
+          
           {/* Toggle switch for breaking news */}
-          <div className="flex items-center flex-shrink-0">
-            <span className="ml-2 text-red-500 text-sm sm:text-base whitespace-nowrap" style={{ 
+          <div className="flex items-center flex-shrink-0 order-3">
+            <span className="ml-2 text-red-500 text-sm sm:text-base whitespace-nowrap font-bold" style={{ 
               fontFamily: 'Alexandria, sans-serif',
-              fontWeight: '300',
               lineHeight: '1.2',
               minWidth: 'fit-content'
             }}>العاجل</span>
