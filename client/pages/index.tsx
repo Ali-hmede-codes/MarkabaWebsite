@@ -196,7 +196,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
             {/* مقالات Section */}
             <section id="articles-section" className="mb-24">
-              <div className="mb-6 sm:mb-8 text-right">
+              <div className="mb-10 sm:mb-12 text-right">
                 <h2 
                   className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block w-full"
                   style={{
@@ -538,7 +538,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
             {/* الأخبار المميزة Section */}
             <section className="mb-32">
-              <div className="mb-6 sm:mb-8 text-right">
+              <div className="mb-10 sm:mb-12 text-right">
                 <h2 
                   className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block w-full"
                   style={{
