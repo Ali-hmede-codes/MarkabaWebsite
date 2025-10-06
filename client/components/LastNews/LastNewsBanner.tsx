@@ -89,7 +89,10 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: scrollbarHideStyle }} />
-      <div className={`w-full ${className}`} dir="rtl" style={{ height: '550px', maxHeight: '550px' }}>
+      <div className={`w-full ${className}`} dir="rtl" style={{ 
+        height: className.includes('h-full') ? '100%' : '550px', 
+        maxHeight: className.includes('h-full') ? '100%' : '550px' 
+      }}>
         <div className="mb-4 sm:mb-6">
           {/* Title and Filter in one row */}
           <div className="flex justify-between items-center gap-4 sm:gap-6 mb-6 flex-wrap">
