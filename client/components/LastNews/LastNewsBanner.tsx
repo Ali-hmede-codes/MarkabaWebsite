@@ -131,9 +131,8 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
       </div>
       
       {/* News content with scrollable container */}
-      <div className="border border-transparent rounded-lg w-full" style={{height: '600px', minHeight: '600px', maxHeight: '600px'}}>
-        <div className="h-full flex flex-col w-full">
-          <div className="flex-1 overflow-y-auto p-4 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+      <div className="border border-transparent rounded-lg w-full h-full flex flex-col">
+        <div className="flex-1 overflow-y-auto p-4 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
             <div className="space-y-4">
               {displayedNews.map((news, index) => {
                 const title = news.title_ar || news.title || '';
@@ -247,7 +246,6 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 };
