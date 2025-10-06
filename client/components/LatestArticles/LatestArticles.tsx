@@ -64,7 +64,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
     return (
       <Link 
         href={`/post/${post.slug}`} 
-        className={`block rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer relative ${
+        className={`block rounded-sm overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer relative ${
           isLarge ? 'aspect-video' : 'aspect-video'
         }`}
       >
@@ -84,23 +84,22 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
           {/* Black fade overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
           {/* Content overlay */}
-          <div className={`absolute bottom-0 left-0 right-0 p-3 ${isLarge ? 'sm:p-6' : 'sm:p-4'}`}>
+          <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 ${isLarge ? 'sm:p-6' : 'sm:p-4'}`}>
             <h3 className={`font-bold text-white mb-2 leading-tight drop-shadow-lg ${
               isLarge ? 'text-base sm:text-xl' : 'text-xs sm:text-base'
             }`}>
               {post.title_ar}
             </h3>
             <div className="flex items-center gap-3 text-xs sm:text-sm text-white/90">
+              {post.category_name && (
+                <span className="bg-red-600 text-white px-2 py-1 rounded text-xs font-medium">
+                  {post.category_name}
+                </span>
+              )}
               <span className="flex items-center">
                 <FiCalendar className="inline ml-1" size={12} /> 
                 {getRelativeTime(post.created_at)}
               </span>
-              {post.category_name && (
-                <span className="flex items-center">
-                  <FiTag className="inline ml-1" size={12} />
-                  {post.category_name}
-                </span>
-              )}
             </div>
           </div>
         </div>
@@ -166,12 +165,19 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
           </div>
           
           {/* Last 4 articles in horizontal layout (4 columns) */}
-          <div className="grid grid-cols-4 gap-4">
-            {latestPosts.slice(3, 7).map(post => (
-              <div key={post.id}>
-                {renderArticleCard(post, false)}
-              </div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 lg:gap-10">
+            {latestPosts.slice(3, 7).map((post, index) => {
+              const isLarge = index === 0 && latestPosts.slice(3, 7).length > 1;
+              
+              return (
+                <div 
+                  key={post.id} 
+                  className={`${isLarge ? 'md:col-span-2 lg:col-span-2 xl:col-span-2 2xl:col-span-2' : ''}`}
+                >
+                  {renderArticleCard(post, false)}
+                </div>
+              );
+            })}
           </div>
         </div>
 
