@@ -31,8 +31,6 @@ type NewsItem = {
   isBreaking?: boolean; // To distinguish breaking news
 };
 
-
-
 type LastNewsBannerProps = {
   className?: string;
 };
@@ -80,17 +78,16 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
     ? [...lastNews, ...breakingNews].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     : lastNews;
 
-
-
-  if (loading) return <div>جاري التحميل...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
+  if (loading) return <div className="flex items-center justify-center h-full">جاري التحميل...</div>;
+  if (error) return <div className="text-red-500 flex items-center justify-center h-full">{error}</div>;
   if (displayedNews.length === 0) return null;
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: scrollbarHideStyle }} />
-      <div className={`w-full ${className.includes('h-full') ? 'h-full' : 'h-96'} ${className} flex flex-col`} dir="rtl">
-        <div className="mb-4 sm:mb-6">
+      <div className={`w-full h-full flex flex-col ${className}`} dir="rtl">
+        {/* Header Section */}
+        <div className="flex-shrink-0 mb-4 sm:mb-6">
           {/* Title and Filter in one row */}
           <div className="flex justify-between items-center gap-4 sm:gap-6 mb-6 flex-wrap">
             {/* Title with underline - Moved to right */}
@@ -130,9 +127,17 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
           </div>
         </div>
         
-        {/* News content with scrollable container */}
-        <div className="border border-transparent rounded-lg w-full flex-1 flex flex-col">
-          <div className="flex-1 overflow-y-auto p-4 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+        {/* Scrollable News Content */}
+        <div className="flex-1 border border-transparent rounded-lg overflow-hidden">
+          <div 
+            ref={scrollRef}
+            className="h-full overflow-y-auto p-4 scrollbar-hide" 
+            style={{
+              scrollbarWidth: 'none', 
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
             <div className="space-y-4">
               {displayedNews.map((news, index) => {
                 const title = news.title_ar || news.title || '';
@@ -143,8 +148,8 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                 return (
                   <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
                     {news.isBreaking ? (
-                      <div className="flex items-start" style={{ gap: '3px' }}>
-                        <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <div className="flex items-start" style={{ gap: '8px' }}>
+                        <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '2px' }}>
                           <span className="text-blue-600 text-center" style={{ 
                             fontSize: '12px', 
                             fontFamily: 'Alexandria, sans-serif',
@@ -157,12 +162,12 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                           </span>
                         </div>
                         <div className="flex-1">
-                          <h3 className={`text-xs sm:text-base leading-snug text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{
+                          <h3 className={`text-sm sm:text-base leading-relaxed text-red-600 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                             wordWrap: 'break-word', 
                             whiteSpace: 'normal', 
-                            lineHeight: '1.3', 
+                            lineHeight: '1.5', 
                             fontFamily: 'Alexandria, sans-serif',
-                            fontWeight: '300',
+                            fontWeight: '400',
                             overflowWrap: 'break-word',
                             hyphens: 'auto',
                             display: 'block',
@@ -182,8 +187,8 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                       </div>
                     ) : (
                       <Link href={`/last-news/${news.slug || news.id}`}>
-                        <div className="flex items-start hover:bg-gray-50 p-2 rounded-lg transition-colors" style={{ gap: '3px' }}>
-                          <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div className="flex items-start hover:bg-gray-50 p-2 rounded-lg transition-colors" style={{ gap: '8px' }}>
+                          <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '2px' }}>
                             <span className="text-blue-600 text-center" style={{ 
                               fontSize: '12px', 
                               fontFamily: 'Alexandria, sans-serif',
@@ -196,12 +201,12 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                             </span>
                           </div>
                           <div className="flex-1">
-                            <h3 className={`text-xs sm:text-base leading-snug text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{
+                            <h3 className={`text-sm sm:text-base leading-relaxed text-gray-800 hover:text-blue-600 transition-colors cursor-pointer`} style={{
                               wordWrap: 'break-word', 
                               whiteSpace: 'normal', 
-                              lineHeight: '1.3', 
+                              lineHeight: '1.5', 
                               fontFamily: 'Alexandria, sans-serif',
-                              fontWeight: '300',
+                              fontWeight: '400',
                               overflowWrap: 'break-word',
                               hyphens: 'auto',
                               display: 'block',
@@ -225,25 +230,25 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                   </div>
                 );
               })}
-              
-              {/* Show More Button - Inside scroll area */}
-              <div className="pt-4 text-center">
-                <Link
-                  href="/last-news"
-                  className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg"
-                >
-                  <FiArrowLeft className="ml-3 text-blue-600" size={24} />
-                  <span className="block" style={{ 
-                    fontFamily: 'Alexandria, sans-serif',
-                    whiteSpace: 'nowrap',
-                    lineHeight: '1.2',
-                    fontSize: '18px',
-                    fontWeight: '300'
-                  }}>الـــمــزيـــد</span>
-                </Link>
-              </div>
             </div>
           </div>
+        </div>
+
+        {/* Footer with More Button */}
+        <div className="flex-shrink-0 pt-4 text-center border-t border-gray-100 mt-4">
+          <Link
+            href="/last-news"
+            className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold text-lg hover:bg-gray-50 transition-colors rounded-lg"
+          >
+            <FiArrowLeft className="ml-3 text-blue-600" size={20} />
+            <span className="block" style={{ 
+              fontFamily: 'Alexandria, sans-serif',
+              whiteSpace: 'nowrap',
+              lineHeight: '1.2',
+              fontSize: '16px',
+              fontWeight: '400'
+            }}>الـــمــزيـــد</span>
+          </Link>
         </div>
       </div>
     </>
