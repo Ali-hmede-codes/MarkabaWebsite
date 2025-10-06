@@ -89,53 +89,55 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: scrollbarHideStyle }} />
-      <div className={`w-full ${className}`} dir="rtl">
-      <div className="mb-4 sm:mb-6">
-        {/* Title and Filter in one row */}
-        <div className="flex justify-between items-center gap-4 sm:gap-6 mb-6 flex-wrap">
-          {/* Title with underline - Moved to right */}
-          <div className="relative flex-shrink-0 order-2">
-            <h2 className="text-gray-800 text-lg sm:text-xl md:text-2xl relative whitespace-nowrap font-bold" style={{ 
-              fontFamily: 'Alexandria, sans-serif',
-              wordWrap: 'break-word',
-              lineHeight: '1.2',
-              minWidth: 'fit-content'
-            }}>
-              آخــــر الأخــــبـــار
-              {/* Blue underline behind the text */}
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full h-1 bg-blue-600 rounded-full -z-10"></div>
-            </h2>
-          </div>
-          
-          {/* Blue line design on the left */}
-          <div className="flex-1 order-1 flex items-center">
-            <div className="h-0.5 bg-blue-600 flex-1 mr-4"></div>
-          </div>
-          
-          {/* Toggle switch for breaking news */}
-          <div className="flex items-center flex-shrink-0 order-3">
-            <span className="ml-2 text-red-500 text-sm sm:text-base whitespace-nowrap font-bold" style={{ 
-              fontFamily: 'Alexandria, sans-serif',
-              lineHeight: '1.2',
-              minWidth: 'fit-content'
-            }}>العاجل</span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={combineNews}
-                onChange={(e) => setCombineNews(e.target.checked)}
-                className="sr-only"
-              />
-              <div className={`w-9 sm:w-11 h-5 sm:h-6 rounded-full transition-colors ${combineNews ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
-              <div className={`absolute left-1 top-1 w-3 sm:w-4 h-3 sm:h-4 rounded-full transition-all ${combineNews ? 'translate-x-4 sm:translate-x-5 bg-white' : 'translate-x-0 bg-white'}`}></div>
-            </label>
+      <div className={`w-full ${className}`} dir="rtl" style={{ height: '400px', maxHeight: '400px' }}>
+        <div className="mb-4 sm:mb-6">
+          {/* Title and Filter in one row */}
+          <div className="flex justify-between items-center gap-4 sm:gap-6 mb-6 flex-wrap">
+            {/* Title with underline - Moved to right */}
+            <div className="relative flex-shrink-0 order-2">
+              <h2 className="text-gray-800 text-lg sm:text-xl md:text-2xl relative whitespace-nowrap font-bold" style={{ 
+                fontFamily: 'Alexandria, sans-serif',
+                wordWrap: 'break-word',
+                lineHeight: '1.2',
+                minWidth: 'fit-content',
+                background: 'linear-gradient(to right, transparent 0%, #2563eb 0%, #2563eb 100%, transparent 100%)',
+                backgroundSize: '100% 4px',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'bottom'
+              }}>
+                آخــــر الأخــــبـــار
+              </h2>
+            </div>
+            
+            {/* Blue line design on the left */}
+            <div className="flex-1 order-1 flex items-center">
+              <div className="h-0.5 bg-blue-600 flex-1 mr-4"></div>
+            </div>
+            
+            {/* Toggle switch for breaking news */}
+            <div className="flex items-center flex-shrink-0 order-3">
+              <span className="ml-2 text-red-500 text-sm sm:text-base whitespace-nowrap font-bold" style={{ 
+                fontFamily: 'Alexandria, sans-serif',
+                lineHeight: '1.2',
+                minWidth: 'fit-content'
+              }}>العاجل</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={combineNews}
+                  onChange={(e) => setCombineNews(e.target.checked)}
+                  className="sr-only"
+                />
+                <div className={`w-9 sm:w-11 h-5 sm:h-6 rounded-full transition-colors ${combineNews ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
+                <div className={`absolute left-1 top-1 w-3 sm:w-4 h-3 sm:h-4 rounded-full transition-all ${combineNews ? 'translate-x-4 sm:translate-x-5 bg-white' : 'translate-x-0 bg-white'}`}></div>
+              </label>
+            </div>
           </div>
         </div>
-      </div>
-      
-      {/* News content with scrollable container */}
-      <div className="border border-transparent rounded-lg w-full h-full flex flex-col">
-        <div className="flex-1 overflow-y-auto p-4 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+        
+        {/* News content with scrollable container */}
+        <div className="border border-transparent rounded-lg w-full flex-1 flex flex-col">
+          <div className="flex-1 overflow-y-auto p-4 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
             <div className="space-y-4">
               {displayedNews.map((news, index) => {
                 const title = news.title_ar || news.title || '';
