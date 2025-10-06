@@ -179,7 +179,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             <section className="mb-8 lg:mb-16">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6">
                 <div className="lg:col-span-12 order-1">
-                  <LatestArticles className="" />
+                  <LatestArticles className="" categories={categories} />
                 </div>
               </div>
               

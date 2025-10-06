@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePosts } from '../API/hooks';
-import { Post } from '../API/types';
+import { Post, Category } from '../API/types';
 import { FiCalendar, FiBook, FiTag, FiArrowLeft } from 'react-icons/fi';
 import { getOptimizedImageProps, preloadImages } from '../../utils/imageUtils';
 import Link from 'next/link';
@@ -8,9 +8,10 @@ import LastNewsBanner from '../LastNews/LastNewsBanner';
 
 type LatestArticlesProps = {
   className?: string;
+  categories?: Category[];
 };
 
-const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
+const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '', categories = [] }) => {
   const { data: postsResponse, loading } = usePosts();
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);
 
@@ -36,6 +37,12 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
     return new Date(date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
+  const getCategoryName = (categoryId: number) => {
+    const category = categories.find((cat) => cat.id === categoryId);
+    if (!category) return "";
+    return category.name_ar || "";
+  };
+
   const getRelativeTime = (dateString: string) => {
     const now = new Date();
     const date = new Date(dateString);
@@ -57,10 +64,114 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
     }
   };
 
-  const formatViews = (views: number) => views.toString();
+  // Helper function to render postcard-style article for PC (last 4 articles)
+  const renderPostcardArticle = (post: Post, index: number) => {
+    const categoryName = getCategoryName(post.category_id);
+    
+    return (
+      <Link 
+        href={`/post/${post.slug}`} 
+        className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
+      >
+        <div className="w-full">
+          {/* Image */}
+          <div className="aspect-[4/3] w-full overflow-hidden">
+            <img 
+              {...getOptimizedImageProps(post.featured_image, {
+                width: 300,
+                height: 225,
+                quality: 85,
+                format: 'auto',
+                lazy: true
+              })}
+              alt={post.title_ar} 
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" 
+            />
+          </div>
+          
+          {/* Content */}
+          <div className="p-4">
+            {/* Category - Black for last 4 posts */}
+            {categoryName && (
+              <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2">
+                {categoryName}
+              </span>
+            )}
+            
+            {/* Title */}
+            <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-2">
+              {post.title_ar}
+            </h3>
+            
+            {/* Time */}
+            <div className="flex items-center text-xs text-gray-500">
+              <FiCalendar className="inline ml-1" size={12} /> 
+              {getRelativeTime(post.created_at)}
+            </div>
+          </div>
+        </div>
+      </Link>
+    );
+  };
 
-  // Helper function to render article card with overlay
+  // Helper function to render horizontal article for mobile (last 4 articles)
+  const renderHorizontalArticle = (post: Post, index: number) => {
+    const categoryName = getCategoryName(post.category_id);
+    
+    return (
+      <Link 
+        href={`/post/${post.slug}`} 
+        className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+      >
+        <div className="flex">
+          {/* Image - 4:3 ratio */}
+          <div className="w-32 flex-shrink-0">
+            <div className="aspect-[4/3] w-full overflow-hidden">
+              <img 
+                {...getOptimizedImageProps(post.featured_image, {
+                  width: 128,
+                  height: 96,
+                  quality: 85,
+                  format: 'auto',
+                  lazy: true
+                })}
+                alt={post.title_ar} 
+                className="w-full h-full object-cover" 
+              />
+            </div>
+          </div>
+          
+          {/* Content */}
+          <div className="flex-1 p-3 flex flex-col justify-between">
+            <div>
+              {/* Category - Black for last 4 posts */}
+              {categoryName && (
+                <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2">
+                  {categoryName}
+                </span>
+              )}
+              
+              {/* Title - No truncation */}
+              <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm">
+                {post.title_ar}
+              </h3>
+            </div>
+            
+            {/* Time */}
+            <div className="flex items-center text-xs text-gray-500 mt-auto">
+              <FiCalendar className="inline ml-1" size={12} /> 
+              {getRelativeTime(post.created_at)}
+            </div>
+          </div>
+        </div>
+      </Link>
+    );
+  };
+
+  // Helper function to render article card with overlay for first 3 articles
   const renderArticleCard = (post: Post, isLarge: boolean = false) => {
+    const categoryName = getCategoryName(post.category_id);
+    
     return (
       <Link 
         href={`/post/${post.slug}`} 
@@ -95,10 +206,11 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
                 <FiCalendar className="inline ml-1" size={12} /> 
                 {getRelativeTime(post.created_at)}
               </span>
-              {post.category_name && (
-                <span className="flex items-center">
+              {/* Category - White for first 3 posts */}
+              {categoryName && (
+                <span className="flex items-center bg-white text-black text-xs px-2 py-1 rounded">
                   <FiTag className="inline ml-1" size={12} />
-                  {post.category_name}
+                  {categoryName}
                 </span>
               )}
             </div>
@@ -128,11 +240,11 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
             <LastNewsBanner className="h-auto w-full" />
           </div>
           
-          {/* Last 4 articles in vertical layout */}
+          {/* Last 4 articles in horizontal layout */}
           <div className="space-y-4">
-            {latestPosts.slice(3, 7).map(post => (
+            {latestPosts.slice(3, 7).map((post, index) => (
               <div key={post.id}>
-                {renderArticleCard(post, false)}
+                {renderHorizontalArticle(post, index)}
               </div>
             ))}
           </div>
@@ -165,11 +277,11 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({ className = '' }) => {
             </div>
           </div>
           
-          {/* Last 4 articles in horizontal layout (4 columns) */}
+          {/* Last 4 articles in postcard layout (4 columns) */}
           <div className="grid grid-cols-4 gap-4">
-            {latestPosts.slice(3, 7).map(post => (
+            {latestPosts.slice(3, 7).map((post, index) => (
               <div key={post.id}>
-                {renderArticleCard(post, false)}
+                {renderPostcardArticle(post, index)}
               </div>
             ))}
           </div>
