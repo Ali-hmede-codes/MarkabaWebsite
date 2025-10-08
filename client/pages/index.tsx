@@ -171,16 +171,24 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
   if (error) {
     return (
-      <Layout pageType="home">
-        <div className="container mx-auto responsive-padding py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-red-600 mb-4">
-              خطأ في تحميل البيانات
-            </h1>
-            <p className="text-gray-600">{error}</p>
+      <>
+        <SimpleMeta 
+          title="خطأ في تحميل البيانات"
+          description="مـركـبـا - الـمـنـصـة الاخـبـاريـة"
+          image="/images/og-image.jpg"
+          canonical="https://markaba.news"
+        />
+        <Layout pageType="home">
+          <div className="container mx-auto responsive-padding py-8">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-red-600 mb-4">
+                خطأ في تحميل البيانات
+              </h1>
+              <p className="text-gray-600">{error}</p>
+            </div>
           </div>
-        </div>
-      </Layout>
+        </Layout>
+      </>
     );
   }
 
@@ -704,16 +712,17 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       {/* Mobile Layout */}
                       <div className="lg:hidden">
                         {/* Horizontal Scrolling Featured Posts */}
-                        <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: 'thin' }}>
+                        <div className="flex gap-4 overflow-x-auto pb-4 min-h-[250px]" style={{ scrollbarWidth: 'thin', WebkitOverflowScrolling: 'touch' }}>
                           {featuredPosts.slice(0, 5).map((post, index) => (
                             <Link key={post.id} href={`/post/${post.slug}`} className="block flex-shrink-0">
-                              <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-video w-80">
+                              <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-video w-80 min-w-[320px]">
                                 <div className="w-full h-full relative">
                                   {post.featured_image ? (
                                     <img
                                       src={getImageUrl(post.featured_image)}
                                       alt={post.title_ar || post.title}
                                       className="w-full h-full object-cover"
+                                      loading="lazy"
                                     />
                                   ) : (
                                     <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
