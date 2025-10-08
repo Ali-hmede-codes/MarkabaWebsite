@@ -712,10 +712,28 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       {/* Mobile Layout */}
                       <div className="lg:hidden">
                         {/* Horizontal Scrolling Featured Posts */}
-                        <div className="flex gap-4 overflow-x-auto pb-4 min-h-[250px]" style={{ scrollbarWidth: 'thin', WebkitOverflowScrolling: 'touch' }}>
+                        <div 
+                          className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide" 
+                          style={{ 
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                            WebkitOverflowScrolling: 'touch',
+                            scrollSnapType: 'x mandatory',
+                            minHeight: '280px'
+                          }}
+                        >
                           {featuredPosts.slice(0, 5).map((post, index) => (
                             <Link key={post.id} href={`/post/${post.slug}`} className="block flex-shrink-0">
-                              <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-video w-80 min-w-[320px]">
+                              <article 
+                                className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer"
+                                style={{
+                                  width: 'calc(100vw - 80px)',
+                                  maxWidth: '350px',
+                                  minWidth: '280px',
+                                  height: '250px',
+                                  scrollSnapAlign: 'start'
+                                }}
+                              >
                                 <div className="w-full h-full relative">
                                   {post.featured_image ? (
                                     <img
@@ -723,6 +741,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                       alt={post.title_ar || post.title}
                                       className="w-full h-full object-cover"
                                       loading="lazy"
+                                      style={{ objectFit: 'cover' }}
                                     />
                                   ) : (
                                     <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
