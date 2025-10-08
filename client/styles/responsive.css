@@ -29,7 +29,7 @@
 /* Featured Posts Desktop Layout - Uniform Horizontal Layout */
 .featured-posts-desktop {
   @apply grid gap-4;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   grid-template-rows: 1fr;
   height: 300px;
   width: 100%;
@@ -59,17 +59,22 @@
   grid-column: 4;
 }
 
+.featured-sub-post:nth-child(5) {
+  @apply block;
+  grid-column: 5;
+}
+
 /* Featured Posts Mobile Layout */
 .featured-posts-mobile {
   @apply -mx-4 px-4;
 }
 
 .featured-mobile-card {
-  @apply w-72 flex-shrink-0;
+  @apply w-48 flex-shrink-0;
 }
 
 .featured-mobile-image {
-  @apply h-48;
+  @apply h-32 w-full object-cover rounded-lg;
 }
 
 /* Scrollbar hide utility */

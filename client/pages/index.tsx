@@ -76,7 +76,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
         ? "https://api.markaba.news"
         : "https://api.markaba.news";
       
-      const response = await fetch(`${baseUrl}/api/v2/posts/featured?limit=4`, {
+      const response = await fetch(`${baseUrl}/api/v2/posts/featured?limit=5`, {
         headers: {
           "Content-Type": "application/json",
           "User-Agent": "NewsMarkaba-FeaturedPosts/1.0",
@@ -96,7 +96,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
         const featuredPostsList = [...posts]
           .filter((post) => Boolean(post.is_featured))
           .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-          .slice(0, 4);
+          .slice(0, 5);
         setFeaturedPosts(featuredPostsList);
       }
     }
@@ -690,16 +690,9 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                   </div>
 
                                   <div className="p-3 flex-shrink-0">
-                                    <h3 className="text-sm font-bold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors leading-tight">
+                                    <h3 className="text-sm font-bold text-gray-800 line-clamp-2 hover:text-blue-600 transition-colors leading-tight">
                                       {post.title_ar || post.title}
                                     </h3>
-                                    <div className="flex items-center text-xs text-gray-500">
-                                      <FiCalendar
-                                        size={10}
-                                        className="ml-1 rtl:ml-0 rtl:mr-1"
-                                      />
-                                      {getRelativeTime(post.created_at)}
-                                    </div>
                                   </div>
                                 </article>
                               </Link>
