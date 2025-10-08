@@ -71,10 +71,15 @@
 
 .featured-mobile-card {
   @apply w-40 flex-shrink-0;
+  min-width: 160px;
+  max-width: 160px;
 }
 
 .featured-mobile-image {
-  @apply h-28 w-full object-cover rounded-lg;
+  @apply h-28 object-cover rounded-lg;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
 }
 
 /* Scrollbar hide utility */
