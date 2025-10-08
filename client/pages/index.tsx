@@ -641,9 +641,9 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                           {featuredPosts.map((post, index) => (
                             <Link key={post.id} href={`/post/${post.slug}`} className="block">
                               <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
-                                <div className="flex h-32">
+                                <div className="flex h-24">
                                   {/* Image */}
-                                  <div className="w-32 h-32 flex-shrink-0 relative overflow-hidden">
+                                  <div className="w-24 h-24 flex-shrink-0 relative overflow-hidden">
                                     {/* Post Number */}
                                     <div className="absolute top-2 left-2 z-20">
                                       <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white font-bold text-xs rounded-full shadow-lg">
@@ -667,7 +667,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                   </div>
                                   
                                   {/* Content */}
-                                  <div className="flex-1 p-3 flex flex-col justify-between">
+                                  <div className="flex-1 p-2 flex flex-col justify-between">
                                     <div>
                                       {/* Category - Black background */}
                                       <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
@@ -675,13 +675,13 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                       </span>
                                       
                                       {/* Title */}
-                                      <h3 className="font-bold text-gray-900 text-sm leading-tight line-clamp-3" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                      <h3 className="font-bold text-gray-900 text-xs leading-tight line-clamp-2" style={{ fontFamily: 'Alexandria, sans-serif' }}>
                                         {post.title_ar || post.title}
                                       </h3>
                                     </div>
                                     
                                     {/* Time - Always at bottom */}
-                                    <div className="flex items-center text-xs text-gray-500 mt-2">
+                                    <div className="flex items-center text-xs text-gray-500 mt-1">
                                       <FiCalendar className="inline ml-1" size={12} /> 
                                       {getRelativeTime(post.created_at)}
                                     </div>
