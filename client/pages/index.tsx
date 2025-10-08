@@ -637,7 +637,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
                       {/* Mobile Layout */}
                       <div className="lg:hidden">
-                        <div className="space-y-1">
+                        <div className="space-y-1 min-h-[400px]">
                           {featuredPosts.map((post, index) => (
                             <Link key={post.id} href={`/post/${post.slug}`} className="block">
                               <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
