@@ -637,16 +637,16 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
                       {/* Mobile Layout */}
                       <div className="lg:hidden">
-                        <div className="space-y-4">
+                        <div className="space-y-2 max-h-[70vh] overflow-y-auto">
                           {featuredPosts.map((post, index) => (
                             <Link key={post.id} href={`/post/${post.slug}`} className="block">
                               <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
-                                <div className="flex h-24">
+                                <div className="flex h-20">
                                   {/* Image */}
-                                  <div className="w-24 h-24 flex-shrink-0 relative overflow-hidden">
+                                  <div className="w-20 h-20 flex-shrink-0 relative overflow-hidden">
                                     {/* Post Number */}
-                                    <div className="absolute top-2 left-2 z-20">
-                                      <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white font-bold text-xs rounded-full shadow-lg">
+                                    <div className="absolute top-1 left-1 z-20">
+                                      <span className="inline-flex items-center justify-center w-5 h-5 bg-blue-600 text-white font-bold text-xs rounded-full shadow-lg">
                                         {String(index + 1).padStart(2, '0')}
                                       </span>
                                     </div>
@@ -670,7 +670,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                   <div className="flex-1 p-2 flex flex-col justify-between">
                                     <div>
                                       {/* Category - Black background */}
-                                      <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
+                                      <span className="inline-block bg-black text-white text-xs px-1 py-0.5 rounded mb-1 w-fit">
                                         {getCategoryName(post.category_id)}
                                       </span>
                                       
@@ -681,8 +681,8 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                     </div>
                                     
                                     {/* Time - Always at bottom */}
-                                    <div className="flex items-center text-xs text-gray-500 mt-1">
-                                      <FiCalendar className="inline ml-1" size={12} /> 
+                                    <div className="flex items-center text-xs text-gray-500">
+                                      <FiCalendar className="inline ml-1" size={10} /> 
                                       {getRelativeTime(post.created_at)}
                                     </div>
                                   </div>
