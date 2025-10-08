@@ -584,61 +584,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       {/* Desktop Layout */}
                       <div className="hidden lg:block">
                         <div className="grid grid-cols-12 gap-6 h-96">
-                          {/* Small Featured Posts Grid (2x2) - Left side */}
-                          <div className="col-span-5 h-full">
-                            <div className="grid grid-cols-2 gap-4 h-full">
-                              {featuredPosts.slice(1, 5).map((post, index) => (
-                                <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
-                                  <div className="w-full flex flex-col h-full">
-                                    {/* Image */}
-                                    <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
-                                      {/* Post Number */}
-                                      <div className="absolute top-2 left-2 z-20">
-                                        <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white font-bold text-xs rounded-full shadow-lg">
-                                          {String(index + 2).padStart(2, '0')}
-                                        </span>
-                                      </div>
-                                      
-                                      {post.featured_image ? (
-                                        <img
-                                          src={getImageUrl(post.featured_image)}
-                                          alt={post.title_ar || post.title}
-                                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                                        />
-                                      ) : (
-                                        <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                          <span className="text-white text-lg font-bold">
-                                            {String(index + 2).padStart(2, '0')}
-                                          </span>
-                                        </div>
-                                      )}
-                                    </div>
-                                    
-                                    {/* Content */}
-                                    <div className="p-3 flex flex-col flex-grow">
-                                      {/* Category - Black badge */}
-                                      <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
-                                        {getCategoryName(post.category_id)}
-                                      </span>
-                                      
-                                      {/* Title - Fixed height with line clamping */}
-                                      <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-2 flex-grow" style={{ fontFamily: 'Alexandria, sans-serif' }}>
-                                        {post.title_ar || post.title}
-                                      </h3>
-                                      
-                                      {/* Time - Always at bottom */}
-                                      <div className="flex items-center text-xs text-gray-500 mt-auto">
-                                        <FiCalendar className="inline ml-1" size={12} /> 
-                                        {getRelativeTime(post.created_at)}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                          
-                          {/* Large Featured Post - Right side */}
+                          {/* Large Featured Post - Left side */}
                           <div className="col-span-7 h-full">
                             {featuredPosts[0] && (
                               <Link href={`/post/${featuredPosts[0].slug}`} className="block h-full">
@@ -698,111 +644,115 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               </Link>
                             )}
                           </div>
+                          
+                          {/* Small Featured Posts Grid (2x2) - Right side */}
+                          <div className="col-span-5 h-full">
+                            <div className="grid grid-cols-2 gap-4 h-full">
+                              {featuredPosts.slice(1, 5).map((post, index) => (
+                                <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
+                                  <div className="w-full flex flex-col h-full">
+                                    {/* Image */}
+                                    <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
+                                      {/* Post Number */}
+                                      <div className="absolute top-2 left-2 z-20">
+                                        <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white font-bold text-xs rounded-full shadow-lg">
+                                          {String(index + 2).padStart(2, '0')}
+                                        </span>
+                                      </div>
+                                      
+                                      {post.featured_image ? (
+                                        <img
+                                          src={getImageUrl(post.featured_image)}
+                                          alt={post.title_ar || post.title}
+                                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                        />
+                                      ) : (
+                                        <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                          <span className="text-white text-lg font-bold">
+                                            {String(index + 2).padStart(2, '0')}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    {/* Content */}
+                                    <div className="p-3 flex flex-col flex-grow">
+                                      {/* Category - Black badge */}
+                                      <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
+                                        {getCategoryName(post.category_id)}
+                                      </span>
+                                      
+                                      {/* Title - Fixed height with line clamping */}
+                                      <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-2 flex-grow" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                        {post.title_ar || post.title}
+                                      </h3>
+                                      
+                                      {/* Time - Always at bottom */}
+                                      <div className="flex items-center text-xs text-gray-500 mt-auto">
+                                        <FiCalendar className="inline ml-1" size={12} /> 
+                                        {getRelativeTime(post.created_at)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
 
                       {/* Mobile Layout */}
-                      <div className="lg:hidden space-y-4">
-                        {/* Large Featured Post */}
-                        {featuredPosts[0] && (
-                          <Link href={`/post/${featuredPosts[0].slug}`} className="block">
-                            <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-video">
-                              <div className="w-full h-full relative">
-                                {featuredPosts[0].featured_image ? (
-                                  <img
-                                    src={getImageUrl(featuredPosts[0].featured_image)}
-                                    alt={featuredPosts[0].title_ar || featuredPosts[0].title}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                    <span className="text-white text-6xl font-bold">01</span>
-                                  </div>
-                                )}
-                                
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                                
-                                {/* Content Overlay */}
-                                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                                  {/* Post Number */}
-                                  <div className="absolute top-4 left-4">
-                                    <span className="inline-flex items-center justify-center w-8 h-8 bg-blue-600 text-white font-bold text-sm rounded-full shadow-lg">
-                                      01
-                                    </span>
-                                  </div>
-                                  
-                                  {/* Category */}
-                                  <span className="inline-block bg-black text-white text-sm px-3 py-1 rounded mb-3 w-fit">
-                                    {getCategoryName(featuredPosts[0].category_id)}
-                                  </span>
-                                  
-                                  {/* Title */}
-                                  <h2 className="text-lg font-bold mb-2 leading-tight" style={{ fontFamily: 'Alexandria, sans-serif' }}>
-                                    {featuredPosts[0].title_ar || featuredPosts[0].title}
-                                  </h2>
-                                  
-                                  {/* Meta */}
-                                  <div className="flex items-center gap-3 text-sm text-white/90">
-                                    <span className="flex items-center">
-                                      <FiCalendar className="inline ml-1" size={12} /> 
-                                      {getRelativeTime(featuredPosts[0].created_at)}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </article>
-                          </Link>
-                        )}
-                        
-                        {/* Small Featured Posts Grid (2x2) */}
-                        <div className="grid grid-cols-2 gap-4">
-                          {featuredPosts.slice(1, 5).map((post, index) => (
-                            <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
-                              <div className="w-full flex flex-col">
-                                {/* Image */}
-                                <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
-                                  {/* Post Number */}
-                                  <div className="absolute top-2 left-2 z-20">
-                                    <span className="inline-flex items-center justify-center w-5 h-5 bg-blue-600 text-white font-bold text-xs rounded-full shadow-lg">
-                                      {String(index + 2).padStart(2, '0')}
-                                    </span>
-                                  </div>
-                                  
+                      <div className="lg:hidden">
+                        {/* Horizontal Scrolling Featured Posts */}
+                        <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: 'thin' }}>
+                          {featuredPosts.slice(0, 5).map((post, index) => (
+                            <Link key={post.id} href={`/post/${post.slug}`} className="block flex-shrink-0">
+                              <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-video w-80">
+                                <div className="w-full h-full relative">
                                   {post.featured_image ? (
                                     <img
                                       src={getImageUrl(post.featured_image)}
                                       alt={post.title_ar || post.title}
-                                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                      className="w-full h-full object-cover"
                                     />
                                   ) : (
                                     <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                      <span className="text-white text-sm font-bold">
-                                        {String(index + 2).padStart(2, '0')}
-                                      </span>
+                                      <span className="text-white text-6xl font-bold">{String(index + 1).padStart(2, '0')}</span>
                                     </div>
                                   )}
-                                </div>
-                                
-                                {/* Content */}
-                                <div className="p-3 flex flex-col flex-grow">
-                                  {/* Category - Black badge */}
-                                  <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
-                                    {getCategoryName(post.category_id)}
-                                  </span>
                                   
-                                  {/* Title - Fixed height with line clamping */}
-                                  <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-2 flex-grow" style={{ fontFamily: 'Alexandria, sans-serif' }}>
-                                    {post.title_ar || post.title}
-                                  </h3>
+                                  {/* Gradient Overlay */}
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                                   
-                                  {/* Time - Always at bottom */}
-                                  <div className="flex items-center text-xs text-gray-500 mt-auto">
-                                    <FiCalendar className="inline ml-1" size={12} /> 
-                                    {getRelativeTime(post.created_at)}
+                                  {/* Content Overlay */}
+                                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                    {/* Post Number */}
+                                    <div className="absolute top-4 left-4">
+                                      <span className="inline-flex items-center justify-center w-8 h-8 bg-blue-600 text-white font-bold text-sm rounded-full shadow-lg">
+                                        {String(index + 1).padStart(2, '0')}
+                                      </span>
+                                    </div>
+                                    
+                                    {/* Category */}
+                                    <span className="inline-block bg-black text-white text-sm px-3 py-1 rounded mb-3 w-fit">
+                                      {getCategoryName(post.category_id)}
+                                    </span>
+                                    
+                                    {/* Title */}
+                                    <h2 className="text-lg font-bold mb-2 leading-tight line-clamp-2" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                      {post.title_ar || post.title}
+                                    </h2>
+                                    
+                                    {/* Meta */}
+                                    <div className="flex items-center gap-3 text-sm text-white/90">
+                                      <span className="flex items-center">
+                                        <FiCalendar className="inline ml-1" size={12} /> 
+                                        {getRelativeTime(post.created_at)}
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
+                              </article>
                             </Link>
                           ))}
                         </div>
