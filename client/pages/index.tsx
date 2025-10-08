@@ -600,11 +600,20 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
                                 <div className="relative flex-1 overflow-hidden">
                                   {post.featured_image ? (
-                                    <img
-                                      src={getImageUrl(post.featured_image)}
-                                      alt={post.title_ar || post.title}
-                                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                                    />
+                                    <div className="w-full h-full overflow-hidden">
+                                      <img
+                                        src={getImageUrl(post.featured_image)}
+                                        alt={post.title_ar || post.title}
+                                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                                        style={{
+                                          width: '100%',
+                                          height: '100%',
+                                          objectFit: 'cover',
+                                          minWidth: '100%',
+                                          minHeight: '100%'
+                                        }}
+                                      />
+                                    </div>
                                   ) : (
                                     <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                                       <span className="text-white text-4xl font-bold">
@@ -620,24 +629,42 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                   </div>
                                 </div>
 
-                                <div className="p-4 flex-shrink-0">
-                                  <h3 className={`font-bold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors leading-tight ${
-                                    index === 0 ? 'text-xl' : 'text-base'
-                                  }`}>
-                                    {post.title_ar || post.title}
-                                  </h3>
+                                <div className="p-4 flex-shrink-0" style={{ minHeight: '120px', maxHeight: '120px' }}>
+                                  <div style={{ height: '60px', overflow: 'hidden', marginBottom: '8px' }}>
+                                    <h3 className={`font-bold text-gray-800 hover:text-blue-600 transition-colors leading-tight ${
+                                      index === 0 ? 'text-xl' : 'text-base'
+                                    }`} style={{
+                                      display: '-webkit-box',
+                                      WebkitLineClamp: index === 0 ? 3 : 2,
+                                      WebkitBoxOrient: 'vertical',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      lineHeight: index === 0 ? '1.3' : '1.4'
+                                    }}>
+                                      {post.title_ar || post.title}
+                                    </h3>
+                                  </div>
                                   {(post.content_ar || post.content) && (
-                                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">
-                                      {truncateText(
-                                        (post.content_ar || post.content).replace(
-                                          /<[^>]*>/g,
-                                          "",
-                                        ),
-                                        index === 0 ? 100 : 60,
-                                      )}
-                                    </p>
+                                    <div style={{ height: '32px', overflow: 'hidden', marginBottom: '8px' }}>
+                                      <p className="text-gray-600 text-sm" style={{
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        lineHeight: '1.3'
+                                      }}>
+                                        {truncateText(
+                                          (post.content_ar || post.content).replace(
+                                            /<[^>]*>/g,
+                                            "",
+                                          ),
+                                          index === 0 ? 100 : 60,
+                                        )}
+                                      </p>
+                                    </div>
                                   )}
-                                  <div className="flex items-center justify-between text-xs text-gray-500">
+                                  <div className="flex items-center justify-between text-xs text-gray-500" style={{ height: '16px' }}>
                                     <div className="flex items-center">
                                       <FiCalendar
                                         size={12}
@@ -667,7 +694,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                     </span>
                                   </div>
 
-                                  <div className="relative overflow-hidden" style={{ height: '112px', width: '100%' }}>
+                                  <div className="relative overflow-hidden" style={{ height: '140px', width: '100%' }}>
                                     {post.featured_image ? (
                                       <img
                                         src={getImageUrl(post.featured_image)}
@@ -689,7 +716,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                     </div>
                                   </div>
 
-                                  <div className="p-2 flex-shrink-0" style={{ height: '48px', overflow: 'hidden' }}>
+                                  <div className="p-2 flex-shrink-0" style={{ height: '60px', overflow: 'hidden' }}>
                                     <h3 className="featured-mobile-title font-bold text-gray-800 hover:text-blue-600 transition-colors">
                                       {post.title_ar || post.title}
                                     </h3>
