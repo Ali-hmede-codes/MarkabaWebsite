@@ -196,8 +196,8 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
       />
       <Layout pageType="home">
         <div className="bg-white min-h-screen" dir="rtl">
-          {/* Breaking News Banner */}
-          <BreakingNewsBanner />
+          {/* Breaking News Banner - Disabled */}
+          {/* <BreakingNewsBanner /> */}
 
           <div className="container mx-auto responsive-padding">
             {/* Latest Articles Section */}
