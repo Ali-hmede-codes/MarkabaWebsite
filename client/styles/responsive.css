@@ -26,6 +26,56 @@
   @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6;
 }
 
+/* Featured Posts Desktop Layout */
+.featured-posts-desktop {
+  @apply grid grid-cols-12 gap-4;
+}
+
+.featured-main-post {
+  @apply col-span-12 lg:col-span-8;
+  height: 400px;
+}
+
+.featured-sub-post {
+  @apply col-span-12 lg:col-span-4;
+  height: 300px;
+}
+
+.featured-sub-post:nth-child(2) {
+  @apply lg:col-start-9 lg:row-start-1;
+}
+
+.featured-sub-post:nth-child(3) {
+  @apply lg:col-start-9 lg:row-start-2;
+}
+
+.featured-sub-post:nth-child(4) {
+  @apply lg:col-start-9 lg:row-start-3;
+}
+
+/* Featured Posts Mobile Layout */
+.featured-posts-mobile {
+  @apply -mx-4 px-4;
+}
+
+.featured-mobile-card {
+  @apply w-72 flex-shrink-0;
+}
+
+.featured-mobile-image {
+  @apply h-48;
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 .info-boxes {
   @apply grid grid-cols-1 lg:grid-cols-2 gap-8;
 }

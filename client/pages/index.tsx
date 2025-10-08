@@ -194,9 +194,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
         image="/images/og-image.jpg"
         canonical="https://markaba.news"
       />
-      <Layout 
-        pageType="home"
-      >
+      <Layout pageType="home">
         <div className="bg-white min-h-screen" dir="rtl">
           {/* Breaking News Banner */}
           <BreakingNewsBanner />
@@ -582,63 +580,134 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6">
                 <div className="lg:col-span-9">
                   {featuredPosts.length > 0 ? (
-                    <div className="featured-grid">
-                      {featuredPosts.map((post, index) => (
-                        <Link key={post.id} href={`/post/${post.slug}`} className="block">
-                          <article
-                            className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 aspect-square flex flex-col cursor-pointer"
-                          >
-                            <div className="relative flex-1 overflow-hidden">
-                              {post.featured_image ? (
-                                <img
-                                  src={getImageUrl(post.featured_image)}
-                                  alt={post.title_ar || post.title}
-                                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                  <span className="text-white text-4xl font-bold">
-                                    {index + 1}
+                    <>
+                      {/* Desktop Layout */}
+                      <div className="hidden lg:block">
+                        <div className="featured-posts-desktop">
+                          {featuredPosts.map((post, index) => (
+                            <Link key={post.id} href={`/post/${post.slug}`} className="block">
+                              <article
+                                className={`news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 flex flex-col cursor-pointer relative ${
+                                  index === 0 ? 'featured-main-post' : 'featured-sub-post'
+                                }`}
+                              >
+                                {/* Post Number */}
+                                <div className="absolute top-4 left-4 z-20">
+                                  <span className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 text-white font-bold text-lg rounded-full shadow-lg">
+                                    {String(index + 1).padStart(2, '0')}
                                   </span>
                                 </div>
-                              )}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                              <div className="absolute top-3 right-3">
-                                <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg">
-                                  {getCategoryName(post.category_id)}
-                                </span>
-                              </div>
 
-                            </div>
-                            <div className="p-4 flex-shrink-0">
-                              <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors leading-tight">
-                                {post.title_ar || post.title}
-                              </h3>
-                              {(post.content_ar || post.content) && (
-                                <p className="text-gray-600 text-xs mb-2 line-clamp-1">
-                                  {truncateText(
-                                    (post.content_ar || post.content).replace(
-                                      /<[^>]*>/g,
-                                      "",
-                                    ),
-                                    50,
+                                <div className="relative flex-1 overflow-hidden">
+                                  {post.featured_image ? (
+                                    <img
+                                      src={getImageUrl(post.featured_image)}
+                                      alt={post.title_ar || post.title}
+                                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                      <span className="text-white text-4xl font-bold">
+                                        {String(index + 1).padStart(2, '0')}
+                                      </span>
+                                    </div>
                                   )}
-                                </p>
-                              )}
-                              <div className="flex items-center justify-between text-xs text-gray-500">
-                                <div className="flex items-center">
-                                  <FiCalendar
-                                    size={10}
-                                    className="ml-1 rtl:ml-0 rtl:mr-1"
-                                  />
-                                  {getRelativeTime(post.created_at)}
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                  <div className="absolute top-4 right-4">
+                                    <span className="inline-block px-3 py-1 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg">
+                                      {getCategoryName(post.category_id)}
+                                    </span>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          </article>
-                        </Link>
-                      ))}
-                    </div>
+
+                                <div className="p-4 flex-shrink-0">
+                                  <h3 className={`font-bold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors leading-tight ${
+                                    index === 0 ? 'text-xl' : 'text-base'
+                                  }`}>
+                                    {post.title_ar || post.title}
+                                  </h3>
+                                  {(post.content_ar || post.content) && (
+                                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                                      {truncateText(
+                                        (post.content_ar || post.content).replace(
+                                          /<[^>]*>/g,
+                                          "",
+                                        ),
+                                        index === 0 ? 100 : 60,
+                                      )}
+                                    </p>
+                                  )}
+                                  <div className="flex items-center justify-between text-xs text-gray-500">
+                                    <div className="flex items-center">
+                                      <FiCalendar
+                                        size={12}
+                                        className="ml-1 rtl:ml-0 rtl:mr-1"
+                                      />
+                                      {getRelativeTime(post.created_at)}
+                                    </div>
+                                  </div>
+                                </div>
+                              </article>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Mobile Layout - Horizontal Scroll */}
+                      <div className="block lg:hidden">
+                        <div className="featured-posts-mobile overflow-x-auto scrollbar-hide">
+                          <div className="flex gap-4 pb-4" style={{ width: 'max-content' }}>
+                            {featuredPosts.map((post, index) => (
+                              <Link key={post.id} href={`/post/${post.slug}`} className="block">
+                                <article className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer relative featured-mobile-card">
+                                  {/* Post Number */}
+                                  <div className="absolute top-3 left-3 z-20">
+                                    <span className="inline-flex items-center justify-center w-10 h-10 bg-blue-600 text-white font-bold text-sm rounded-full shadow-lg">
+                                      {String(index + 1).padStart(2, '0')}
+                                    </span>
+                                  </div>
+
+                                  <div className="relative overflow-hidden featured-mobile-image">
+                                    {post.featured_image ? (
+                                      <img
+                                        src={getImageUrl(post.featured_image)}
+                                        alt={post.title_ar || post.title}
+                                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                        <span className="text-white text-2xl font-bold">
+                                          {String(index + 1).padStart(2, '0')}
+                                        </span>
+                                      </div>
+                                    )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <div className="absolute top-3 right-3">
+                                      <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg">
+                                        {getCategoryName(post.category_id)}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="p-3 flex-shrink-0">
+                                    <h3 className="text-sm font-bold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors leading-tight">
+                                      {post.title_ar || post.title}
+                                    </h3>
+                                    <div className="flex items-center text-xs text-gray-500">
+                                      <FiCalendar
+                                        size={10}
+                                        className="ml-1 rtl:ml-0 rtl:mr-1"
+                                      />
+                                      {getRelativeTime(post.created_at)}
+                                    </div>
+                                  </div>
+                                </article>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   ) : (
                     <div className="text-center py-12">
                       <div className="bg-white rounded-xl shadow-lg p-8 mx-auto max-w-md">
