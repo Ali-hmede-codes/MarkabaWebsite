@@ -70,11 +70,11 @@
 }
 
 .featured-mobile-card {
-  @apply w-48 flex-shrink-0;
+  @apply w-40 flex-shrink-0;
 }
 
 .featured-mobile-image {
-  @apply h-32 w-full object-cover rounded-lg;
+  @apply h-28 w-full object-cover rounded-lg;
 }
 
 /* Scrollbar hide utility */

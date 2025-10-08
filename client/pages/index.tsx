@@ -656,13 +656,13 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       {/* Mobile Layout - Horizontal Scroll */}
                       <div className="block lg:hidden">
                         <div className="featured-posts-mobile overflow-x-auto scrollbar-hide">
-                          <div className="flex gap-4 pb-4" style={{ width: 'max-content' }}>
+                          <div className="flex gap-3 pb-4 px-1" style={{ width: 'max-content' }}>
                             {featuredPosts.map((post, index) => (
                               <Link key={post.id} href={`/post/${post.slug}`} className="block">
                                 <article className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer relative featured-mobile-card">
                                   {/* Post Number */}
-                                  <div className="absolute top-3 left-3 z-20">
-                                    <span className="inline-flex items-center justify-center w-10 h-10 bg-blue-600 text-white font-bold text-sm rounded-full shadow-lg">
+                                  <div className="absolute top-2 left-2 z-20">
+                                    <span className="inline-flex items-center justify-center w-8 h-8 bg-blue-600 text-white font-bold text-xs rounded-full shadow-lg">
                                       {String(index + 1).padStart(2, '0')}
                                     </span>
                                   </div>
@@ -682,15 +682,15 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                       </div>
                                     )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                                    <div className="absolute top-3 right-3">
-                                      <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg">
+                                    <div className="absolute top-2 right-2">
+                                      <span className="inline-block px-1.5 py-0.5 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg">
                                         {getCategoryName(post.category_id)}
                                       </span>
                                     </div>
                                   </div>
 
-                                  <div className="p-3 flex-shrink-0">
-                                    <h3 className="text-sm font-bold text-gray-800 line-clamp-2 hover:text-blue-600 transition-colors leading-tight">
+                                  <div className="p-2 flex-shrink-0">
+                                    <h3 className="text-xs font-bold text-gray-800 line-clamp-2 hover:text-blue-600 transition-colors leading-tight">
                                       {post.title_ar || post.title}
                                     </h3>
                                   </div>
