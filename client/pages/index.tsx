@@ -577,13 +577,13 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6">
-                <div className="lg:col-span-9">
+              <div className="w-full">
+                <div className="w-full">
                   {featuredPosts.length > 0 ? (
                     <>
                       {/* Desktop Layout */}
                       <div className="hidden lg:block">
-                        <div className="grid grid-cols-5 gap-4">
+                        <div className="grid grid-cols-10 gap-6">
                           {featuredPosts.map((post, index) => (
                             <Link key={post.id} href={`/post/${post.slug}`} className="block">
                               <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full flex flex-col">
@@ -637,16 +637,16 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
                       {/* Mobile Layout */}
                       <div className="lg:hidden">
-                        <div className="space-y-2 max-h-[70vh] overflow-y-auto">
+                        <div className="space-y-1">
                           {featuredPosts.map((post, index) => (
                             <Link key={post.id} href={`/post/${post.slug}`} className="block">
                               <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
-                                <div className="flex h-20">
+                                <div className="flex h-16">
                                   {/* Image */}
-                                  <div className="w-20 h-20 flex-shrink-0 relative overflow-hidden">
+                                  <div className="w-16 h-16 flex-shrink-0 relative overflow-hidden">
                                     {/* Post Number */}
-                                    <div className="absolute top-1 left-1 z-20">
-                                      <span className="inline-flex items-center justify-center w-5 h-5 bg-blue-600 text-white font-bold text-xs rounded-full shadow-lg">
+                                    <div className="absolute top-0.5 left-0.5 z-20">
+                                      <span className="inline-flex items-center justify-center w-4 h-4 bg-blue-600 text-white font-bold text-xs rounded-full shadow-lg">
                                         {String(index + 1).padStart(2, '0')}
                                       </span>
                                     </div>
@@ -659,7 +659,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                       />
                                     ) : (
                                       <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                        <span className="text-white text-lg font-bold">
+                                        <span className="text-white text-sm font-bold">
                                           {String(index + 1).padStart(2, '0')}
                                         </span>
                                       </div>
@@ -667,22 +667,22 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                   </div>
                                   
                                   {/* Content */}
-                                  <div className="flex-1 p-2 flex flex-col justify-between">
+                                  <div className="flex-1 p-1.5 flex flex-col justify-between">
                                     <div>
                                       {/* Category - Black background */}
-                                      <span className="inline-block bg-black text-white text-xs px-1 py-0.5 rounded mb-1 w-fit">
+                                      <span className="inline-block bg-black text-white text-xs px-1 py-0.5 rounded mb-0.5 w-fit">
                                         {getCategoryName(post.category_id)}
                                       </span>
                                       
                                       {/* Title */}
-                                      <h3 className="font-bold text-gray-900 text-xs leading-tight line-clamp-2" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                      <h3 className="font-bold text-gray-900 text-xs leading-tight line-clamp-1" style={{ fontFamily: 'Alexandria, sans-serif' }}>
                                         {post.title_ar || post.title}
                                       </h3>
                                     </div>
                                     
                                     {/* Time - Always at bottom */}
                                     <div className="flex items-center text-xs text-gray-500">
-                                      <FiCalendar className="inline ml-1" size={10} /> 
+                                      <FiCalendar className="inline ml-1" size={8} /> 
                                       {getRelativeTime(post.created_at)}
                                     </div>
                                   </div>
@@ -705,11 +705,6 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       </div>
                     </div>
                   )}
-                </div>
-                
-                {/* Sidebar with Ad */}
-                <div className="lg:col-span-3 hidden lg:block">
-                  <SidebarTopAd />
                 </div>
               </div>
             </section>
