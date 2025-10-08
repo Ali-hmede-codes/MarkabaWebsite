@@ -76,7 +76,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
         ? "https://api.markaba.news"
         : "https://api.markaba.news";
       
-      const response = await fetch(`${baseUrl}/api/v2/posts/featured?limit=10`, {
+      const response = await fetch(`${baseUrl}/api/v2/posts/featured?limit=5`, {
         headers: {
           "Content-Type": "application/json",
           "User-Agent": "NewsMarkaba-FeaturedPosts/1.0",
@@ -96,7 +96,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
         const featuredPostsList = [...posts]
           .filter((post) => Boolean(post.is_featured))
           .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-          .slice(0, 10);
+          .slice(0, 5);
         setFeaturedPosts(featuredPostsList);
       }
     }
