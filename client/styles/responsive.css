@@ -82,6 +82,18 @@
   max-width: 100%;
 }
 
+.featured-mobile-title {
+  font-family: 'Alexandria, sans-serif';
+  font-size: 0.75rem;
+  line-height: 1.2;
+  max-height: 2.4rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
 /* Scrollbar hide utility */
 .scrollbar-hide {
   -ms-overflow-style: none;

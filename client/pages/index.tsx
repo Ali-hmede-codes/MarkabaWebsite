@@ -689,8 +689,8 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                     </div>
                                   </div>
 
-                                  <div className="p-2 flex-shrink-0">
-                                    <h3 className="text-xs font-bold text-gray-800 line-clamp-2 hover:text-blue-600 transition-colors leading-tight">
+                                  <div className="p-2 flex-shrink-0" style={{ height: '48px', overflow: 'hidden' }}>
+                                    <h3 className="featured-mobile-title font-bold text-gray-800 hover:text-blue-600 transition-colors">
                                       {post.title_ar || post.title}
                                     </h3>
                                   </div>
