@@ -443,8 +443,8 @@ router.get('/featured', async (req, res) => {
       // Note: Only Arabic language is supported in this schema
     }
     
-    queryStr += ' ORDER BY p.created_at DESC LIMIT ?';
-    params.push(limit);
+    queryStr += ` ORDER BY p.created_at DESC LIMIT ${limit}`;
+    // Remove the limit from params since we're using direct substitution
     
     const posts = await query(queryStr, params);
     
