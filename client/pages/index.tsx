@@ -583,10 +583,10 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                     <>
                       {/* Desktop Layout */}
                       <div className="hidden lg:block">
-                        <div className="grid grid-cols-10 gap-6">
+                        <div className="flex gap-6 overflow-x-auto pb-4" style={{ scrollbarWidth: 'thin' }}>
                           {featuredPosts.map((post, index) => (
-                            <Link key={post.id} href={`/post/${post.slug}`} className="block">
-                              <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full flex flex-col">
+                            <Link key={post.id} href={`/post/${post.slug}`} className="block flex-shrink-0">
+                              <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full flex flex-col w-80">
                                 {/* Image */}
                                 <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
                                   {/* Post Number */}
