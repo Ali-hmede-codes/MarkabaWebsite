@@ -153,12 +153,12 @@ ${posts.map(post => {
   const isRecent = new Date(lastmod) > new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours
   
   return `  <url>
-    <loc>${baseUrl}/posts/${post.slug}</loc>
+    <loc>${baseUrl}/post/${post.slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${isRecent ? 'hourly' : 'weekly'}</changefreq>
     <priority>${isRecent ? '0.9' : '0.7'}</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/posts/${post.slug}" />
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/posts/${post.slug}" />
+    <xhtml:link rel="alternate" hreflang="ar" href="${baseUrl}/post/${post.slug}" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/post/${post.slug}" />
     ${isRecent ? `<news:news>
       <news:publication>
         <news:name>Markaba News</news:name>

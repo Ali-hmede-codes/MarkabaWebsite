@@ -334,7 +334,7 @@ const SitemapPage: React.FC<SitemapPageProps> = ({ categories, recentPosts }) =>
                     <div key={post.id} className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                         <Link 
-                          href={`/posts/${post.slug}`}
+                          href={`/post/${post.slug}`}
                           className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
                         >
                           {post.title_ar}
@@ -347,7 +347,7 @@ const SitemapPage: React.FC<SitemapPageProps> = ({ categories, recentPosts }) =>
                       )}
                       <div className="flex items-center justify-between">
                         <p className="text-xs text-gray-500 dark:text-gray-500 font-mono">
-                          /posts/{post.slug}
+                          /post/{post.slug}
                         </p>
                         <span className="text-xs text-gray-500 dark:text-gray-500">
                           {new Date(post.created_at).toLocaleDateString(
