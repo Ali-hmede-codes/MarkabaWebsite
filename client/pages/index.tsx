@@ -33,6 +33,46 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
   const [videoPosts, setVideoPosts] = useState<Post[]>([]);
   const [videoLoading, setVideoLoading] = useState(false);
+  const [featuredLoading, setFeaturedLoading] = useState(false);
+  const [dataRefreshInterval, setDataRefreshInterval] = useState<NodeJS.Timeout | null>(null);
+
+  // Fetch featured posts from API to ensure fresh data
+  const fetchFeaturedPosts = async () => {
+    try {
+      setFeaturedLoading(true);
+      const response = await fetch('/api/posts?featured=true&limit=4&sort=created_at&order=desc');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data?.posts) {
+          const freshFeaturedPosts = data.data.posts.filter((post: Post) => Boolean(post.is_featured));
+          setFeaturedPosts(freshFeaturedPosts);
+          
+          // Cache in localStorage for persistence
+          localStorage.setItem('featuredPosts', JSON.stringify({
+            data: freshFeaturedPosts,
+            timestamp: Date.now()
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching featured posts:', error);
+      // Try to load from localStorage as fallback
+      const cached = localStorage.getItem('featuredPosts');
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          // Use cached data if it's less than 5 minutes old
+          if (Date.now() - timestamp < 5 * 60 * 1000) {
+            setFeaturedPosts(data);
+          }
+        } catch (e) {
+          console.error('Error parsing cached featured posts:', e);
+        }
+      }
+    } finally {
+      setFeaturedLoading(false);
+    }
+  };
 
   // Fetch video posts from the new endpoint
   const fetchVideoPosts = async () => {
@@ -69,11 +109,59 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
         .slice(0, 4);
 
       setFeaturedPosts(featuredPostsList);
+      
+      // Cache initial featured posts
+      if (featuredPostsList.length > 0) {
+        localStorage.setItem('featuredPosts', JSON.stringify({
+          data: featuredPostsList,
+          timestamp: Date.now()
+        }));
+      }
+    } else {
+      // If no posts from SSR, try to load from cache
+      const cached = localStorage.getItem('featuredPosts');
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          // Use cached data if it's less than 10 minutes old
+          if (Date.now() - timestamp < 10 * 60 * 1000) {
+            setFeaturedPosts(data);
+          }
+        } catch (e) {
+          console.error('Error parsing cached featured posts:', e);
+        }
+      }
     }
     
     // Fetch video posts separately
     fetchVideoPosts();
+    
+    // Fetch fresh featured posts to ensure they don't disappear
+    fetchFeaturedPosts();
+    
+    // Set up periodic refresh for featured posts every 2 minutes
+    const interval = setInterval(() => {
+      fetchFeaturedPosts();
+    }, 2 * 60 * 1000);
+    
+    setDataRefreshInterval(interval);
+    
+    // Cleanup interval on unmount
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [posts]);
+
+  // Cleanup interval on component unmount
+  useEffect(() => {
+    return () => {
+      if (dataRefreshInterval) {
+        clearInterval(dataRefreshInterval);
+      }
+    };
+  }, [dataRefreshInterval]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -554,7 +642,22 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6">
                 <div className="lg:col-span-9">
-                  {featuredPosts.length > 0 ? (
+                  {featuredLoading && featuredPosts.length === 0 ? (
+                    <div className="featured-grid">
+                      {[1, 2, 3, 4].map((index) => (
+                        <div key={index} className="news-card bg-white rounded-xl shadow-lg overflow-hidden aspect-square flex flex-col animate-pulse">
+                          <div className="relative flex-1 overflow-hidden">
+                            <div className="w-full h-full bg-gray-300"></div>
+                          </div>
+                          <div className="p-4 flex-shrink-0">
+                            <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                            <div className="h-3 bg-gray-200 rounded mb-2"></div>
+                            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : featuredPosts.length > 0 ? (
                     <div className="featured-grid">
                       {featuredPosts.map((post, index) => (
                         <Link key={post.id} href={`/post/${post.slug}`} className="block">
@@ -618,9 +721,18 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                         <div className="text-gray-400 mb-4">
                           <FiTrendingUp className="text-4xl mx-auto" />
                         </div>
-                        <p className="text-gray-600 text-lg font-medium">
-                          لا يوجد الان مواضيع مميزة
+                        <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                          لا توجد أخبار مميزة حالياً
+                        </h3>
+                        <p className="text-gray-500 text-sm">
+                          سيتم عرض الأخبار المميزة هنا عند توفرها
                         </p>
+                        {featuredLoading && (
+                          <div className="mt-4">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
+                            <p className="text-xs text-gray-400 mt-2">جاري التحديث...</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
