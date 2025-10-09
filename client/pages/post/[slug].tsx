@@ -72,6 +72,32 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
   const postImage = post.featured_image ? `https://markaba.news${post.featured_image}` : 'https://markaba.news/images/og-image.jpg';
   const postUrl = `https://markaba.news/post/${post.slug}`;
 
+  // NewsArticle structured data for better SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": postTitle,
+    "image": [postImage],
+    "datePublished": post.created_at ? new Date(post.created_at).toISOString() : new Date().toISOString(),
+    "dateModified": post.updated_at ? new Date(post.updated_at).toISOString() : new Date(post.created_at || Date.now()).toISOString(),
+    "author": {
+      "@type": "Person",
+      "name": "مـركـبـا - الـمـنـصـة الاخـبـاريـة"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "مـركـبـا - الـمـنـصـة الاخـبـاريـة",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://markaba.news/images/logo_new.png"
+      }
+    },
+    "mainEntityOfPage": postUrl,
+    "description": postDescription,
+    "articleSection": post.category?.name_ar || "أخبار",
+    "inLanguage": "ar"
+  };
+
   return (
     <>
       <Head>
@@ -81,6 +107,12 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
         <meta name="author" content="مـركـبـا - الـمـنـصـة الاخـبـاريـة" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={postUrl} />
+        
+        {/* NewsArticle Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         
         {/* Open Graph */}
         <meta property="og:title" content={pageTitle} />

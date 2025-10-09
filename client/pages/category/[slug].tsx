@@ -135,18 +135,25 @@ const CategoryPage: React.FC = () => {
 
   const categoryName = currentCategory.name_ar;
   const pageTitle = `${content.category.posts_in} ${categoryName} - ${content.site.name}`;
-  const pageDescription = `تصفح جميع أخبار ${categoryName} على ${content.site.name}`;
+  const pageDescription = currentCategory.description_ar 
+    ? `${currentCategory.description_ar} - تصفح جميع أخبار ${categoryName} على ${content.site.name}`
+    : `تصفح جميع أخبار ${categoryName} على ${content.site.name}`;
 
   return (
     <Layout
-      title={pageTitle}
-      description={pageDescription}
+      pageType="category"
+      pageData={{ slug: currentCategory.slug }}
       seo={{
         title: pageTitle,
         description: pageDescription,
-        type: 'website',
-        section: categoryName,
-        keywords: ['أخبار', categoryName, 'مقالات', content.site.name]
+        keywords: [
+          'أخبار', 
+          categoryName, 
+          'مقالات', 
+          content.site.name
+        ],
+        url: `https://markaba.news/category/${currentCategory.slug}`,
+        image: currentCategory.image ? getImageUrl(currentCategory.image) : undefined
       }}
     >
       <div className="bg-gray-50">

@@ -45,13 +45,40 @@ const Layout: React.FC<LayoutProps> = ({
   className = '',
   containerClassName = '',
 }) => {
+  // Generate canonical URL based on current page
+  const getCanonicalUrl = () => {
+    if (seo?.url) return seo.url;
+    
+    // Generate canonical URL based on page type and data
+    const baseUrl = 'https://markaba.news';
+    
+    switch (pageType) {
+      case 'home':
+        return baseUrl;
+      case 'category':
+        return pageData?.slug ? `${baseUrl}/category/${pageData.slug}` : baseUrl;
+      case 'search':
+        return `${baseUrl}/search`;
+      case 'about':
+        return `${baseUrl}/about`;
+      case 'contact':
+        return `${baseUrl}/contact`;
+      case 'advertise':
+        return `${baseUrl}/advertise`;
+      default:
+        return typeof window !== 'undefined' ? window.location.href : baseUrl;
+    }
+  };
+
   return (
     <div className={`min-h-screen flex flex-col bg-white ${className}`}>
-      {(title || description || keywords) && (
+      {(title || description || keywords || seo) && (
         <SimpleMeta 
-          title={title}
-          description={description}
-          keywords={keywords}
+          title={seo?.title || title}
+          description={seo?.description || description}
+          keywords={Array.isArray(seo?.keywords) ? seo.keywords.join(', ') : keywords}
+          canonical={getCanonicalUrl()}
+          image={seo?.image}
         />
       )}
       {showHeader && <Header />}

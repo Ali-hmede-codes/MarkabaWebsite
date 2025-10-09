@@ -117,7 +117,23 @@ const SearchPage: React.FC = () => {
   const totalPages = searchResults ? Math.ceil(totalResults / searchResults.limit) : 0;
 
   return (
-    <Layout>
+    <Layout 
+      pageType="search"
+      seo={{
+        title: searchQuery 
+          ? `نتائج البحث عن "${searchQuery}" - مـركـبـا` 
+          : 'البحث - مـركـبـا',
+        description: searchQuery 
+          ? `نتائج البحث عن "${searchQuery}" في موقع مـركـبـا - الـمـنـصـة الاخـبـاريـة. اكتشف المقالات والأخبار ذات الصلة.`
+          : 'ابحث في آلاف المقالات والأخبار في موقع مـركـبـا - الـمـنـصـة الاخـبـاريـة للعثور على المحتوى الذي تبحث عنه.',
+        keywords: searchQuery 
+          ? [`${searchQuery}`, 'بحث', 'أخبار', 'مقالات', 'مـركـبـا']
+          : ['بحث', 'أخبار', 'مقالات', 'البحث المتقدم', 'مـركـبـا'],
+        url: searchQuery 
+          ? `https://markaba.news/search?q=${encodeURIComponent(searchQuery)}`
+          : 'https://markaba.news/search'
+      }}
+    >
       <Head>
         <title>
           {searchQuery ? `نتائج البحث عن "${searchQuery}" - مركبا` : 'البحث - مركبا'}
