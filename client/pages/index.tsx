@@ -877,7 +877,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             </section>
 
             {/* Spacing between Featured News and Prayer/Weather sections */}
-            <div className="hidden lg:block mb-12"></div>
+            <div className="hidden lg:block mb-20"></div>
 
             {/* Prayer and Weather Section */}
             <section className="mb-16">
