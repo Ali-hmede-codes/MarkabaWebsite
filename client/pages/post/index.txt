@@ -52,28 +52,55 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   };
 
   useEffect(() => {
-    if (posts.length > 0) {
-      // Sort posts by date for latest news
+    if (posts && posts.length > 0) {
+      // Sort posts by creation date (newest first)
       const sortedPosts = [...posts].sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
 
       // Latest posts for آخر الأخبار (last 8 posts)
       setLatestPosts(sortedPosts.slice(0, 8));
-
-      // Featured posts for الأخبار المميزة - last 4 featured posts
-      const featuredPostsList = [...posts]
-        .filter((post) => Boolean(post.is_featured))
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 4);
-
-      setFeaturedPosts(featuredPostsList);
     }
+    
+    // Fetch featured posts separately from dedicated endpoint
+    fetchFeaturedPosts();
     
     // Fetch video posts separately
     fetchVideoPosts();
   }, [posts]);
+
+  const fetchFeaturedPosts = async () => {
+    try {
+      const isDevelopment = process.env.NODE_ENV === "development";
+      const baseUrl = isDevelopment
+        ? "https://api.markaba.news"
+        : "https://api.markaba.news";
+      
+      const response = await fetch(`${baseUrl}/api/v2/posts/featured?limit=4`, {
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": "NewsMarkaba-FeaturedPosts/1.0",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setFeaturedPosts(data.data);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching featured posts:", error);
+      // Fallback to filtering from existing posts if API fails
+      if (posts && posts.length > 0) {
+        const featuredPostsList = [...posts]
+          .filter((post) => Boolean(post.is_featured))
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .slice(0, 4);
+        setFeaturedPosts(featuredPostsList);
+      }
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

@@ -559,7 +559,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       {featuredPosts.map((post, index) => (
                         <Link key={post.id} href={`/post/${post.slug}`} className="block">
                           <article
-                            className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 aspect-square flex flex-col cursor-pointer"
+                            className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 flex flex-col cursor-pointer"
                           >
                             <div className="relative flex-1 overflow-hidden">
                               {post.featured_image ? (
