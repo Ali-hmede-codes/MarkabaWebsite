@@ -362,9 +362,9 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
             {/* بالفيديو Section */}
             <section className="mb-24">
-              <div className="mb-6 sm:mb-8 text-right">
+              <div className="mb-6 sm:mb-8 text-right flex justify-between items-center">
                 <h2 
-                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block w-full"
+                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block"
                   style={{
                     fontFamily: 'Alexandria, sans-serif',
                     lineHeight: '1.2',
@@ -374,6 +374,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 >
                   بالفيديو
                 </h2>
+                
+                <Link href="/videos" className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm sm:text-base font-medium">
+                  <FiPlay className="w-4 h-4" />
+                  <span>الــــمـــزيــــد</span>
+                </Link>
               </div>
 
               {videoLoading ? (
