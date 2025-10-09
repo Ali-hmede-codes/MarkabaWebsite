@@ -881,14 +881,18 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
               </div>
             </section>
 
-            {/* Prayer Times Section */}
-            <section className="mb-8 lg:mt-24">
-              <PrayerTimes />
-            </section>
+            {/* Spacing Separator */}
+            <div className="py-8 lg:py-16"></div>
 
-            {/* Weather Section */}
+            {/* Prayer and Weather Section */}
             <section className="mb-16">
-              <Weather />
+              <div className="info-boxes">
+                {/* Prayer Times Box */}
+                <PrayerTimes />
+
+                {/* Weather Box */}
+                <Weather />
+              </div>
             </section>
 
             {/* Footer Banner Ad */}
