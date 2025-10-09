@@ -16,7 +16,7 @@ import {
 import { getImageUrl } from "../utils/imageUtils";
 import LastNewsBanner from "../components/LastNews/LastNewsBanner";
 import LatestArticles from "../components/LatestArticles/LatestArticles";
-import BreakingNewsBanner from "../components/BreakingNews/BreakingNewsBanner";
+// import BreakingNewsBanner from "../components/BreakingNews/BreakingNewsBanner";
 import { PrayerTimes, Weather } from "../components/PrayerWeather";
 import { MainTopAd, SidebarTopAd, BottomMainAd } from "../components/ads";
 
@@ -172,7 +172,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
       >
         <div className="bg-white min-h-screen" dir="rtl">
           {/* Breaking News Banner */}
-          <BreakingNewsBanner />
+          {/* <BreakingNewsBanner /> */}
 
           <div className="container mx-auto responsive-padding">
             {/* Latest Articles Section */}
