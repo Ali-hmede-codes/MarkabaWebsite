@@ -40,7 +40,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   const fetchFeaturedPosts = async () => {
     try {
       setFeaturedLoading(true);
-      const response = await fetch('/api/posts?featured=true&limit=4&sort=created_at&order=desc');
+      const response = await fetch('/api/posts?featured=true&limit=5&sort=created_at&order=desc');
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.data?.posts) {
@@ -102,11 +102,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
       // Latest posts for آخر الأخبار (last 8 posts)
       setLatestPosts(sortedPosts.slice(0, 8));
 
-      // Featured posts for الأخبار المميزة - last 4 featured posts
+      // Featured posts for الأخبار المميزة - last 5 featured posts
       const featuredPostsList = [...posts]
         .filter((post) => Boolean(post.is_featured))
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 4);
+        .slice(0, 5);
 
       setFeaturedPosts(featuredPostsList);
       
@@ -640,15 +640,21 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6">
-                <div className="lg:col-span-9">
+              <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 lg:gap-6">
+                <div className="lg:col-span-10">
                   {featuredLoading && featuredPosts.length === 0 ? (
                     <div className="space-y-6">
                       {/* Loading state for desktop */}
                       <div className="hidden lg:block">
-                        <div className="grid grid-cols-12 gap-6 h-96">
+                        <div className="grid grid-cols-10 gap-6 h-96">
+                          {/* Large featured post loading - Right side */}
+                          <div className="col-span-6 h-full">
+                            <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse h-full">
+                              <div className="h-full bg-gray-300"></div>
+                            </div>
+                          </div>
                           {/* Small featured posts loading - Left side */}
-                          <div className="col-span-5 h-full">
+                          <div className="col-span-4 h-full">
                             <div className="grid grid-cols-2 gap-4 h-full">
                               {[1, 2, 3, 4].map((i) => (
                                 <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse h-full">
@@ -659,12 +665,6 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                   </div>
                                 </div>
                               ))}
-                            </div>
-                          </div>
-                          {/* Large featured post loading - Right side */}
-                          <div className="col-span-7 h-full">
-                            <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse h-full">
-                              <div className="h-full bg-gray-300"></div>
                             </div>
                           </div>
                         </div>
@@ -692,9 +692,44 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                     <div className="space-y-6">
                       {/* Desktop Layout */}
                       <div className="hidden lg:block">
-                        <div className="grid grid-cols-12 gap-6 h-96">
+                        <div className="grid grid-cols-10 gap-6 h-96">
+                          {/* Large Featured Post - Right side */}
+                          <div className="col-span-6 h-full">
+                            {featuredPosts[0] && (
+                              <Link href={`/post/${featuredPosts[0].slug}`} className="block h-full">
+                                <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer h-full">
+                                  <div className="w-full h-full relative">
+                                    <img
+                                      src={getImageUrl(featuredPosts[0].featured_image)}
+                                      alt={featuredPosts[0].title_ar || featuredPosts[0].title}
+                                      className="w-full h-full object-cover"
+                                    />
+                                    {/* Black fade overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                                    
+                                    {/* Content overlay */}
+                                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                                      <h3 className="font-bold text-white mb-2 leading-tight drop-shadow-lg text-xl" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                        {featuredPosts[0].title_ar || featuredPosts[0].title}
+                                      </h3>
+                                      <div className="flex items-center gap-3 text-sm text-white/90">
+                                        <span className="flex items-center">
+                                          <FiCalendar className="inline ml-1" size={12} /> 
+                                          {getRelativeTime(featuredPosts[0].created_at)}
+                                        </span>
+                                        <span className="flex items-center text-white text-xs">
+                                          {getCategoryName(featuredPosts[0].category_id)}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </article>
+                              </Link>
+                            )}
+                          </div>
+                          
                           {/* Small Featured Posts Grid (2x2) - Left side */}
-                          <div className="col-span-5 h-full">
+                          <div className="col-span-4 h-full">
                             <div className="grid grid-cols-2 gap-4 h-full">
                               {featuredPosts.slice(1, 5).map((post, index) => (
                                 <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
@@ -732,41 +767,6 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                 </Link>
                               ))}
                             </div>
-                          </div>
-                          
-                          {/* Large Featured Post - Right side */}
-                          <div className="col-span-7 h-full">
-                            {featuredPosts[0] && (
-                              <Link href={`/post/${featuredPosts[0].slug}`} className="block h-full">
-                                <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer h-full">
-                                  <div className="w-full h-full relative">
-                                    <img
-                                      src={getImageUrl(featuredPosts[0].featured_image)}
-                                      alt={featuredPosts[0].title_ar || featuredPosts[0].title}
-                                      className="w-full h-full object-cover"
-                                    />
-                                    {/* Black fade overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                                    
-                                    {/* Content overlay */}
-                                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                                      <h3 className="font-bold text-white mb-2 leading-tight drop-shadow-lg text-xl" style={{ fontFamily: 'Alexandria, sans-serif' }}>
-                                        {featuredPosts[0].title_ar || featuredPosts[0].title}
-                                      </h3>
-                                      <div className="flex items-center gap-3 text-sm text-white/90">
-                                        <span className="flex items-center">
-                                          <FiCalendar className="inline ml-1" size={12} /> 
-                                          {getRelativeTime(featuredPosts[0].created_at)}
-                                        </span>
-                                        <span className="flex items-center text-white text-xs">
-                                          {getCategoryName(featuredPosts[0].category_id)}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </article>
-                              </Link>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -867,11 +867,6 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       </div>
                     </div>
                   )}
-                </div>
-                
-                {/* Sidebar with Ad */}
-                <div className="lg:col-span-3 hidden lg:block">
-                  <SidebarTopAd />
                 </div>
               </div>
             </section>
