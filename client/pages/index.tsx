@@ -380,7 +380,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                   بالفيديو
                 </h2>
                 
-                <Link href="/videos" className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm sm:text-base font-medium">
+                <Link href="/videos" className="flex items-center gap-2 text-black hover:text-gray-700 transition-colors duration-200 text-sm sm:text-base font-medium">
                   <FiArrowLeft className="w-4 h-4" />
                   <span>الــــمـــزيــــد</span>
                 </Link>
