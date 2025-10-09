@@ -76,7 +76,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
         ? "https://api.markaba.news"
         : "https://api.markaba.news";
       
-      const response = await fetch(`${baseUrl}/api/v2/posts/featured?limit=5`, {
+      const response = await fetch(`${baseUrl}/api/v2/posts/featured?limit=4`, {
         headers: {
           "Content-Type": "application/json",
           "User-Agent": "NewsMarkaba-FeaturedPosts/1.0",
@@ -96,7 +96,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
         const featuredPostsList = [...posts]
           .filter((post) => Boolean(post.is_featured))
           .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-          .slice(0, 5);
+          .slice(0, 4);
         setFeaturedPosts(featuredPostsList);
       }
     }
@@ -171,24 +171,16 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
   if (error) {
     return (
-      <>
-        <SimpleMeta 
-          title="خطأ في تحميل البيانات"
-          description="مـركـبـا - الـمـنـصـة الاخـبـاريـة"
-          image="/images/og-image.jpg"
-          canonical="https://markaba.news"
-        />
-        <Layout pageType="home">
-          <div className="container mx-auto responsive-padding py-8">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-red-600 mb-4">
-                خطأ في تحميل البيانات
-              </h1>
-              <p className="text-gray-600">{error}</p>
-            </div>
+      <Layout pageType="home">
+        <div className="container mx-auto responsive-padding py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">
+              خطأ في تحميل البيانات
+            </h1>
+            <p className="text-gray-600">{error}</p>
           </div>
-        </Layout>
-      </>
+        </div>
+      </Layout>
     );
   }
 
@@ -202,10 +194,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
         image="/images/og-image.jpg"
         canonical="https://markaba.news"
       />
-      <Layout pageType="home">
+      <Layout 
+        pageType="home"
+      >
         <div className="bg-white min-h-screen" dir="rtl">
-          {/* Breaking News Banner - Disabled */}
-          {/* <BreakingNewsBanner /> */}
+          {/* Breaking News Banner */}
+          <BreakingNewsBanner />
 
           <div className="container mx-auto responsive-padding">
             {/* Latest Articles Section */}
