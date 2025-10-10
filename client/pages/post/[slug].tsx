@@ -251,18 +251,7 @@ const PostContent: React.FC<{
             {post.title_ar || post.title}
           </h1>
 
-          {/* Featured Image - Now under title */}
-          {(post.featured_image || post.image) && (
-            <div className="relative w-full h-64 sm:h-80 lg:w-96 lg:h-54 lg:float-right lg:ml-8 lg:mb-4 rounded-xl overflow-hidden shadow-lg mb-0">
-              <Image 
-                src={getImageUrl(post.featured_image || post.image || '')} 
-                alt={post.title_ar || post.title} 
-                fill 
-                className="object-cover" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-            </div>
-          )}
+
 
           {/* Post Excerpt */}
           {(post.excerpt_ar || post.excerpt) && (
@@ -285,7 +274,18 @@ const PostContent: React.FC<{
           {/* Main Article Content */}
           <article className="lg:col-span-3">
             <div className="bg-white lg:rounded-xl lg:shadow-sm overflow-hidden">
-
+              {/* Featured Image - Above post content */}
+              {(post.featured_image || post.image) && (
+                <div className="relative w-full h-64 sm:h-80 lg:h-96 overflow-hidden">
+                  <Image 
+                    src={getImageUrl(post.featured_image || post.image || '')} 
+                    alt={post.title_ar || post.title} 
+                    fill 
+                    className="object-cover" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+              )}
 
               {/* Post Content */}
               <div className="p-4 sm:p-6 lg:p-12 relative">
