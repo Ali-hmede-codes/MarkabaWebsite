@@ -248,6 +248,33 @@ size plz   .footer-bottom-links {
   display: none;
 }
 
+/* Show scrollbar on large screens */
+@media (min-width: 1024px) {
+  .horizontal-scroll.lg\:scrollbar-visible {
+    scrollbar-width: thin;
+    -ms-overflow-style: auto;
+  }
+  
+  .horizontal-scroll.lg\:scrollbar-visible::-webkit-scrollbar {
+    display: block;
+    height: 8px;
+  }
+  
+  .horizontal-scroll.lg\:scrollbar-visible::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+  
+  .horizontal-scroll.lg\:scrollbar-visible::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  
+  .horizontal-scroll.lg\:scrollbar-visible::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
 .horizontal-scroll-content {
   @apply flex space-x-4 rtl:space-x-reverse px-4;
   width: max-content;

@@ -300,10 +300,10 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
               </div>
 
               {posts.length > 0 && (
-                <div className="horizontal-scroll lg:overflow-visible">
-                  <div className="horizontal-scroll-content lg:flex-wrap lg:justify-start lg:w-full">
+                <div className="horizontal-scroll lg:overflow-x-auto lg:scrollbar-visible">
+                  <div className="horizontal-scroll-content">
                     {posts.slice(0, 8).map((post, index) => (
-                      <Link key={post.id} href={`/post/${post.slug}`} className="horizontal-scroll-item lg:w-80 lg:mb-6">
+                      <Link key={post.id} href={`/post/${post.slug}`} className="horizontal-scroll-item">
                         <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
                           {post.featured_image ? (
                             <img
