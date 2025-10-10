@@ -56,8 +56,11 @@ const SinglePostPage: React.FC<SinglePostPageProps> = ({
           <div className="text-center py-10">
             <div className="text-red-500 mb-4">{error || 'المنشور غير موجود'}</div>
             <a href="/">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                العودة للرئيسية
+              <button className="text-blue-600 hover:text-blue-700 font-medium py-2 px-4 transition-colors flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                الــعــودة للرئيـسـيـة
               </button>
             </a>
           </div>
@@ -346,12 +349,12 @@ const PostContent: React.FC<{
 
             {/* Back to Home Button */}
             <div className="flex justify-center mt-8 mb-8">
-              <a href="/">
-                <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 flex items-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+              <a href="/" className="inline-block">
+                <button className="text-blue-600 hover:text-blue-700 font-semibold py-4 px-8 transition-all duration-200 flex items-center gap-3 transform hover:-translate-y-1">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                   </svg>
-                  العودة للرئيسية
+                  الــعــودة للرئيـسـيـة
                 </button>
               </a>
             </div>
