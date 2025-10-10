@@ -300,10 +300,10 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
               </div>
 
               {posts.length > 0 && (
-                <div className="horizontal-scroll">
-                  <div className="horizontal-scroll-content">
+                <div className="horizontal-scroll lg:overflow-visible">
+                  <div className="horizontal-scroll-content lg:flex-wrap lg:justify-start lg:w-full">
                     {posts.slice(0, 8).map((post, index) => (
-                      <Link key={post.id} href={`/post/${post.slug}`} className="horizontal-scroll-item">
+                      <Link key={post.id} href={`/post/${post.slug}`} className="horizontal-scroll-item lg:w-80 lg:mb-6">
                         <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
                           {post.featured_image ? (
                             <img
@@ -324,7 +324,16 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                 {getCategoryName(post.category_id)}
                               </span>
                             )}
-                            <h3 className="font-bold text-gray-900 mb-2 leading-tight h-12 overflow-hidden line-clamp-2" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                            <h3 
+                              className={`font-bold text-gray-900 mb-2 leading-tight h-12 overflow-hidden flex items-center ${
+                                (post.title_ar || post.title).length > 50 
+                                  ? 'text-sm' 
+                                  : (post.title_ar || post.title).length > 30 
+                                    ? 'text-base' 
+                                    : 'text-lg'
+                              }`} 
+                              style={{ fontFamily: 'Alexandria, sans-serif' }}
+                            >
                               {post.title_ar || post.title}
                             </h3>
                             <div className="flex items-center justify-between text-xs text-gray-500">
