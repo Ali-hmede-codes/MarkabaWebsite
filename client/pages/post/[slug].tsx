@@ -361,10 +361,14 @@ const PostContent: React.FC<{
               <div className="mt-12 mb-8">
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                   <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <FiFileText className="text-white" size={18} />
-                      </div>
+                    <h2 
+                      className="text-2xl font-bold text-gray-800 text-right w-full"
+                      style={{
+                        fontFamily: 'Alexandria, sans-serif',
+                        lineHeight: '1.2',
+                        background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #000000) 0% 100% / 100% 3px no-repeat'
+                      }}
+                    >
                       مقالات ذات صلة
                     </h2>
                   </div>
@@ -421,10 +425,14 @@ const PostContent: React.FC<{
             {/* Latest Posts Section */}
             <div className="bg-white lg:rounded-xl lg:shadow-sm overflow-hidden w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
               <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
-                <h3 className="text-lg font-bold text-gray-800 flex items-center gap-3">
-                  <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
-                    <FiFileText className="text-white" size={16} />
-                  </div>
+                <h3 
+                  className="text-lg font-bold text-gray-800 text-right w-full"
+                  style={{
+                    fontFamily: 'Alexandria, sans-serif',
+                    lineHeight: '1.2',
+                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #000000) 0% 100% / 100% 3px no-repeat'
+                  }}
+                >
                   آخر المقالات
                 </h3>
               </div>
@@ -433,9 +441,6 @@ const PostContent: React.FC<{
                   {latestPosts.map((latestPost, index) => (
                     <Link key={latestPost.id} href={`/post/${latestPost.slug}`}>
                       <div className="flex gap-3 p-3 hover:bg-gray-50 transition-colors rounded-lg cursor-pointer">
-                        <div className="flex-shrink-0 w-6 h-6 bg-green-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                          {index + 1}
-                        </div>
                         {(latestPost.featured_image || latestPost.image) && (
                           <div className="relative w-16 h-16 flex-shrink-0">
                             <Image 
@@ -470,10 +475,14 @@ const PostContent: React.FC<{
             {/* Breaking News Section */}
             <div className="bg-white lg:rounded-xl lg:shadow-sm overflow-hidden w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
               <div className="p-4 bg-gradient-to-r from-red-50 to-pink-50">
-                <h3 className="text-lg font-bold text-red-600 flex items-center gap-3">
-                  <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center animate-pulse">
-                    <FiAlertTriangle className="text-white" size={16} />
-                  </div>
+                <h3 
+                  className="text-lg font-bold text-red-600 text-right w-full"
+                  style={{
+                    fontFamily: 'Alexandria, sans-serif',
+                    lineHeight: '1.2',
+                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #000000) 0% 100% / 100% 3px no-repeat'
+                  }}
+                >
                   أخبار عاجلة
                 </h3>
               </div>
