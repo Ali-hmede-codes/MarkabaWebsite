@@ -79,6 +79,7 @@ const Layout: React.FC<LayoutProps> = ({
           keywords={Array.isArray(seo?.keywords) ? seo.keywords.join(', ') : keywords}
           canonical={getCanonicalUrl()}
           image={seo?.image}
+          structuredData={seo?.structuredData}
         />
       )}
       {showHeader && <Header />}

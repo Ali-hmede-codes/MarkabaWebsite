@@ -170,6 +170,21 @@ class MyDocument extends Document<MyDocumentProps> {
           
           {/* Global Twitter Tags removed - handled by SimpleMeta component */}
           
+          {/* Schema.org Structured Data for Site Name */}
+          <script
+            type="application/ld+json"
+            nonce={nonce}
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "منصة مركبا الأخبارية",
+                "alternateName": "منصة مركبا الأخبارية",
+                "url": "https://www.markaba.news/"
+              })
+            }}
+          />
+
           {/* OneSignal Push Notifications */}
           <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" nonce={nonce} defer></script>
           <script

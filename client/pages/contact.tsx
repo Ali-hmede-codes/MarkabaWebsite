@@ -33,19 +33,28 @@ const ContactPage: React.FC = () => {
     }
   ];
 
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'ContactPage',
-    name: 'تواصل معنا - مـركـبـا',
-    description: 'تواصل مع فريق مـركـبـا - الـمـنـصـة الاخـبـاريـة للاستفسارات والملاحظات',
-    url: typeof window !== 'undefined' ? window.location.href : '',
-    mainEntity: {
-      '@type': 'Organization',
-      name: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
-      email: 'markabachannel154@gmail.com',
-      telephone: '78 875 636'
+  const structuredData = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'منصة مركبا الأخبارية',
+      alternateName: 'منصة مركبا الأخبارية',
+      url: 'https://www.markaba.news/'
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ContactPage',
+      name: theme.language === 'ar' ? 'تواصل معنا' : 'Contact Us',
+      description: 'تواصل مع فريق مـركـبـا - الـمـنـصـة الاخـبـاريـة للاستفسارات والملاحظات',
+      url: typeof window !== 'undefined' ? window.location.href : '',
+      mainEntity: {
+        '@type': 'Organization',
+        name: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+        email: 'markabachannel154@gmail.com',
+        telephone: '78 875 636'
+      }
     }
-  };
+  ];
 
   return (
     <Layout 

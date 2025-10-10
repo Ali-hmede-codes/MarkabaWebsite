@@ -9,6 +9,7 @@ interface SimpleMetaProps {
   robots?: string;
   canonical?: string;
   image?: string;
+  structuredData?: any;
 }
 
 const SimpleMeta: React.FC<SimpleMetaProps> = ({
@@ -18,7 +19,8 @@ const SimpleMeta: React.FC<SimpleMetaProps> = ({
   author,
   robots,
   canonical,
-  image
+  image,
+  structuredData
 }) => {
   const pageTitle = title ? `${title} - ${siteConfig.name}` : defaultMeta.title;
   const pageDescription = description || defaultMeta.description;
@@ -53,6 +55,28 @@ const SimpleMeta: React.FC<SimpleMetaProps> = ({
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={pageDescription} />
       {pageImage && <meta name="twitter:image" content={pageImage} />}
+      
+      {/* Structured Data */}
+      {structuredData && (
+        Array.isArray(structuredData) ? (
+          structuredData.map((data, index) => (
+            <script
+              key={index}
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify(data)
+              }}
+            />
+          ))
+        ) : (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(structuredData)
+            }}
+          />
+        )
+      )}
     </Head>
   );
 };

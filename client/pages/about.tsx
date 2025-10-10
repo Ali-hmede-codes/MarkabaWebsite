@@ -175,28 +175,37 @@ const AboutPage: React.FC = () => {
 
 
 
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'AboutPage',
-    name: theme.language === 'ar' ? 'عن موقع الأخبار' : 'About News Website',
-    description: theme.language === 'ar' 
-      ? 'تعرف على موقع الأخبار، مهمتنا، قيمنا، وفريق العمل المتخصص في تقديم أحدث الأخبار'
-      : 'Learn about News Website, our mission, values, and specialized team dedicated to delivering the latest news',
-    url: typeof window !== 'undefined' ? window.location.href : '',
-    mainEntity: {
-      '@type': 'Organization',
-      name: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
-      url: 'https://markaba.news',
-      logo: 'https://www.markaba.news/images/logo_new.png',
-      description: 'موقع إخباري يقدم آخر الأخبار المحلية والعالمية',
-      foundingDate: '2020',
-      employee: teamMembers.map((member: any) => ({
-        '@type': 'Person',
-        name: member.name,
-        jobTitle: member.role
-      }))
+  const structuredData = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'منصة مركبا الأخبارية',
+      alternateName: 'منصة مركبا الأخبارية',
+      url: 'https://www.markaba.news/'
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      name: theme.language === 'ar' ? 'عن موقع الأخبار' : 'About News Website',
+      description: theme.language === 'ar' 
+        ? 'تعرف على موقع الأخبار، مهمتنا، قيمنا، وفريق العمل المتخصص في تقديم أحدث الأخبار'
+        : 'Learn about News Website, our mission, values, and specialized team dedicated to delivering the latest news',
+      url: typeof window !== 'undefined' ? window.location.href : '',
+      mainEntity: {
+        '@type': 'Organization',
+        name: 'مـركـبـا - الـمـنـصـة الاخـبـاريـة',
+        url: 'https://markaba.news',
+        logo: 'https://www.markaba.news/images/logo_new.png',
+        description: 'موقع إخباري يقدم آخر الأخبار المحلية والعالمية',
+        foundingDate: '2020',
+        employee: teamMembers.map((member: any) => ({
+          '@type': 'Person',
+          name: member.name,
+          jobTitle: member.role
+        }))
+      }
     }
-  };
+  ];
 
   return (
     <Layout 
