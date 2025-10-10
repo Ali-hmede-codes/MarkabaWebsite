@@ -253,7 +253,7 @@ const PostContent: React.FC<{
 
           {/* Featured Image - Now under title */}
           {(post.featured_image || post.image) && (
-            <div className="relative w-full h-64 sm:h-80 lg:w-80 lg:h-[568px] lg:float-right lg:ml-8 lg:mb-4 rounded-xl overflow-hidden shadow-lg mb-0">
+            <div className="relative w-full h-64 sm:h-80 lg:w-96 lg:h-54 lg:float-right lg:ml-8 lg:mb-4 rounded-xl overflow-hidden shadow-lg mb-0">
               <Image 
                 src={getImageUrl(post.featured_image || post.image || '')} 
                 alt={post.title_ar || post.title} 
