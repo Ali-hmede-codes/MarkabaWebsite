@@ -232,7 +232,7 @@ const PostContent: React.FC<{
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="relative bg-white shadow-sm border-b">
+      <div className="relative bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Category Badge and Date - Side by Side */}
           <div className="mb-4 flex items-center gap-4 flex-wrap">
