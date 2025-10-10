@@ -266,7 +266,7 @@ const PostContent: React.FC<{
 
           {/* Post Excerpt */}
           {(post.excerpt_ar || post.excerpt) && (
-            <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="mb-8 p-6 bg-white rounded-xl shadow-sm">
               <div className="flex items-start gap-3 mb-3">
                 <div className="w-1 h-6 bg-blue-600 rounded-full flex-shrink-0 mt-1"></div>
                 <h2 className="text-lg font-semibold text-gray-800">ملخص المقال</h2>
@@ -359,8 +359,8 @@ const PostContent: React.FC<{
             {/* Related Articles Section */}
             {relatedPosts.length > 0 && (
               <div className="mt-12 mb-8">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                  <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50">
                     <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
                       <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                         <FiFileText className="text-white" size={18} />
