@@ -295,68 +295,53 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                     background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #2563EB) 0% 100% / 100% 3px no-repeat'
                   }}
                 >
-                  مقالات
+                  اقــــرأ
                 </h2>
               </div>
 
               {posts.length > 0 && (
-                <div className="flex overflow-x-auto space-x-4 rtl:space-x-reverse pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-blue-100">
-                  {posts.slice(0, 8).map((post, index) => (
-                    <Link key={post.id} href={`/post/${post.slug}`} className="block">
-                      <article
-                        className="news-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 flex-shrink-0 w-64 sm:w-72 cursor-pointer"
-                        style={{ scrollSnapAlign: "start" }}
-                      >
-                        <div className="relative h-40 sm:h-48 overflow-hidden">
+                <div className="horizontal-scroll">
+                  <div className="horizontal-scroll-content">
+                    {posts.slice(0, 8).map((post, index) => (
+                      <Link key={post.id} href={`/post/${post.slug}`} className="horizontal-scroll-item">
+                        <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
                           {post.featured_image ? (
                             <img
                               src={getImageUrl(post.featured_image)}
                               alt={post.title_ar || post.title}
-                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                              className="w-full h-48 object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                            <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                               <span className="text-white text-4xl font-bold">
                                 {index + 1}
                               </span>
                             </div>
                           )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                          <div className="absolute top-3 right-3">
-                            <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg">
-                              {getCategoryName(post.category_id)}
-                            </span>
-                          </div>
-
-                        </div>
-                        <div className="p-4">
-                          <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors leading-tight">
-                            {post.title_ar || post.title}
-                          </h3>
-                          {(post.content_ar || post.content) && (
-                            <p className="text-gray-600 text-xs mb-2 line-clamp-1">
-                              {truncateText(
-                                (post.content_ar || post.content).replace(
-                                  /<[^>]*>/g,
-                                  "",
-                                ),
-                                50,
-                              )}
+                          <div className="p-4">
+                            {getCategoryName(post.category_id) && (
+                              <span className="inline-block bg-blue-600 text-white text-xs px-2 py-1 rounded mb-2">
+                                {getCategoryName(post.category_id)}
+                              </span>
+                            )}
+                            <h3 className="font-bold text-gray-900 mb-2 leading-tight" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                              {post.title_ar || post.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                              {post.content_ar?.replace(/<[^>]*>/g, '').substring(0, 100) || 
+                               post.content?.replace(/<[^>]*>/g, '').substring(0, 100)}...
                             </p>
-                          )}
-                          <div className="flex items-center justify-between text-xs text-gray-500">
-                            <div className="flex items-center">
-                              <FiCalendar
-                                size={10}
-                                className="ml-1 rtl:ml-0 rtl:mr-1"
-                              />
-                              {getRelativeTime(post.created_at)}
+                            <div className="flex items-center justify-between text-xs text-gray-500">
+                              <div className="flex items-center">
+                                <FiCalendar className="inline ml-1" size={12} /> 
+                                {getRelativeTime(post.created_at)}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </article>
-                    </Link>
-                  ))}
+                        </article>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
             </section>
