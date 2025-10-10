@@ -324,13 +324,9 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                 {getCategoryName(post.category_id)}
                               </span>
                             )}
-                            <h3 className="font-bold text-gray-900 mb-2 leading-tight" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                            <h3 className="font-bold text-gray-900 mb-2 leading-tight h-12 overflow-hidden line-clamp-2" style={{ fontFamily: 'Alexandria, sans-serif' }}>
                               {post.title_ar || post.title}
                             </h3>
-                            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                              {post.content_ar?.replace(/<[^>]*>/g, '').substring(0, 100) || 
-                               post.content?.replace(/<[^>]*>/g, '').substring(0, 100)}...
-                            </p>
                             <div className="flex items-center justify-between text-xs text-gray-500">
                               <div className="flex items-center">
                                 <FiCalendar className="inline ml-1" size={12} /> 
