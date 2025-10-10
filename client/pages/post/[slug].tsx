@@ -358,15 +358,15 @@ const PostContent: React.FC<{
 
             {/* Related Articles Section */}
             {relatedPosts.length > 0 && (
-              <div className="mt-12 mb-8">
+              <div className="mt-12 mb-8 w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                  <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50">
+                  <div className="p-6 bg-white">
                     <h2 
-                      className="text-2xl font-bold text-gray-800 text-right w-full"
+                      className="text-2xl font-bold text-black text-right w-full"
                       style={{
                         fontFamily: 'Alexandria, sans-serif',
                         lineHeight: '1.2',
-                        background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #000000) 0% 100% / 100% 3px no-repeat'
+                        borderBottom: '3px solid #3B82F6'
                       }}
                     >
                       مقالات ذات صلة
@@ -424,13 +424,13 @@ const PostContent: React.FC<{
           <aside className="lg:col-span-1 space-y-6 px-4 lg:px-0">
             {/* Latest Posts Section */}
             <div className="bg-white lg:rounded-xl lg:shadow-sm overflow-hidden w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
-              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
+              <div className="p-4 bg-white">
                 <h3 
-                  className="text-lg font-bold text-gray-800 text-right w-full"
+                  className="text-lg font-bold text-black text-right w-full"
                   style={{
                     fontFamily: 'Alexandria, sans-serif',
                     lineHeight: '1.2',
-                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #000000) 0% 100% / 100% 3px no-repeat'
+                    borderBottom: '3px solid #3B82F6'
                   }}
                 >
                   آخر المقالات
@@ -474,13 +474,13 @@ const PostContent: React.FC<{
 
             {/* Breaking News Section */}
             <div className="bg-white lg:rounded-xl lg:shadow-sm overflow-hidden w-full lg:w-[120%] -ml-0 lg:-ml-[10%]">
-              <div className="p-4 bg-gradient-to-r from-red-50 to-pink-50">
+              <div className="p-4 bg-white">
                 <h3 
-                  className="text-lg font-bold text-red-600 text-right w-full"
+                  className="text-lg font-bold text-black text-right w-full"
                   style={{
                     fontFamily: 'Alexandria, sans-serif',
                     lineHeight: '1.2',
-                    background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #000000) 0% 100% / 100% 3px no-repeat'
+                    borderBottom: '3px solid #DC2626'
                   }}
                 >
                   أخبار عاجلة
