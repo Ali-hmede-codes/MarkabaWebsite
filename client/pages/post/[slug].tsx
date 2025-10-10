@@ -455,7 +455,7 @@ const PostContent: React.FC<{
                           <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2 leading-tight">
                             {latestPost.title_ar || latestPost.title}
                           </h4>
-                          <p className="text-xs text-green-600 font-medium flex items-center gap-1">
+                          <p className="text-xs text-blue-600 font-medium flex items-center gap-1">
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -490,11 +490,11 @@ const PostContent: React.FC<{
                 <div className="space-y-4">
                   {breakingNews.map((newsPost, index) => (
                     <div key={newsPost.id} className="flex gap-3 p-3 rounded-lg hover:bg-red-50 transition-colors">
-                      <div className="flex-shrink-0 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse">
-                        !
-                      </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-medium text-red-700 mb-2 leading-tight">
+                        <h4 
+                          className="text-sm font-medium text-red-700 mb-2 leading-tight"
+                          style={{ fontFamily: 'Alexandria, sans-serif' }}
+                        >
                           {newsPost.title_ar || newsPost.title}
                         </h4>
                         <p className="text-xs text-red-600 font-medium flex items-center gap-1">
