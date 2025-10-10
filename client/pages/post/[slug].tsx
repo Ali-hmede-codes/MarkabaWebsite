@@ -250,7 +250,7 @@ const PostContent: React.FC<{
           </div>
           
           {/* Post Title */}
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-8 font-['Alexandria']">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-0 font-['Alexandria']">
             {post.title_ar || post.title}
           </h1>
 
@@ -272,7 +272,7 @@ const PostContent: React.FC<{
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-0 sm:px-4 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-0 sm:px-4 lg:px-8 py-0">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 lg:gap-8">
           {/* Main Article Content */}
           <article className="lg:col-span-3">
