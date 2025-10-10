@@ -62,6 +62,12 @@ const nextConfig = {
   // Redirects for SEO
   async redirects() {
     return [
+      // Redirect old /posts/ URLs to new /post/ URLs
+      {
+        source: '/posts/:slug',
+        destination: '/post/:slug',
+        permanent: true,
+      },
       // Removed robots.txt and sitemap.xml redirects to fix Google Search Console indexing
       // These files should be served directly from /public folder
     ];
