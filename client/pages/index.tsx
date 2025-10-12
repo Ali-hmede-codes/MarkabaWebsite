@@ -33,8 +33,10 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);
   const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
   const [videoPosts, setVideoPosts] = useState<Post[]>([]);
+  const [lebanonPosts, setLebanonPosts] = useState<Post[]>([]);
   const [videoLoading, setVideoLoading] = useState(false);
   const [featuredLoading, setFeaturedLoading] = useState(false);
+  const [lebanonLoading, setLebanonLoading] = useState(false);
   const [dataRefreshInterval, setDataRefreshInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Fetch featured posts from API to ensure fresh data
@@ -92,6 +94,24 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
     }
   };
 
+  // Fetch Lebanon posts from the Lebanon category
+  const fetchLebanonPosts = async () => {
+    try {
+      setLebanonLoading(true);
+      const response = await fetch('/api/v2/categories/lebanon?include_posts=true&posts_limit=4&posts_page=1');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data?.posts) {
+          setLebanonPosts(data.data.posts);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching Lebanon posts:', error);
+    } finally {
+      setLebanonLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (posts.length > 0) {
       // Sort posts by date for latest news
@@ -136,6 +156,9 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
     
     // Fetch video posts separately
     fetchVideoPosts();
+    
+    // Fetch Lebanon posts separately
+    fetchLebanonPosts();
     
     // Fetch fresh featured posts to ensure they don't disappear
     fetchFeaturedPosts();
@@ -282,6 +305,242 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
             </section>
 
 
+
+            {/* لـــبــنـــان Section */}
+            <section className="mb-24">
+              <div 
+                className="mb-6 sm:mb-8 text-right flex justify-between items-center"
+                style={{
+                  background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #2563EB) 0% 100% / 100% 3px no-repeat'
+                }}
+              >
+                <h2 
+                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block"
+                  style={{
+                    fontFamily: 'Alexandria, sans-serif',
+                    lineHeight: '1.2',
+                    minWidth: 'fit-content'
+                  }}
+                >
+                  لـــبــنـــان
+                </h2>
+                
+                <Link href="/category/lebanon" className="flex items-center gap-2 text-black hover:text-gray-700 transition-colors duration-200 text-sm sm:text-base font-medium">
+                  <FiArrowLeft className="w-4 h-4" />
+                  <span>الــــمـــزيــــد</span>
+                </Link>
+              </div>
+
+              {lebanonLoading ? (
+                <div className="space-y-6">
+                  {/* Loading state for desktop */}
+                  <div className="hidden lg:block">
+                    <div className="grid grid-cols-12 gap-6 h-96">
+                      {/* Small posts loading - Left side */}
+                      <div className="col-span-5 h-full">
+                        <div className="grid grid-cols-2 gap-4 h-full">
+                          {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse h-full">
+                              <div className="aspect-[4/3] bg-gray-300"></div>
+                              <div className="p-3">
+                                <div className="h-3 bg-gray-300 rounded mb-2"></div>
+                                <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      {/* Large post loading - Right side */}
+                      <div className="col-span-7 h-full">
+                        <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse h-full">
+                          <div className="h-full bg-gray-300"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Loading state for mobile */}
+                  <div className="lg:hidden space-y-4">
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse aspect-video">
+                      <div className="h-full bg-gray-300"></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
+                          <div className="aspect-[4/3] bg-gray-300"></div>
+                          <div className="p-3">
+                            <div className="h-3 bg-gray-300 rounded mb-2"></div>
+                            <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : lebanonPosts.length > 0 ? (
+                <div className="space-y-6">
+                  {/* Desktop Layout */}
+                  <div className="hidden lg:block">
+                    <div className="grid grid-cols-12 gap-6 h-96">
+                      {/* Small Posts Grid (2x2) - Left side */}
+                      <div className="col-span-5 h-full">
+                        <div className="grid grid-cols-2 gap-4 h-full">
+                          {lebanonPosts.slice(1, 5).map((post, index) => (
+                            <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
+                              <div className="w-full flex flex-col h-full">
+                                {/* Image */}
+                                <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
+                                  <img
+                                    src={getImageUrl(post.featured_image)}
+                                    alt={post.title_ar || post.title}
+                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                  />
+                                </div>
+                                
+                                {/* Content */}
+                                <div className="p-3 flex flex-col flex-grow">
+                                  {/* Category - Black badge */}
+                                  {getCategoryName(post.category_id) && (
+                                    <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
+                                      {getCategoryName(post.category_id)}
+                                    </span>
+                                  )}
+                                  
+                                  {/* Title - Fixed height with line clamping */}
+                                  <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-2 flex-grow" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                    {post.title_ar || post.title}
+                                  </h3>
+                                  
+                                  {/* Time - Always at bottom */}
+                                  <div className="flex items-center text-xs text-gray-500 mt-auto">
+                                    <FiCalendar className="inline ml-1" size={12} /> 
+                                    {getRelativeTime(post.created_at)}
+                                  </div>
+                                </div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Large Post - Right side */}
+                      <div className="col-span-7 h-full">
+                        {lebanonPosts[0] && (
+                          <Link href={`/post/${lebanonPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer h-full">
+                            <div className="w-full h-full flex flex-col">
+                              {/* Image */}
+                              <div className="flex-grow overflow-hidden relative">
+                                <img
+                                  src={getImageUrl(lebanonPosts[0].featured_image)}
+                                  alt={lebanonPosts[0].title_ar || lebanonPosts[0].title}
+                                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                />
+                                
+                                {/* Overlay Content */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-6">
+                                  {/* Category */}
+                                  {getCategoryName(lebanonPosts[0].category_id) && (
+                                    <span className="inline-block bg-white text-black text-sm px-3 py-1 rounded mb-3 w-fit font-medium">
+                                      {getCategoryName(lebanonPosts[0].category_id)}
+                                    </span>
+                                  )}
+                                  
+                                  {/* Title */}
+                                  <h3 className="text-white font-bold text-xl mb-3 leading-tight" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                    {lebanonPosts[0].title_ar || lebanonPosts[0].title}
+                                  </h3>
+                                  
+                                  {/* Meta */}
+                                  <div className="flex items-center text-white/80 text-sm">
+                                    <FiCalendar className="inline ml-2" size={14} />
+                                    {getRelativeTime(lebanonPosts[0].created_at)}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Mobile Layout */}
+                  <div className="lg:hidden space-y-4">
+                    {/* Large Post */}
+                    {lebanonPosts[0] && (
+                      <Link href={`/post/${lebanonPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
+                        <div className="aspect-video overflow-hidden relative">
+                          <img
+                            src={getImageUrl(lebanonPosts[0].featured_image)}
+                            alt={lebanonPosts[0].title_ar || lebanonPosts[0].title}
+                            className="w-full h-full object-cover"
+                          />
+                          
+                          {/* Overlay Content */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-4">
+                            {/* Category */}
+                            {getCategoryName(lebanonPosts[0].category_id) && (
+                              <span className="inline-block bg-white text-black text-xs px-2 py-1 rounded mb-2 w-fit font-medium">
+                                {getCategoryName(lebanonPosts[0].category_id)}
+                              </span>
+                            )}
+                            
+                            {/* Title */}
+                            <h3 className="text-white font-bold text-lg mb-2 leading-tight" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                              {lebanonPosts[0].title_ar || lebanonPosts[0].title}
+                            </h3>
+                            
+                            {/* Meta */}
+                            <div className="flex items-center text-white/80 text-xs">
+                              <FiCalendar className="inline ml-1" size={12} />
+                              {getRelativeTime(lebanonPosts[0].created_at)}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    )}
+                    
+                    {/* Small Posts Grid */}
+                    <div className="grid grid-cols-2 gap-4">
+                      {lebanonPosts.slice(1, 5).map((post, index) => (
+                        <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer">
+                          <div className="aspect-[4/3] overflow-hidden">
+                            <img
+                              src={getImageUrl(post.featured_image)}
+                              alt={post.title_ar || post.title}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          <div className="p-3">
+                            {/* Category */}
+                            {getCategoryName(post.category_id) && (
+                              <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2">
+                                {getCategoryName(post.category_id)}
+                              </span>
+                            )}
+                            
+                            {/* Title */}
+                            <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-2" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                              {post.title_ar || post.title}
+                            </h3>
+                            
+                            {/* Time */}
+                            <div className="flex items-center text-xs text-gray-500">
+                              <FiCalendar className="inline ml-1" size={12} />
+                              {getRelativeTime(post.created_at)}
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  لا توجد أخبار متاحة حالياً
+                </div>
+              )}
+            </section>
 
             {/* مقالات Section */}
             <section id="articles-section" className="mb-24">
