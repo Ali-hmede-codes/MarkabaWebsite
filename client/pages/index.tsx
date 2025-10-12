@@ -307,7 +307,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
 
 
             {/* لـــبــنـــان Section */}
-            <section className="mb-24">
+            <section className="mb-32">
               <div 
                 className="mb-6 sm:mb-8 text-right flex justify-between items-center"
                 style={{
@@ -382,49 +382,8 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                   {/* Desktop Layout */}
                   <div className="hidden lg:block">
                     <div className="grid grid-cols-12 gap-6 h-96">
-                      {/* Small Posts Grid (2x2) - Left side */}
-                      <div className="col-span-5 h-full">
-                        <div className="grid grid-cols-2 gap-4 h-full">
-                          {lebanonPosts.slice(1, 5).map((post, index) => (
-                            <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
-                              <div className="w-full flex flex-col h-full">
-                                {/* Image */}
-                                <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
-                                  <img
-                                    src={getImageUrl(post.featured_image)}
-                                    alt={post.title_ar || post.title}
-                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                                  />
-                                </div>
-                                
-                                {/* Content */}
-                                <div className="p-3 flex flex-col flex-grow">
-                                  {/* Category - Black badge */}
-                                  {getCategoryName(post.category_id) && (
-                                    <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
-                                      {getCategoryName(post.category_id)}
-                                    </span>
-                                  )}
-                                  
-                                  {/* Title - Fixed height with line clamping */}
-                                  <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-2 flex-grow" style={{ fontFamily: 'Alexandria, sans-serif' }}>
-                                    {post.title_ar || post.title}
-                                  </h3>
-                                  
-                                  {/* Time - Always at bottom */}
-                                  <div className="flex items-center text-xs text-gray-500 mt-auto">
-                                    <FiCalendar className="inline ml-1" size={12} /> 
-                                    {getRelativeTime(post.created_at)}
-                                  </div>
-                                </div>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      {/* Large Post - Right side */}
-                      <div className="col-span-7 h-full">
+                      {/* Large Post - Right side (order-2) */}
+                      <div className="col-span-7 h-full order-2">
                         {lebanonPosts[0] && (
                           <Link href={`/post/${lebanonPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer h-full">
                             <div className="w-full h-full flex flex-col">
@@ -460,6 +419,49 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             </div>
                           </Link>
                         )}
+                      </div>
+                      
+                      {/* Small Posts - Left side (order-1) using video mobile design */}
+                      <div className="col-span-5 h-full order-1 space-y-4">
+                        {lebanonPosts.slice(1, 4).map((post, index) => (
+                          <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer h-32">
+                            <div className="flex h-full">
+                              {/* Image - 4:3 ratio */}
+                              <div className="w-32 flex-shrink-0">
+                                <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
+                                  <img
+                                    src={getImageUrl(post.featured_image)}
+                                    alt={post.title_ar || post.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              </div>
+                              
+                              {/* Content */}
+                              <div className="flex-1 p-3 flex flex-col justify-between min-h-0">
+                                <div className="flex-grow">
+                                  {/* Category - Black badge */}
+                                  {getCategoryName(post.category_id) && (
+                                    <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
+                                      {getCategoryName(post.category_id)}
+                                    </span>
+                                  )}
+                                  
+                                  {/* Title - Fixed height with line clamping */}
+                                  <h3 className="font-bold text-gray-900 leading-tight text-sm line-clamp-2 overflow-hidden" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                    {post.title_ar || post.title}
+                                  </h3>
+                                </div>
+                                
+                                {/* Time - Always at bottom */}
+                                <div className="flex items-center text-xs text-gray-500 mt-auto flex-shrink-0">
+                                  <FiCalendar className="inline ml-1" size={12} /> 
+                                  {getRelativeTime(post.created_at)}
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -500,34 +502,43 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       </Link>
                     )}
                     
-                    {/* Small Posts Grid */}
-                    <div className="grid grid-cols-2 gap-4">
-                      {lebanonPosts.slice(1, 5).map((post, index) => (
-                        <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer">
-                          <div className="aspect-[4/3] overflow-hidden">
-                            <img
-                              src={getImageUrl(post.featured_image)}
-                              alt={post.title_ar || post.title}
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                          <div className="p-3">
-                            {/* Category */}
-                            {getCategoryName(post.category_id) && (
-                              <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2">
-                                {getCategoryName(post.category_id)}
-                              </span>
-                            )}
+                    {/* Small Posts using video mobile design */}
+                    <div className="space-y-4">
+                      {lebanonPosts.slice(1, 4).map((post, index) => (
+                        <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer h-32">
+                          <div className="flex h-full">
+                            {/* Image - 4:3 ratio */}
+                            <div className="w-32 flex-shrink-0">
+                              <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
+                                <img
+                                  src={getImageUrl(post.featured_image)}
+                                  alt={post.title_ar || post.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            </div>
                             
-                            {/* Title */}
-                            <h3 className="font-bold text-gray-900 mb-2 leading-tight text-sm line-clamp-2" style={{ fontFamily: 'Alexandria, sans-serif' }}>
-                              {post.title_ar || post.title}
-                            </h3>
-                            
-                            {/* Time */}
-                            <div className="flex items-center text-xs text-gray-500">
-                              <FiCalendar className="inline ml-1" size={12} />
-                              {getRelativeTime(post.created_at)}
+                            {/* Content */}
+                            <div className="flex-1 p-3 flex flex-col justify-between min-h-0">
+                              <div className="flex-grow">
+                                {/* Category - Black badge */}
+                                {getCategoryName(post.category_id) && (
+                                  <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
+                                    {getCategoryName(post.category_id)}
+                                  </span>
+                                )}
+                                
+                                {/* Title - Fixed height with line clamping */}
+                                <h3 className="font-bold text-gray-900 leading-tight text-sm line-clamp-2 overflow-hidden" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                  {post.title_ar || post.title}
+                                </h3>
+                              </div>
+                              
+                              {/* Time - Always at bottom */}
+                              <div className="flex items-center text-xs text-gray-500 mt-auto flex-shrink-0">
+                                <FiCalendar className="inline ml-1" size={12} /> 
+                                {getRelativeTime(post.created_at)}
+                              </div>
                             </div>
                           </div>
                         </Link>
