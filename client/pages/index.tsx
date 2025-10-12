@@ -34,9 +34,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
   const [videoPosts, setVideoPosts] = useState<Post[]>([]);
   const [lebanonPosts, setLebanonPosts] = useState<Post[]>([]);
+  const [arabInternationalPosts, setArabInternationalPosts] = useState<Post[]>([]);
   const [videoLoading, setVideoLoading] = useState(false);
   const [featuredLoading, setFeaturedLoading] = useState(false);
   const [lebanonLoading, setLebanonLoading] = useState(false);
+  const [arabInternationalLoading, setArabInternationalLoading] = useState(false);
   const [dataRefreshInterval, setDataRefreshInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Fetch featured posts from API to ensure fresh data
@@ -112,6 +114,24 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
     }
   };
 
+  // Fetch Arab International posts from the dwly-w3rby category
+  const fetchArabInternationalPosts = async () => {
+    try {
+      setArabInternationalLoading(true);
+      const response = await fetch('/api/v2/categories/dwly-w3rby?include_posts=true&posts_limit=4&posts_page=1');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data?.posts) {
+          setArabInternationalPosts(data.data.posts);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching Arab International posts:', error);
+    } finally {
+      setArabInternationalLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (posts.length > 0) {
       // Sort posts by date for latest news
@@ -159,6 +179,9 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
     
     // Fetch Lebanon posts separately
     fetchLebanonPosts();
+    
+    // Fetch Arab International posts separately
+    fetchArabInternationalPosts();
     
     // Fetch fresh featured posts to ensure they don't disappear
     fetchFeaturedPosts();
@@ -507,6 +530,255 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                     {/* Small Posts using video mobile design */}
                     <div className="space-y-4">
                       {lebanonPosts.slice(1, 4).map((post, index) => (
+                        <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer h-32">
+                          <div className="flex h-full">
+                            {/* Image - 4:3 ratio */}
+                            <div className="w-32 flex-shrink-0">
+                              <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
+                                <img
+                                  src={getImageUrl(post.featured_image)}
+                                  alt={post.title_ar || post.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="flex-1 p-3 flex flex-col justify-between min-h-0">
+                              <div className="flex-grow">
+                                {/* Category - Black badge */}
+                                {getCategoryName(post.category_id) && (
+                                  <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
+                                    {getCategoryName(post.category_id)}
+                                  </span>
+                                )}
+                                
+                                {/* Title - Fixed height with line clamping */}
+                                <h3 className="font-bold text-gray-900 leading-tight text-sm line-clamp-2 overflow-hidden" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                  {post.title_ar || post.title}
+                                </h3>
+                              </div>
+                              
+                              {/* Time - Always at bottom */}
+                              <div className="flex items-center text-xs text-gray-500 mt-auto flex-shrink-0">
+                                <FiCalendar className="inline ml-1" size={12} /> 
+                                {getRelativeTime(post.created_at)}
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  لا توجد أخبار متاحة حالياً
+                </div>
+              )}
+            </section>
+
+            {/* دولــي عــربــــي Section */}
+            <section className="mb-32">
+              <div 
+                className="mb-6 sm:mb-8 text-right flex justify-between items-center"
+                style={{
+                  background: 'linear-gradient(to right, transparent 0%, transparent 100%), linear-gradient(to right, #3B82F6, #2563EB) 0% 100% / 100% 3px no-repeat'
+                }}
+              >
+                <h2 
+                  className="text-2xl sm:text-3xl font-bold text-gray-800 inline-block"
+                  style={{
+                    fontFamily: 'Alexandria, sans-serif',
+                    lineHeight: '1.2',
+                    minWidth: 'fit-content'
+                  }}
+                >
+                  دولــي عــربــــي
+                </h2>
+                
+                <Link href="https://www.markaba.news/category/dwly-w3rby" className="flex items-center gap-2 text-black hover:text-gray-700 transition-colors duration-200 text-sm sm:text-base font-medium">
+                  <FiArrowLeft className="w-4 h-4" />
+                  <span>الــــمـــزيــــد</span>
+                </Link>
+              </div>
+
+              {arabInternationalLoading ? (
+                <div className="space-y-6">
+                  {/* Loading state for desktop */}
+                  <div className="hidden lg:block">
+                    <div className="grid grid-cols-12 gap-6 h-96">
+                      {/* Large post loading - Right side */}
+                      <div className="col-span-7 h-full order-0">
+                        <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse h-full">
+                          <div className="h-full bg-gray-300"></div>
+                        </div>
+                      </div>
+                      {/* Small posts loading - Left side */}
+                      <div className="col-span-5 h-full order-1">
+                        <div className="space-y-4 h-full">
+                          {[1, 2, 3].map((i) => (
+                            <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse h-32">
+                              <div className="flex h-full">
+                                <div className="w-32 bg-gray-300"></div>
+                                <div className="flex-1 p-3">
+                                  <div className="h-3 bg-gray-300 rounded mb-2"></div>
+                                  <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Loading state for mobile */}
+                  <div className="lg:hidden space-y-4">
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse aspect-video">
+                      <div className="h-full bg-gray-300"></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
+                          <div className="aspect-[4/3] bg-gray-300"></div>
+                          <div className="p-3">
+                            <div className="h-3 bg-gray-300 rounded mb-2"></div>
+                            <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : arabInternationalPosts.length > 0 ? (
+                <div className="space-y-6">
+                  {/* Desktop Layout */}
+                  <div className="hidden lg:block">
+                    <div className="grid grid-cols-12 gap-6 h-96">
+                      {/* Large Post - Right side (order-0) */}
+                      <div className="col-span-7 h-full order-0">
+                        {arabInternationalPosts[0] && (
+                          <Link href={`/post/${arabInternationalPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer h-full">
+                            <div className="w-full h-full flex flex-col">
+                              {/* Image */}
+                              <div className="flex-grow overflow-hidden relative">
+                                <img
+                                  src={getImageUrl(arabInternationalPosts[0].featured_image)}
+                                  alt={arabInternationalPosts[0].title_ar || arabInternationalPosts[0].title}
+                                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                />
+                                
+                                {/* Overlay Content */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-6">
+                                  {/* Category */}
+                                  {getCategoryName(arabInternationalPosts[0].category_id) && (
+                                    <span className="inline-block bg-white text-black text-sm px-3 py-1 rounded mb-3 w-fit font-medium">
+                                      {getCategoryName(arabInternationalPosts[0].category_id)}
+                                    </span>
+                                  )}
+                                  
+                                  {/* Title */}
+                                  <h3 className="text-white font-bold text-xl mb-3 leading-tight" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                    {arabInternationalPosts[0].title_ar || arabInternationalPosts[0].title}
+                                  </h3>
+                                  
+                                  {/* Meta */}
+                                  <div className="flex items-center text-white/80 text-sm">
+                                    <FiCalendar className="inline ml-2" size={14} />
+                                    {getRelativeTime(arabInternationalPosts[0].created_at)}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        )}
+                      </div>
+                      
+                      {/* Small Posts - Left side (order-1) using video mobile design */}
+                      <div className="col-span-5 h-full order-1 space-y-4">
+                        {arabInternationalPosts.slice(1, 4).map((post, index) => (
+                          <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer h-32">
+                            <div className="flex h-full">
+                              {/* Image - 4:3 ratio */}
+                              <div className="w-32 flex-shrink-0">
+                                <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
+                                  <img
+                                    src={getImageUrl(post.featured_image)}
+                                    alt={post.title_ar || post.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              </div>
+                              
+                              {/* Content */}
+                              <div className="flex-1 p-3 flex flex-col justify-between min-h-0">
+                                <div className="flex-grow">
+                                  {/* Category - Black badge */}
+                                  {getCategoryName(post.category_id) && (
+                                    <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2 w-fit">
+                                      {getCategoryName(post.category_id)}
+                                    </span>
+                                  )}
+                                  
+                                  {/* Title - Fixed height with line clamping */}
+                                  <h3 className="font-bold text-gray-900 leading-tight text-sm line-clamp-2 overflow-hidden" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                                    {post.title_ar || post.title}
+                                  </h3>
+                                </div>
+                                
+                                {/* Time - Always at bottom */}
+                                <div className="flex items-center text-xs text-gray-500 mt-auto flex-shrink-0">
+                                  <FiCalendar className="inline ml-1" size={12} /> 
+                                  {getRelativeTime(post.created_at)}
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Mobile Layout */}
+                  <div className="lg:hidden space-y-4">
+                    {/* Large Post */}
+                    {arabInternationalPosts[0] && (
+                      <Link href={`/post/${arabInternationalPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
+                        <div className="aspect-video overflow-hidden relative">
+                          <img
+                            src={getImageUrl(arabInternationalPosts[0].featured_image)}
+                            alt={arabInternationalPosts[0].title_ar || arabInternationalPosts[0].title}
+                            className="w-full h-full object-cover"
+                          />
+                          
+                          {/* Overlay Content */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-4">
+                            {/* Category */}
+                            {getCategoryName(arabInternationalPosts[0].category_id) && (
+                              <span className="inline-block bg-white text-black text-xs px-2 py-1 rounded mb-2 w-fit font-medium">
+                                {getCategoryName(arabInternationalPosts[0].category_id)}
+                              </span>
+                            )}
+                            
+                            {/* Title */}
+                            <h3 className="text-white font-bold text-lg mb-2 leading-tight" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+                              {arabInternationalPosts[0].title_ar || arabInternationalPosts[0].title}
+                            </h3>
+                            
+                            {/* Meta */}
+                            <div className="flex items-center text-white/80 text-xs">
+                              <FiCalendar className="inline ml-1" size={12} />
+                              {getRelativeTime(arabInternationalPosts[0].created_at)}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    )}
+                    
+                    {/* Small Posts using video mobile design */}
+                    <div className="space-y-4">
+                      {arabInternationalPosts.slice(1, 4).map((post, index) => (
                         <Link key={post.id} href={`/post/${post.slug}`} className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer h-32">
                           <div className="flex h-full">
                             {/* Image - 4:3 ratio */}
