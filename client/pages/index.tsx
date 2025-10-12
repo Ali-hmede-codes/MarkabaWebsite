@@ -843,10 +843,10 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 </h2>
               </div>
 
-              {posts.length > 0 && (
+              {posts.length > 6 && (
                 <div className="horizontal-scroll lg:overflow-x-auto lg:scrollbar-visible">
                   <div className="horizontal-scroll-content">
-                    {posts.slice(0, 8).map((post, index) => (
+                    {posts.slice(6, 18).map((post, index) => (
                       <Link key={post.id} href={`/post/${post.slug}`} className="horizontal-scroll-item">
                         <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
                           {post.featured_image ? (
@@ -858,7 +858,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                           ) : (
                             <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                               <span className="text-white text-4xl font-bold">
-                                {index + 1}
+                                {index + 7}
                               </span>
                             </div>
                           )}
