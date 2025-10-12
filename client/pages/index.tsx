@@ -337,7 +337,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                   <div className="hidden lg:block">
                     <div className="grid grid-cols-12 gap-6 h-96">
                       {/* Large post loading - Right side */}
-                      <div className="col-span-7 h-full order-2">
+                      <div className="col-span-7 h-full order-0">
                         <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse h-full">
                           <div className="h-full bg-gray-300"></div>
                         </div>
@@ -384,8 +384,8 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                   {/* Desktop Layout */}
                   <div className="hidden lg:block">
                     <div className="grid grid-cols-12 gap-6 h-96">
-                      {/* Large Post - Right side (order-2) */}
-                      <div className="col-span-7 h-full order-2">
+                      {/* Large Post - Right side (order-0) */}
+                      <div className="col-span-7 h-full order-0">
                         {lebanonPosts[0] && (
                           <Link href={`/post/${lebanonPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer h-full">
                             <div className="w-full h-full flex flex-col">
