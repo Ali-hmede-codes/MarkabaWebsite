@@ -35,10 +35,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   const [videoPosts, setVideoPosts] = useState<Post[]>([]);
   const [lebanonPosts, setLebanonPosts] = useState<Post[]>([]);
   const [arabInternationalPosts, setArabInternationalPosts] = useState<Post[]>([]);
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [videoLoading, setVideoLoading] = useState(false);
   const [featuredLoading, setFeaturedLoading] = useState(false);
   const [lebanonLoading, setLebanonLoading] = useState(false);
   const [arabInternationalLoading, setArabInternationalLoading] = useState(false);
+  const [allPostsLoading, setAllPostsLoading] = useState(false);
   const [dataRefreshInterval, setDataRefreshInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Fetch featured posts from API to ensure fresh data
@@ -132,6 +134,24 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
     }
   };
 
+  // Fetch all posts from all categories for اقــــرأ section
+  const fetchAllPosts = async () => {
+    try {
+      setAllPostsLoading(true);
+      const response = await fetch('/api/posts?limit=50&sort=created_at&order=desc');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data?.posts) {
+          setAllPosts(data.data.posts);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching all posts:', error);
+    } finally {
+      setAllPostsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (posts.length > 0) {
       // Sort posts by date for latest news
@@ -182,6 +202,9 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
     
     // Fetch Arab International posts separately
     fetchArabInternationalPosts();
+    
+    // Fetch all posts for اقــــرأ section
+    fetchAllPosts();
     
     // Fetch fresh featured posts to ensure they don't disappear
     fetchFeaturedPosts();
@@ -843,10 +866,10 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 </h2>
               </div>
 
-              {posts.length > 19 && (
+              {allPosts.length > 19 && (
                 <div className="horizontal-scroll lg:overflow-x-auto lg:scrollbar-visible">
                   <div className="horizontal-scroll-content">
-                    {posts.slice(7, 19).map((post, index) => (
+                    {allPosts.slice(7, 19).map((post, index) => (
                       <Link key={post.id} href={`/post/${post.slug}`} className="horizontal-scroll-item">
                         <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
                           {post.featured_image ? (
@@ -891,6 +914,18 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       </Link>
                     ))}
                   </div>
+                </div>
+              )}
+              
+              {allPostsLoading && (
+                <div className="text-center py-8">
+                  جاري تحميل المقالات...
+                </div>
+              )}
+              
+              {!allPostsLoading && allPosts.length <= 19 && (
+                <div className="text-center py-8">
+                  لا توجد مقالات كافية لعرضها
                 </div>
               )}
             </section>
