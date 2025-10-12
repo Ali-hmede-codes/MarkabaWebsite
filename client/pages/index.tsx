@@ -336,24 +336,26 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                   {/* Loading state for desktop */}
                   <div className="hidden lg:block">
                     <div className="grid grid-cols-12 gap-6 h-96">
+                      {/* Large post loading - Right side */}
+                      <div className="col-span-7 h-full order-2">
+                        <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse h-full">
+                          <div className="h-full bg-gray-300"></div>
+                        </div>
+                      </div>
                       {/* Small posts loading - Left side */}
-                      <div className="col-span-5 h-full">
-                        <div className="grid grid-cols-2 gap-4 h-full">
-                          {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse h-full">
-                              <div className="aspect-[4/3] bg-gray-300"></div>
-                              <div className="p-3">
-                                <div className="h-3 bg-gray-300 rounded mb-2"></div>
-                                <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+                      <div className="col-span-5 h-full order-1">
+                        <div className="space-y-4 h-full">
+                          {[1, 2, 3].map((i) => (
+                            <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse h-32">
+                              <div className="flex h-full">
+                                <div className="w-32 bg-gray-300"></div>
+                                <div className="flex-1 p-3">
+                                  <div className="h-3 bg-gray-300 rounded mb-2"></div>
+                                  <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+                                </div>
                               </div>
                             </div>
                           ))}
-                        </div>
-                      </div>
-                      {/* Large post loading - Right side */}
-                      <div className="col-span-7 h-full">
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse h-full">
-                          <div className="h-full bg-gray-300"></div>
                         </div>
                       </div>
                     </div>
