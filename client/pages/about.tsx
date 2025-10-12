@@ -179,8 +179,8 @@ const AboutPage: React.FC = () => {
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: 'مركبا المنصة الأخبارية',
-      alternateName: 'مركبا المنصة الأخبارية',
+      name: 'مركبا المنصة الاخبارية',
+      alternateName: 'مركبا المنصة الاخبارية',
       url: 'https://www.markaba.news/'
     },
     {
