@@ -1467,8 +1467,8 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (cont
 
     // Fetch posts and categories in parallel
     const postsEndpoint = isDevelopment
-      ? `${baseUrl}/api/posts`
-      : `${baseUrl}/api/v2/posts`;
+      ? `${baseUrl}/api/posts?limit=50`
+      : `${baseUrl}/api/v2/posts?limit=50`;
     const categoriesEndpoint = isDevelopment
       ? `${baseUrl}/api/categories`
       : `${baseUrl}/api/v2/categories`;
