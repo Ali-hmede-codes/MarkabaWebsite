@@ -31,10 +31,22 @@ export const formatPostContent = (content: string): string => {
     '<strong class="bold-text-formatted" style="font-weight: bold;">$1</strong>'
   );
   
-  // Convert $text$ patterns to blue quote with icon
+  // Convert $text$ patterns to centered quote with top and bottom quote icons
   formattedContent = formattedContent.replace(
     /\$([^$]+)\$/g,
-    '<div class="quote-formatted" style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 1rem; margin: 1.5rem 0; border-radius: 0.5rem; position: relative; color: #1e40af; font-style: italic; line-height: 1.6;"><div style="display: flex; align-items: flex-start; gap: 0.5rem;"><svg style="width: 1.25rem; height: 1.25rem; color: #3b82f6; flex-shrink: 0; margin-top: 0.125rem;" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/></svg><span>$1</span></div></div>'
+    '<div class="quote-formatted" style="margin: 2rem auto; padding: 2rem 1rem; text-align: center; max-width: 600px; position: relative;"><div style="position: relative; display: inline-block;"><svg style="position: absolute; top: -1rem; left: -1.5rem; width: 1.5rem; height: 1.5rem; color: #6b7280; transform: rotate(180deg);" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/></svg><span style="color: #374151; font-style: italic; font-size: 1.1em; line-height: 1.6; display: block; padding: 0 2rem;">$1</span><svg style="position: absolute; bottom: -1rem; right: -1.5rem; width: 1.5rem; height: 1.5rem; color: #6b7280;" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/></svg></div></div>'
+  );
+  
+  // Convert &text& patterns to gray light text
+  formattedContent = formattedContent.replace(
+    /&([^&]+)&/g,
+    '<span class="gray-light-text-formatted" style="color: #9ca3af; font-weight: 300; opacity: 0.8;">$1</span>'
+  );
+  
+  // Convert (text) patterns to bold title with black bullet point
+  formattedContent = formattedContent.replace(
+    /\(([^)]+)\)/g,
+    '<div class="bullet-title-formatted" style="display: flex; align-items: flex-start; gap: 0.5rem; margin: 1.2em 0 0.8em 0; font-weight: bold; font-size: 1.1em; color: #111827; line-height: 1.4;"><span style="color: #000; font-size: 1.2em; line-height: 1; margin-top: -0.1em;">•</span><span>$1</span></div>'
   );
   
   return formattedContent;
@@ -67,6 +79,8 @@ export const extractPlainText = (content: string): string => {
     .replace(/_([^_]+)_/g, '$1') // Remove underscores but keep text
     .replace(/%([^%]+)%/g, '$1') // Remove percent signs but keep text
     .replace(/\$([^$]+)\$/g, '$1') // Remove dollar signs but keep text
+    .replace(/&([^&]+)&/g, '$1') // Remove ampersands but keep text
+    .replace(/\(([^)]+)\)/g, '$1') // Remove parentheses but keep text
     .replace(/<br>/g, '\n') // Convert <br> back to line breaks
     .trim();
 };

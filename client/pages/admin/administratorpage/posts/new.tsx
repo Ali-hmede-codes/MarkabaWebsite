@@ -501,6 +501,22 @@ const CreatePost: React.FC = () => {
                   required
                   placeholder="محتوى المقال باللغة العربية"
                 />
+                
+                {/* Formatting Guide */}
+                <div className="mt-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h4 className="text-sm font-semibold text-blue-800 mb-2">دليل التنسيق:</h4>
+                  <div className="text-sm text-blue-700 space-y-1">
+                    <div><strong>&كلمة&</strong> - نص رمادي فاتح</div>
+                    <div><strong>(كلمة)</strong> - عنوان عريض مع نقطة سوداء</div>
+                    <div><strong>**كلمة**</strong> - نص عريض</div>
+                    <div><strong>*كلمة*</strong> - نص مائل</div>
+                    <div><strong>__كلمة__</strong> - نص تحته خط</div>
+                    <div><strong>~~كلمة~~</strong> - نص مشطوب</div>
+                    <div><strong>```كود```</strong> - كتلة كود</div>
+                    <div><strong>`كود`</strong> - كود مضمن</div>
+                    <div><strong>[نص الرابط](URL)</strong> - رابط</div>
+                  </div>
+                </div>
               </div>
 
               {/* SEO Fields */}
