@@ -141,60 +141,77 @@ const Footer: React.FC = () => {
       <footer className="bg-gray-50 text-gray-800 relative" dir="rtl">
         {/* Main Footer Content */}
         <div className="w-full px-3 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-8">
-          {/* Logo Section */}
-          <div className="text-center mb-4 sm:mb-6">
-            <div className="flex justify-center mb-3 sm:mb-4">
-              <Image
-                src="/images/logo_new.png"
-                alt="Logo"
-                width={95}
-                height={70}
-                className="object-contain sm:w-[80px] sm:h-[40px] lg:w-[160px] lg:h-[80px]"
-              />
+          {/* Mobile Layout: Logo and Social Media centered */}
+          <div className="md:hidden">
+            {/* Logo Section */}
+            <div className="text-center mb-4 sm:mb-6">
+              <div className="flex justify-center mb-3 sm:mb-4">
+                <Image
+                  src="/images/logo_new.png"
+                  alt="Logo"
+                  width={95}
+                  height={70}
+                  className="object-contain sm:w-[80px] sm:h-[40px] lg:w-[160px] lg:h-[80px]"
+                />
+              </div>
+            </div>
+
+            {/* Social Media Section - Directly under logo */}
+            <div className="text-center mb-4 sm:mb-6 lg:mb-8">
+              <div className="flex justify-center space-x-2 sm:space-x-3 rtl:space-x-reverse">
+                {socialMediaLinks
+                  ?.filter((link: SocialMedia) => Boolean(link.is_active))
+                  ?.sort((a: SocialMedia, b: SocialMedia) => a.sort_order - b.sort_order)
+                  ?.map((link: SocialMedia) => {
+                    const IconComponent = getSocialIcon(link.platform);
+                    return (
+                      <a
+                        key={link.id}
+                        href={link?.url?.trim()?.replace(/`/g, '') || '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors duration-200"
+                        aria-label={link.name_ar}
+                        title={link.name_ar}
+                      >
+                        <IconComponent className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                      </a>
+                    );
+                  })
+                }
+                {socialMediaLoading && (
+                  <div className="text-gray-600 text-sm">جاري التحميل...</div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Social Media Section - Directly under logo */}
-          <div className="text-center mb-4 sm:mb-6 lg:mb-8">
-            <div className="flex justify-center space-x-2 sm:space-x-3 rtl:space-x-reverse">
-              {socialMediaLinks
-                ?.filter((link: SocialMedia) => Boolean(link.is_active))
-                ?.sort((a: SocialMedia, b: SocialMedia) => a.sort_order - b.sort_order)
-                ?.map((link: SocialMedia) => {
-                  const IconComponent = getSocialIcon(link.platform);
-                  return (
-                    <a
-                      key={link.id}
-                      href={link?.url?.trim()?.replace(/`/g, '') || '#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors duration-200"
-                      aria-label={link.name_ar}
-                      title={link.name_ar}
-                    >
-                      <IconComponent className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
-                    </a>
-                  );
-                })
-              }
-              {socialMediaLoading && (
-                <div className="text-gray-600 text-sm">جاري التحميل...</div>
-              )}
-            </div>
-          </div>
-
-          {/* Horizontal Navigation Categories with Blue Background */}
-           <div className="text-center mb-4 sm:mb-6 lg:mb-8">
-             {/* Desktop Layout: 2 columns grid */}
+          {/* Navigation Links Grid */}
+           <div className="text-center mb-4 sm:mb-6 lg:mb-8" style={{ fontFamily: 'Alexandria, sans-serif' }}>
+             {/* Desktop Layout: 3 columns - Pages, Categories, Logo+Social */}
              <div className="hidden md:block">
-               {/* Line above sections */}
-               <div className="w-full h-px bg-blue-600 mb-6"></div>
+               {/* Dashed line above sections */}
+               <div className="w-full h-px border-t border-dashed border-blue-600 mb-6"></div>
                
-               <div className="grid grid-cols-2 gap-8 max-w-4xl mx-auto">
-                 {/* Categories Section - Right side */}
+               <div className="grid grid-cols-3 gap-8 max-w-6xl mx-auto">
+                 {/* Pages Section - Left side */}
                  <div className="text-right">
-                   <h3 className="text-blue-600 font-bold text-lg mb-4">تصنيفاتي</h3>
-                   <div className="space-y-2">
+                   <div className="grid grid-cols-1 gap-2">
+                     {quickLinks.map((link, index) => (
+                       <Link 
+                         key={index} 
+                         href={link.href}
+                         className="block text-blue-600 hover:text-blue-800 text-sm transition-colors duration-200"
+                       >
+                         {link.label}
+                       </Link>
+                     ))}
+                   </div>
+                 </div>
+                 
+                 {/* Categories Section - Center */}
+                 <div className="text-right">
+                   <div className="grid grid-cols-1 gap-2">
                      {categoriesLoading ? (
                        <div className="text-blue-600 text-sm">جاري تحميل التصنيفات...</div>
                      ) : (
@@ -211,63 +228,77 @@ const Footer: React.FC = () => {
                    </div>
                  </div>
                  
-                 {/* Pages Section - Left side */}
-                 <div className="text-right">
-                   <h3 className="text-blue-600 font-bold text-lg mb-4">الصفحات</h3>
-                   <div className="space-y-2">
-                     {quickLinks.map((link, index) => (
-                       <Link 
-                         key={index} 
-                         href={link.href}
-                         className="block text-blue-600 hover:text-blue-800 text-sm transition-colors duration-200"
-                       >
-                         {link.label}
-                       </Link>
-                     ))}
+                 {/* Logo and Social Media Section - Right side */}
+                 <div className="text-center">
+                   {/* Logo */}
+                   <div className="mb-4">
+                     <Image
+                       src="/images/logo_new.png"
+                       alt="Logo"
+                       width={120}
+                       height={80}
+                       className="object-contain mx-auto"
+                     />
+                   </div>
+                   
+                   {/* Social Media Icons */}
+                   <div className="flex justify-center space-x-2 rtl:space-x-reverse">
+                     {socialMediaLinks
+                       ?.filter((link: SocialMedia) => Boolean(link.is_active))
+                       ?.sort((a: SocialMedia, b: SocialMedia) => a.sort_order - b.sort_order)
+                       ?.map((link: SocialMedia) => {
+                         const IconComponent = getSocialIcon(link.platform);
+                         return (
+                           <a
+                             key={link.id}
+                             href={link?.url?.trim()?.replace(/`/g, '') || '#'}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors duration-200"
+                             aria-label={link.name_ar}
+                             title={link.name_ar}
+                           >
+                             <IconComponent className="w-4 h-4" />
+                           </a>
+                         );
+                       })
+                     }
+                     {socialMediaLoading && (
+                       <div className="text-gray-600 text-sm">جاري التحميل...</div>
+                     )}
                    </div>
                  </div>
                </div>
              </div>
              
-             {/* Mobile Layout: Categories above pages with blue line separator */}
+             {/* Mobile Layout: All links in 2 columns */}
              <div className="md:hidden">
-               {/* Categories Section */}
-               <div className="mb-6">
-                 <h3 className="text-blue-600 font-bold text-lg mb-4 text-center">تصنيفاتي</h3>
-                 <div className="flex flex-wrap justify-center gap-2">
-                   {categoriesLoading ? (
-                     <div className="text-blue-600 text-sm">جاري تحميل التصنيفات...</div>
-                   ) : (
-                     categories.slice(0, 6).map((category) => (
-                       <Link 
-                         key={category.id} 
-                         href={`/category/${category.slug}`}
-                         className="text-blue-600 hover:text-blue-800 text-sm px-2 py-1 transition-colors duration-200"
-                       >
-                         {category.name_ar}
-                       </Link>
-                     ))
-                   )}
-                 </div>
-               </div>
-               
-               {/* Blue line separator */}
-               <div className="w-full h-px bg-blue-600 mb-6"></div>
-               
-               {/* Pages Section */}
-               <div>
-                 <h3 className="text-blue-600 font-bold text-lg mb-4 text-center">الصفحات</h3>
-                 <div className="flex flex-wrap justify-center gap-2">
-                   {quickLinks.map((link, index) => (
+               <div className="grid grid-cols-2 gap-x-4 gap-y-2 max-w-sm mx-auto">
+                 {/* Categories */}
+                 {categoriesLoading ? (
+                   <div className="col-span-2 text-blue-600 text-sm text-center">جاري تحميل التصنيفات...</div>
+                 ) : (
+                   categories.slice(0, 6).map((category) => (
                      <Link 
-                       key={index} 
-                       href={link.href}
-                       className="text-blue-600 hover:text-blue-800 text-sm px-2 py-1 transition-colors duration-200"
+                       key={category.id} 
+                       href={`/category/${category.slug}`}
+                       className="text-blue-600 hover:text-blue-800 text-sm text-center transition-colors duration-200"
                      >
-                       {link.label}
+                       {category.name_ar}
                      </Link>
-                   ))}
-                 </div>
+                   ))
+                 )}
+                 
+                 {/* Pages */}
+                 {quickLinks.map((link, index) => (
+                   <Link 
+                     key={index} 
+                     href={link.href}
+                     className="text-blue-600 hover:text-blue-800 text-sm text-center transition-colors duration-200"
+                   >
+                     {link.label}
+                   </Link>
+                 ))}
                </div>
              </div>
            </div>
