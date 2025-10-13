@@ -167,7 +167,8 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                               overflowWrap: 'break-word',
                               hyphens: 'auto',
                               display: 'block',
-                              width: '100%'
+                              width: '100%',
+                              fontSize: '14px'
                             }}>
                               {displayTitle}
                               {hasContent && (
@@ -209,7 +210,8 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                                  overflowWrap: 'break-word',
                                  hyphens: 'auto',
                                  display: 'block',
-                                 width: '100%'
+                                 width: '100%',
+                                 fontSize: '14px'
                                }}>
                                  {displayTitle}
                                  {hasContent && (
@@ -276,7 +278,8 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                                 overflowWrap: 'break-word',
                                 hyphens: 'auto',
                                 display: 'block',
-                                width: '100%'
+                                width: '100%',
+                                fontSize: '14px'
                               }}>
                                 {displayTitle}
                                 {hasContent && (
@@ -318,7 +321,8 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                                    overflowWrap: 'break-word',
                                    hyphens: 'auto',
                                    display: 'block',
-                                   width: '100%'
+                                   width: '100%',
+                                   fontSize: '14px'
                                  }}>
                                    {displayTitle}
                                    {hasContent && (
