@@ -250,16 +250,6 @@ const Header: React.FC = () => {
                 <FiSearch size={22} className="drop-shadow-sm" />
               </button>
               
-              {/* Football Button */}
-              <Link href="/football">
-                <button
-                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                  aria-label="كرة القدم"
-                >
-                  <MdSportsSoccer size={22} />
-                </button>
-              </Link>
-              
 
               <button
                 onClick={toggleMenu}
