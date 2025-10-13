@@ -144,7 +144,10 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                   return (
                     <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
                       {news.isBreaking ? (
-                        <div className="flex items-start" style={{ gap: '8px' }}>
+                        <div className="relative flex items-start hover:bg-gray-50 p-2 rounded-lg transition-all duration-200 group" style={{ gap: '8px' }}>
+                          {/* Blue line on the right - appears on hover */}
+                          <div className="absolute right-0 top-0 bottom-0 w-1 bg-blue-600 rounded-l-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                          
                           <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '2px' }}>
                             <span className="text-blue-600 text-center" style={{ 
                               fontSize: '12px', 
@@ -255,7 +258,10 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
                     return (
                       <div key={`${news.id}-${news.isBreaking ? 'breaking' : 'last'}`} className="">
                         {news.isBreaking ? (
-                          <div className="flex items-start" style={{ gap: '8px' }}>
+                          <div className="relative flex items-start hover:bg-gray-50 p-2 rounded-lg transition-all duration-200 group" style={{ gap: '8px' }}>
+                            {/* Blue line on the right - appears on hover */}
+                            <div className="absolute right-0 top-0 bottom-0 w-1 bg-blue-600 rounded-l-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                            
                             <div className="flex-shrink-0" style={{ width: '50px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '2px' }}>
                               <span className="text-blue-600 text-center" style={{ 
                                 fontSize: '12px', 
