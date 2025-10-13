@@ -45,6 +45,54 @@ class MyDocument extends Document<MyDocumentProps> {
         description: 'ابق على اطلاع بآخر الأخبار والقصص العاجلة والتحليلات المتعمقة من مـركـبـا - الـمـنـصـة الاخـبـاريـة',
         keywords: 'أخبار, أخبار عاجلة, تحديثات, صحافة, أحداث جارية, لبنان, الشرق الأوسط'
       };
+    } else if (ctx.pathname === '/category/[slug]' && ctx.query?.slug) {
+      // For category pages, fetch the category data to get meta information
+      try {
+        const slug = ctx.query.slug as string;
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
+        const apiVersion = isDevelopment ? '/api' : '/api/v2';
+        
+        const categoryResponse = await fetch(`${baseUrl}${apiVersion}/categories?slug=${slug}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'NewsMarkaba-SSR/1.0'
+          }
+        });
+        
+        if (categoryResponse.ok) {
+          const categoryData = await categoryResponse.json();
+          const category = categoryData.success && categoryData.data?.categories?.length > 0 ? categoryData.data.categories[0] : null;
+          
+          if (category) {
+            const categoryName = category.name_ar || category.name;
+            const categoryDescription = category.description_ar || category.description || `تصفح جميع أخبار ${categoryName} على مـركـبـا - الـمـنـصـة الاخـبـاريـة`;
+            const categoryImage = category.image;
+            
+            // Ensure image URL is absolute for social media sharing
+            let fullImageUrl = categoryImage;
+            if (categoryImage && !categoryImage.startsWith('http')) {
+              const imageBaseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
+              fullImageUrl = categoryImage.startsWith('/') ? `${imageBaseUrl}${categoryImage}` : `${imageBaseUrl}/${categoryImage}`;
+            }
+            
+            // Construct the full URL for the category
+            const protocol = ctx.req?.headers['x-forwarded-proto'] || (isDevelopment ? 'http' : 'https');
+            const host = ctx.req?.headers.host || (isDevelopment ? 'localhost:3000' : 'markaba.news');
+            const fullUrl = `${protocol}://${host}/category/${slug}`;
+            
+            metaData = {
+              title: categoryName,
+              description: categoryDescription,
+              keywords: `أخبار, ${categoryName}, مقالات, مـركـبـا - الـمـنـصـة الاخـبـاريـة, لبنان, الشرق الأوسط`,
+              image: fullImageUrl || 'https://markaba.news/images/og-image.jpg',
+              url: fullUrl
+            };
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching category meta data:', error);
+      }
     } else if (ctx.pathname === '/post/[slug]' && ctx.query?.slug) {
        // For post pages, fetch the post data to get meta information
        try {

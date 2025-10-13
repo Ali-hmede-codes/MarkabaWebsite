@@ -153,7 +153,30 @@ const CategoryPage: React.FC = () => {
           content.site.name
         ],
         url: `https://markaba.news/category/${currentCategory.slug}`,
-        image: currentCategory.image ? getImageUrl(currentCategory.image) : undefined
+        image: currentCategory.image ? getImageUrl(currentCategory.image) : 'https://markaba.news/images/og-image.jpg',
+        type: 'website',
+        structuredData: {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": categoryName,
+          "description": pageDescription,
+          "url": `https://markaba.news/category/${currentCategory.slug}`,
+          "mainEntity": {
+            "@type": "ItemList",
+            "name": `أخبار ${categoryName}`,
+            "description": pageDescription,
+            "numberOfItems": totalPosts
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "مـركـبـا - الـمـنـصـة الاخـبـاريـة",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://markaba.news/images/logo_new.png"
+            }
+          },
+          "inLanguage": "ar"
+        }
       }}
     >
       <div className="bg-gray-50">
