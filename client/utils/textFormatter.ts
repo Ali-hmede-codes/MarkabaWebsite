@@ -53,9 +53,9 @@ export const formatPostContent = (content: string): string => {
     '<span class="gray-light-text-formatted" style="color: #9ca3af; font-weight: 300; opacity: 0.8;">$1</span>'
   );
   
-  // Convert (text) patterns to bold title with black bullet point
+  // Convert !text! patterns to bold title with black bullet point
   formattedContent = formattedContent.replace(
-    /\(([^)]+)\)/g,
+    /!([^!]+)!/g,
     '<div class="bullet-title-formatted" style="display: flex; align-items: flex-start; gap: 0.5rem; margin: 1.2em 0 0.8em 0; font-weight: bold; font-size: 1.1em; color: #111827; line-height: 1.4;"><span style="color: #000; font-size: 1.2em; line-height: 1; margin-top: -0.1em;">•</span><span>$1</span></div>'
   );
   

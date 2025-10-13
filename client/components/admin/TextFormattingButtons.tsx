@@ -58,7 +58,7 @@ const TextFormattingButtons: React.FC<TextFormattingButtonsProps> = ({
   const formatBoldText = () => applyFormatting('%', '%', 'نص عريض');
   const formatQuote = () => applyFormatting('$', '$', 'اقتباس مهم');
   const formatGrayText = () => applyFormatting('&', '&', 'نص رمادي فاتح');
-  const formatBulletTitle = () => applyFormatting('(', ')', 'عنوان مع نقطة');
+  const formatBulletTitle = () => applyFormatting('!', '!', 'عنوان مع نقطة');
 
   return (
     <div className="mb-4 p-3 bg-gray-50 rounded-lg border">
@@ -127,11 +127,11 @@ const TextFormattingButtons: React.FC<TextFormattingButtonsProps> = ({
           type="button"
           onClick={formatBulletTitle}
           className="flex items-center gap-2 px-3 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors text-sm"
-          title="عنوان مع نقطة ((نص))"
+          title="عنوان مع نقطة (!نص!)"
         >
           <span className="font-bold">•</span>
           <span>عنوان مع نقطة</span>
-          <code className="text-xs bg-gray-700 px-1 rounded">(نص)</code>
+          <code className="text-xs bg-gray-700 px-1 rounded">!نص!</code>
         </button>
       </div>
     </div>
