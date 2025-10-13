@@ -189,7 +189,7 @@ const Header: React.FC = () => {
               )}
             </div>
 
-            {/* Desktop Search Button and Social Media */}
+            {/* Desktop Search Button and Logo with Social Media */}
             <div className="hidden md:flex items-center space-x-3 rtl:space-x-reverse">
               {/* Search Button */}
               <button
@@ -200,32 +200,56 @@ const Header: React.FC = () => {
                 <FiSearch size={20} />
               </button>
 
+              {/* Upper Right Corner Logo with Social Media Icons Below */}
+              <div className="flex flex-col items-center ml-4 rtl:mr-4">
+                {/* Logo */}
+                <a 
+                  href="https://www.markaba.news" 
+                  className="relative group cursor-pointer mb-2"
+                >
+                  <div className="h-12 w-16 lg:h-14 lg:w-18 flex items-center justify-center relative">
+                    {logoUrl ? (
+                      <Image
+                        src={logoUrl}
+                        alt={content?.site?.name || 'Logo'}
+                        fill
+                        className="object-contain transition-transform duration-300 group-hover:scale-110"
+                        priority
+                        quality={100}
+                        sizes="(max-width: 768px) 64px, 72px"
+                      />
+                    ) : (
+                      <span className="text-blue-600 font-bold text-2xl lg:text-3xl">م</span>
+                    )}
+                  </div>
+                  <div className="absolute -inset-1 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10"></div>
+                </a>
 
-
-              {/* Social Media Icons */}
-              <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                {socialMediaLinks
-                  .filter((link: SocialMedia) => Boolean(link.is_active))
-                  ?.sort((a: SocialMedia, b: SocialMedia) => a.sort_order - b.sort_order)
-                  ?.map((link: SocialMedia) => {
-                    const IconComponent = getSocialIcon(link.platform);
-                    return (
-                      <a
-                        key={link.id}
-                        href={link.url.trim().replace(/`/g, '')}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-blue-600 hover:scale-110 transition-all duration-200 p-2 rounded-full hover:bg-blue-50"
-                        title={link.name_ar}
-                      >
-                        <IconComponent size={16} />
-                      </a>
-                    );
-                  })
-                }
-                {socialMediaLoading && (
-                  <div className="text-gray-400 text-xs">جاري التحميل...</div>
-                )}
+                {/* Social Media Icons Below Logo */}
+                <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                  {socialMediaLinks
+                    .filter((link: SocialMedia) => Boolean(link.is_active))
+                    ?.sort((a: SocialMedia, b: SocialMedia) => a.sort_order - b.sort_order)
+                    ?.map((link: SocialMedia) => {
+                      const IconComponent = getSocialIcon(link.platform);
+                      return (
+                        <a
+                          key={link.id}
+                          href={link.url.trim().replace(/`/g, '')}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-600 hover:text-blue-600 hover:scale-110 transition-all duration-200 p-1 rounded-full hover:bg-blue-50"
+                          title={link.name_ar}
+                        >
+                          <IconComponent size={14} />
+                        </a>
+                      );
+                    })
+                  }
+                  {socialMediaLoading && (
+                    <div className="text-gray-400 text-xs">جاري التحميل...</div>
+                  )}
+                </div>
               </div>
             </div>
 
