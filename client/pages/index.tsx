@@ -20,6 +20,7 @@ import LatestArticles from "../components/LatestArticles/LatestArticles";
 // import BreakingNewsBanner from "../components/BreakingNews/BreakingNewsBanner";
 import { PrayerTimes, Weather } from "../components/PrayerWeather";
 import { MainTopAd, SidebarTopAd, BottomMainAd } from "../components/ads";
+import LazyImage from "../components/UI/LazyImage";
 
 
 interface HomePageProps {
@@ -506,10 +507,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             <div className="w-full h-full flex flex-col">
                               {/* Image */}
                               <div className="flex-grow overflow-hidden relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(lebanonPosts[0].featured_image)}
                                   alt={lebanonPosts[0].title_ar || lebanonPosts[0].title}
-                                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                  className="w-full h-full hover:scale-105 transition-transform duration-300"
+                                  priority={true}
                                 />
                                 
                                 {/* Overlay Content */}
@@ -546,10 +548,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               {/* Image - 4:3 ratio */}
                               <div className="w-32 flex-shrink-0">
                                 <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                  <img
+                                  <LazyImage
                                     src={getImageUrl(post.featured_image)}
                                     alt={post.title_ar || post.title}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full"
+                                    aspectRatio="aspect-[4/3]"
                                   />
                                 </div>
                               </div>
@@ -589,10 +592,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                     {lebanonPosts[0] && (
                       <Link href={`/post/${lebanonPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
                         <div className="aspect-video overflow-hidden relative">
-                          <img
+                          <LazyImage
                             src={getImageUrl(lebanonPosts[0].featured_image)}
                             alt={lebanonPosts[0].title_ar || lebanonPosts[0].title}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full"
+                            priority={true}
                           />
                           
                           {/* Overlay Content */}
@@ -627,10 +631,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             {/* Image - 4:3 ratio */}
                             <div className="w-32 flex-shrink-0">
                               <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(post.featured_image)}
                                   alt={post.title_ar || post.title}
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full"
+                                  aspectRatio="aspect-[4/3]"
                                 />
                               </div>
                             </div>
@@ -756,10 +761,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               <div className="w-full h-full flex flex-col">
                                 {/* Image */}
                                 <div className="flex-grow overflow-hidden relative">
-                                  <img
+                                  <LazyImage
                                     src={getImageUrl(khasPosts[0].featured_image)}
                                     alt={khasPosts[0].title_ar || khasPosts[0].title}
-                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                    className="w-full h-full hover:scale-105 transition-transform duration-300"
+                                    priority={true}
                                   />
                                   
                                   {/* Overlay Content */}
@@ -796,10 +802,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                 {/* Image - 4:3 ratio */}
                                 <div className="w-32 flex-shrink-0">
                                   <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                    <img
+                                    <LazyImage
                                       src={getImageUrl(post.featured_image)}
                                       alt={post.title_ar || post.title}
-                                      className="w-full h-full object-cover"
+                                      className="w-full h-full"
+                                      aspectRatio="aspect-[4/3]"
                                     />
                                   </div>
                                 </div>
@@ -839,10 +846,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       {khasPosts[0] && (
                         <Link href={`/post/${khasPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
                           <div className="aspect-video overflow-hidden relative">
-                            <img
+                            <LazyImage
                               src={getImageUrl(khasPosts[0].featured_image)}
                               alt={khasPosts[0].title_ar || khasPosts[0].title}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full"
+                              priority={true}
                             />
                             
                             {/* Overlay Content */}
@@ -877,10 +885,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               {/* Image - 4:3 ratio */}
                               <div className="w-32 flex-shrink-0">
                                 <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                  <img
+                                  <LazyImage
                                     src={getImageUrl(post.featured_image)}
                                     alt={post.title_ar || post.title}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full"
+                                    aspectRatio="aspect-[4/3]"
                                   />
                                 </div>
                               </div>
@@ -1006,10 +1015,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             <div className="w-full h-full flex flex-col">
                               {/* Image */}
                               <div className="flex-grow overflow-hidden relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(sportsPosts[0].featured_image)}
                                   alt={sportsPosts[0].title_ar || sportsPosts[0].title}
                                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                  priority={true}
                                 />
                                 
                                 {/* Overlay Content */}
@@ -1046,10 +1056,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               {/* Image - 4:3 ratio */}
                               <div className="w-32 flex-shrink-0">
                                 <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                  <img
+                                  <LazyImage
                                     src={getImageUrl(post.featured_image)}
                                     alt={post.title_ar || post.title}
                                     className="w-full h-full object-cover"
+                                    aspectRatio="4/3"
                                   />
                                 </div>
                               </div>
@@ -1089,10 +1100,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                     {sportsPosts[0] && (
                       <Link href={`/post/${sportsPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
                         <div className="aspect-video overflow-hidden relative">
-                          <img
+                          <LazyImage
                             src={getImageUrl(sportsPosts[0].featured_image)}
                             alt={sportsPosts[0].title_ar || sportsPosts[0].title}
                             className="w-full h-full object-cover"
+                            priority={true}
                           />
                           
                           {/* Overlay Content */}
@@ -1127,10 +1139,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             {/* Image - 4:3 ratio */}
                             <div className="w-32 flex-shrink-0">
                               <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(post.featured_image)}
                                   alt={post.title_ar || post.title}
                                   className="w-full h-full object-cover"
+                                  aspectRatio="4/3"
                                 />
                               </div>
                             </div>
@@ -1255,10 +1268,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             <div className="w-full h-full flex flex-col">
                               {/* Image */}
                               <div className="flex-grow overflow-hidden relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(technologyPosts[0].featured_image)}
                                   alt={technologyPosts[0].title_ar || technologyPosts[0].title}
                                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                  priority={true}
                                 />
                                 
                                 {/* Overlay Content */}
@@ -1295,10 +1309,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               {/* Image - 4:3 ratio */}
                               <div className="w-32 flex-shrink-0">
                                 <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                  <img
+                                  <LazyImage
                                     src={getImageUrl(post.featured_image)}
                                     alt={post.title_ar || post.title}
                                     className="w-full h-full object-cover"
+                                    aspectRatio="4/3"
                                   />
                                 </div>
                               </div>
@@ -1338,10 +1353,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                     {technologyPosts[0] && (
                       <Link href={`/post/${technologyPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
                         <div className="aspect-video overflow-hidden relative">
-                          <img
+                          <LazyImage
                             src={getImageUrl(technologyPosts[0].featured_image)}
                             alt={technologyPosts[0].title_ar || technologyPosts[0].title}
                             className="w-full h-full object-cover"
+                            priority={true}
                           />
                           
                           {/* Overlay Content */}
@@ -1376,10 +1392,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             {/* Image - 4:3 ratio */}
                             <div className="w-32 flex-shrink-0">
                               <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(post.featured_image)}
                                   alt={post.title_ar || post.title}
                                   className="w-full h-full object-cover"
+                                  aspectRatio="4/3"
                                 />
                               </div>
                             </div>
@@ -1504,10 +1521,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             <div className="w-full h-full flex flex-col">
                               {/* Image */}
                               <div className="flex-grow overflow-hidden relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(arabInternationalPosts[0].featured_image)}
                                   alt={arabInternationalPosts[0].title_ar || arabInternationalPosts[0].title}
                                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                  priority={true}
                                 />
                                 
                                 {/* Overlay Content */}
@@ -1544,10 +1562,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               {/* Image - 4:3 ratio */}
                               <div className="w-32 flex-shrink-0">
                                 <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                  <img
+                                  <LazyImage
                                     src={getImageUrl(post.featured_image)}
                                     alt={post.title_ar || post.title}
                                     className="w-full h-full object-cover"
+                                    aspectRatio="4/3"
                                   />
                                 </div>
                               </div>
@@ -1587,10 +1606,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                     {arabInternationalPosts[0] && (
                       <Link href={`/post/${arabInternationalPosts[0].slug}`} className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
                         <div className="aspect-video overflow-hidden relative">
-                          <img
+                          <LazyImage
                             src={getImageUrl(arabInternationalPosts[0].featured_image)}
                             alt={arabInternationalPosts[0].title_ar || arabInternationalPosts[0].title}
                             className="w-full h-full object-cover"
+                            priority={true}
                           />
                           
                           {/* Overlay Content */}
@@ -1625,10 +1645,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             {/* Image - 4:3 ratio */}
                             <div className="w-32 flex-shrink-0">
                               <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(post.featured_image)}
                                   alt={post.title_ar || post.title}
                                   className="w-full h-full object-cover"
+                                  aspectRatio="4/3"
                                 />
                               </div>
                             </div>
@@ -1832,10 +1853,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               <div className="w-full flex flex-col h-full">
                                 {/* Image */}
                                 <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
-                                  <img
+                                  <LazyImage
                                     src={getImageUrl(post.featured_image)}
                                     alt={post.title_ar || post.title}
-                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                    className="w-full h-full hover:scale-105 transition-transform duration-300"
+                                    aspectRatio="aspect-[4/3]"
                                   />
                                   {/* Video Play Icon Overlay */}
                                   <div className="absolute inset-0 flex items-center justify-center">
@@ -1877,10 +1899,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                           <Link href={`/post/${videoPosts[0].slug}`} className="block h-full">
                             <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer h-full">
                               <div className="w-full h-full relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(videoPosts[0].featured_image)}
                                   alt={videoPosts[0].title_ar || videoPosts[0].title}
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full"
+                                  aspectRatio="aspect-none"
+                                  priority={true}
                                 />
                                 {/* Black fade overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -1922,10 +1946,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                       <Link href={`/post/${videoPosts[0].slug}`} className="block">
                         <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-video">
                           <div className="w-full h-full relative">
-                            <img
+                            <LazyImage
                               src={getImageUrl(videoPosts[0].featured_image)}
                               alt={videoPosts[0].title_ar || videoPosts[0].title}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full"
+                              aspectRatio="aspect-video"
+                              priority={true}
                             />
                             {/* Black fade overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -1965,10 +1991,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                             {/* Image - 4:3 ratio */}
                             <div className="w-32 flex-shrink-0">
                               <div className="aspect-[4/3] w-full overflow-hidden h-full relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(post.featured_image)}
                                   alt={post.title_ar || post.title}
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full"
+                                  aspectRatio="aspect-[4/3]"
                                 />
                                 {/* Video Play Icon Overlay */}
                                 <div className="absolute inset-0 flex items-center justify-center">
@@ -2096,10 +2123,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               <Link href={`/post/${featuredPosts[0].slug}`} className="block h-full">
                                 <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer h-full">
                                   <div className="w-full h-full relative">
-                                    <img
+                                    <LazyImage
                                       src={getImageUrl(featuredPosts[0].featured_image)}
                                       alt={featuredPosts[0].title_ar || featuredPosts[0].title}
-                                      className="w-full h-full object-cover"
+                                      className="w-full h-full"
+                                      aspectRatio="aspect-none"
+                                      priority={true}
                                     />
                                     {/* Black fade overlay */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -2133,10 +2162,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                                   <div className="w-full flex flex-col h-full">
                                     {/* Image */}
                                     <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
-                                      <img
+                                      <LazyImage
                                         src={getImageUrl(post.featured_image)}
                                         alt={post.title_ar || post.title}
-                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                        className="w-full h-full hover:scale-105 transition-transform duration-300"
+                                        aspectRatio="aspect-[4/3]"
                                       />
                                     </div>
                                     
@@ -2175,10 +2205,12 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                           <Link href={`/post/${featuredPosts[0].slug}`} className="block">
                             <article className="relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-video">
                               <div className="w-full h-full relative">
-                                <img
+                                <LazyImage
                                   src={getImageUrl(featuredPosts[0].featured_image)}
                                   alt={featuredPosts[0].title_ar || featuredPosts[0].title}
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full"
+                                  aspectRatio="aspect-video"
+                                  priority={true}
                                 />
                                 {/* Black fade overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -2210,10 +2242,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                               <div className="w-full flex flex-col">
                                 {/* Image */}
                                 <div className="aspect-[4/3] w-full overflow-hidden flex-shrink-0 relative">
-                                  <img
+                                  <LazyImage
                                     src={getImageUrl(post.featured_image)}
                                     alt={post.title_ar || post.title}
-                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                    className="w-full h-full hover:scale-105 transition-transform duration-300"
+                                    aspectRatio="aspect-[4/3]"
                                   />
                                 </div>
                                 
