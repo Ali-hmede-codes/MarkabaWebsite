@@ -144,40 +144,43 @@ const CategoryPage: React.FC = () => {
       pageType="category"
       pageData={{ slug: currentCategory.slug }}
       seo={{
-        title: pageTitle,
-        description: pageDescription,
-        keywords: [
-          'أخبار', 
-          categoryName, 
-          'مقالات', 
-          content.site.name
-        ],
-        url: `https://markaba.news/category/${currentCategory.slug}`,
-        image: currentCategory.image ? getImageUrl(currentCategory.image) : 'https://markaba.news/images/og-image.jpg',
-        type: 'website',
-        structuredData: {
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": categoryName,
-          "description": pageDescription,
-          "url": `https://markaba.news/category/${currentCategory.slug}`,
-          "mainEntity": {
-            "@type": "ItemList",
-            "name": `أخبار ${categoryName}`,
+          title: pageTitle,
+          description: pageDescription,
+          keywords: [
+            'أخبار', 
+            categoryName, 
+            'مقالات', 
+            content.site.name
+          ],
+          url: `https://markaba.news/category/${currentCategory.slug}`,
+          image: currentCategory.image ? getImageUrl(currentCategory.image) : 'https://markaba.news/images/og-image.jpg',
+          type: 'website',
+          structuredData: {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": categoryName,
             "description": pageDescription,
-            "numberOfItems": totalPosts
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "مـركـبـا - الـمـنـصـة الاخـبـاريـة",
-            "logo": {
-              "@type": "ImageObject",
-              "url": "https://markaba.news/images/logo_new.png"
-            }
-          },
-          "inLanguage": "ar"
-        }
-      }}
+            "url": `https://markaba.news/category/${currentCategory.slug}`,
+            "publisher": {
+              "@type": "Organization",
+              "name": "مـركـبـا - الـمـنـصـة الاخـبـاريـة",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://markaba.news/images/logo_new.png"
+              }
+            },
+            "about": {
+              "@type": "Thing",
+              "name": categoryName
+            },
+            "mainEntity": {
+              "@type": "ItemList",
+              "name": `أخبار ${categoryName}`,
+              "numberOfItems": totalPosts
+            },
+            "inLanguage": "ar"
+          }
+        }}
     >
       <div className="bg-gray-50">
         {/* Breadcrumb */}
