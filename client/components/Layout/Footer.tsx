@@ -19,14 +19,16 @@ import {
   SiTiktok
 } from 'react-icons/si';
 import { useContent } from '../../hooks/useContent';
-import { useSocialMedia } from '../API/hooks';
+import { useSocialMedia, useCategories } from '../API/hooks';
 import type { SocialMedia } from '../API/types';
 
 const Footer: React.FC = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const { content } = useContent();
   const { data: socialMediaData, loading: socialMediaLoading } = useSocialMedia();
+  const { data: categoriesData, loading: categoriesLoading } = useCategories();
   const socialMediaLinks: SocialMedia[] = (socialMediaData && Array.isArray(socialMediaData)) ? socialMediaData : [];
+  const categories = categoriesData?.categories || [];
   const whatsappLink = socialMediaLinks.find(link => link.platform.toLowerCase() === 'whatsapp');
   
   // Function to get icon component for social media platform
@@ -110,6 +112,14 @@ const Footer: React.FC = () => {
       href: '/contact' 
     },
     { 
+      label: 'للإعلان معنا', 
+      href: '/advertise' 
+    },
+    { 
+      label: 'وظائف شاغرة', 
+      href: '/jobs' 
+    },
+    { 
       label: content?.footer.privacy || 'سياسة الخصوصية', 
       href: '/privacy' 
     },
@@ -175,22 +185,90 @@ const Footer: React.FC = () => {
 
           {/* Horizontal Navigation Categories with Blue Background */}
            <div className="text-center mb-4 sm:mb-6 lg:mb-8">
-             <div className="inline-flex bg-blue-600 rounded-full px-1 sm:px-2 py-0.5 sm:py-1 shadow-lg justify-center">
-               <Link href="/" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
-                 الرئيسية
-               </Link>
-               <Link href="/advertise" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
-                 للإعلان معنا
-               </Link>
-               <Link href="/contact" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
-                 اتصل بنا
-               </Link>
-               <Link href="/" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
-                 وظائف شاغرة
-               </Link>
-               <Link href="/about" className="px-2 sm:px-3 py-0.5 sm:py-1 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 rounded-full transition-colors duration-200">
-                 من نحن
-               </Link>
+             {/* Desktop Layout: 2 columns grid */}
+             <div className="hidden md:block">
+               {/* Line above sections */}
+               <div className="w-full h-px bg-blue-600 mb-6"></div>
+               
+               <div className="grid grid-cols-2 gap-8 max-w-4xl mx-auto">
+                 {/* Categories Section - Right side */}
+                 <div className="text-right">
+                   <h3 className="text-blue-600 font-bold text-lg mb-4">تصنيفاتي</h3>
+                   <div className="space-y-2">
+                     {categoriesLoading ? (
+                       <div className="text-blue-600 text-sm">جاري تحميل التصنيفات...</div>
+                     ) : (
+                       categories.slice(0, 8).map((category) => (
+                         <Link 
+                           key={category.id} 
+                           href={`/category/${category.slug}`}
+                           className="block text-blue-600 hover:text-blue-800 text-sm transition-colors duration-200"
+                         >
+                           {category.name_ar}
+                         </Link>
+                       ))
+                     )}
+                   </div>
+                 </div>
+                 
+                 {/* Pages Section - Left side */}
+                 <div className="text-right">
+                   <h3 className="text-blue-600 font-bold text-lg mb-4">الصفحات</h3>
+                   <div className="space-y-2">
+                     {quickLinks.map((link, index) => (
+                       <Link 
+                         key={index} 
+                         href={link.href}
+                         className="block text-blue-600 hover:text-blue-800 text-sm transition-colors duration-200"
+                       >
+                         {link.label}
+                       </Link>
+                     ))}
+                   </div>
+                 </div>
+               </div>
+             </div>
+             
+             {/* Mobile Layout: Categories above pages with blue line separator */}
+             <div className="md:hidden">
+               {/* Categories Section */}
+               <div className="mb-6">
+                 <h3 className="text-blue-600 font-bold text-lg mb-4 text-center">تصنيفاتي</h3>
+                 <div className="flex flex-wrap justify-center gap-2">
+                   {categoriesLoading ? (
+                     <div className="text-blue-600 text-sm">جاري تحميل التصنيفات...</div>
+                   ) : (
+                     categories.slice(0, 6).map((category) => (
+                       <Link 
+                         key={category.id} 
+                         href={`/category/${category.slug}`}
+                         className="text-blue-600 hover:text-blue-800 text-sm px-2 py-1 transition-colors duration-200"
+                       >
+                         {category.name_ar}
+                       </Link>
+                     ))
+                   )}
+                 </div>
+               </div>
+               
+               {/* Blue line separator */}
+               <div className="w-full h-px bg-blue-600 mb-6"></div>
+               
+               {/* Pages Section */}
+               <div>
+                 <h3 className="text-blue-600 font-bold text-lg mb-4 text-center">الصفحات</h3>
+                 <div className="flex flex-wrap justify-center gap-2">
+                   {quickLinks.map((link, index) => (
+                     <Link 
+                       key={index} 
+                       href={link.href}
+                       className="text-blue-600 hover:text-blue-800 text-sm px-2 py-1 transition-colors duration-200"
+                     >
+                       {link.label}
+                     </Link>
+                   ))}
+                 </div>
+               </div>
              </div>
            </div>
 
