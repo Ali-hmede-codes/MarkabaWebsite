@@ -3,7 +3,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FiSearch, FiMenu, FiX } from 'react-icons/fi';
-import { MdSportsSoccer } from 'react-icons/md';
 import { FiPlay } from 'react-icons/fi';
 import { SiFacebook, SiTwitter, SiInstagram, SiYoutube, SiLinkedin, SiTelegram, SiWhatsapp, SiTiktok } from 'react-icons/si';
 import { useContent } from '../../hooks/useContent';
@@ -190,7 +189,7 @@ const Header: React.FC = () => {
               )}
             </div>
 
-            {/* Desktop Search Button, Football Button and Social Media */}
+            {/* Desktop Search Button and Social Media */}
             <div className="hidden md:flex items-center space-x-3 rtl:space-x-reverse">
               {/* Search Button */}
               <button
@@ -200,16 +199,6 @@ const Header: React.FC = () => {
               >
                 <FiSearch size={20} />
               </button>
-              
-              {/* Football Button */}
-              <Link href="/football">
-                <button
-                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                  aria-label="كرة القدم"
-                >
-                  <MdSportsSoccer size={20} />
-                </button>
-              </Link>
 
 
 

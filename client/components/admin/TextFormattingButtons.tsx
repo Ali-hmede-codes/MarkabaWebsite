@@ -59,36 +59,6 @@ const TextFormattingButtons: React.FC<TextFormattingButtonsProps> = ({
   const formatQuote = () => applyFormatting('$', '$', 'اقتباس مهم');
   const formatGrayText = () => applyFormatting('&', '&', 'نص رمادي فاتح');
   const formatBulletTitle = () => applyFormatting('(', ')', 'عنوان مع نقطة');
-  const formatMarkdownBold = () => applyFormatting('**', '**', 'نص عريض');
-  const formatMarkdownItalic = () => applyFormatting('*', '*', 'نص مائل');
-  const formatMarkdownUnderline = () => applyFormatting('__', '__', 'نص تحته خط');
-  const formatMarkdownStrikethrough = () => applyFormatting('~~', '~~', 'نص مشطوب');
-  const formatCodeBlock = () => applyFormatting('```', '```', 'كتلة كود');
-  const formatInlineCode = () => applyFormatting('`', '`', 'كود مضمن');
-  const formatLink = () => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
-    
-    const beforeText = textarea.value.substring(0, start);
-    const afterText = textarea.value.substring(end);
-    const linkText = selectedText || 'نص الرابط';
-    const formattedText = `[${linkText}](URL)`;
-    const newText = beforeText + formattedText + afterText;
-    
-    onTextChange(newText);
-    
-    // Select the URL part for easy replacement
-    setTimeout(() => {
-      const urlStart = start + linkText.length + 3; // After [text](
-      const urlEnd = urlStart + 3; // Select "URL"
-      textarea.setSelectionRange(urlStart, urlEnd);
-      textarea.focus();
-    }, 0);
-  };
 
   return (
     <div className="mb-4 p-3 bg-gray-50 rounded-lg border">
@@ -97,7 +67,7 @@ const TextFormattingButtons: React.FC<TextFormattingButtonsProps> = ({
           أدوات التنسيق - اختر النص ثم اضغط على الزر المطلوب:
         </div>
         
-        {/* Original formatting buttons */}
+        {/* Formatting buttons for implemented patterns only */}
         <button
           type="button"
           onClick={formatSubtitle}
@@ -142,7 +112,6 @@ const TextFormattingButtons: React.FC<TextFormattingButtonsProps> = ({
           <code className="text-xs bg-indigo-800 px-1 rounded">$نص$</code>
         </button>
 
-        {/* New formatting buttons */}
         <button
           type="button"
           onClick={formatGrayText}
@@ -163,84 +132,6 @@ const TextFormattingButtons: React.FC<TextFormattingButtonsProps> = ({
           <span className="font-bold">•</span>
           <span>عنوان مع نقطة</span>
           <code className="text-xs bg-gray-700 px-1 rounded">(نص)</code>
-        </button>
-
-        {/* Markdown formatting buttons */}
-        <button
-          type="button"
-          onClick={formatMarkdownBold}
-          className="flex items-center gap-2 px-3 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors text-sm"
-          title="نص عريض (**نص**)"
-        >
-          <FiBold size={16} />
-          <span>عريض</span>
-          <code className="text-xs bg-orange-800 px-1 rounded">**نص**</code>
-        </button>
-
-        <button
-          type="button"
-          onClick={formatMarkdownItalic}
-          className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-sm"
-          title="نص مائل (*نص*)"
-        >
-          <span className="italic font-medium">أ</span>
-          <span>مائل</span>
-          <code className="text-xs bg-purple-800 px-1 rounded">*نص*</code>
-        </button>
-
-        <button
-          type="button"
-          onClick={formatMarkdownUnderline}
-          className="flex items-center gap-2 px-3 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors text-sm"
-          title="نص تحته خط (__نص__)"
-        >
-          <span className="underline font-medium">أ</span>
-          <span>تحته خط</span>
-          <code className="text-xs bg-teal-800 px-1 rounded">__نص__</code>
-        </button>
-
-        <button
-          type="button"
-          onClick={formatMarkdownStrikethrough}
-          className="flex items-center gap-2 px-3 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition-colors text-sm"
-          title="نص مشطوب (~~نص~~)"
-        >
-          <span className="line-through font-medium">أ</span>
-          <span>مشطوب</span>
-          <code className="text-xs bg-pink-800 px-1 rounded">~~نص~~</code>
-        </button>
-
-        <button
-          type="button"
-          onClick={formatCodeBlock}
-          className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
-          title="كتلة كود (```كود```)"
-        >
-          <span className="font-mono text-xs">{'{}'}</span>
-          <span>كتلة كود</span>
-          <code className="text-xs bg-green-800 px-1 rounded">```كود```</code>
-        </button>
-
-        <button
-          type="button"
-          onClick={formatInlineCode}
-          className="flex items-center gap-2 px-3 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors text-sm"
-          title="كود مضمن (`كود`)"
-        >
-          <span className="font-mono text-xs">{'<>'}</span>
-          <span>كود مضمن</span>
-          <code className="text-xs bg-yellow-800 px-1 rounded">`كود`</code>
-        </button>
-
-        <button
-          type="button"
-          onClick={formatLink}
-          className="flex items-center gap-2 px-3 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 transition-colors text-sm"
-          title="رابط ([نص](URL))"
-        >
-          <span className="font-medium">🔗</span>
-          <span>رابط</span>
-          <code className="text-xs bg-cyan-800 px-1 rounded">[نص](URL)</code>
         </button>
       </div>
     </div>
