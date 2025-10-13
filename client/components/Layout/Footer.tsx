@@ -188,47 +188,10 @@ const Footer: React.FC = () => {
 
           {/* Navigation Links Grid */}
            <div className="text-center mb-4 sm:mb-6 lg:mb-8" style={{ fontFamily: 'Alexandria, sans-serif' }}>
-             {/* Desktop Layout: 3 columns - Pages, Categories, Logo+Social */}
+             {/* Desktop Layout: Logo+Social, Categories, Pages */}
              <div className="hidden md:block">
-               {/* Dashed line above sections */}
-               <div className="w-full h-px border-t border-dashed border-blue-600 mb-6"></div>
-               
                <div className="grid grid-cols-3 gap-8 max-w-6xl mx-auto">
-                 {/* Pages Section - Left side */}
-                 <div className="text-right">
-                   <div className="grid grid-cols-1 gap-2">
-                     {quickLinks.map((link, index) => (
-                       <Link 
-                         key={index} 
-                         href={link.href}
-                         className="block text-blue-600 hover:text-blue-800 text-sm transition-colors duration-200"
-                       >
-                         {link.label}
-                       </Link>
-                     ))}
-                   </div>
-                 </div>
-                 
-                 {/* Categories Section - Center */}
-                 <div className="text-right">
-                   <div className="grid grid-cols-1 gap-2">
-                     {categoriesLoading ? (
-                       <div className="text-blue-600 text-sm">جاري تحميل التصنيفات...</div>
-                     ) : (
-                       categories.slice(0, 8).map((category) => (
-                         <Link 
-                           key={category.id} 
-                           href={`/category/${category.slug}`}
-                           className="block text-blue-600 hover:text-blue-800 text-sm transition-colors duration-200"
-                         >
-                           {category.name_ar}
-                         </Link>
-                       ))
-                     )}
-                   </div>
-                 </div>
-                 
-                 {/* Logo and Social Media Section - Right side */}
+                 {/* Logo and Social Media Section - Left side */}
                  <div className="text-center">
                    {/* Logo */}
                    <div className="mb-4">
@@ -268,28 +231,73 @@ const Footer: React.FC = () => {
                      )}
                    </div>
                  </div>
+                 
+                 {/* Categories Section - Center */}
+                 <div className="text-right">
+                   {/* Solid line above categories */}
+                   <div className="w-full h-px border-t border-solid border-blue-600 mb-4"></div>
+                   <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                     {categoriesLoading ? (
+                       <div className="col-span-2 text-blue-600 text-sm text-center">جاري تحميل التصنيفات...</div>
+                     ) : (
+                       categories.slice(0, 8).map((category) => (
+                         <Link 
+                           key={category.id} 
+                           href={`/category/${category.slug}`}
+                           className="block text-blue-600 hover:text-blue-800 text-sm transition-colors duration-200"
+                         >
+                           {category.name_ar}
+                         </Link>
+                       ))
+                     )}
+                   </div>
+                 </div>
+                 
+                 {/* Pages Section - Right side */}
+                 <div className="text-right">
+                   {/* Solid line above pages */}
+                   <div className="w-full h-px border-t border-solid border-blue-600 mb-4"></div>
+                   <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                     {quickLinks.map((link, index) => (
+                       <Link 
+                         key={index} 
+                         href={link.href}
+                         className="block text-blue-600 hover:text-blue-800 text-sm transition-colors duration-200"
+                       >
+                         {link.label}
+                       </Link>
+                     ))}
+                   </div>
+                 </div>
                </div>
              </div>
              
-             {/* Mobile Layout: All links in 2 columns */}
+             {/* Mobile Layout: Categories above Pages in 2 columns */}
              <div className="md:hidden">
+               {/* Categories Section */}
+               <div className="mb-6">
+                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 max-w-sm mx-auto">
+                   {categoriesLoading ? (
+                     <div className="col-span-2 text-blue-600 text-sm text-center">جاري تحميل التصنيفات...</div>
+                   ) : (
+                     categories.slice(0, 8).map((category) => (
+                       <Link 
+                         key={category.id} 
+                         href={`/category/${category.slug}`}
+                         className="text-blue-600 hover:text-blue-800 text-sm text-center transition-colors duration-200"
+                       >
+                         {category.name_ar}
+                       </Link>
+                     ))
+                   )}
+                 </div>
+               </div>
+               
+               {/* Blue line separator */}
+               <div className="w-full h-px border-t border-solid border-blue-600 mb-4"></div>
+               
+               {/* Pages Section */}
                <div className="grid grid-cols-2 gap-x-4 gap-y-2 max-w-sm mx-auto">
-                 {/* Categories */}
-                 {categoriesLoading ? (
-                   <div className="col-span-2 text-blue-600 text-sm text-center">جاري تحميل التصنيفات...</div>
-                 ) : (
-                   categories.slice(0, 6).map((category) => (
-                     <Link 
-                       key={category.id} 
-                       href={`/category/${category.slug}`}
-                       className="text-blue-600 hover:text-blue-800 text-sm text-center transition-colors duration-200"
-                     >
-                       {category.name_ar}
-                     </Link>
-                   ))
-                 )}
-                 
-                 {/* Pages */}
                  {quickLinks.map((link, index) => (
                    <Link 
                      key={index} 
