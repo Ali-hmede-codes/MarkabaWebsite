@@ -82,7 +82,7 @@ class MyDocument extends Document<MyDocumentProps> {
             const fullUrl = `${protocol}://${host}/category/${slug}`;
             
             metaData = {
-              title: categoryName,
+              title: `${categoryName} - أخبار`,
               description: categoryDescription,
               keywords: `أخبار, ${categoryName}, مقالات, مـركـبـا - الـمـنـصـة الاخـبـاريـة, لبنان, الشرق الأوسط`,
               image: fullImageUrl || 'https://markaba.news/images/og-image.jpg',
