@@ -136,7 +136,7 @@ const CategoryPage: React.FC = () => {
   const categoryName = currentCategory.name_ar;
   const pageTitle = `${content.category.posts_in} ${categoryName} - ${content.site.name}`;
   const pageDescription = currentCategory.description_ar 
-    ? `${currentCategory.description_ar} - تصفح جميع أخبار ${categoryName} على ${content.site.name}`
+    ? currentCategory.description_ar
     : `تصفح جميع أخبار ${categoryName} على ${content.site.name}`;
 
   return (
@@ -173,16 +173,13 @@ const CategoryPage: React.FC = () => {
         {/* Category Header */}
         <div className="bg-gray-100 py-6 sm:py-8">
           <div className="container mx-auto px-4">
-            <div className="text-center">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                أخبار {categoryName}
+            <div className="text-right">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 inline-block">
+                {categoryName}
+                <span className="text-sm text-gray-500 font-normal mr-3">
+                  ({totalPosts} مقال)
+                </span>
               </h1>
-              <p className="text-gray-700 max-w-2xl mx-auto mb-4 text-sm sm:text-base px-4">
-                {pageDescription}
-              </p>
-              <div className="text-xs sm:text-sm text-gray-600 bg-white px-3 sm:px-4 py-1 rounded inline-block">
-                {totalPosts} مقال متاح
-              </div>
             </div>
           </div>
         </div>
