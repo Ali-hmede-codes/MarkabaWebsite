@@ -47,9 +47,11 @@ const AboutPage: React.FC = () => {
   const { theme } = useTheme();
   const { getSetting } = useSettingsContext();
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Team functionality disabled - no need to fetch team members
+  // const [loading, setLoading] = useState(true);
 
-  // Fetch team members from API
+  // Fetch team members from API - DISABLED
+  /*
   useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
@@ -69,16 +71,19 @@ const AboutPage: React.FC = () => {
 
     fetchTeamMembers();
   }, []);
+  */
 
   // Editable Content - Easy to modify without database
   const aboutContent = {
     title: 'من نحن',
     description: 'نحن فريق من الصحفيين المتخصصين والمحررين المحترفين نسعى لتقديم أحدث الأخبار والتحليلات العميقة بمصداقية وشفافية عالية، مع التزامنا بالمعايير المهنية والأخلاقية في الصحافة',
     mission: 'نسعى إلى أن نكون المصدر الأول والأكثر موثوقية للأخبار في المنطقة، من خلال تقديم تغطية شاملة ومتوازنة للأحداث المحلية والعالمية، مع الحفاظ على أعلى معايير الجودة والمهنية في العمل الصحفي والالتزام بالحقيقة والشفافية',
-    teamDescription: 'تعرف على الفريق المتخصص والمحترف الذي يعمل بجد وإخلاص لتقديم أفضل المحتوى الإخباري والتحليلات العميقة',
+    // teamDescription: 'تعرف على الفريق المتخصص والمحترف الذي يعمل بجد وإخلاص لتقديم أفضل المحتوى الإخباري والتحليلات العميقة', // DISABLED
     contactDescription: 'نحن نقدر آراءكم واقتراحاتكم ونرحب بتواصلكم معنا. شاركونا أفكاركم وملاحظاتكم لنستمر في تطوير خدماتنا الإخبارية'
   };
 
+  // Team transformation functions - DISABLED
+  /*
   // Transform API users to display format
   const transformUserToAdmin = (user: User, index: number) => {
     const gradients = [
@@ -115,6 +120,7 @@ const AboutPage: React.FC = () => {
 
   // Transform all users to display format
   const teamMembers = users.map(transformUserToAdmin);
+  */
 
   // Arabic-only stats data
   const stats = [
@@ -188,8 +194,8 @@ const AboutPage: React.FC = () => {
       '@type': 'AboutPage',
       name: theme.language === 'ar' ? 'عن موقع الأخبار' : 'About News Website',
       description: theme.language === 'ar' 
-        ? 'تعرف على موقع الأخبار، مهمتنا، قيمنا، وفريق العمل المتخصص في تقديم أحدث الأخبار'
-        : 'Learn about News Website, our mission, values, and specialized team dedicated to delivering the latest news',
+        ? 'تعرف على موقع الأخبار، مهمتنا، قيمنا في تقديم أحدث الأخبار'
+        : 'Learn about News Website, our mission, values in delivering the latest news',
       url: typeof window !== 'undefined' ? window.location.href : '',
       mainEntity: {
         '@type': 'Organization',
@@ -197,12 +203,8 @@ const AboutPage: React.FC = () => {
         url: 'https://markaba.news',
         logo: 'https://www.markaba.news/images/logo_new.png',
         description: 'موقع إخباري يقدم آخر الأخبار المحلية والعالمية',
-        foundingDate: '2020',
-        employee: teamMembers.map((member: any) => ({
-          '@type': 'Person',
-          name: member.name,
-          jobTitle: member.role
-        }))
+        foundingDate: '2020'
+        // employee section removed - team section disabled
       }
     }
   ];
@@ -317,7 +319,8 @@ const AboutPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Team Section */}
+        {/* Team Section - DISABLED */}
+        {/* 
         <div className="mb-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-black mb-4">
@@ -372,6 +375,7 @@ const AboutPage: React.FC = () => {
             </div>
           )}
         </div>
+        */}
 
         {/* Contact CTA */}
         <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-900 rounded-3xl p-8 md:p-12 border border-blue-200 dark:border-blue-700 shadow-xl">
