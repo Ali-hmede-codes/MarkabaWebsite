@@ -1204,7 +1204,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
                 
                 <Link href="https://www.markaba.news/football" className="flex items-center gap-2 text-black hover:text-gray-700 transition-colors duration-200 text-sm sm:text-base font-medium">
                   <FiArrowLeft className="w-4 h-4" />
-                  <span>الــــمـــزيــــد</span>
+                  <span>جـــدول المـبـاريـات</span>
                 </Link>
               </div>
 

@@ -7,6 +7,15 @@
 /* Import Enhanced Responsive Styles */
 @import './responsive.css';
 
+/* Custom Font Face */
+@font-face {
+  font-family: 'Amin Bold';
+  src: url('/fonts/Amin-Font-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Base styles */
 @layer base {
   html {

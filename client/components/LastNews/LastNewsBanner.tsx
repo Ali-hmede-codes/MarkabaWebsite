@@ -73,11 +73,11 @@ const LastNewsBanner: React.FC<LastNewsBannerProps> = ({ className = '' }) => {
     Promise.all([fetchLastNews(), fetchBreakingNews()]).finally(() => setLoading(false));
   }, [combineNews]);
 
-  // Combine and sort news, then limit to maximum 12 total items
+  // Combine and sort news, then limit to maximum 8 total items
   const displayedNews: NewsItem[] = combineNews 
     ? [...lastNews.map(news => ({ ...news, isBreaking: false })), ...breakingNews.map(news => ({ ...news, isBreaking: true }))]
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 12)
+        .slice(0, 8)
     : lastNews;
 
   if (loading) return <div className="flex items-center justify-center h-full">جاري التحميل...</div>;
