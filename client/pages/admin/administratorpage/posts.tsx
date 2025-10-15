@@ -217,13 +217,13 @@ const PostsManagement: React.FC = () => {
     <AdminLayout title="إدارة المقالات" description="إنشاء وتعديل وحذف المقالات">
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">إدارة المقالات</h1>
-            <p className="text-gray-600 mt-1">إنشاء وتعديل وحذف المقالات</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">إدارة المقالات</h1>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">إنشاء وتعديل وحذف المقالات</p>
           </div>
           <Link href="/admin/administratorpage/posts/new">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 rtl:space-x-reverse transition-colors">
+            <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 sm:px-4 sm:py-2 rounded-lg flex items-center justify-center space-x-2 rtl:space-x-reverse transition-colors">
               <FiPlus size={20} />
               <span>مقال جديد</span>
             </button>
@@ -231,17 +231,17 @@ const PostsManagement: React.FC = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Search */}
-            <div className="relative">
+            <div className="relative sm:col-span-2 lg:col-span-1">
               <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               <input
                 type="text"
                 placeholder="البحث في المقالات..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pr-10 pl-4 py-3 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base sm:text-sm"
                 dir="rtl"
               />
             </div>
@@ -250,7 +250,7 @@ const PostsManagement: React.FC = () => {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              className="px-4 py-3 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black text-base sm:text-sm"
             >
               <option value="">جميع التصنيفات</option>
               {Array.isArray(categories) && categories.map(category => (
@@ -264,7 +264,7 @@ const PostsManagement: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              className="px-4 py-3 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black text-base sm:text-sm"
             >
               <option value="all">جميع الحالات</option>
               <option value="published">منشور</option>
@@ -273,7 +273,7 @@ const PostsManagement: React.FC = () => {
             </select>
 
             {/* Results Count */}
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex items-center text-sm text-gray-600 sm:col-span-2 lg:col-span-1 justify-center sm:justify-start">
               <FiFilter className="ml-2" size={16} />
               <span>{totalPosts} مقال إجمالي</span>
             </div>
@@ -293,31 +293,157 @@ const PostsManagement: React.FC = () => {
               <p className="text-gray-600 mt-2">لا توجد مقالات</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      المقال
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      التصنيف
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      الحالة
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      المشاهدات
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      التاريخ
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      الإجراءات
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+            <>
+              {/* Mobile Card Layout */}
+              <div className="block sm:hidden">
+                {displayedPosts.map((post) => (
+                  <div key={post.id} className="border-b border-gray-200 p-4 hover:bg-gray-50">
+                    <div className="flex items-start space-x-3 rtl:space-x-reverse">
+                      {/* Image */}
+                      {post.featured_image && (
+                        <div className="flex-shrink-0">
+                          <img
+                            className="h-16 w-16 rounded-lg object-cover cursor-pointer"
+                            src={getImageUrl(post.featured_image)}
+                            alt={post.title}
+                            onClick={() => {
+                              setSelectedImage(post.featured_image);
+                              setShowImageModal(true);
+                            }}
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                              {post.title}
+                            </h3>
+                            <p className="text-xs text-gray-500 line-clamp-1 mb-2">
+                              {post.excerpt}
+                            </p>
+                            
+                            {/* Meta info */}
+                            <div className="flex flex-wrap items-center gap-2 mb-3">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {post.category_name}
+                              </span>
+                              
+                              {/* Status */}
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                post.status === 1 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {post.status === 1 ? 'منشور' : 'مسودة'}
+                              </span>
+                              
+                              {/* Featured */}
+                              {post.is_featured === 1 && (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                  مميز
+                                </span>
+                              )}
+                            </div>
+                            
+                            {/* Views and Date */}
+                            <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+                              <span className="flex items-center">
+                                <FiEye className="ml-1" size={12} />
+                                {post.views} مشاهدة
+                              </span>
+                              <span className="flex items-center">
+                                <FiCalendar className="ml-1" size={12} />
+                                {formatDate(post.created_at)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Actions */}
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                          <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                            {/* Status Toggle */}
+                            <button
+                              onClick={() => togglePublishStatus(post)}
+                              className={`p-2 rounded-lg transition-colors ${
+                                post.status === 1
+                                  ? 'text-green-600 hover:bg-green-50'
+                                  : 'text-gray-400 hover:bg-gray-50'
+                              }`}
+                              title={post.status === 1 ? 'إخفاء المقال' : 'نشر المقال'}
+                            >
+                              {post.status === 1 ? <FiEye size={16} /> : <FiEyeOff size={16} />}
+                            </button>
+                            
+                            {/* Featured Toggle */}
+                            <button
+                              onClick={() => toggleFeaturedStatus(post)}
+                              className={`p-2 rounded-lg transition-colors ${
+                                post.is_featured === 1
+                                  ? 'text-yellow-500 hover:bg-yellow-50'
+                                  : 'text-gray-400 hover:bg-gray-50'
+                              }`}
+                              title={post.is_featured === 1 ? 'إلغاء التمييز' : 'تمييز المقال'}
+                            >
+                              <FiStar size={16} />
+                            </button>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                            {/* Edit */}
+                            <Link href={`/admin/administratorpage/posts/edit/${post.id}`}>
+                              <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                <FiEdit size={16} />
+                              </button>
+                            </Link>
+                            
+                            {/* Delete */}
+                            <button
+                              onClick={() => {
+                                setPostToDelete(post);
+                                setShowDeleteModal(true);
+                              }}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <FiTrash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table Layout */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        المقال
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        التصنيف
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        الحالة
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        المشاهدات
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        التاريخ
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        الإجراءات
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
                   {displayedPosts.map((post) => (
                     <tr key={post.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
@@ -441,96 +567,157 @@ const PostsManagement: React.FC = () => {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg">
-            <div className="text-sm text-gray-700">
-              صفحة {currentPage} من {totalPages} - عرض {((currentPage - 1) * postsPerPage) + 1} إلى {Math.min(currentPage * postsPerPage, totalPosts)} من {totalPosts} مقال
-            </div>
-            <div className="flex items-center space-x-2 rtl:space-x-reverse">
-              {/* Previous Button */}
-              <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1 text-sm border rounded-md text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                السابق
-              </button>
+          <div className="bg-white px-4 sm:px-6 py-4 border rounded-lg">
+            {/* Mobile Layout */}
+            <div className="flex flex-col space-y-4 sm:hidden">
+              {/* Page Info */}
+              <div className="text-sm text-gray-700 text-center">
+                صفحة {currentPage} من {totalPages}
+              </div>
               
-              {/* First page and ellipsis */}
-              {currentPage > 3 && totalPages > 7 && (
-                <>
+              {/* Navigation Buttons */}
+              <div className="flex justify-between items-center">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="flex-1 mx-1 px-4 py-3 text-sm border rounded-lg text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 font-medium"
+                >
+                  السابق
+                </button>
+                
+                {/* Current page indicator */}
+                <div className="flex-1 mx-2 text-center">
+                  <span className="inline-block px-4 py-3 text-sm bg-red-600 text-white rounded-lg font-medium">
+                    {currentPage}
+                  </span>
+                </div>
+                
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex-1 mx-1 px-4 py-3 text-sm border rounded-lg text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 font-medium"
+                >
+                  التالي
+                </button>
+              </div>
+              
+              {/* Quick page jump for mobile */}
+              <div className="flex justify-center space-x-1 rtl:space-x-reverse">
+                {currentPage > 1 && (
                   <button
                     onClick={() => setCurrentPage(1)}
-                    className="px-3 py-1 text-sm border rounded-md text-black hover:bg-gray-50"
+                    className="px-3 py-2 text-xs border rounded-md text-black hover:bg-gray-50"
                   >
                     1
                   </button>
-                  {currentPage > 4 && (
-                    <span className="px-2 py-1 text-sm text-gray-500">...</span>
-                  )}
-                </>
-              )}
-
-              {/* Page numbers */}
-              {(() => {
-                const pages = [];
-                let startPage = Math.max(1, currentPage - 2);
-                let endPage = Math.min(totalPages, currentPage + 2);
-                
-                // Adjust range to always show 5 pages when possible
-                if (endPage - startPage < 4) {
-                  if (startPage === 1) {
-                    endPage = Math.min(totalPages, startPage + 4);
-                  } else if (endPage === totalPages) {
-                    startPage = Math.max(1, endPage - 4);
-                  }
-                }
-                
-                for (let i = startPage; i <= endPage; i++) {
-                  pages.push(
-                    <button
-                      key={i}
-                      onClick={() => setCurrentPage(i)}
-                      className={`px-3 py-1 text-sm border rounded-md ${
-                        currentPage === i
-                          ? 'bg-red-600 text-white border-red-600'
-                          : 'text-black hover:bg-gray-50'
-                      }`}
-                    >
-                      {i}
-                    </button>
-                  );
-                }
-                return pages;
-              })()}
-
-              {/* Last page and ellipsis */}
-              {currentPage < totalPages - 2 && totalPages > 7 && (
-                <>
-                  {currentPage < totalPages - 3 && (
-                    <span className="px-2 py-1 text-sm text-gray-500">...</span>
-                  )}
+                )}
+                {currentPage > 2 && totalPages > 3 && (
+                  <span className="px-2 py-2 text-xs text-gray-500">...</span>
+                )}
+                {currentPage < totalPages && (
                   <button
                     onClick={() => setCurrentPage(totalPages)}
-                    className="px-3 py-1 text-sm border rounded-md text-black hover:bg-gray-50"
+                    className="px-3 py-2 text-xs border rounded-md text-black hover:bg-gray-50"
                   >
                     {totalPages}
                   </button>
-                </>
-              )}
-              
-              {/* Next Button */}
-              <button
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm border rounded-md text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                التالي
-              </button>
+                )}
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden sm:flex items-center justify-between">
+              <div className="text-sm text-gray-700">
+                صفحة {currentPage} من {totalPages} - عرض {((currentPage - 1) * postsPerPage) + 1} إلى {Math.min(currentPage * postsPerPage, totalPosts)} من {totalPosts} مقال
+              </div>
+              <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                {/* Previous Button */}
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 text-sm border rounded-lg text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                >
+                  السابق
+                </button>
+                
+                {/* First page and ellipsis */}
+                {currentPage > 3 && totalPages > 7 && (
+                  <>
+                    <button
+                      onClick={() => setCurrentPage(1)}
+                      className="px-3 py-2 text-sm border rounded-lg text-black hover:bg-gray-50 transition-colors"
+                    >
+                      1
+                    </button>
+                    {currentPage > 4 && (
+                      <span className="px-2 py-2 text-sm text-gray-500">...</span>
+                    )}
+                  </>
+                )}
+
+                {/* Page numbers */}
+                {(() => {
+                  const pages = [];
+                  let startPage = Math.max(1, currentPage - 2);
+                  let endPage = Math.min(totalPages, currentPage + 2);
+                  
+                  // Adjust range to always show 5 pages when possible
+                  if (endPage - startPage < 4) {
+                    if (startPage === 1) {
+                      endPage = Math.min(totalPages, startPage + 4);
+                    } else if (endPage === totalPages) {
+                      startPage = Math.max(1, endPage - 4);
+                    }
+                  }
+                  
+                  for (let i = startPage; i <= endPage; i++) {
+                    pages.push(
+                      <button
+                        key={i}
+                        onClick={() => setCurrentPage(i)}
+                        className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
+                          currentPage === i
+                            ? 'bg-red-600 text-white border-red-600'
+                            : 'text-black hover:bg-gray-50'
+                        }`}
+                      >
+                        {i}
+                      </button>
+                    );
+                  }
+                  return pages;
+                })()}
+
+                {/* Last page and ellipsis */}
+                {currentPage < totalPages - 2 && totalPages > 7 && (
+                  <>
+                    {currentPage < totalPages - 3 && (
+                      <span className="px-2 py-2 text-sm text-gray-500">...</span>
+                    )}
+                    <button
+                      onClick={() => setCurrentPage(totalPages)}
+                      className="px-3 py-2 text-sm border rounded-lg text-black hover:bg-gray-50 transition-colors"
+                    >
+                      {totalPages}
+                    </button>
+                  </>
+                )}
+                
+                {/* Next Button */}
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 text-sm border rounded-lg text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                >
+                  التالي
+                </button>
+              </div>
             </div>
           </div>
         )}
