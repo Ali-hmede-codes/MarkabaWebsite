@@ -1,9 +1,8 @@
-const mysql = require('mysql2/promise');
-const config = require('../config/database');
+const { pool } = require('../config/database');
 
 class NewsCleanupService {
     constructor() {
-        this.pool = mysql.createPool(config);
+        this.pool = pool;
     }
 
     /**
