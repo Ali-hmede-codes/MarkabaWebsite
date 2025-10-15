@@ -22,17 +22,20 @@ import { getImageUrl } from '../../../utils/imageUtils';
 
 interface Post {
   id: number;
-  title_ar: string;
-  content_ar: string;
-  excerpt_ar: string;
+  title: string; // Changed from title_ar to match backend response
+  slug: string;
+  excerpt: string; // Changed from excerpt_ar to match backend response
   featured_image: string;
-  is_published: boolean;
+  video_link?: string;
+  status: boolean; // Changed from is_published to match backend response
   is_featured: boolean;
   views: number;
-  category_id: number;
-  category_name_ar: string;
   created_at: string;
   updated_at: string;
+  author_name: string;
+  author_username: string;
+  category_name: string; // Changed from category_name_ar to match backend response
+  category_slug: string;
 }
 
 interface Category {
@@ -73,13 +76,18 @@ const PostsManagement: React.FC = () => {
         ...(statusFilter !== 'all' && { status: statusFilter })
       });
 
-      const response = await fetch(`/api/posts?${params}`);
+      const response = await fetch(`?${params}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await response.json();
 
       if (data.success) {
-        setPosts(data.data.posts || []);
-        setTotalPosts(data.data.total || 0);
-        setTotalPages(Math.ceil((data.data.total || 0) / postsPerPage));
+        setPosts(data.data || []);
+        setTotalPosts(data.pagination?.totalItems || 0);
+        setTotalPages(data.pagination?.totalPages || 1);
       } else {
         toast.error('فشل في تحميل المقالات');
       }
@@ -116,18 +124,18 @@ const PostsManagement: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          status: !post.is_published ? 'published' : 'draft'
+          status: !post.status ? 'published' : 'draft'
         })
       });
 
       const data = await response.json();
       if (data.success) {
-        const newPublishedStatus = !post.is_published;
-        setPosts(posts.map(p => 
-          p.id === post.id 
-            ? { ...p, is_published: newPublishedStatus }
-            : p
-        ));
+        const newPublishedStatus = !post.status;
+      setPosts(posts.map(p => 
+        p.id === post.id 
+          ? { ...p, status: newPublishedStatus }
+          : p
+      ));
         toast.success(
           newPublishedStatus ? 'تم نشر المقال' : 'تم إلغاء نشر المقال'
         );
@@ -319,33 +327,33 @@ const PostsManagement: React.FC = () => {
                               <img
                                 className="h-12 w-12 rounded-lg object-cover"
                                 src={getImageUrl(post.featured_image)}
-                                alt={post.title_ar}
+                                alt={post.title}
                               />
                             </div>
                           )}
                           <div>
                             <div className="text-sm font-medium text-gray-900 line-clamp-2">
-                              {post.title_ar}
+                              {post.title}
                             </div>
                             <div className="text-sm text-gray-500 line-clamp-1">
-                              {post.excerpt_ar}
+                              {post.excerpt}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {post.category_name_ar}
+                          {post.category_name}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2 rtl:space-x-reverse">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            post.is_published 
+                            post.status 
                               ? 'bg-green-100 text-green-800' 
                               : 'bg-yellow-100 text-yellow-800'
                           }`}>
-                            {post.is_published ? 'منشور' : 'مسودة'}
+                            {post.status ? 'منشور' : 'مسودة'}
                           </span>
                           {post.is_featured && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
@@ -370,16 +378,16 @@ const PostsManagement: React.FC = () => {
                         <div className="flex items-center space-x-2 rtl:space-x-reverse">
                           {/* Toggle Publish */}
                           <button
-                            onClick={() => togglePublishStatus(post)}
-                            className={`p-2 rounded-lg transition-colors ${
-                              post.is_published
-                                ? 'text-green-600 hover:bg-green-100'
-                                : 'text-gray-400 hover:bg-gray-100'
-                            }`}
-                            title={post.is_published ? 'إلغاء النشر' : 'نشر'}
-                          >
-                            {post.is_published ? <FiEye size={16} /> : <FiEyeOff size={16} />}
-                          </button>
+                              onClick={() => togglePublishStatus(post)}
+                              className={`p-2 rounded-lg transition-colors ${
+                                post.status
+                                  ? 'text-green-600 hover:bg-green-50'
+                                  : 'text-yellow-600 hover:bg-yellow-50'
+                              }`}
+                              title={post.status ? 'إلغاء النشر' : 'نشر'}
+                            >
+                              {post.status ? <FiEye size={16} /> : <FiEyeOff size={16} />}
+                            </button>
 
                           {/* View Image */}
                           {post.featured_image && (
@@ -587,7 +595,7 @@ const PostsManagement: React.FC = () => {
                     </h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        هل أنت متأكد من حذف المقال "{postToDelete.title_ar}"؟ لا يمكن التراجع عن هذا الإجراء.
+                        هل أنت متأكد من حذف المقال "{postToDelete.title}"؟ لا يمكن التراجع عن هذا الإجراء.
                       </p>
                     </div>
                   </div>
