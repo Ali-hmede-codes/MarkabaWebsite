@@ -50,7 +50,7 @@ const PostsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
-  const [postsPerPage, setPostsPerPage] = useState(20); // Changed back to 20 for proper pagination
+  const [postsPerPage, setPostsPerPage] = useState(15); // Changed from 20 to 15 for better pagination
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -281,10 +281,12 @@ const PostsManagement: React.FC = () => {
               }}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
             >
+              <option value={5}>5 مقالات</option>
               <option value={10}>10 مقالات</option>
+              <option value={15}>15 مقال</option>
               <option value={20}>20 مقال</option>
+              <option value={30}>30 مقال</option>
               <option value={50}>50 مقال</option>
-              <option value={100}>100 مقال</option>
             </select>
 
             {/* Results Count */}
@@ -459,7 +461,7 @@ const PostsManagement: React.FC = () => {
           )}
         </div>
 
-        {/* Pagination - Always show when there are multiple pages */}
+        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg">
             <div className="text-sm text-gray-700">
@@ -474,33 +476,68 @@ const PostsManagement: React.FC = () => {
                 السابق
               </button>
               
+              {/* First page */}
+              {currentPage > 3 && totalPages > 7 && (
+                <>
+                  <button
+                    onClick={() => setCurrentPage(1)}
+                    className="px-3 py-1 text-sm border rounded-md text-black hover:bg-gray-50"
+                  >
+                    1
+                  </button>
+                  {currentPage > 4 && (
+                    <span className="px-2 py-1 text-sm text-gray-500">...</span>
+                  )}
+                </>
+              )}
+
               {/* Page numbers */}
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum;
-                if (totalPages <= 5) {
-                  pageNum = i + 1;
-                } else if (currentPage <= 3) {
-                  pageNum = i + 1;
-                } else if (currentPage >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
-                } else {
-                  pageNum = currentPage - 2 + i;
+              {(() => {
+                const pages = [];
+                let startPage = Math.max(1, currentPage - 3);
+                let endPage = Math.min(totalPages, currentPage + 3);
+                
+                // Adjust range to always show 7 pages when possible
+                if (endPage - startPage < 6) {
+                  if (startPage === 1) {
+                    endPage = Math.min(totalPages, startPage + 6);
+                  } else if (endPage === totalPages) {
+                    startPage = Math.max(1, endPage - 6);
+                  }
                 }
                 
-                return (
+                for (let i = startPage; i <= endPage; i++) {
+                  pages.push(
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i)}
+                      className={`px-3 py-1 text-sm border rounded-md ${
+                        currentPage === i
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'text-black hover:bg-gray-50'
+                      }`}
+                    >
+                      {i}
+                    </button>
+                  );
+                }
+                return pages;
+              })()}
+
+              {/* Last page */}
+              {currentPage < totalPages - 2 && totalPages > 7 && (
+                <>
+                  {currentPage < totalPages - 3 && (
+                    <span className="px-2 py-1 text-sm text-gray-500">...</span>
+                  )}
                   <button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={`px-3 py-1 text-sm border rounded-md ${
-                      currentPage === pageNum
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'text-black hover:bg-gray-50'
-                    }`}
+                    onClick={() => setCurrentPage(totalPages)}
+                    className="px-3 py-1 text-sm border rounded-md text-black hover:bg-gray-50"
                   >
-                    {pageNum}
+                    {totalPages}
                   </button>
-                );
-              })}
+                </>
+              )}
               
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
