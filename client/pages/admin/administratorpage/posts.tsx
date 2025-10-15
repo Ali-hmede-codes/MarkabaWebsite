@@ -77,7 +77,7 @@ const PostsManagement: React.FC = () => {
         ...(statusFilter !== 'all' && { status: statusFilter })
       });
 
-      const response = await fetch(`/api/admin/posts?${params}`);
+      const response = await fetch(`/api/admin/administratorpage/posts?${params}`);
       const data = await response.json();
 
       if (data.success) {
