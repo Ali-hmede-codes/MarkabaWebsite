@@ -50,7 +50,7 @@ const PostsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
-  const [postsPerPage, setPostsPerPage] = useState(15); // Changed from 20 to 15 for better pagination
+  const [postsPerPage, setPostsPerPage] = useState<number | string>(15); // Changed to allow 'all' option
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -64,22 +64,26 @@ const PostsManagement: React.FC = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
+      
+      // When "all" is selected, use 30 posts per page for pagination
+      const actualLimit = postsPerPage === 'all' ? 30 : postsPerPage;
+      
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: postsPerPage.toString(),
+        limit: actualLimit.toString(),
         status: 'all', // Show all posts (published and drafts)
         ...(searchTerm && { search: searchTerm }),
         ...(selectedCategory && { category: selectedCategory }),
         ...(statusFilter !== 'all' && { status: statusFilter })
       });
 
-      const response = await fetch(`/api/posts?${params}`);
+      const response = await fetch(`/api/admin/posts?${params}`);
       const data = await response.json();
 
       if (data.success) {
-        setPosts(data.data.posts || []);
-        setTotalPosts(data.data.total || 0);
-        setTotalPages(Math.ceil((data.data.total || 0) / postsPerPage));
+        setPosts(data.data || []);
+        setTotalPosts(data.pagination?.totalItems || 0);
+        setTotalPages(data.pagination?.totalPages || 1);
       } else {
         toast.error('فشل في تحميل المقالات');
       }
@@ -276,7 +280,8 @@ const PostsManagement: React.FC = () => {
             <select
               value={postsPerPage}
               onChange={(e) => {
-                setPostsPerPage(Number(e.target.value));
+                const value = e.target.value === 'all' ? 'all' : Number(e.target.value);
+                setPostsPerPage(value);
                 setCurrentPage(1); // Reset to first page when changing posts per page
               }}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
@@ -287,6 +292,7 @@ const PostsManagement: React.FC = () => {
               <option value={20}>20 مقال</option>
               <option value={30}>30 مقال</option>
               <option value={50}>50 مقال</option>
+              <option value="all">جميع المقالات</option>
             </select>
 
             {/* Results Count */}
@@ -465,7 +471,11 @@ const PostsManagement: React.FC = () => {
         {totalPages > 1 && (
           <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg">
             <div className="text-sm text-gray-700">
-              صفحة {currentPage} من {totalPages} - عرض {((currentPage - 1) * postsPerPage) + 1} إلى {Math.min(currentPage * postsPerPage, totalPosts)} من {totalPosts} مقال
+              {postsPerPage === 'all' ? (
+                <>صفحة {currentPage} من {totalPages} - عرض {((currentPage - 1) * 30) + 1} إلى {Math.min(currentPage * 30, totalPosts)} من {totalPosts} مقال (جميع المقالات)</>
+              ) : (
+                <>صفحة {currentPage} من {totalPages} - عرض {((currentPage - 1) * Number(postsPerPage)) + 1} إلى {Math.min(currentPage * Number(postsPerPage), totalPosts)} من {totalPosts} مقال</>
+              )}
             </div>
             <div className="flex space-x-2 rtl:space-x-reverse">
               <button
