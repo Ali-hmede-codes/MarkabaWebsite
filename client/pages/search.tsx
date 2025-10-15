@@ -28,7 +28,6 @@ const SearchPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState('posts');
-  const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState('');
 
   // Update local state when router query changes
@@ -39,26 +38,24 @@ const SearchPage: React.FC = () => {
     if (type && typeof type === 'string') {
       setSearchType(type);
     }
-    if (page && typeof page === 'string') {
-      setCurrentPage(parseInt(page));
-    }
-  }, [q, type, page]);
+  }, [q, type]);
 
   // Perform search when query parameters change
   useEffect(() => {
     if (q && typeof q === 'string' && q.trim()) {
-      performSearch(q, type as string, page as string);
+      performSearch(q, type as string);
     }
-  }, [q, type, page]);
+  }, [q, type]);
 
-  const performSearch = async (query: string, searchType: string = 'all', pageNum: string = '1') => {
+  const performSearch = async (query: string, searchType: string = 'all') => {
     if (!query.trim()) return;
 
     setLoading(true);
     setError('');
 
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=${searchType}&page=${pageNum}&limit=12`);
+      // Use a very high limit to show all results (unlimited search)
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=${searchType}&page=1&limit=10000`);
       const data = await response.json();
 
       if (data.success) {
@@ -77,20 +74,14 @@ const SearchPage: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&type=${searchType}&page=1`);
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&type=${searchType}`);
     }
   };
 
   const handleTypeChange = (newType: string) => {
     setSearchType(newType);
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&type=${newType}&page=1`);
-    }
-  };
-
-  const handlePageChange = (newPage: number) => {
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&type=${searchType}&page=${newPage}`);
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&type=${newType}`);
     }
   };
 
@@ -114,7 +105,6 @@ const SearchPage: React.FC = () => {
   };
 
   const totalResults = searchResults ? searchResults.total : 0;
-  const totalPages = searchResults ? Math.ceil(totalResults / searchResults.limit) : 0;
 
   return (
     <Layout 
@@ -288,43 +278,12 @@ const SearchPage: React.FC = () => {
                         </div>
                       )}
 
-                      {/* Pagination */}
-                      {totalPages > 1 && (
-                        <div className="flex justify-center mt-8">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handlePageChange(currentPage - 1)}
-                              disabled={currentPage <= 1}
-                              className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-black dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
-                            >
-                              السابق
-                            </button>
-                            
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                              const pageNum = i + 1;
-                              return (
-                                <button
-                                  key={pageNum}
-                                  onClick={() => handlePageChange(pageNum)}
-                                  className={`px-3 py-2 rounded-lg ${
-                                    currentPage === pageNum
-                                      ? 'bg-black text-white'
-                                      : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-black dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                                  }`}
-                                >
-                                  {pageNum}
-                                </button>
-                              );
-                            })}
-                            
-                            <button
-                              onClick={() => handlePageChange(currentPage + 1)}
-                              disabled={currentPage >= totalPages}
-                              className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-black dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
-                            >
-                              التالي
-                            </button>
-                          </div>
+                      {/* Show total results count instead of pagination */}
+                      {totalResults > 0 && (
+                        <div className="text-center mt-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                          <p className="text-black dark:text-gray-300">
+                            عرض جميع النتائج ({totalResults} نتيجة)
+                          </p>
                         </div>
                       )}
                     </div>
