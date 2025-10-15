@@ -47,10 +47,7 @@ const PostsManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
-  const [postsPerPage, setPostsPerPage] = useState(15); // Changed from 20 to 15 for better pagination
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -59,14 +56,13 @@ const PostsManagement: React.FC = () => {
   useEffect(() => {
     fetchPosts();
     fetchCategories();
-  }, [currentPage, searchTerm, selectedCategory, statusFilter, postsPerPage]);
+  }, [searchTerm, selectedCategory, statusFilter]); // Removed pagination dependencies
 
   const fetchPosts = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        page: currentPage.toString(),
-        limit: postsPerPage.toString(),
+        limit: 'all', // Get all posts without pagination
         status: 'all', // Show all posts (published and drafts)
         ...(searchTerm && { search: searchTerm }),
         ...(selectedCategory && { category: selectedCategory }),
@@ -79,7 +75,6 @@ const PostsManagement: React.FC = () => {
       if (data.success) {
         setPosts(data.data.posts || []);
         setTotalPosts(data.data.total || 0);
-        setTotalPages(Math.ceil((data.data.total || 0) / postsPerPage));
       } else {
         toast.error('فشل في تحميل المقالات');
       }
@@ -272,22 +267,7 @@ const PostsManagement: React.FC = () => {
               <option value="featured">مميز</option>
             </select>
 
-            {/* Posts Per Page */}
-            <select
-              value={postsPerPage}
-              onChange={(e) => {
-                setPostsPerPage(Number(e.target.value));
-                setCurrentPage(1); // Reset to first page when changing posts per page
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
-            >
-              <option value={5}>5 مقالات</option>
-              <option value={10}>10 مقالات</option>
-              <option value={15}>15 مقال</option>
-              <option value={20}>20 مقال</option>
-              <option value={30}>30 مقال</option>
-              <option value={50}>50 مقال</option>
-            </select>
+
 
             {/* Results Count */}
             <div className="flex items-center text-sm text-gray-600">
@@ -461,94 +441,7 @@ const PostsManagement: React.FC = () => {
           )}
         </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg">
-            <div className="text-sm text-gray-700">
-              صفحة {currentPage} من {totalPages} - عرض {((currentPage - 1) * postsPerPage) + 1} إلى {Math.min(currentPage * postsPerPage, totalPosts)} من {totalPosts} مقال
-            </div>
-            <div className="flex space-x-2 rtl:space-x-reverse">
-              <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1 text-sm border rounded-md text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                السابق
-              </button>
-              
-              {/* First page */}
-              {currentPage > 3 && totalPages > 7 && (
-                <>
-                  <button
-                    onClick={() => setCurrentPage(1)}
-                    className="px-3 py-1 text-sm border rounded-md text-black hover:bg-gray-50"
-                  >
-                    1
-                  </button>
-                  {currentPage > 4 && (
-                    <span className="px-2 py-1 text-sm text-gray-500">...</span>
-                  )}
-                </>
-              )}
 
-              {/* Page numbers */}
-              {(() => {
-                const pages = [];
-                let startPage = Math.max(1, currentPage - 3);
-                let endPage = Math.min(totalPages, currentPage + 3);
-                
-                // Adjust range to always show 7 pages when possible
-                if (endPage - startPage < 6) {
-                  if (startPage === 1) {
-                    endPage = Math.min(totalPages, startPage + 6);
-                  } else if (endPage === totalPages) {
-                    startPage = Math.max(1, endPage - 6);
-                  }
-                }
-                
-                for (let i = startPage; i <= endPage; i++) {
-                  pages.push(
-                    <button
-                      key={i}
-                      onClick={() => setCurrentPage(i)}
-                      className={`px-3 py-1 text-sm border rounded-md ${
-                        currentPage === i
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'text-black hover:bg-gray-50'
-                      }`}
-                    >
-                      {i}
-                    </button>
-                  );
-                }
-                return pages;
-              })()}
-
-              {/* Last page */}
-              {currentPage < totalPages - 2 && totalPages > 7 && (
-                <>
-                  {currentPage < totalPages - 3 && (
-                    <span className="px-2 py-1 text-sm text-gray-500">...</span>
-                  )}
-                  <button
-                    onClick={() => setCurrentPage(totalPages)}
-                    className="px-3 py-1 text-sm border rounded-md text-black hover:bg-gray-50"
-                  >
-                    {totalPages}
-                  </button>
-                </>
-              )}
-              
-              <button
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm border rounded-md text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                التالي
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Image View Modal */}
