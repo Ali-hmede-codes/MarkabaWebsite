@@ -48,6 +48,9 @@ const PostsManagement: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [totalPosts, setTotalPosts] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const postsPerPage = 10; // Fixed to 10 posts per page
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -56,13 +59,14 @@ const PostsManagement: React.FC = () => {
   useEffect(() => {
     fetchPosts();
     fetchCategories();
-  }, [searchTerm, selectedCategory, statusFilter]); // Removed pagination dependencies
+  }, [searchTerm, selectedCategory, statusFilter, currentPage]);
 
   const fetchPosts = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        limit: 'all', // Get all posts without pagination
+        page: currentPage.toString(),
+        limit: postsPerPage.toString(),
         status: 'all', // Show all posts (published and drafts)
         ...(searchTerm && { search: searchTerm }),
         ...(selectedCategory && { category: selectedCategory }),
@@ -75,6 +79,7 @@ const PostsManagement: React.FC = () => {
       if (data.success) {
         setPosts(data.data.posts || []);
         setTotalPosts(data.data.total || 0);
+        setTotalPages(Math.ceil((data.data.total || 0) / postsPerPage));
       } else {
         toast.error('فشل في تحميل المقالات');
       }
@@ -197,16 +202,8 @@ const PostsManagement: React.FC = () => {
     });
   };
 
-  const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title_ar.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !selectedCategory || post.category_id.toString() === selectedCategory;
-    const matchesStatus = statusFilter === 'all' || 
-                         (statusFilter === 'published' && post.is_published) ||
-                         (statusFilter === 'draft' && !post.is_published) ||
-                         (statusFilter === 'featured' && post.is_featured);
-    
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
+  // Since filtering is now handled by the backend API, we use posts directly
+  const displayedPosts = posts;
 
   return (
     <AdminLayout title="إدارة المقالات" description="إنشاء وتعديل وحذف المقالات">
@@ -267,8 +264,6 @@ const PostsManagement: React.FC = () => {
               <option value="featured">مميز</option>
             </select>
 
-
-
             {/* Results Count */}
             <div className="flex items-center text-sm text-gray-600">
               <FiFilter className="ml-2" size={16} />
@@ -284,7 +279,7 @@ const PostsManagement: React.FC = () => {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
               <p className="text-gray-600 mt-2">جاري التحميل...</p>
             </div>
-          ) : filteredPosts.length === 0 ? (
+          ) : displayedPosts.length === 0 ? (
             <div className="p-8 text-center">
               <FiFileText className="mx-auto h-12 w-12 text-gray-400" />
               <p className="text-gray-600 mt-2">لا توجد مقالات</p>
@@ -315,7 +310,7 @@ const PostsManagement: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredPosts.map((post) => (
+                  {displayedPosts.map((post) => (
                     <tr key={post.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div className="flex items-center">
@@ -440,6 +435,97 @@ const PostsManagement: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg">
+            <div className="text-sm text-gray-700">
+              صفحة {currentPage} من {totalPages} - عرض {((currentPage - 1) * postsPerPage) + 1} إلى {Math.min(currentPage * postsPerPage, totalPosts)} من {totalPosts} مقال
+            </div>
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              {/* Previous Button */}
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-sm border rounded-md text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                السابق
+              </button>
+              
+              {/* First page and ellipsis */}
+              {currentPage > 3 && totalPages > 7 && (
+                <>
+                  <button
+                    onClick={() => setCurrentPage(1)}
+                    className="px-3 py-1 text-sm border rounded-md text-black hover:bg-gray-50"
+                  >
+                    1
+                  </button>
+                  {currentPage > 4 && (
+                    <span className="px-2 py-1 text-sm text-gray-500">...</span>
+                  )}
+                </>
+              )}
+
+              {/* Page numbers */}
+              {(() => {
+                const pages = [];
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
+                
+                // Adjust range to always show 5 pages when possible
+                if (endPage - startPage < 4) {
+                  if (startPage === 1) {
+                    endPage = Math.min(totalPages, startPage + 4);
+                  } else if (endPage === totalPages) {
+                    startPage = Math.max(1, endPage - 4);
+                  }
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                  pages.push(
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i)}
+                      className={`px-3 py-1 text-sm border rounded-md ${
+                        currentPage === i
+                          ? 'bg-red-600 text-white border-red-600'
+                          : 'text-black hover:bg-gray-50'
+                      }`}
+                    >
+                      {i}
+                    </button>
+                  );
+                }
+                return pages;
+              })()}
+
+              {/* Last page and ellipsis */}
+              {currentPage < totalPages - 2 && totalPages > 7 && (
+                <>
+                  {currentPage < totalPages - 3 && (
+                    <span className="px-2 py-1 text-sm text-gray-500">...</span>
+                  )}
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    className="px-3 py-1 text-sm border rounded-md text-black hover:bg-gray-50"
+                  >
+                    {totalPages}
+                  </button>
+                </>
+              )}
+              
+              {/* Next Button */}
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 text-sm border rounded-md text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                التالي
+              </button>
+            </div>
+          </div>
+        )}
 
 
       </div>
