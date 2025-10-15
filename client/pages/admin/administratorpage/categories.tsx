@@ -52,7 +52,8 @@ const AdminCategories: React.FC = () => {
   const fetchCategories = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/categories');
+      // Request all categories by setting a high limit
+      const response = await fetch('/api/admin/categories?limit=1000');
       const data = await response.json();
 
       if (data.success) {
