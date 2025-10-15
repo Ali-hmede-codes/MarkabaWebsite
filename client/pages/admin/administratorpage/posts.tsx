@@ -76,7 +76,7 @@ const PostsManagement: React.FC = () => {
         ...(statusFilter !== 'all' && { status: statusFilter })
       });
 
-      const response = await fetch(`?${params}`, {
+      const response = await fetch(`/api/admin/administratorpage/posts?${params}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
