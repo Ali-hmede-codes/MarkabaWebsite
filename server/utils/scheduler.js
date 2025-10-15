@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const WeatherService = require('./weatherService');
 const PrayerService = require('./prayerService');
 const footballService = require('./footballService');
+const NewsCleanupService = require('../services/newsCleanupService');
 
 /**
  * Scheduler Service
@@ -12,6 +13,7 @@ class Scheduler {
     this.weatherService = new WeatherService();
     this.prayerService = new PrayerService();
     this.footballService = footballService;
+    this.newsCleanupService = new NewsCleanupService();
     this.tasks = new Map();
   }
 
@@ -23,6 +25,7 @@ class Scheduler {
     this.startWeatherUpdates();
     this.startPrayerUpdates();
     this.startFootballUpdates();
+    this.startNewsCleanup();
     console.log('Scheduler service started successfully');
   }
 
@@ -142,6 +145,33 @@ class Scheduler {
   }
 
   /**
+   * Start news cleanup scheduler
+   * Runs daily at 2:00 AM to clean up old news entries
+   */
+  startNewsCleanup() {
+    const schedule = process.env.NEWS_CLEANUP_SCHEDULE || '0 2 * * *'; // Default: 2:00 AM daily
+    
+    console.log(`Scheduling news cleanup with cron: ${schedule}`);
+    
+    const task = cron.schedule(schedule, async () => {
+      try {
+        console.log('🧹 Starting scheduled news cleanup...');
+        const results = await this.newsCleanupService.runDailyCleanup(2);
+        console.log('✅ Scheduled news cleanup completed:', results);
+      } catch (error) {
+        console.error('❌ Scheduled news cleanup failed:', error.message);
+      }
+    }, {
+      scheduled: false,
+      timezone: process.env.TZ || 'Asia/Riyadh'
+    });
+    
+    task.start();
+    this.tasks.set('newsCleanup', task);
+    console.log('News cleanup scheduler started - will run daily at 2:00 AM');
+  }
+
+  /**
    * Manually trigger weather update
    */
   async triggerWeatherUpdate() {
@@ -187,6 +217,21 @@ class Scheduler {
   }
 
   /**
+   * Manually trigger news cleanup
+   */
+  async triggerNewsCleanup() {
+    try {
+      console.log('Manually triggering news cleanup...');
+      const results = await this.newsCleanupService.runDailyCleanup(2);
+      console.log('Manual news cleanup completed successfully');
+      return { success: true, message: 'News cleanup completed successfully', data: results };
+    } catch (error) {
+      console.error('Manual news cleanup failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
    * Get scheduler status
    */
   getStatus() {
@@ -206,6 +251,7 @@ class Scheduler {
       schedules: {
         weather: process.env.WEATHER_UPDATE_SCHEDULE || '0 6 * * *',
         prayer: process.env.PRAYER_UPDATE_SCHEDULE || '0 5 * * *',
+        newsCleanup: process.env.NEWS_CLEANUP_SCHEDULE || '0 2 * * *',
         footballMidnight: '0 0 * * *',
         footballMorning: '0 6 * * *',
         footballNoon: '0 12 * * *',
