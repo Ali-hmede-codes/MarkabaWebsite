@@ -201,12 +201,13 @@ const PostsManagement: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
+    return new Date(dateString).toLocaleDateString('ar-EG', {
       year: 'numeric',
-      month: 'short',
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      calendar: 'gregory'
     });
   };
 
@@ -348,12 +349,8 @@ const PostsManagement: React.FC = () => {
                               )}
                             </div>
                             
-                            {/* Views and Date */}
-                            <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-                              <span className="flex items-center">
-                                <FiEye className="ml-1" size={12} />
-                                {post.views} مشاهدة
-                              </span>
+                            {/* Date */}
+                            <div className="flex items-center text-xs text-gray-500 mb-3">
                               <span className="flex items-center">
                                 <FiCalendar className="ml-1" size={12} />
                                 {formatDate(post.created_at)}
@@ -433,9 +430,6 @@ const PostsManagement: React.FC = () => {
                         الحالة
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        المشاهدات
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                         التاريخ
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -486,12 +480,6 @@ const PostsManagement: React.FC = () => {
                               مميز
                             </span>
                           )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex items-center">
-                          <FiEye className="ml-1 text-gray-400" size={14} />
-                          {post.views?.toLocaleString('ar-SA') || 0}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
