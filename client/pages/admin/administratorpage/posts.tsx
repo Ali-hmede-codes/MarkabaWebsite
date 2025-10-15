@@ -27,8 +27,8 @@ interface Post {
   excerpt: string; // Changed from excerpt_ar to match backend response
   featured_image: string;
   video_link?: string;
-  status: boolean; // Changed from is_published to match backend response
-  is_featured: boolean;
+  status: number; // Changed from is_published to match backend response (0 = draft, 1 = published)
+  is_featured: number;
   views: number;
   created_at: string;
   updated_at: string;
@@ -77,8 +77,9 @@ const PostsManagement: React.FC = () => {
       });
 
       const response = await fetch(`/api/admin/administratorpage/posts?${params}`, {
+        method: 'GET',
+        credentials: 'include', // This ensures cookies are sent
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         }
       });
@@ -124,13 +125,13 @@ const PostsManagement: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          status: !post.status ? 'published' : 'draft'
+          status: post.status === 0 ? 'published' : 'draft'
         })
       });
 
       const data = await response.json();
       if (data.success) {
-        const newPublishedStatus = !post.status;
+        const newPublishedStatus = post.status === 0 ? 1 : 0;
       setPosts(posts.map(p => 
         p.id === post.id 
           ? { ...p, status: newPublishedStatus }
@@ -159,14 +160,14 @@ const PostsManagement: React.FC = () => {
 
       const data = await response.json();
       if (data.success) {
-        const newFeaturedStatus = !post.is_featured;
+        const newFeaturedStatus = post.is_featured === 0 ? 1 : 0;
         setPosts(posts.map(p => 
           p.id === post.id 
             ? { ...p, is_featured: newFeaturedStatus }
             : p
         ));
         toast.success(
-          newFeaturedStatus ? 'تم تمييز المقال' : 'تم إلغاء تمييز المقال'
+          newFeaturedStatus === 1 ? 'تم تمييز المقال' : 'تم إلغاء تمييز المقال'
         );
       } else {
         toast.error('فشل في تحديث حالة التمييز');
@@ -349,13 +350,13 @@ const PostsManagement: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2 rtl:space-x-reverse">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            post.status 
+                            post.status === 1
                               ? 'bg-green-100 text-green-800' 
                               : 'bg-yellow-100 text-yellow-800'
                           }`}>
-                            {post.status ? 'منشور' : 'مسودة'}
+                            {post.status === 1 ? 'منشور' : 'مسودة'}
                           </span>
-                          {post.is_featured && (
+                          {post.is_featured === 1 && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                               مميز
                             </span>
@@ -407,11 +408,11 @@ const PostsManagement: React.FC = () => {
                           <button
                             onClick={() => toggleFeaturedStatus(post)}
                             className={`p-2 rounded-lg transition-colors ${
-                              post.is_featured
+                              post.is_featured === 1
                                 ? 'text-yellow-600 hover:bg-yellow-100'
                                 : 'text-gray-400 hover:bg-gray-100'
                             }`}
-                            title={post.is_featured ? 'إلغاء التمييز' : 'تمييز'}
+                            title={post.is_featured === 1 ? 'إلغاء التمييز' : 'تمييز'}
                           >
                             <FiStar size={16} />
                           </button>
