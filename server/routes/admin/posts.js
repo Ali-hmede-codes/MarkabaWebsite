@@ -74,7 +74,9 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
       sortOrder = 'DESC'
     } = req.query;
 
-    const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+    // If limit is 'all', set a very high limit to show all posts
+    const actualLimit = limit === 'all' ? 999999 : parseInt(limit, 10);
+    const offset = (parseInt(page, 10) - 1) * actualLimit;
     
     // Build WHERE clause
     const whereConditions = [];
@@ -147,7 +149,7 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
       LEFT JOIN categories c ON p.category_id = c.id
       ${whereClause}
       ${orderByClause}
-      LIMIT ${parseInt(limit, 10)} OFFSET ${offset}
+      LIMIT ${actualLimit} OFFSET ${offset}
     `;
     
     const countQuery = `

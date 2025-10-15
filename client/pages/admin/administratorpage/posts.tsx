@@ -50,7 +50,7 @@ const PostsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
-  const [postsPerPage, setPostsPerPage] = useState(20); // Changed from hardcoded 8 to 20
+  const [postsPerPage, setPostsPerPage] = useState(20); // Changed back to 20 for proper pagination
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -459,7 +459,7 @@ const PostsManagement: React.FC = () => {
           )}
         </div>
 
-        {/* Pagination */}
+        {/* Pagination - Always show when there are multiple pages */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between bg-white px-6 py-3 border rounded-lg">
             <div className="text-sm text-gray-700">
