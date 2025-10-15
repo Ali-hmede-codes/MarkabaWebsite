@@ -68,6 +68,12 @@ const nextConfig = {
         destination: '/post/:slug',
         permanent: true,
       },
+      // Redirect post URLs with IDs to clean URLs without IDs
+      {
+        source: '/post/:id(\\d+)/:slug',
+        destination: '/post/:slug',
+        permanent: true,
+      },
       // Removed robots.txt and sitemap.xml redirects to fix Google Search Console indexing
       // These files should be served directly from /public folder
     ];
