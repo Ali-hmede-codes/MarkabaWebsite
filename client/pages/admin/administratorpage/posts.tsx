@@ -69,7 +69,7 @@ const PostsManagement: React.FC = () => {
       setLoading(true);
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: postsPerPage.toString(),
+        limit: statusFilter === 'featured' ? 'all' : postsPerPage.toString(),
         ...(searchTerm && { search: searchTerm }),
         ...(selectedCategory && { category: selectedCategory })
       });
@@ -568,7 +568,7 @@ const PostsManagement: React.FC = () => {
         </div>
 
         {/* Pagination Controls */}
-        {totalPages > 1 && (
+        {totalPages > 1 && statusFilter !== 'featured' && (
           <div className="bg-white px-4 sm:px-6 py-4 border rounded-lg">
             {/* Mobile Layout */}
             <div className="flex flex-col space-y-4 sm:hidden">
