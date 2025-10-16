@@ -88,9 +88,17 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
       queryParams.push(searchTerm, searchTerm, searchTerm);
     }
     
-    if (status) {
-      whereConditions.push('p.is_published = ?');
-      queryParams.push(status === 'published' ? 1 : 0);
+    if (status && status !== 'all') {
+      if (status === 'published') {
+        whereConditions.push('p.is_published = ?');
+        queryParams.push(1);
+      } else if (status === 'draft') {
+        whereConditions.push('p.is_published = ?');
+        queryParams.push(0);
+      } else if (status === 'featured') {
+        whereConditions.push('p.is_featured = ?');
+        queryParams.push(1);
+      }
     }
     
     if (category) {

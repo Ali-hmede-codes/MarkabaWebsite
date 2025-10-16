@@ -71,9 +71,17 @@ const PostsManagement: React.FC = () => {
         page: currentPage.toString(),
         limit: postsPerPage.toString(),
         ...(searchTerm && { search: searchTerm }),
-        ...(selectedCategory && { category: selectedCategory }),
-        ...(statusFilter !== 'all' && { status: statusFilter })
+        ...(selectedCategory && { category: selectedCategory })
       });
+
+      // Handle status filter properly
+      if (statusFilter !== 'all') {
+        if (statusFilter === 'featured') {
+          params.append('featured', 'true');
+        } else {
+          params.append('status', statusFilter);
+        }
+      }
 
       const response = await fetch(`/api/admin/administratorpage/posts?${params}`, {
         method: 'GET',
