@@ -96,8 +96,9 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
         whereConditions.push('p.is_published = ?');
         queryParams.push(0);
       } else if (status === 'featured') {
-        whereConditions.push('p.is_featured = ?');
-        queryParams.push(1);
+        // For featured filter, show only published featured posts
+        whereConditions.push('p.is_featured = ? AND p.is_published = ?');
+        queryParams.push(1, 1);
       }
     }
     
