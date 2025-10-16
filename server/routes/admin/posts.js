@@ -174,7 +174,8 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
     const [countResult] = await db.execute(countQuery, queryParams);
     
     const total = countResult[0].total;
-    const totalPages = Math.ceil(total / parseInt(limit, 10));
+    const limitForPagination = limit === 'all' ? total : parseInt(limit, 10);
+    const totalPages = Math.ceil(total / limitForPagination);
     
     res.json({
       success: true,
@@ -183,7 +184,7 @@ router.get('/', authenticateToken, requireRole(['admin', 'editor', 'author']), a
         currentPage: parseInt(page, 10),
         totalPages,
         totalItems: total,
-        itemsPerPage: parseInt(limit, 10),
+        itemsPerPage: limitForPagination,
         hasNextPage: parseInt(page, 10) < totalPages,
         hasPrevPage: parseInt(page, 10) > 1
       }
