@@ -191,6 +191,8 @@
   
   .article-content blockquote {
     @apply border-l-4 border-primary-500 pl-4 italic text-gray-600 my-4;
+    font-family: 'Alexandria', Arial, sans-serif;
+    font-weight: 700;
   }
   
   /* Loading spinner */

@@ -39,7 +39,7 @@ export const formatPostContent = (content: string): string => {
         <svg style="position: absolute; top: -2rem; left: 50%; transform: translateX(-50%); width: 2rem; height: 2rem; color: #3b82f6;" fill="currentColor" viewBox="0 0 24 24">
           <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
         </svg>
-        <span style="color: #000000; font-family: 'Amin Bold', Arial, sans-serif; font-size: 1.2em; line-height: 1.6; display: block; padding: 3rem 2rem; text-align: center; font-weight: bold;">$1</span>
+        <span style="color: #000000; font-family: 'Alexandria', Arial, sans-serif; font-size: 1.2em; line-height: 1.6; display: block; padding: 3rem 2rem; text-align: center; font-weight: 700;">$1</span>
         <svg style="position: absolute; bottom: -2rem; left: 50%; transform: translateX(-50%) rotate(180deg); width: 2rem; height: 2rem; color: #3b82f6;" fill="currentColor" viewBox="0 0 24 24">
           <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
         </svg>
