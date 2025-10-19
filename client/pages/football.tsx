@@ -65,6 +65,11 @@ const transformStoredMatchesToLeagues = (matches: any[]): League[] => {
       return;
     }
     
+    // Only show matches that have started and have results (exclude NS - Not Started)
+    if (match.fixture.status.short === 'NS') {
+      return;
+    }
+    
     if (!leaguesMap.has(leagueId)) {
       leaguesMap.set(leagueId, {
         id: leagueId,
@@ -139,7 +144,7 @@ const FootballPage: React.FC = () => {
     if (status === 'FT') return 'انتهت';
     if (status === 'LIVE') return 'مباشر';
     if (status === 'HT') return 'استراحة';
-    if (status === 'NS') return 'لم تبدأ';
+    // Removed 'NS' (لم تبدأ) condition since we filter out these matches
     return status;
   };
 
