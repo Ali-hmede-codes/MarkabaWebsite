@@ -136,18 +136,35 @@ const FootballPage: React.FC = () => {
 
   const getMatchStatus = (match: Match) => {
     const status = match.fixture.status.short;
+    
+    // If match has finished and has goals, show the result
+    if (status === 'FT' && match.goals.home !== null && match.goals.away !== null) {
+      return `النتيجة: ${match.goals.home} - ${match.goals.away}`;
+    }
+    
     if (status === 'FT') return 'انتهت';
     if (status === 'LIVE') return 'مباشر';
     if (status === 'HT') return 'استراحة';
-    if (status === 'NS') return 'لم تبدأ';
+    
+    // Only show "لم تبدأ" if match hasn't started AND has no goals
+    if (status === 'NS' && (match.goals.home === null || match.goals.away === null)) {
+      return 'لم تبدأ';
+    }
+    
+    // If match has goals but status is NS, show the result
+    if (match.goals.home !== null && match.goals.away !== null) {
+      return `النتيجة: ${match.goals.home} - ${match.goals.away}`;
+    }
+    
     return status;
   };
 
   const getStatusColor = (status: string) => {
-    if (status === 'FT') return 'text-gray-600';
-    if (status === 'LIVE') return 'text-red-500 animate-pulse';
-    if (status === 'HT') return 'text-yellow-500';
-    return 'text-blue-600';
+    if (status === 'انتهت' || status.startsWith('النتيجة:')) return 'text-green-600';
+    if (status === 'مباشر') return 'text-red-500 animate-pulse';
+    if (status === 'استراحة') return 'text-yellow-500';
+    if (status === 'لم تبدأ') return 'text-blue-600';
+    return 'text-gray-600';
   };
 
   if (loading) {
