@@ -18,7 +18,8 @@ function generateArabicSlug(title_ar) {
   };
   
   const transliterated = title_ar.split('').map(char => arabicToLatin[char] || char).join('');
-  return slugify(transliterated, { lower: true, strict: true });
+  const slug = slugify(transliterated, { lower: true, strict: true });
+  return slug || `post-${Date.now()}`;
 }
 
 // Calculate reading time based on Arabic content

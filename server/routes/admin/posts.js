@@ -11,6 +11,31 @@ const { generateArabicSlug, createPostFiles } = require('../../utils/postUtils')
 
 const router = express.Router();
 
+function normalizeTags(value) {
+  if (value === undefined || value === null || value === '') {
+    return JSON.stringify([]);
+  }
+  if (Array.isArray(value)) {
+    return JSON.stringify(value.map((tag) => String(tag).trim()).filter(Boolean));
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return JSON.stringify([]);
+    }
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        return JSON.stringify(parsed.map((tag) => String(tag).trim()).filter(Boolean));
+      }
+    } catch {
+      // comma-separated fallback
+    }
+    return JSON.stringify(trimmed.split(',').map((tag) => tag.trim()).filter(Boolean));
+  }
+  return JSON.stringify([]);
+}
+
 // Configure multer for file uploads
 
 const storage = multer.memoryStorage();
@@ -327,9 +352,12 @@ router.post('/',
       .withMessage('وصف SEO يجب أن يكون أقل من 160 حرف'),
     body('tags')
       .optional()
-      .trim()
-      .isLength({ max: 500 })
-      .withMessage('الكلمات المفتاحية يجب أن تكون أقل من 500 حرف')
+      .custom((value) => {
+        if (value === undefined || value === null || value === '') return true;
+        if (Array.isArray(value)) return value.every((tag) => typeof tag === 'string' || typeof tag === 'number');
+        return typeof value === 'string';
+      })
+      .withMessage('الكلمات المفتاحية غير صحيحة')
   ],
   async (req, res) => {
     try {
@@ -478,8 +506,8 @@ router.put('/:id',
     body('title_ar')
       .optional()
       .trim()
-      .isLength({ min: 5, max: 200 })
-      .withMessage('عنوان المقال يجب أن يكون بين 5 و 200 حرف'),
+      .isLength({ min: 3, max: 255 })
+      .withMessage('عنوان المقال يجب أن يكون بين 3 و 255 حرف'),
     body('slug')
       .optional()
       .trim()
@@ -490,8 +518,8 @@ router.put('/:id',
     body('content_ar')
       .optional()
       .trim()
-      .isLength({ min: 50 })
-      .withMessage('محتوى المقال يجب أن يكون 50 حرف على الأقل'),
+      .isLength({ min: 10 })
+      .withMessage('محتوى المقال يجب أن يكون 10 أحرف على الأقل'),
     body('excerpt_ar')
       .optional()
       .trim()
@@ -526,9 +554,12 @@ router.put('/:id',
       .withMessage('وصف SEO يجب أن يكون أقل من 160 حرف'),
     body('tags')
       .optional()
-      .trim()
-      .isLength({ max: 500 })
-      .withMessage('الكلمات المفتاحية يجب أن تكون أقل من 500 حرف')
+      .custom((value) => {
+        if (value === undefined || value === null || value === '') return true;
+        if (Array.isArray(value)) return value.every((tag) => typeof tag === 'string' || typeof tag === 'number');
+        return typeof value === 'string';
+      })
+      .withMessage('الكلمات المفتاحية غير صحيحة')
   ],
   async (req, res) => {
     try {
@@ -550,19 +581,13 @@ router.put('/:id',
       if (updateData.content_ar) updateData.content_ar = updateData.content_ar.trim();
       if (updateData.excerpt_ar) updateData.excerpt_ar = updateData.excerpt_ar.trim();
       if (updateData.meta_description_ar) updateData.meta_description_ar = updateData.meta_description_ar.trim();
-      if (updateData.tags) {
-        // Handle tags as array or string
-        if (Array.isArray(updateData.tags)) {
-          updateData.tags = updateData.tags.join(',').trim();
-        } else {
-          updateData.tags = updateData.tags.trim();
-        }
+      if (updateData.tags !== undefined) {
+        updateData.tags = normalizeTags(updateData.tags);
       }
       if (updateData.video_link) updateData.video_link = updateData.video_link.trim();
       
-      // Generate slug if title is provided but slug is not
       if (updateData.title_ar && !updateData.slug) {
-        updateData.slug = generateArabicSlug(updateData.title_ar);
+        delete updateData.slug;
       }
       
       // Validate slug if provided
@@ -715,7 +740,7 @@ router.put('/:id',
       console.error('Error updating post:', error);
       res.status(500).json({
         success: false,
-        message: 'خطأ في الخادم الداخلي'
+        message: error.message || 'خطأ في الخادم الداخلي'
       });
     }
   }
