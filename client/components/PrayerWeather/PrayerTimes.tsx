@@ -78,8 +78,7 @@ const PrayerTimes: React.FC = () => {
   useEffect(() => {
     const fetchPrayerTimes = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-        const response = await axios.get<PrayerTimesResponse>(`${apiUrl}/api/prayer/today`);
+        const response = await axios.get<PrayerTimesResponse>('/api/v2/prayer/today');
         if (response.data.success) {
           setPrayerTimes(response.data.data.results);
         } else {
