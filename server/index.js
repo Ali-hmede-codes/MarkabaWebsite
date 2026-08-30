@@ -718,26 +718,13 @@ const startServer = async () => {
       console.warn('⚠️ Database connection failed, continuing without database:', dbError.message);
     }
 
-    // Initialize scheduler service
-    console.log('Initializing scheduler service...');
-    const scheduler = new Scheduler();
-    await scheduler.initializeWeatherData();
-    await scheduler.initializePrayerData();
-    scheduler.start();
-    console.log('✅ Scheduler service initialized');
-
-    // Store scheduler reference for graceful shutdown
-    global.scheduler = scheduler;
-
-    // Ensure upload directories exist
     const uploadDirs = [
-      path.join(__dirname, '../uploads'),
-      path.join(__dirname, '../uploads/posts'),
-      path.join(__dirname, '../uploads/breaking_news'),
-      path.join(__dirname, '../uploads/categories'),
-      path.join(__dirname, '../uploads/avatars'),
-      path.join(__dirname, '../uploads/general'),
-
+      path.join(__dirname, 'public/uploads'),
+      path.join(__dirname, 'public/uploads/posts'),
+      path.join(__dirname, 'public/uploads/breaking_news'),
+      path.join(__dirname, 'public/uploads/categories'),
+      path.join(__dirname, 'public/uploads/avatars'),
+      path.join(__dirname, 'public/uploads/general'),
     ];
 
     await Promise.all(uploadDirs.map(async (dir) => {
@@ -751,7 +738,6 @@ const startServer = async () => {
     }));
     console.log('✅ Upload directories initialized');
 
-    // Start the server
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log('🚀 News Markaba Enhanced Server Started');
       console.log(`📡 Server running on port ${PORT}`);
@@ -785,8 +771,21 @@ const startServer = async () => {
       }
     });
 
-    // Store server reference for graceful shutdown
     global.server = server;
+
+    setImmediate(async () => {
+      try {
+        console.log('Initializing scheduler service...');
+        const scheduler = new Scheduler();
+        await scheduler.initializeWeatherData();
+        await scheduler.initializePrayerData();
+        scheduler.start();
+        global.scheduler = scheduler;
+        console.log('✅ Scheduler service initialized');
+      } catch (schedulerError) {
+        console.error('Scheduler failed (API is still up):', schedulerError.message);
+      }
+    });
 
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);

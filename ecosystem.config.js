@@ -7,13 +7,14 @@ module.exports = {
     {
       name: 'markaba-backend',
       script: path.join(root, 'server', 'index.js'),
-      cwd: path.join(root, 'server'),
+      cwd: root,
       instances: 1,
       exec_mode: 'fork',
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
       time: true,
+      env_file: path.join(root, '.env'),
       error_file: path.join(root, 'logs', 'backend-error.log'),
       out_file: path.join(root, 'logs', 'backend-out.log'),
       env: {
