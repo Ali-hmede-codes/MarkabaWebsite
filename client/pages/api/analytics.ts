@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
+import { INTERNAL_API_BASE } from '../../lib/api/config';
 
 // Initialize the Analytics Data API client
 let analyticsDataClient: BetaAnalyticsDataClient | null = null;
@@ -47,8 +48,8 @@ export default async function handler(
   try {
     // Fetch posts and categories count from existing APIs
     const [postsResponse, categoriesResponse] = await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`)
+      fetch(`${INTERNAL_API_BASE}/posts`),
+      fetch(`${INTERNAL_API_BASE}/categories`)
     ]);
 
     const postsData = await postsResponse.json();

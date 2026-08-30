@@ -1,7 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jwt from 'jsonwebtoken';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
+import { INTERNAL_BACKEND_ORIGIN } from '../../../../lib/api/config';
+
+const BACKEND_URL = INTERNAL_BACKEND_ORIGIN;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {

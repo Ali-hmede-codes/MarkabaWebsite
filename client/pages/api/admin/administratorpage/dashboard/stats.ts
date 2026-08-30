@@ -1,8 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { API_BASE_URL } from '../../../../../lib/api/config';
-
-
-//const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
+import { INTERNAL_API_BASE } from '../../../../../lib/api/config';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -17,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Forward request to backend
-    const response = await fetch(`${API_BASE_URL}/admin/administratorpage/dashboard/stats`, {
+    const response = await fetch(`${INTERNAL_API_BASE}/admin/administratorpage/dashboard/stats`, {
       method: 'GET',
       headers: {
         'Authorization': authHeader,

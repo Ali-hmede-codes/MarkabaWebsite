@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { INTERNAL_API_BASE } from '../../../lib/api/config';
 
 interface LogoutResponse {
   success: boolean;
@@ -24,7 +25,7 @@ export default async function handler(
     // If we have tokens, try to invalidate them on the backend
     if (token || refreshToken) {
       try {
-        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://markaba.news/api/v2';
+        const backendUrl = INTERNAL_API_BASE;
         const response = await fetch(`${backendUrl}/auth/logout`, {
           method: 'POST',
           headers: {

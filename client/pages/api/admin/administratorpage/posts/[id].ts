@@ -3,7 +3,9 @@ import formidable from 'formidable';
 import FormData from 'form-data';
 import fs from 'fs';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.markaba.news/api/v2';
+import { INTERNAL_API_BASE } from '../../../../../lib/api/config';
+
+const API_BASE_URL = INTERNAL_API_BASE;
 
 // Disable body parsing for multipart data
 export const config = {

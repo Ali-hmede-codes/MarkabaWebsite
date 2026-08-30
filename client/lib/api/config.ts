@@ -4,9 +4,6 @@ function stripTrailingSlash(url: string) {
   return url.replace(/\/$/, '');
 }
 
-// Browser-facing API (baked into the client bundle)
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
-
 // Server-side only: talk to Express on this machine, never the public hostname.
 // Using markaba.news here would loop back through nginx/Next and 404.
 export const INTERNAL_API_BASE = stripTrailingSlash(
@@ -20,6 +17,13 @@ export const INTERNAL_API_BASE = stripTrailingSlash(
 export const INTERNAL_BACKEND_ORIGIN = stripTrailingSlash(
   process.env.BACKEND_INTERNAL_URL?.replace(/\/api\/v2\/?$/, '') || 'http://127.0.0.1:5000'
 );
+
+// Browser-facing API (baked into the client bundle)
+export const PUBLIC_API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
+
+// On the Next.js server, always call Express locally. In the browser, use the public URL.
+export const API_BASE_URL =
+  typeof window === 'undefined' ? INTERNAL_API_BASE : PUBLIC_API_BASE;
 
 // Default API headers
 export const API_HEADERS = {

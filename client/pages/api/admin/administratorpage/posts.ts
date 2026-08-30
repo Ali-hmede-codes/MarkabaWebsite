@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { INTERNAL_API_BASE } from '../../../../lib/api/config';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.markaba.news/api/v2';
+const API_BASE_URL = INTERNAL_API_BASE;
 
 export default async function handler(
   req: NextApiRequest,
@@ -24,8 +25,8 @@ export default async function handler(
       backendUrl += `?${searchParams.toString()}`;
     }
     
-    // Get auth token from cookies
-    const token = req.cookies.token;
+    const headerToken = req.headers.authorization?.replace(/^Bearer\s+/i, '');
+    const token = headerToken || req.cookies.token;
     
     if (!token) {
       return res.status(401).json({ 

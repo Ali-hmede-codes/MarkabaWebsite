@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { API_BASE_URL } from '../../lib/api/config';
+import { INTERNAL_BACKEND_ORIGIN } from '../../lib/api/config';
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,7 +17,7 @@ export default async function handler(
   
   try {
     // Use the production backend URL for team endpoint
-    const backendUrl = 'https://api.markaba.news/api/team';
+    const backendUrl = `${INTERNAL_BACKEND_ORIGIN}/api/team`;
     
     // Make request to backend (no authentication required)
     const response = await fetch(backendUrl, {
