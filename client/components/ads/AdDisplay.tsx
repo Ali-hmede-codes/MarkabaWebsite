@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { API_BASE_URL } from '../../lib/api/config';
+import { getImageUrl } from '../../utils/imageUtils';
 
 interface Ad {
   id: number;
@@ -110,7 +111,7 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '', style }
     >
       <div className="relative w-full h-full overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 bg-gray-100">
         <Image
-          src={`https://api.markaba.news${ad.image_url}`}
+          src={getImageUrl(ad.image_url)}
           alt={ad.title}
           fill
           className="w-full h-full"

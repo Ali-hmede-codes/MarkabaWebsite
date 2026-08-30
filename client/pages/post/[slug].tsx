@@ -10,7 +10,7 @@ import { getImageUrl } from '../../utils/imageUtils';
 import Layout from '../../components/Layout/Layout';
 import PostLayout from '../../components/Layout/PostLayout';
 import Link from 'next/link';
-import { API_BASE_URL, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
+import { API_BASE_URL, INTERNAL_API_BASE, createTimeoutController, handleApiError, API_HEADERS } from '../../lib/api/config';
 import YouTubePlayer from '../../components/Posts/YouTubePlayer';
 import { formatPostContent } from '../../utils/textFormatter';
 import { PostBottomAd, SidebarTopAd, SquarePostMiddleAd } from '../../components/ads';
@@ -524,15 +524,12 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
   const { slug } = context.params as { slug: string };
   
   try {
-    // Use production API URL
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
-    const apiVersion = isDevelopment ? '/api' : '/api/v2';
-    
+    const apiBase = INTERNAL_API_BASE;
+
     console.log('SSR: Fetching post data for slug:', slug);
     
     // Fetch post data
-    const postResponse = await fetch(`${baseUrl}${apiVersion}/posts?slug=${slug}&limit=1&page=1`, {
+    const postResponse = await fetch(`${apiBase}/posts?slug=${slug}&limit=1&page=1`, {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'NewsMarkaba-SSR/1.0'
@@ -569,20 +566,20 @@ export const getServerSideProps: GetServerSideProps<SinglePostPageProps> = async
     
     // Fetch latest posts, breaking news, and related posts in parallel
     const [latestPostsResponse, breakingNewsResponse, relatedPostsResponse] = await Promise.all([
-      fetch(`${baseUrl}${apiVersion}/posts?limit=6&sort=latest&active=true&include_content=false`, {
+      fetch(`${apiBase}/posts?limit=6&sort=latest&active=true&include_content=false`, {
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'NewsMarkaba-SSR/1.0'
         }
       }),
-      fetch(`${baseUrl}${apiVersion}/breaking-news?limit=4&active=true&include_content=false`, {
+      fetch(`${apiBase}/breaking-news?limit=4&active=true&include_content=false`, {
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'NewsMarkaba-SSR/1.0'
         }
       }),
       // Fetch related posts from same category
-      post.category_id ? fetch(`${baseUrl}${apiVersion}/posts?category=${post.category_id}&limit=5&sort=latest&status=published&include_content=false`, {
+      post.category_id ? fetch(`${apiBase}/posts?category=${post.category_id}&limit=5&sort=latest&status=published&include_content=false`, {
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'NewsMarkaba-SSR/1.0'

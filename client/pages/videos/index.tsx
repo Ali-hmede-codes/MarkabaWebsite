@@ -8,6 +8,7 @@ import Layout from '../../components/Layout/Layout';
 import { Post, Category } from '../../components/API/types';
 import { FiPlay, FiCalendar, FiChevronLeft, FiChevronRight, FiHome } from 'react-icons/fi';
 import { getImageUrl } from '../../utils/imageUtils';
+import { INTERNAL_API_BASE } from '../../lib/api/config';
 import { useContent } from '../../hooks/useContent';
 
 interface VideosPageProps {
@@ -243,10 +244,6 @@ export const getServerSideProps: GetServerSideProps<VideosPageProps> = async (co
     const sort_by = query.sort_by as string || 'created_at';
     const sort_order = query.sort_order as string || 'desc';
 
-    // Build API URL
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    const baseUrl = isDevelopment ? 'https://api.markaba.news' : 'https://api.markaba.news';
-    
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
@@ -256,10 +253,9 @@ export const getServerSideProps: GetServerSideProps<VideosPageProps> = async (co
       sort_order
     });
 
-    // Fetch video posts and categories in parallel
     const [videosResponse, categoriesResponse] = await Promise.all([
-      fetch(`${baseUrl}/api/posts/videos?${params}`),
-      fetch(`${baseUrl}/api/categories`)
+      fetch(`${INTERNAL_API_BASE}/posts/videos?${params}`),
+      fetch(`${INTERNAL_API_BASE}/categories`)
     ]);
 
     if (!videosResponse.ok || !categoriesResponse.ok) {

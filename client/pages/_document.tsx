@@ -50,10 +50,9 @@ class MyDocument extends Document<MyDocumentProps> {
       try {
         const slug = ctx.query.slug as string;
         const isDevelopment = process.env.NODE_ENV === 'development';
-        const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
-        const apiVersion = isDevelopment ? '/api' : '/api/v2';
+        const { INTERNAL_API_BASE } = await import('../lib/api/config');
         
-        const categoryResponse = await fetch(`${baseUrl}${apiVersion}/categories?slug=${slug}`, {
+        const categoryResponse = await fetch(`${INTERNAL_API_BASE}/categories?slug=${slug}`, {
           headers: {
             'Content-Type': 'application/json',
             'User-Agent': 'NewsMarkaba-SSR/1.0'
@@ -72,7 +71,7 @@ class MyDocument extends Document<MyDocumentProps> {
             // Ensure image URL is absolute for social media sharing
             let fullImageUrl = categoryImage;
             if (categoryImage && !categoryImage.startsWith('http')) {
-              const imageBaseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
+              const imageBaseUrl = 'https://markaba.news';
               fullImageUrl = categoryImage.startsWith('/') ? `${imageBaseUrl}${categoryImage}` : `${imageBaseUrl}/${categoryImage}`;
             }
             
@@ -98,10 +97,9 @@ class MyDocument extends Document<MyDocumentProps> {
        try {
          const slug = ctx.query.slug as string;
          const isDevelopment = process.env.NODE_ENV === 'development';
-         const baseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
-         const apiVersion = isDevelopment ? '/api' : '/api/v2';
+         const { INTERNAL_API_BASE } = await import('../lib/api/config');
          
-         const postResponse = await fetch(`${baseUrl}${apiVersion}/posts?slug=${slug}&limit=1&page=1`, {
+         const postResponse = await fetch(`${INTERNAL_API_BASE}/posts?slug=${slug}&limit=1&page=1`, {
            headers: {
              'Content-Type': 'application/json',
              'User-Agent': 'NewsMarkaba-SSR/1.0'
@@ -120,7 +118,7 @@ class MyDocument extends Document<MyDocumentProps> {
              // Ensure image URL is absolute for social media sharing
              let fullImageUrl = postImage;
              if (postImage && !postImage.startsWith('http')) {
-               const imageBaseUrl = isDevelopment ? 'http://localhost:5000' : 'https://api.markaba.news';
+               const imageBaseUrl = 'https://markaba.news';
                fullImageUrl = postImage.startsWith('/') ? `${imageBaseUrl}${postImage}` : `${imageBaseUrl}/${postImage}`;
              }
              

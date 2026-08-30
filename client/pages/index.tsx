@@ -15,6 +15,7 @@ import {
   FiArrowLeft,
 } from "react-icons/fi";
 import { getImageUrl } from "../utils/imageUtils";
+import { INTERNAL_API_BASE } from "../lib/api/config";
 import LastNewsBanner from "../components/LastNews/LastNewsBanner";
 import LatestArticles from "../components/LatestArticles/LatestArticles";
 // import BreakingNewsBanner from "../components/BreakingNews/BreakingNewsBanner";
@@ -2327,79 +2328,25 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories, error }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<HomePageProps> = async (context) => {
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async () => {
   try {
-    // Check if we're on server or client side
-    const isServer = typeof window === 'undefined';
-    
-    // Use production API URL for www.markaba.news
-    const isDevelopment = process.env.NODE_ENV === "development";
-    
-    // For SSR, use internal API calls or direct database access
-    // For client-side, use external API URLs
-    let baseUrl: string;
-    
-    if (isServer) {
-      // Server-side: use localhost for development, external API for production
-      baseUrl = isDevelopment
-        ? "https://api.markaba.news"
-        : "https://api.markaba.news";
-    } else {
-      // Client-side: use relative paths or external API
-      baseUrl = isDevelopment
-        ? "https://api.markaba.news"
-        : "https://api.markaba.news";
-    }
-
-    console.log(`getInitialProps (${isServer ? 'server' : 'client'}): Fetching data from:`, baseUrl);
-
-    // Fetch posts and categories in parallel
-    const postsEndpoint = isDevelopment
-      ? `${baseUrl}/api/posts?limit=50`
-      : `${baseUrl}/api/v2/posts?limit=50`;
-    const categoriesEndpoint = isDevelopment
-      ? `${baseUrl}/api/categories`
-      : `${baseUrl}/api/v2/categories`;
-
-    // Use dynamic import for node-fetch on server side
-    let fetchFunction: typeof fetch;
-    
-    if (isServer && isDevelopment) {
-      // For server-side in development, we might need to handle ECONNREFUSED
-      // by providing fallback data or using a different approach
-      try {
-        fetchFunction = fetch;
-      } catch {
-        // If fetch is not available on server, provide fallback
-        console.warn('Fetch not available on server, providing fallback data');
-        return {
-          props: {
-            posts: [],
-            categories: [],
-            error: null,
-          },
-        };
-      }
-    } else {
-      fetchFunction = fetch;
-    }
+    const postsEndpoint = `${INTERNAL_API_BASE}/posts?limit=50`;
+    const categoriesEndpoint = `${INTERNAL_API_BASE}/categories`;
 
     const [postsResponse, categoriesResponse] = await Promise.all([
-      fetchFunction(postsEndpoint, {
+      fetch(postsEndpoint, {
         headers: {
           "Content-Type": "application/json",
-          "User-Agent": "NewsMarkaba-getInitialProps/1.0",
+          "User-Agent": "NewsMarkaba-SSR/1.0",
         },
-        // Add timeout for server-side requests
-        ...(isServer && { signal: AbortSignal.timeout(5000) }),
+        signal: AbortSignal.timeout(5000),
       }),
-      fetchFunction(categoriesEndpoint, {
+      fetch(categoriesEndpoint, {
         headers: {
           "Content-Type": "application/json",
-          "User-Agent": "NewsMarkaba-getInitialProps/1.0",
+          "User-Agent": "NewsMarkaba-SSR/1.0",
         },
-        // Add timeout for server-side requests
-        ...(isServer && { signal: AbortSignal.timeout(5000) }),
+        signal: AbortSignal.timeout(5000),
       }),
     ]);
 

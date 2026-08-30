@@ -95,10 +95,7 @@ const FootballPage: React.FC = () => {
   const fetchFootballData = async () => {
     try {
       setLoading(true);
-      const isDevelopment = process.env.NODE_ENV === 'development';
-      const apiUrl = isDevelopment 
-        ? 'http://localhost:5000/api/football/matches/stored'
-        : 'https://api.markaba.news/api/football/matches/stored';
+      const apiUrl = '/api/v2/football/matches/stored';
       
       const response = await fetch(apiUrl);
       if (!response.ok) {
