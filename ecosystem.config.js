@@ -23,8 +23,7 @@ module.exports = {
     },
     {
       name: 'markaba-frontend',
-      script: 'npm',
-      args: 'start',
+      script: path.join(root, 'scripts', 'start-frontend-prod.js'),
       cwd: path.join(root, 'client'),
       instances: 1,
       exec_mode: 'fork',
