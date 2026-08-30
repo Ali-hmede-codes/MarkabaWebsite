@@ -1,7 +1,25 @@
 // API configuration and utility functions
 
-// Base API configuration
+function stripTrailingSlash(url: string) {
+  return url.replace(/\/$/, '');
+}
+
+// Browser-facing API (baked into the client bundle)
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
+
+// Server-side only: talk to Express on this machine, never the public hostname.
+// Using markaba.news here would loop back through nginx/Next and 404.
+export const INTERNAL_API_BASE = stripTrailingSlash(
+  process.env.BACKEND_INTERNAL_URL
+    ? (process.env.BACKEND_INTERNAL_URL.includes('/api/')
+        ? process.env.BACKEND_INTERNAL_URL
+        : `${stripTrailingSlash(process.env.BACKEND_INTERNAL_URL)}/api/v2`)
+    : 'http://127.0.0.1:5000/api/v2'
+);
+
+export const INTERNAL_BACKEND_ORIGIN = stripTrailingSlash(
+  process.env.BACKEND_INTERNAL_URL?.replace(/\/api\/v2\/?$/, '') || 'http://127.0.0.1:5000'
+);
 
 // Default API headers
 export const API_HEADERS = {

@@ -243,9 +243,8 @@ class MyDocument extends Document<MyDocumentProps> {
                 OneSignalDeferred.push(async function(OneSignal) {
                   try {
                     // Only initialize OneSignal on production domain
-                    if (typeof window !== 'undefined' && 
-                        (window.location.hostname === 'www.markaba.news' || 
-                         window.location.hostname === 'markaba.news')) {
+                    if (typeof window !== 'undefined' &&
+                        window.location.hostname === 'www.markaba.news') {
                       await OneSignal.init({
                         appId: "${process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID || '02e93d78-0cea-455a-82c1-cfef034fbf18'}",
                         safari_web_id: "${process.env.NEXT_PUBLIC_ONESIGNAL_SAFARI_WEB_ID || 'web.onesignal.auto.4b99c5db-a7c9-461a-8333-facb0838095d'}",

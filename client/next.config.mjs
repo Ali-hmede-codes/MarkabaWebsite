@@ -84,6 +84,7 @@ const nextConfig = {
   
   // Rewrites for clean URLs
   async rewrites() {
+    const backend = (process.env.BACKEND_INTERNAL_URL || 'http://127.0.0.1:5000').replace(/\/$/, '');
     return [
       // Sitemap rewrites to serve API-generated sitemaps at root level
       {
@@ -97,6 +98,18 @@ const nextConfig = {
       {
         source: '/sitemap.xml',
         destination: '/api/sitemap.xml',
+      },
+      {
+        source: '/uploads/:path*',
+        destination: `${backend}/uploads/:path*`,
+      },
+      {
+        source: '/api/prayer/:path*',
+        destination: `${backend}/api/prayer/:path*`,
+      },
+      {
+        source: '/api/weather/:path*',
+        destination: `${backend}/api/weather/:path*`,
       },
     ];
   },
@@ -154,8 +167,8 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: `
               default-src 'self';
-              script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://s.ytimg.com https://cdn.onesignal.com https://onesignal.com https://api.onesignal.com;
-              connect-src 'self' https://www.google-analytics.com https://api.markaba.news http://localhost:5000 https://www.youtube.com https://youtube.com https://cdn.onesignal.com https://api.onesignal.com https://onesignal.com https://*.onesignal.com https://firebase.googleapis.com https://firestore.googleapis.com https://securetoken.googleapis.com;
+              script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.youtube.com https://s.ytimg.com https://cdn.onesignal.com https://onesignal.com https://api.onesignal.com https://static.cloudflareinsights.com;
+              connect-src 'self' https://markaba.news https://www.markaba.news https://www.google-analytics.com https://api.markaba.news http://127.0.0.1:5000 http://localhost:5000 https://www.youtube.com https://youtube.com https://cdn.onesignal.com https://api.onesignal.com https://onesignal.com https://*.onesignal.com https://static.cloudflareinsights.com https://firebase.googleapis.com https://firestore.googleapis.com https://securetoken.googleapis.com;
               img-src 'self' data: blob: https: http: https://www.google-analytics.com https://www.googletagmanager.com https://www.youtube.com https://s.ytimg.com;
               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://onesignal.com;
               font-src 'self' https://fonts.gstatic.com;

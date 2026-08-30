@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { INTERNAL_API_BASE } from '../../../lib/api/config';
 
 interface LoginRequest {
   username?: string;
@@ -51,8 +52,7 @@ export default async function handler(
       });
     }
 
-    // Forward request to backend auth service
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://markaba.news/api/v2';
+    const backendUrl = INTERNAL_API_BASE;
     const response = await fetch(`${backendUrl}/auth/login`, {
       method: 'POST',
       headers: {
