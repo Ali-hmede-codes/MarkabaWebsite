@@ -289,32 +289,51 @@ const Custom404: React.FC<Custom404Props> = ({ popularPosts, categories }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
+async function readApiJson(url: string): Promise<any | null> {
   try {
-    // Fetch popular posts
-    const postsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.markaba.news/api/v2'}/posts?limit=10&sort=popular`);
-    const postsData = await postsResponse.json();
-    
-    // Fetch categories
-    const categoriesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.markaba.news/api/v2'}/categories?limit=8`);
-    const categoriesData = await categoriesResponse.json();
+    const response = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(5000),
+    });
+    const contentType = response.headers.get('content-type') || '';
+    if (!response.ok || !contentType.includes('application/json')) {
+      return null;
+    }
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+  const empty = {
+    props: {
+      popularPosts: [] as Post[],
+      categories: [] as Category[],
+    },
+    revalidate: 3600,
+  };
+
+  try {
+    const apiBase =
+      process.env.BACKEND_URL
+        ? `${process.env.BACKEND_URL}/api/v2`
+        : process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api/v2';
+
+    const [postsData, categoriesData] = await Promise.all([
+      readApiJson(`${apiBase}/posts?limit=10&sort=popular`),
+      readApiJson(`${apiBase}/categories?limit=8`),
+    ]);
 
     return {
       props: {
-        popularPosts: postsData.posts || [],
-        categories: categoriesData.categories || []
+        popularPosts: postsData?.data?.posts || postsData?.posts || [],
+        categories: categoriesData?.data?.categories || categoriesData?.categories || [],
       },
-      revalidate: 3600 // Revalidate every hour
+      revalidate: 3600,
     };
-  } catch (error) {
-    console.error('Error fetching 404 page data:', error);
-    return {
-      props: {
-        popularPosts: [],
-        categories: []
-      },
-      revalidate: 3600
-    };
+  } catch {
+    return empty;
   }
 };
 
