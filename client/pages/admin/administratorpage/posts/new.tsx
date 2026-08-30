@@ -56,6 +56,7 @@ const CreatePost: React.FC = () => {
   
   const [tagInput, setTagInput] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState('');
   const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -65,8 +66,7 @@ const CreatePost: React.FC = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE}/categories`, {
+      const response = await fetch('/api/v2/categories', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -97,35 +97,35 @@ const CreatePost: React.FC = () => {
     setPost({ ...post, [field]: value });
   };
 
-  const handleImageUpload = async (file: File) => {
+  const handleImageUpload = async (file: File): Promise<string | null> => {
     try {
       setImageUploading(true);
       const formData = new FormData();
       formData.append('file', file);
-      
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE}/media/upload`, {
+      formData.append('upload_type', 'post');
+
+      const response = await fetch('/api/v2/media/upload', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: formData
+        body: formData,
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-      
+
       const data = await response.json();
-      if (data.success && data.data?.url) {
-        setPost({ ...post, featured_image: data.data.url });
-        toast.success('تم رفع الصورة بنجاح');
-      } else {
-        throw new Error('Invalid response from server');
+      const uploadedUrl = data?.data?.url || data?.url || data?.imageUrl;
+
+      if (!response.ok || !data.success || !uploadedUrl) {
+        throw new Error(data.message || 'Failed to upload image');
       }
+
+      setPost((current) => ({ ...current, featured_image: uploadedUrl }));
+      toast.success('تم رفع الصورة بنجاح');
+      return uploadedUrl;
     } catch (error) {
       console.error('Error uploading image:', error);
       toast.error('فشل في رفع الصورة');
+      return null;
     } finally {
       setImageUploading(false);
     }
@@ -196,19 +196,17 @@ const CreatePost: React.FC = () => {
     try {
       setSaving(true);
       
-      // Upload image first if selected
-      if (selectedFile && !post.featured_image) {
-        await handleImageUpload(selectedFile);
+      let featuredImageUrl = post.featured_image;
+      if (selectedFile && !featuredImageUrl) {
+        featuredImageUrl = (await handleImageUpload(selectedFile)) || '';
       }
-      
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      
+
       const postData = {
         title_ar: post.title_ar.trim(),
         content_ar: post.content_ar.trim(),
         excerpt_ar: post.excerpt_ar.trim(),
         category_id: parseInt(post.category_id.toString()),
-        featured_image: post.featured_image,
+        featured_image: featuredImageUrl,
         video_link: post.video_link.trim(),
         tags: post.tags,
         meta_description_ar: post.meta_description_ar.trim(),
@@ -217,7 +215,7 @@ const CreatePost: React.FC = () => {
         is_published: post.is_published
       };
       
-      const response = await fetch(`${API_BASE}/admin/administratorpage/posts`, {
+      const response = await fetch('/api/v2/admin/administratorpage/posts', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -295,10 +293,10 @@ const CreatePost: React.FC = () => {
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <h2 className="text-3xl font-bold mb-4 text-gray-900" dir="rtl">{post.title_ar || 'عنوان المقال'}</h2>
             
-            {post.featured_image && (
+            {(imagePreview || post.featured_image) && (
               <div className="mb-6">
                 <img 
-                  src={getImageUrl(post.featured_image)}
+                  src={imagePreview || getImageUrl(post.featured_image)}
                   alt="الصورة المميزة"
                   className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
                 />
@@ -385,6 +383,7 @@ const CreatePost: React.FC = () => {
                         const file = e.target.files?.[0];
                         if (file) {
                           setSelectedFile(file);
+                          setImagePreview(URL.createObjectURL(file));
                           handleImageUpload(file);
                         }
                       }}
@@ -394,9 +393,9 @@ const CreatePost: React.FC = () => {
                     {imageUploading && (
                       <p className="text-sm text-blue-600">جاري رفع الصورة...</p>
                     )}
-                    {post.featured_image && (
+                    {(imagePreview || post.featured_image) && (
                       <div className="mt-2">
-                        <img src={getImageUrl(post.featured_image)} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
+                        <img src={imagePreview || getImageUrl(post.featured_image)} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
                       </div>
                     )}
                   </div>

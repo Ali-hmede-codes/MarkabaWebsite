@@ -4,52 +4,52 @@
  * Includes lazy loading, WebP support, and image optimization features
  */
 
-// Get the backend URL for serving images
-const getBackendUrl = (): string => {
-  // Use the configured server URL, preserving HTTPS in production
-  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://api.markaba.news';
-  
-  // In development, use HTTP and port 5000
-  if (process.env.NODE_ENV === 'development') {
-    return serverUrl.replace(':3443', ':5000').replace('https:', 'http:');
-  }
-  
-  // In production, keep HTTPS and use the configured domain
-  return serverUrl;
-};
+const LEGACY_IMAGE_HOSTS = new Set([
+  'api.markaba.news',
+  'localhost',
+  '127.0.0.1',
+  '69.62.115.12',
+]);
 
-/**
- * Constructs the correct image URL from a given image path
- * @param imagePath - The image path from the database (e.g., '/uploads/general/image.jpg' or 'uploads/general/image.jpg')
- * @returns The complete URL to access the image
- */
-export const getImageUrl = (imagePath: string | null | undefined): string => {
-  // Return placeholder if no image path
-  if (!imagePath) {
-    return '/placeholder.svg';
-  }
+function toUploadsPath(rawPath: string): string {
+  let cleanPath = rawPath.replace(/^\/+/, '');
 
-  // If it's already a complete URL, return as is
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath;
-  }
-
-  // Remove any leading slashes and duplicate 'uploads' paths
-  let cleanPath = imagePath.replace(/^\/+/, ''); // Remove leading slashes
-  
-  // Handle the double /uploads/ issue
   if (cleanPath.startsWith('uploads/uploads/')) {
     cleanPath = cleanPath.replace('uploads/uploads/', 'uploads/');
   }
-  
-  // Ensure the path starts with 'uploads/'
+
   if (!cleanPath.startsWith('uploads/')) {
     cleanPath = `uploads/${cleanPath}`;
   }
 
-  // Construct the full URL using the backend server
-  const backendUrl = getBackendUrl();
-  return `${backendUrl}/${cleanPath}`;
+  return `/${cleanPath}`;
+}
+
+/**
+ * Same-origin /uploads/... so CloudPanel → Next.js can rewrite to Express.
+ */
+export const getImageUrl = (imagePath: string | null | undefined): string => {
+  if (!imagePath) {
+    return '/placeholder.svg';
+  }
+
+  if (imagePath.startsWith('blob:') || imagePath.startsWith('data:')) {
+    return imagePath;
+  }
+
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    try {
+      const parsed = new URL(imagePath);
+      if (LEGACY_IMAGE_HOSTS.has(parsed.hostname) && parsed.pathname.includes('uploads')) {
+        return parsed.pathname;
+      }
+    } catch {
+      return imagePath;
+    }
+    return imagePath;
+  }
+
+  return toUploadsPath(imagePath);
 };
 
 /**

@@ -192,34 +192,31 @@ const EditPost: React.FC = () => {
   const handleImageUpload = async (file: File): Promise<string | null> => {
     try {
       const formData = new FormData();
-      formData.append('image', file);
-      
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      formData.append('file', file);
+      formData.append('upload_type', 'post');
+
       const token = document.cookie
         .split('; ')
         .find(row => row.startsWith('token='))
         ?.split('=')[1];
-      
-      const response = await fetch(`${API_BASE}/upload`, {
+
+      const response = await fetch('/api/v2/media/upload', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: formData
+        body: formData,
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'فشل في رفع الصورة');
-      }
-      
+
       const data = await response.json();
-      if (data.success) {
-        toast.success('تم رفع الصورة بنجاح');
-        return data.imageUrl;
-      } else {
+      const uploadedUrl = data?.data?.url || data?.url || data?.imageUrl;
+
+      if (!response.ok || !data.success || !uploadedUrl) {
         throw new Error(data.message || 'فشل في رفع الصورة');
       }
+
+      toast.success('تم رفع الصورة بنجاح');
+      return uploadedUrl;
     } catch (error: any) {
       console.error('Error uploading image:', error);
       toast.error(error.message || 'حدث خطأ في رفع الصورة');
@@ -268,7 +265,7 @@ const EditPost: React.FC = () => {
         .find(row => row.startsWith('token='))
         ?.split('=')[1];
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${id}`, {
+      const response = await fetch(`/api/v2/admin/administratorpage/posts/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -416,8 +413,12 @@ const EditPost: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   الصورة المميزة
                 </label>
-                {post.featured_image && (
-                  <img src={getImageUrl(post.featured_image)} alt="Current featured" className="w-32 h-32 object-cover mb-2" />
+                {(selectedFile || post.featured_image) && (
+                  <img
+                    src={selectedFile ? URL.createObjectURL(selectedFile) : getImageUrl(post.featured_image)}
+                    alt="Current featured"
+                    className="w-32 h-32 object-cover mb-2"
+                  />
                 )}
                 <input
                   type="file"

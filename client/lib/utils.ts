@@ -8,17 +8,27 @@
  * @returns The full image URL
  */
 export function getImageUrl(imagePath: string | null | undefined): string {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
   if (!imagePath) {
     return '/placeholder.svg';
   }
+  if (imagePath.startsWith('blob:') || imagePath.startsWith('data:')) {
+    return imagePath;
+  }
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    try {
+      const parsed = new URL(imagePath);
+      if (parsed.pathname.includes('/uploads')) {
+        return parsed.pathname;
+      }
+    } catch {
+      return imagePath;
+    }
     return imagePath;
   }
   if (imagePath.startsWith('/')) {
-    return `${backendUrl}${imagePath}`;
+    return imagePath;
   }
-  return `${backendUrl}/uploads/${imagePath}`;
+  return `/uploads/${imagePath}`;
 }
 
 /**

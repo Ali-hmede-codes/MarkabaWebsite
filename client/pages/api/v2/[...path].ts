@@ -3,10 +3,18 @@ import { INTERNAL_BACKEND_ORIGIN } from '../../../lib/api/config';
 
 export const config = {
   api: {
-    bodyParser: true,
+    bodyParser: false,
     externalResolver: true,
   },
 };
+
+async function readRawBody(req: NextApiRequest): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  for await (const chunk of req) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const segments = req.query.path;
@@ -26,35 +34,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const backendUrl = `${INTERNAL_BACKEND_ORIGIN}/api/v2/${path}${query ? `?${query}` : ''}`;
 
   try {
-    const headers: HeadersInit = {
-      Accept: 'application/json',
+    const headers: Record<string, string> = {
+      Accept: req.headers.accept || 'application/json',
     };
 
-    const incomingType = req.headers['content-type'];
-    if (incomingType) {
-      headers['Content-Type'] = incomingType;
-    } else if (req.method !== 'GET' && req.method !== 'HEAD') {
-      headers['Content-Type'] = 'application/json';
+    if (req.headers['content-type']) {
+      headers['Content-Type'] = String(req.headers['content-type']);
     }
-
     if (req.headers.authorization) {
-      headers.Authorization = req.headers.authorization;
+      headers.Authorization = String(req.headers.authorization);
     }
     if (req.headers.cookie) {
-      headers.Cookie = req.headers.cookie;
+      headers.Cookie = String(req.headers.cookie);
     }
     if (req.headers['user-agent']) {
-      headers['User-Agent'] = req.headers['user-agent'];
+      headers['User-Agent'] = String(req.headers['user-agent']);
     }
 
-    const fetchOptions: RequestInit = {
-      method: req.method,
-      headers,
-    };
+    const method = req.method || 'GET';
+    const fetchOptions: RequestInit = { method, headers };
 
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
-      fetchOptions.body =
-        typeof req.body === 'string' ? req.body : JSON.stringify(req.body ?? {});
+    if (method !== 'GET' && method !== 'HEAD') {
+      const body = await readRawBody(req);
+      if (body.length) {
+        headers['Content-Length'] = String(body.length);
+        fetchOptions.body = body;
+      }
     }
 
     const response = await fetch(backendUrl, fetchOptions);
@@ -69,8 +74,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(response.status).json(data);
     }
 
-    const text = await response.text();
-    return res.status(response.status).send(text);
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (contentType) {
+      res.setHeader('Content-Type', contentType);
+    }
+    return res.status(response.status).send(buffer);
   } catch (error) {
     console.error('API v2 proxy error:', backendUrl, error);
     return res.status(502).json({

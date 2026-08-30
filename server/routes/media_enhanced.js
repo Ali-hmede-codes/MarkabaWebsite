@@ -134,44 +134,46 @@ router.post('/upload', auth, requireAdminOrEditor, upload.single('file'), async 
     
     const fileInfo = await getFileInfo(req.file.path);
     const fileUrl = generateFileUrl(req.file.path);
-    
-    // Save to database
-    const result = await query(
-      `INSERT INTO media (
-        filename, original_name, file_path, file_size, mime_type,
-        type, alt_text, caption, uploaded_by, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
-      [
-        req.file.filename,
-        req.file.originalname,
-        req.file.path,
-        fileInfo ? fileInfo.size : 0,
-        req.file.mimetype,
-        upload_type === 'general' ? 'general' : 'post',
-        alt_text,
-        caption,
-        req.user.id
-      ]
-    );
-    
-    const mediaId = result.insertId;
-    
-    // Get the created media record
-    const media = await queryOne(
-      `SELECT m.*, u.username as uploaded_by_username
-       FROM media m
-       LEFT JOIN users u ON m.uploaded_by = u.id
-       WHERE m.id = ?`,
-      [mediaId]
-    );
-    
+
+    let media = null;
+    try {
+      const result = await query(
+        `INSERT INTO media (
+          filename, original_name, file_path, file_size, mime_type,
+          type, alt_text, caption, uploaded_by, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+        [
+          req.file.filename,
+          req.file.originalname,
+          fileUrl,
+          fileInfo ? fileInfo.size : 0,
+          req.file.mimetype,
+          upload_type === 'general' ? 'general' : 'post',
+          alt_text,
+          caption,
+          req.user.id
+        ]
+      );
+
+      media = await queryOne(
+        `SELECT m.*, u.username as uploaded_by_username
+         FROM media m
+         LEFT JOIN users u ON m.uploaded_by = u.id
+         WHERE m.id = ?`,
+        [result.insertId]
+      );
+    } catch (dbError) {
+      console.error('Media record insert failed, file was saved:', dbError);
+    }
+
     res.status(201).json({
       success: true,
       message: 'File uploaded successfully',
       data: {
-        ...media,
+        ...(media || {}),
         url: fileUrl,
-        file_size_formatted: formatFileSize(media.file_size)
+        file_path: fileUrl,
+        file_size_formatted: formatFileSize((media && media.file_size) || (fileInfo ? fileInfo.size : 0))
       }
     });
     
