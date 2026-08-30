@@ -28,6 +28,8 @@ module.exports = {
       instances: 1,
       exec_mode: 'fork',
       autorestart: true,
+      max_restarts: 5,
+      min_uptime: '10s',
       watch: false,
       max_memory_restart: '1G',
       time: true,
