@@ -1,60 +1,43 @@
+const path = require('path');
+
+const root = __dirname;
+
 module.exports = {
   apps: [
     {
       name: 'markaba-backend',
-      script: './server/index.js',
-      cwd: '/var/www/MarkabaWebsite',
-      env: {
-        NODE_ENV: 'production',
-        PORT: 5000
-      },
-      env_production: {
-        NODE_ENV: 'production',
-        PORT: 5000
-      },
+      script: path.join(root, 'server', 'index.js'),
+      cwd: path.join(root, 'server'),
       instances: 1,
+      exec_mode: 'fork',
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
-      error_file: './logs/backend-error.log',
-      out_file: './logs/backend-out.log',
-      log_file: './logs/backend-combined.log',
-      time: true
+      time: true,
+      error_file: path.join(root, 'logs', 'backend-error.log'),
+      out_file: path.join(root, 'logs', 'backend-out.log'),
+      env: {
+        NODE_ENV: 'production',
+        PORT: 5000,
+      },
     },
     {
       name: 'markaba-frontend',
-      script: 'npm',
-      args: 'start',
-      cwd: '/var/www/MarkabaWebsite/client',
-      env: {
-        NODE_ENV: 'production',
-        PORT: 3000
-      },
-      env_production: {
-        NODE_ENV: 'production',
-        PORT: 3000
-      },
+      script: path.join(root, 'client', 'node_modules', 'next', 'dist', 'bin', 'next'),
+      args: 'start -p 3000',
+      cwd: path.join(root, 'client'),
       instances: 1,
+      exec_mode: 'fork',
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
-      error_file: './logs/frontend-error.log',
-      out_file: './logs/frontend-out.log',
-      log_file: './logs/frontend-combined.log',
-      time: true
-    }
+      time: true,
+      error_file: path.join(root, 'logs', 'frontend-error.log'),
+      out_file: path.join(root, 'logs', 'frontend-out.log'),
+      env: {
+        NODE_ENV: 'production',
+        PORT: 3000,
+      },
+    },
   ],
-
-  deploy: {
-    production: {
-      user: 'root',
-      host: '69.62.115.12',
-      ref: 'origin/old-version02',
-      repo: 'git@github.com:username/NewsMarkaba.git',
-      path: '/var/www/MarkabaWebsite',
-      'pre-deploy-local': '',
-      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
-      'pre-setup': ''
-    }
-  }
 };

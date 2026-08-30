@@ -1,5 +1,4 @@
-import React, { useState, useRef } from 'react';
-import { useInView } from 'react-intersection-observer';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface LazyImageProps {
   src: string;
@@ -25,12 +24,31 @@ const LazyImage: React.FC<LazyImageProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
+  const [inView, setInView] = useState(priority);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const { ref, inView } = useInView({
-    threshold: 0.1,
-    triggerOnce: true,
-    skip: priority // Skip intersection observer if priority is true
-  });
+  useEffect(() => {
+    if (priority) {
+      setInView(true);
+      return;
+    }
+
+    const element = containerRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [priority]);
 
   const shouldLoad = priority || inView;
 
@@ -75,7 +93,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
   );
 
   return (
-    <div ref={ref} className={`relative overflow-hidden ${aspectRatio} ${className}`}>
+    <div ref={containerRef} className={`relative overflow-hidden ${aspectRatio} ${className}`}>
       {/* Show skeleton while not loaded and not errored */}
       {!isLoaded && !hasError && <Skeleton />}
       

@@ -30,6 +30,11 @@
     "db:reset": "dropdb newsmarkaba && createdb newsmarkaba && npm run db:setup",
     "setup:env": "bash scripts/setup-env.sh",
     "setup:node": "node scripts/setup-and-run.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop all",
+    "pm2:restart": "pm2 restart all",
+    "pm2:logs": "pm2 logs",
+    "pm2:status": "pm2 status",
     "update-domain": "node scripts/update-domain.js",
     "deploy:help": "echo \"Usage: npm run update-domain <domain> [server_port] [client_port] [protocol]\" && echo \"Example: npm run update-domain markaba.news 5001 443 https\""
   },
