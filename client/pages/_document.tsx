@@ -247,13 +247,13 @@ class MyDocument extends Document<MyDocumentProps> {
                         (window.location.hostname === 'www.markaba.news' || 
                          window.location.hostname === 'markaba.news')) {
                       await OneSignal.init({
-                        appId: "02e93d78-0cea-455a-82c1-cfef034fbf18",
-                        safari_web_id: "web.onesignal.auto.4b99c5db-a7c9-461a-8333-facb0838095d",
+                        appId: "${process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID || '02e93d78-0cea-455a-82c1-cfef034fbf18'}",
+                        safari_web_id: "${process.env.NEXT_PUBLIC_ONESIGNAL_SAFARI_WEB_ID || 'web.onesignal.auto.4b99c5db-a7c9-461a-8333-facb0838095d'}",
                         allowLocalhostAsSecureOrigin: true,
                         notificationClickHandlerMatch: 'origin',
                         notificationClickHandlerAction: 'navigate',
                       notifyButton: {
-                        enable: true,
+                        enable: ${process.env.NEXT_PUBLIC_ONESIGNAL_NOTIFY_BUTTON !== 'false'},
                         size: 'medium',
                         theme: 'default',
                         position: 'bottom-right',

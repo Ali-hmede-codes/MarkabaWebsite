@@ -64,8 +64,7 @@ A modern, bilingual (Arabic/English) news website built with Next.js, Node.js, a
    createdb newsmarkaba
    
    # Run database migrations
-   cd ../sql
-   psql -d newsmarkaba -f create_tables.sql
+   mysql -u root -p < sql/schema.sql
    ```
 
 4. **Environment Configuration**
@@ -133,30 +132,19 @@ A modern, bilingual (Arabic/English) news website built with Next.js, Node.js, a
 ## 📁 Project Structure
 
 ```
-newsmarkaba/
+MarkabaWebsite/
 ├── client/                 # Next.js frontend
-│   ├── components/         # React components
-│   │   ├── Layout/        # Layout components
-│   │   ├── Posts/         # Post-related components
-│   │   ├── Categories/    # Category components
-│   │   ├── Auth/          # Authentication components
-│   │   └── UI/            # Reusable UI components
-│   ├── context/           # React context providers
-│   ├── hooks/             # Custom React hooks
-│   ├── pages/             # Next.js pages
-│   ├── public/            # Static assets
-│   ├── styles/            # CSS and styling
-│   ├── types/             # TypeScript type definitions
-│   └── utils/             # Utility functions
-├── server/                # Express.js backend
-│   ├── controllers/       # Route controllers
-│   ├── middleware/        # Express middleware
-│   ├── models/            # Database models
-│   ├── routes/            # API routes
-│   ├── utils/             # Utility functions
-│   └── uploads/           # File uploads
-├── sql/                   # Database scripts
-│   └── create_tables.sql  # Database schema
+├── server/                 # Express API
+├── sql/
+│   └── schema.sql          # One-file MySQL install
+├── scripts/
+│   ├── start/              # start-dev, start-vps, start-frontend
+│   ├── database/           # setup, seed, admin, schema checks
+│   └── tests/              # one-off API/debug scripts
+├── docs/                   # deployment and feature guides
+├── deploy/                 # nginx config
+├── ecosystem.config.js     # PM2
+├── .env                    # local backend + shared env
 └── README.md
 ```
 

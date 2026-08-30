@@ -1,7 +1,14 @@
 import { useEffect } from 'react';
 
-// OneSignal configuration
-const ONESIGNAL_APP_ID = '02e93d78-0cea-455a-82c1-cfef034fbf18';
+export const ONESIGNAL_APP_ID =
+  process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID || '02e93d78-0cea-455a-82c1-cfef034fbf18';
+
+export const ONESIGNAL_SAFARI_WEB_ID =
+  process.env.NEXT_PUBLIC_ONESIGNAL_SAFARI_WEB_ID ||
+  'web.onesignal.auto.4b99c5db-a7c9-461a-8333-facb0838095d';
+
+export const ONESIGNAL_NOTIFY_BUTTON =
+  process.env.NEXT_PUBLIC_ONESIGNAL_NOTIFY_BUTTON !== 'false';
 
 // Types for OneSignal v16
 interface OneSignalWindow extends Window {
