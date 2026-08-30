@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Clock, Calendar, Trophy } from 'lucide-react';
+import { FiClock as Clock, FiCalendar as Calendar, FiAward as Trophy } from 'react-icons/fi';
 import Layout from '../components/Layout/Layout';
 
 interface Team {
